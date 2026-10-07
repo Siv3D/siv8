@@ -492,19 +492,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateX(const float angle) noexcept
+	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateX(const Concept::Arithmetic auto angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR0.v, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR0.v, static_cast<float>(angle)) } };
 	}
 
-	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateY(const float angle) noexcept
+	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateY(const Concept::Arithmetic auto angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR1.v, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR1.v, static_cast<float>(angle)) } };
 	}
 
-	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateZ(const float angle) noexcept
+	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotateZ(const Concept::Arithmetic auto angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR2.v, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(DirectX::g_XMIdentityR2.v, static_cast<float>(angle)) } };
 	}
 
 }

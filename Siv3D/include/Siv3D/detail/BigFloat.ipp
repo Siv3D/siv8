@@ -226,17 +226,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int32 BigFloat::compare(const Concept::SignedIntegral auto i) const noexcept
+	std::partial_ordering BigFloat::compare(const Concept::SignedIntegral auto i) const noexcept
 	{
 		return compare(static_cast<int64>(i));
 	}
 
-	int32 BigFloat::compare(const Concept::UnsignedIntegral auto i) const noexcept
+	std::partial_ordering BigFloat::compare(const Concept::UnsignedIntegral auto i) const noexcept
 	{
 		return compare(static_cast<uint64>(i));
 	}
 
-	int32 BigFloat::compare(const Concept::FloatingPoint auto f) const noexcept
+	std::partial_ordering BigFloat::compare(const Concept::FloatingPoint auto f) const noexcept
 	{
 		return compare(static_cast<long double>(f));
 	}

@@ -46,22 +46,22 @@ TEST_CASE("HSV.constructor")
 	static_assert(HSV{ Vec3{ 120.0, 0.5, 0.75 }, 0.25 } == HSV{ 120.0, 0.5, 0.75, 0.25 });
 	static_assert(HSV{ Vec4{ 120.0, 0.5, 0.75, 0.25 } } == HSV{ 120.0, 0.5, 0.75, 0.25 });
 
-	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.h == doctest::Approx(0.0));
-	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.s == doctest::Approx(1.0));
-	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.v == doctest::Approx(1.0));
-	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.a == doctest::Approx(128.0 / 255.0));
+	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.h == Test::Approx(0.0));
+	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.s == Test::Approx(1.0));
+	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.v == Test::Approx(1.0));
+	CHECK(HSV{ Color{ 255, 0, 0, 128 } }.a == Test::Approx(128.0 / 255.0));
 
 	const HSV gray{ ColorF{ 0.5, 0.5, 0.5, 0.25 } };
-	CHECK(gray.h == doctest::Approx(0.0));
-	CHECK(gray.s == doctest::Approx(0.0));
-	CHECK(gray.v == doctest::Approx(0.5));
-	CHECK(gray.a == doctest::Approx(0.25));
+	CHECK(gray.h == Test::Approx(0.0));
+	CHECK(gray.s == Test::Approx(0.0));
+	CHECK(gray.v == Test::Approx(0.5));
+	CHECK(gray.a == Test::Approx(0.25));
 
 	const HSV tinyRed{ ColorF{ 1e-30, 0.0, 0.0, 0.25 } };
-	CHECK(tinyRed.h == doctest::Approx(0.0));
-	CHECK(tinyRed.s == doctest::Approx(1.0));
-	CHECK(tinyRed.v == doctest::Approx(1e-30));
-	CHECK(tinyRed.a == doctest::Approx(0.25));
+	CHECK(tinyRed.h == Test::Approx(0.0));
+	CHECK(tinyRed.s == Test::Approx(1.0));
+	CHECK(tinyRed.v == Test::Approx(1e-30));
+	CHECK(tinyRed.a == Test::Approx(0.25));
 }
 
 TEST_CASE("HSV.component operations")
@@ -112,21 +112,21 @@ TEST_CASE("HSV.lerp")
 	static_assert(from.lerp(to, 1.0) == to);
 
 	const HSV linear = from.lerp(to, 0.5);
-	CHECK(linear.h == doctest::Approx(180.0));
-	CHECK(linear.s == doctest::Approx(0.5));
-	CHECK(linear.v == doctest::Approx(0.7));
-	CHECK(linear.a == doctest::Approx(0.4));
+	CHECK(linear.h == Test::Approx(180.0));
+	CHECK(linear.s == Test::Approx(0.5));
+	CHECK(linear.v == Test::Approx(0.7));
+	CHECK(linear.a == Test::Approx(0.4));
 
 	const HSV shortest = from.lerpShortestHue(to, 0.5);
-	CHECK(shortest.h == doctest::Approx(360.0));
-	CHECK(shortest.s == doctest::Approx(0.5));
-	CHECK(shortest.v == doctest::Approx(0.7));
-	CHECK(shortest.a == doctest::Approx(0.4));
+	CHECK(shortest.h == Test::Approx(360.0));
+	CHECK(shortest.s == Test::Approx(0.5));
+	CHECK(shortest.v == Test::Approx(0.7));
+	CHECK(shortest.a == Test::Approx(0.4));
 
-	CHECK(to.lerpShortestHue(from, 0.5).h == doctest::Approx(0.0));
-	CHECK(from.lerpShortestHue(to, 2.0).h == doctest::Approx(390.0));
-	CHECK(HSV{ 0.0 }.lerpShortestHue(HSV{ 180.0 }, 0.5).h == doctest::Approx(-90.0));
-	CHECK(HSV{ 720.0 }.lerpShortestHue(HSV{ -350.0 }, 0.5).h == doctest::Approx(725.0));
+	CHECK(to.lerpShortestHue(from, 0.5).h == Test::Approx(0.0));
+	CHECK(from.lerpShortestHue(to, 2.0).h == Test::Approx(390.0));
+	CHECK(HSV{ 0.0 }.lerpShortestHue(HSV{ 180.0 }, 0.5).h == Test::Approx(-90.0));
+	CHECK(HSV{ 720.0 }.lerpShortestHue(HSV{ -350.0 }, 0.5).h == Test::Approx(725.0));
 }
 
 TEST_CASE("HSV.toColor")
@@ -168,55 +168,55 @@ TEST_CASE("HSV.toColor")
 TEST_CASE("HSV.toColorF")
 {
 	const ColorF red = HSV{ 0.0 }.toColorF();
-	CHECK(red.r == doctest::Approx(1.0));
-	CHECK(red.g == doctest::Approx(0.0));
-	CHECK(red.b == doctest::Approx(0.0));
-	CHECK(red.a == doctest::Approx(1.0));
+	CHECK(red.r == Test::Approx(1.0));
+	CHECK(red.g == Test::Approx(0.0));
+	CHECK(red.b == Test::Approx(0.0));
+	CHECK(red.a == Test::Approx(1.0));
 
 	const ColorF color = HSV{ 120.0, 0.5, 0.75, 0.25 }.toColorF();
-	CHECK(color.r == doctest::Approx(0.375));
-	CHECK(color.g == doctest::Approx(0.75));
-	CHECK(color.b == doctest::Approx(0.375));
-	CHECK(color.a == doctest::Approx(0.25));
-	CHECK(HSV{ 120.0, 0.5, 0.75, 0.25 }.toColorF(0.5).a == doctest::Approx(0.5));
+	CHECK(color.r == Test::Approx(0.375));
+	CHECK(color.g == Test::Approx(0.75));
+	CHECK(color.b == Test::Approx(0.375));
+	CHECK(color.a == Test::Approx(0.25));
+	CHECK(HSV{ 120.0, 0.5, 0.75, 0.25 }.toColorF(0.5).a == Test::Approx(0.5));
 
 	const ColorF hue = HueToColorF(-60.0);
-	CHECK(hue.r == doctest::Approx(1.0));
-	CHECK(hue.g == doctest::Approx(0.0));
-	CHECK(hue.b == doctest::Approx(1.0));
-	CHECK(hue.a == doctest::Approx(1.0));
+	CHECK(hue.r == Test::Approx(1.0));
+	CHECK(hue.g == Test::Approx(0.0));
+	CHECK(hue.b == Test::Approx(1.0));
+	CHECK(hue.a == Test::Approx(1.0));
 
 	for (const double hueValue : { -721.0, -60.5, 0.0, 59.5, 360.0, 721.0 })
 	{
 		const ColorF actual = HueToColorF(hueValue);
 		const ColorF expected = HSV{ hueValue }.toColorF();
-		CHECK(actual.r == doctest::Approx(expected.r));
-		CHECK(actual.g == doctest::Approx(expected.g));
-		CHECK(actual.b == doctest::Approx(expected.b));
-		CHECK(actual.a == doctest::Approx(expected.a));
+		CHECK(actual.r == Test::Approx(expected.r));
+		CHECK(actual.g == Test::Approx(expected.g));
+		CHECK(actual.b == Test::Approx(expected.b));
+		CHECK(actual.a == Test::Approx(expected.a));
 	}
 
 	const ColorF source{ 0.125, 0.25, 0.75, 0.5 };
 	const ColorF roundTrip = HSV{ source }.toColorF();
-	CHECK(roundTrip.r == doctest::Approx(source.r));
-	CHECK(roundTrip.g == doctest::Approx(source.g));
-	CHECK(roundTrip.b == doctest::Approx(source.b));
-	CHECK(roundTrip.a == doctest::Approx(source.a));
+	CHECK(roundTrip.r == Test::Approx(source.r));
+	CHECK(roundTrip.g == Test::Approx(source.g));
+	CHECK(roundTrip.b == Test::Approx(source.b));
+	CHECK(roundTrip.a == Test::Approx(source.a));
 }
 
 TEST_CASE("HSV.color space conversion")
 {
 	const ColorF linear = HSV{ 0.0, 1.0, 0.5, 0.25 }.srgbToLinear();
-	CHECK(linear.r == doctest::Approx(0.21404114048223255));
-	CHECK(linear.g == doctest::Approx(0.0));
-	CHECK(linear.b == doctest::Approx(0.0));
-	CHECK(linear.a == doctest::Approx(0.25));
+	CHECK(linear.r == Test::Approx(0.21404114048223255));
+	CHECK(linear.g == Test::Approx(0.0));
+	CHECK(linear.b == Test::Approx(0.0));
+	CHECK(linear.a == Test::Approx(0.25));
 
 	const ColorF srgb = HSV{ 0.0, 1.0, 0.5, 0.25 }.linearToSRGB();
-	CHECK(srgb.r == doctest::Approx(0.7353569830524495));
-	CHECK(srgb.g == doctest::Approx(0.0));
-	CHECK(srgb.b == doctest::Approx(0.0));
-	CHECK(srgb.a == doctest::Approx(0.25));
+	CHECK(srgb.r == Test::Approx(0.7353569830524495));
+	CHECK(srgb.g == Test::Approx(0.0));
+	CHECK(srgb.b == Test::Approx(0.0));
+	CHECK(srgb.a == Test::Approx(0.25));
 }
 
 TEST_CASE("HSV.hash")

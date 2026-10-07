@@ -20,11 +20,6 @@ else
 fi
 readonly output_dir
 printf 'Artifacts: %s\n' "${output_dir}"
-cat > "${output_dir}/main.cpp" <<'DRIVER'
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#define DOCTEST_CONFIG_COLORS_NONE
-#include <ThirdParty/doctest/doctest.h>
-DRIVER
 
 flags=(-std=c++23 -g -O0 -fno-omit-frame-pointer)
 if [[ "${mode}" == asan ]]; then
@@ -34,7 +29,7 @@ else
 fi
 xcrun clang++ "${flags[@]}" \
 	-I "${repo_dir}/Siv3D/include" -I "${repo_dir}/Siv3D/include/ThirdParty" \
-	"${output_dir}/main.cpp" \
+	"${repo_dir}/Test/ThirdParty/Catch2/catch_amalgamated.cpp" \
 	"${repo_dir}/Test/Test_ArrayException.cpp" \
 	"${repo_dir}/Test/Test_ArrayModel.cpp" \
 	"${repo_dir}/Siv3D/src/Siv3D/Array/SivArray.cpp" \

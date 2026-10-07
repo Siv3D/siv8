@@ -22,14 +22,14 @@ TEST_CASE("StringView.owner_lifetime_contract")
 	const String owner = U"alpha,beta";
 	// A temporary view is safe when its backing owner remains alive.
 	const auto data = StringView{ owner }.data();
-	CHECK_EQ(data, owner.data());
+	CHECK((data) == (owner.data()));
 	const auto parts = StringView{ owner }.splitView(U',');
-	CHECK_EQ(parts, Array<StringView>{ U"alpha", U"beta" });
-	CHECK_EQ(parts[0].data(), owner.data());
-	CHECK_EQ(parts[1].data(), owner.data() + 6);
+	CHECK((parts) == (Array<StringView>{ U"alpha", U"beta" }));
+	CHECK((parts[0].data()) == (owner.data()));
+	CHECK((parts[1].data()) == (owner.data() + 6));
 	const auto length = [](StringView v) { return v.size(); };
-	CHECK_EQ(length(String{ U"temporary" }), size_t{ 9 });
-	CHECK_EQ(StringView{ U"abc" }.map([](char32 ch) { return static_cast<int32>(ch); }), Array<int32>{ 97, 98, 99 });
+	CHECK((length(String{ U"temporary" })) == (size_t{ 9 }));
+	CHECK((StringView{ U"abc" }.map([](char32 ch) { return static_cast<int32>(ch); })) == (Array<int32>{ 97, 98, 99 }));
 	CHECK_THROWS_AS((void) StringView{ U"abc" }.filter([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
 }
 

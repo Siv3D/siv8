@@ -10,9 +10,9 @@
 //-----------------------------------------------
 
 # include "PolygonBuffer.hpp"
-# include "PolygonDetail.hpp"
 # include "GeometryCommon.hpp"
 # include <Siv3D/LineString.hpp>
+# include <algorithm>
 
 namespace s3d
 {
@@ -102,67 +102,29 @@ namespace s3d
 				boost::geometry::strategy::buffer::point_circle{ quality });
 		}
 
-		template <class Ring>
-		[[nodiscard]]
-		Array<Vec2> NormalizeRing(const Ring& ring)
+		void NormalizeRing(CWOpenRing& ring)
 		{
-			Array<Vec2> result;
-
-			if (ring.empty())
-			{
-				return result;
-			}
-
-			result.reserve(ring.size());
-
-			Vec2 previous = ring.front();
-			result << previous;
-
-			for (auto it = std::next(ring.begin()); it != ring.end(); ++it)
-			{
-				const Vec2 current = *it;
-
-				if (previous != current)
-				{
-					result << current;
-
-					previous = current;
-				}
-			}
-
-			// Boost.Geometry の出力 ring が閉じている場合、末尾の重複点を除去する。
-			if ((2 < result.size()) && (result.front() == result.back()))
-			{
-				result.pop_back();
-			}
-
-			return result;
+			ring.erase(std::unique(ring.begin(), ring.end()), ring.end());
+			ring.resize(detail::OpenRingView(ring).size());
 		}
 
 		[[nodiscard]]
-		Polygon ToPolygonFromBufferedLineString(const CwOpenPolygon& polygon)
+		Polygon ToPolygonFromBufferedLineString(CwOpenPolygon& polygon)
 		{
-			const Array<Vec2> outer = NormalizeRing(polygon.outer());
+			NormalizeRing(polygon.outer());
 
-			if (outer.size() < 3)
+			if (polygon.outer().size() < 3)
 			{
 				return{};
 			}
 
-			Array<Array<Vec2>> holes;
-			holes.reserve(polygon.inners().size());
-
-			for (const auto& inner : polygon.inners())
+			for (auto& inner : polygon.inners())
 			{
-				Array<Vec2> hole = NormalizeRing(inner);
-
-				if (3 <= hole.size())
-				{
-					holes << std::move(hole);
-				}
+				NormalizeRing(inner);
 			}
 
-			return Polygon{ outer, holes };
+			polygon.inners().erase_all_if([](const auto& hole) { return (hole.size() < 3); });
+			return detail::ToPolygon(polygon, SkipValidation::No);
 		}
 	}
 

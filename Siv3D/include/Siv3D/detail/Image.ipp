@@ -56,6 +56,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline Image& Image::operator =(const Image& other)
+	{
+		if (&other != this)
+		{
+			if (m_pixels.capacity() < other.m_pixels.size())
+			{
+				// Allocate before releasing the old image, without copying pixels
+				// that are about to be overwritten.
+				m_pixels = base_type(other.m_pixels);
+			}
+			else
+			{
+				m_pixels = other.m_pixels;
+			}
+			m_size = other.m_size;
+		}
+
+		return *this;
+	}
+
 	inline Image& Image::operator =(Image&& other) noexcept
 	{
 		if (&other != this)

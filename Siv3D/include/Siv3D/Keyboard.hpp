@@ -45,7 +45,8 @@ namespace s3d
 	/// @brief Tab キー	
 	inline constexpr Input KeyTab{ InputDeviceType::Keyboard, 0x09 };
 	
-	/// @brief Clear(NumLock を外した状態のテンキー5) キー	
+	/// @brief Clear キー
+	/// @remark Windows では NumLock が無効な状態のテンキー 5、macOS ではテンキーの Clear キーです。
 	inline constexpr Input KeyClear{ InputDeviceType::Keyboard, 0x0C };
 	
 	/// @brief Enter キー
@@ -93,7 +94,8 @@ namespace s3d
 	/// @brief Down (↓) キー
 	inline constexpr Input KeyDown{ InputDeviceType::Keyboard, 0x28 };
 
-	/// @brief PrintScreen キー	
+	/// @brief PrintScreen キー
+	/// @remark macOS では F13 キーです。
 	inline constexpr Input KeyPrintScreen{ InputDeviceType::Keyboard, 0x2C };
 
 	/// @brief Insert キー
@@ -331,6 +333,7 @@ namespace s3d
 	inline constexpr Input KeyF24{ InputDeviceType::Keyboard, 0x87 };
 
 	/// @brief NumLock キー
+	/// @remark macOS ではテンキーの Clear キーです。
 	inline constexpr Input KeyNumLock{ InputDeviceType::Keyboard, 0x90 };
 
 	/// @brief 左 Shift キー

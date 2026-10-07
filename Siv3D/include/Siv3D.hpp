@@ -169,6 +169,7 @@
 # include <Siv3D/Unicode.hpp>
 
 // Unicode の逐次変換 | Unicode converter
+# include <Siv3D/UnicodeDecodeStatus.hpp>
 # include <Siv3D/UnicodeConverter.hpp>
 
 // アルファベットの大文字・小文字 | Letter case
@@ -739,7 +740,17 @@
 
 # include <Siv3D/Pattern/PolkaDot.hpp>
 
+# include <Siv3D/Pattern/Halftone.hpp>
+
 # include <Siv3D/Pattern/Stripe.hpp>
+
+# include <Siv3D/Pattern/Wave.hpp>
+
+# include <Siv3D/Pattern/Ripple.hpp>
+
+# include <Siv3D/Pattern/Weave.hpp>
+
+# include <Siv3D/Pattern/Truchet.hpp>
 
 # include <Siv3D/Pattern/Grid.hpp>
 
@@ -1026,8 +1037,8 @@
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
 
-// Web ブラウザ | Web browser
-# include <Siv3D/WebBrowser.hpp>
+// Web ブラウザアプリ | Web browser application
+# include <Siv3D/BrowserApp.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1564,6 +1575,7 @@
 
 // 2D シェーダスコープ | 2D shader scope
 # include <Siv3D/ScopedCustomShader2D.hpp>
+# include <Siv3D/ScopedConstantBuffer2D.hpp>
 
 //// 3D シェーダスコープ | 3D shader scope
 //# include <Siv3D/ScopedCustomShader3D.hpp>
@@ -1664,6 +1676,7 @@
 
 // 2D 描画のビューポートスコープ | Viewport scope for 2D rendering
 # include <Siv3D/ScopedViewport2D.hpp>
+# include <Siv3D/ScopedQuadWarp2D.hpp>
 
 // 2D 描画の座標変換スコープ | Coordinate transformation scope for 2D rendering
 # include <Siv3D/Transformer2D.hpp>

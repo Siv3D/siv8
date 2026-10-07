@@ -13,9 +13,23 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include <ThirdParty/simdutf/simdutf.h>
+# include <functional>
 
 namespace s3d
 {
+	namespace
+	{
+		static void EncodeBase64(const char* src, const size_t size, std::string& dst)
+		{
+			const size_t length = simdutf::base64_length_from_binary(size);
+
+			dst.resize_and_overwrite(length, [src, size](char* output, size_t)
+				{
+					return simdutf::binary_to_base64(src, size, output);
+				});
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	encodeFromMemory
@@ -30,11 +44,23 @@ namespace s3d
 			return;
 		}
 
-		const size_t base64Length = simdutf::base64_length_from_binary(size);
+		const char* const input = static_cast<const char*>(src);
+		const char* const begin = m_base64.data();
+		// The terminating null is also a readable input byte.
+		const char* const end = (begin + m_base64.size() + 1);
+		const std::less<const char*> less;
 
-		m_base64.resize(base64Length);
-		
-		simdutf::binary_to_base64(static_cast<const char*>(src), size, m_base64.data());
+		if (less(input, end) && less(begin, (input + size)))
+		{
+			// Keep the original storage alive and unchanged until encoding completes.
+			std::string result;
+			EncodeBase64(input, size, result);
+			m_base64.swap(result);
+		}
+		else
+		{
+			EncodeBase64(input, size, m_base64);
+		}
 	}
 
 	void Base64Value::encodeFromMemory(const std::span<const Byte> src)
@@ -247,20 +273,34 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<size_t, size_t> Base64Value::decodeToString(String& dst) const
+	Result<size_t, Base64Value::DecodeError> Base64Value::decodeToString(String& dst) const
 	{
 		std::string s;
 
 		const auto result = decodeToUTF8(s);
 
-		if (result)
-		{
-			dst = Unicode::FromUTF8(s);
-		}
-		else
+		if (not result)
 		{
 			dst.clear();
-			return Err{ result.error() };
+			return Err{ DecodeError{ DecodeError::Code::InvalidBase64, result.error() } };
+		}
+
+		const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
+		simdutf::result conversionResult;
+
+		dst.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) -> size_t
+			{
+				const size_t written = simdutf::convert_utf8_to_utf32(s.data(), s.size(), buf);
+				if ((written == 0) && (not s.empty()))
+				{
+					conversionResult = simdutf::validate_utf8_with_errors(s.data(), s.size());
+				}
+				return written;
+			});
+
+		if (conversionResult.error != simdutf::SUCCESS)
+		{
+			return Err{ DecodeError{ DecodeError::Code::InvalidUTF8, conversionResult.count } };
 		}
 
 		return dst.size();

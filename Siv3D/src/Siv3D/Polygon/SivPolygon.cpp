@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/Shape2D.hpp>
@@ -752,6 +753,11 @@ namespace s3d
 
 	Polygon Polygon::computeMiterBufferPolygon(const double distance) const
 	{
+		if (isEmpty() || (distance == 0.0))
+		{
+			return *this;
+		}
+
 		return pImpl->computeMiterBufferPolygon(distance);
 	}
 
@@ -763,7 +769,56 @@ namespace s3d
 
 	Polygon Polygon::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
+		if (isEmpty() || (distance == 0.0))
+		{
+			return *this;
+		}
+
 		return pImpl->computeRoundBufferPolygon(distance, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::computeMiterBufferMultiPolygon(const double distance) const
+	{
+		if (isEmpty())
+		{
+			return{};
+		}
+		if (distance == 0.0)
+		{
+			MultiPolygon result;
+			result.push_back(*this);
+			return result;
+		}
+
+		return pImpl->computeMiterBufferMultiPolygon(distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::computeRoundBufferMultiPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		if (isEmpty())
+		{
+			return{};
+		}
+		if (distance == 0.0)
+		{
+			MultiPolygon result;
+			result.push_back(*this);
+			return result;
+		}
+
+		return pImpl->computeRoundBufferMultiPolygon(distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -779,7 +834,17 @@ namespace s3d
 			return *this;
 		}
 
-		return pImpl->simplified(maxDistance);
+		auto rings = pImpl->simplified(maxDistance);
+		if (not rings)
+		{
+			return *this;
+		}
+		Polygon result{ rings->outer, std::move(rings->inners), SkipValidation::Yes };
+		if (not result)
+		{
+			return *this;
+		}
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -813,13 +878,19 @@ namespace s3d
 
 	LineString Polygon::outline(double distanceFromOrigin, double length) const
 	{
+		const auto& out = outer();
+
+		if (out.isEmpty())
+		{
+			return{};
+		}
+
 		if (length <= 0.0)
 		{
 			distanceFromOrigin += length;
 			length = -length;
 		}
 
-		const auto& out = outer();
 		const size_t N = out.size();
 		Array<double> lens(N);
 		{
@@ -1288,28 +1359,7 @@ namespace s3d
 
 	Polygon Polygon::CorrectOne(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		Array<Polygon> polygons = Correct(outer, holes);
-
-		if (polygons.isEmpty())
-		{
-			return Polygon{};
-		}
-
-		size_t largestIndex = 0;
-		double largestArea = polygons[0].area();
-
-		for (size_t i = 1; i < polygons.size(); ++i)
-		{
-			const double area = polygons[i].area();
-			
-			if (largestArea < area)
-			{
-				largestIndex = i;
-				largestArea = area;
-			}
-		}
-
-		return std::move(polygons[largestIndex]);
+		return PolygonDetail::CorrectOne(outer, holes);
 	}
 
 	////////////////////////////////////////////////////////////////

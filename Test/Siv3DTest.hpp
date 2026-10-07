@@ -29,15 +29,9 @@
 
 # endif
 
-//
-// doctest
-//
-# if SIV3D_COMPILER(APPLE_CLANG) // Xcode では色付けを無効化
-#   define DOCTEST_CONFIG_COLORS_NONE
-# endif
-# include <ThirdParty/doctest/doctest.h>
+# include "Siv3DTestFramework.hpp"
 
-int32 RunTest();
+s3d::int32 RunTest();
 
 namespace s3d
 {

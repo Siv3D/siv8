@@ -123,22 +123,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief MSL ファイルから頂点シェーダを作成します。
+		/// @brief 既定の Metal ライブラリから頂点シェーダを作成します。
 		/// @param entryPoint エントリーポイント
-		/// @return 頂点シェーダ
+		/// @return 作成した頂点シェーダ。作成に失敗した場合、または entryPoint が vertex 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static VertexShader MSL(StringView entryPoint);
 
 		/// @brief MSL ファイルから頂点シェーダを作成します。
 		/// @param path MSL ファイルのパス
 		/// @param entryPoint エントリーポイント
-		/// @return 頂点シェーダ
+		/// @return 作成した頂点シェーダ。作成に失敗した場合、または entryPoint が vertex 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static VertexShader MSL(FilePathView path, StringView entryPoint);
 
+		/// @brief Reader から MSL ソースコードを読み込み、頂点シェーダを作成します。
+		/// @param reader MSL ソースコードを読み込む Reader。所有権を受け取ります。
+		/// @param entryPoint エントリーポイント
+		/// @return 作成した頂点シェーダ。作成に失敗した場合、または entryPoint が vertex 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static VertexShader MSL(std::unique_ptr<IReader> reader, StringView entryPoint);
 
+		/// @brief Reader から MSL ソースコードを読み込み、頂点シェーダを作成します。
+		/// @tparam Reader Reader の型
+		/// @param reader MSL ソースコードを読み込む Reader
+		/// @param entryPoint エントリーポイント
+		/// @return 作成した頂点シェーダ。作成に失敗した場合、または entryPoint が vertex 関数でない場合は空のシェーダ
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		static VertexShader MSL(Reader&& reader, StringView entryPoint);
@@ -146,7 +155,7 @@ namespace s3d
 		/// @brief MSL ソースコードから頂点シェーダを作成します。
 		/// @param source MSL ソースコード
 		/// @param entryPoint エントリーポイント
-		/// @return 頂点シェーダ
+		/// @return 作成した頂点シェーダ。作成に失敗した場合、または entryPoint が vertex 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static VertexShader MSL(const std::string& source, StringView entryPoint);
 

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
+# include <limits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -658,10 +659,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color)
+		uint32 BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color)
 		{
+			if ((vertices.size() > std::numeric_limits<Vertex2D::IndexType>::max())
+				|| (triangleIndices.size() > (std::numeric_limits<uint32>::max() / 3)))
+			{
+				return 0;
+			}
+
 			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
-			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
+			const uint32 IndexCount = static_cast<uint32>(triangleIndices.size() * 3);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -709,10 +716,16 @@ namespace s3d
 			return IndexCount;
 		}
 
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const Vertex2D::IndexType> indices, const Float4& color)
+		uint32 BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const Vertex2D::IndexType> indices, const Float4& color)
 		{
+			if ((vertices.size() > std::numeric_limits<Vertex2D::IndexType>::max())
+				|| (indices.size() > std::numeric_limits<uint32>::max()))
+			{
+				return 0;
+			}
+
 			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
-			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indices.size());
+			const uint32 IndexCount = static_cast<uint32>(indices.size());
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -752,10 +765,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const float s, const float c, const Float2& offset, const Float4& color)
+		uint32 BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const float s, const float c, const Float2& offset, const Float4& color)
 		{
+			if ((vertices.size() > std::numeric_limits<Vertex2D::IndexType>::max())
+				|| (triangleIndices.size() > (std::numeric_limits<uint32>::max() / 3)))
+			{
+				return 0;
+			}
+
 			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
-			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
+			const uint32 IndexCount = static_cast<uint32>(triangleIndices.size() * 3);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -853,10 +872,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset)
+		uint32 BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset)
 		{
+			if ((vertices.size() > std::numeric_limits<Vertex2D::IndexType>::max())
+				|| (triangleIndices.size() > (std::numeric_limits<uint32>::max() / 3)))
+			{
+				return 0;
+			}
+
 			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
-			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
+			const uint32 IndexCount = static_cast<uint32>(triangleIndices.size() * 3);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 			if (not pVertex)
 			{

@@ -17,6 +17,12 @@ namespace s3d
 	{
 		namespace Internal
 		{
+			void SetConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+
+			uint32 BeginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+
+			void EndConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
+
 			void SetColorMul(const Float4& color);
 
 			void SetColorAdd(const Float3& color);
@@ -44,6 +50,9 @@ namespace s3d
 			void SetLocalTransform(const Mat3x2& transform);
 
 			void SetCameraTransform(const Mat3x2& transform);
+
+			void SetQuadWarpTransform(const Mat3x3& transform);
 		}
+
 	}
 }

@@ -22,7 +22,7 @@ TEST_CASE("Step.step(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 0, 1, 2 });
+		CHECK((v) == (std::vector<int32>{ 0, 1, 2 }));
 	}
 
 	{
@@ -46,7 +46,7 @@ TEST_CASE("Step.step(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 0, 1, 2 });
+		CHECK((v) == (std::vector<uint64>{ 0, 1, 2 }));
 	}
 
 	{
@@ -58,7 +58,7 @@ TEST_CASE("Step.step(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 0, 1, 2 });
+		CHECK((v) == (std::vector<uint64>{ 0, 1, 2 }));
 	}
 
 	{
@@ -80,7 +80,7 @@ TEST_CASE("Step.step(a, n, step)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 10, 15, 20, 25 });
+		CHECK((v) == (std::vector<int32>{ 10, 15, 20, 25 }));
 	}
 
 	{
@@ -92,7 +92,7 @@ TEST_CASE("Step.step(a, n, step)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ -10, -5, 0, 5 });
+		CHECK((v) == (std::vector<int32>{ -10, -5, 0, 5 }));
 	}
 
 	{
@@ -104,7 +104,7 @@ TEST_CASE("Step.step(a, n, step)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 10, 5, 0, -5 });
+		CHECK((v) == (std::vector<int32>{ 10, 5, 0, -5 }));
 	}
 }
 
@@ -119,7 +119,7 @@ TEST_CASE("Step.step_backward(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 2, 1, 0 });
+		CHECK((v) == (std::vector<int32>{ 2, 1, 0 }));
 	}
 
 	{
@@ -143,7 +143,7 @@ TEST_CASE("Step.step_backward(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 2, 1, 0 });
+		CHECK((v) == (std::vector<uint64>{ 2, 1, 0 }));
 	}
 
 	{
@@ -155,7 +155,7 @@ TEST_CASE("Step.step_backward(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 2, 1, 0 });
+		CHECK((v) == (std::vector<uint64>{ 2, 1, 0 }));
 	}
 
 	{
@@ -177,7 +177,7 @@ TEST_CASE("Step.Range(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 0, 1, 2, 3 });
+		CHECK((v) == (std::vector<int32>{ 0, 1, 2, 3 }));
 	}
 
 	{
@@ -189,7 +189,7 @@ TEST_CASE("Step.Range(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ -2, -1, 0, 1, 2 });
+		CHECK((v) == (std::vector<int32>{ -2, -1, 0, 1, 2 }));
 	}
 
 	{
@@ -201,7 +201,7 @@ TEST_CASE("Step.Range(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<int32>{ 0 });
+		CHECK((v) == (std::vector<int32>{ 0 }));
 	}
 
 	{
@@ -225,7 +225,7 @@ TEST_CASE("Step.Range(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 0, 1, 2, 3 });
+		CHECK((v) == (std::vector<uint64>{ 0, 1, 2, 3 }));
 	}
 
 	{
@@ -237,7 +237,7 @@ TEST_CASE("Step.Range(n)")
 			v.push_back(i);
 		}
 
-		CHECK_EQ(v, std::vector<uint64>{ 0, 1, 2, 3 });
+		CHECK((v) == (std::vector<uint64>{ 0, 1, 2, 3 }));
 	}
 
 	{
@@ -249,6 +249,6 @@ TEST_CASE("Step.Range(n)")
 			s.push_back(i);
 		}
 
-		CHECK_EQ(s, std::string{ "ABCDEF" });
+		CHECK((s) == (std::string{ "ABCDEF" }));
 	}
 }

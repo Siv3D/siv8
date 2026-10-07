@@ -46,7 +46,7 @@
 	# endif
 
 	# if (SIV3D_USE_MIMALLOC)
-	#	pragma comment (lib, "mimalloc/mimalloc-static" SIV3D_DEBUG_LIB_SUFFIX(_d))
+	#	pragma comment (lib, "mimalloc/mimalloc" SIV3D_DEBUG_LIB_SUFFIX(-debug))
 	# endif
 
 	# undef SIV3D_DEBUG_LIB_SUFFIX

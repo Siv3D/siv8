@@ -9,6 +9,9 @@
 //
 //-----------------------------------------------
 
+# include <cassert>
+# include <cmath>
+# include <limits>
 # include <Siv3D/BigInt.hpp>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
@@ -16,6 +19,29 @@
 
 namespace s3d
 {
+	namespace
+	{
+		template <class Uint>
+		[[nodiscard]]
+		Uint ToUnsigned(const boost::multiprecision::cpp_int& value) noexcept
+		{
+			const auto& backend = value.backend();
+			constexpr size_t LimbBits = std::numeric_limits<boost::multiprecision::limb_type>::digits;
+			constexpr size_t ResultBits = std::numeric_limits<Uint>::digits;
+			Uint result = static_cast<Uint>(backend.limbs()[0]);
+
+			if constexpr (ResultBits > LimbBits)
+			{
+				for (size_t i = 1; (i < backend.size()) && (i * LimbBits < ResultBits); ++i)
+				{
+					result |= (static_cast<Uint>(backend.limbs()[i]) << (i * LimbBits));
+				}
+			}
+
+			return backend.sign() ? (Uint{ 0 } - result) : result;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -27,6 +53,8 @@ namespace s3d
 
 	BigInt::BigInt(const BigInt& other)
 		: pImpl{ std::make_unique<BigIntDetail>(*other.pImpl) } {}
+
+	BigInt::BigInt(BigInt&& other) noexcept = default;
 
 	BigInt::BigInt(const int64 i)
 		: pImpl{ std::make_unique<BigIntDetail>(i) } {}
@@ -56,18 +84,36 @@ namespace s3d
 
 	BigInt& BigInt::operator =(const int64 i)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigIntDetail>(i);
+			return *this;
+		}
+
 		pImpl->value.assign(i);
 		return *this;
 	}
 
 	BigInt& BigInt::operator =(const uint64 i)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigIntDetail>(i);
+			return *this;
+		}
+
 		pImpl->value.assign(i);
 		return *this;
 	}
 
 	BigInt& BigInt::operator =(const BigInt& other)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigIntDetail>(*other.pImpl);
+			return *this;
+		}
+
 		pImpl->value = other.pImpl->value;
 		return *this;
 	}
@@ -80,14 +126,19 @@ namespace s3d
 
 	BigInt& BigInt::operator =(const std::string_view number)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigIntDetail>(number);
+			return *this;
+		}
+
 		pImpl->value.assign(number);
 		return *this;
 	}
 
 	BigInt& BigInt::operator =(const StringView number)
 	{
-		pImpl->value.assign(Unicode::ToAscii(number));
-		return *this;
+		return (*this = Unicode::ToAscii(number));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -714,6 +765,17 @@ namespace s3d
 
 	void BigInt::divmod(const BigInt& x, BigInt& q, BigInt& r) const
 	{
+		assert(&q != &r);
+
+		if ((this == &q) || (this == &r) || (&x == &q) || (&x == &r))
+		{
+			BigInt quotient, remainder;
+			divmod(x, quotient, remainder);
+			q.swap(quotient);
+			r.swap(remainder);
+			return;
+		}
+
 		boost::multiprecision::divide_qr(pImpl->value, x.pImpl->value, q.pImpl->value, r.pImpl->value);
 	}
 
@@ -766,7 +828,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BigInt& BigInt::bitSet(const uint32 index, const bool value) noexcept
+	BigInt& BigInt::bitSet(const uint32 index, const bool value)
 	{
 		if (value)
 		{
@@ -775,6 +837,8 @@ namespace s3d
 		else
 		{
 			boost::multiprecision::bit_unset(pImpl->value, index);
+			auto& backend = pImpl->value.backend();
+			backend.sign(backend.sign()); // Clear the sign if the magnitude became zero.
 		}
 
 		return *this;
@@ -786,9 +850,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BigInt& BigInt::bitFlip(const uint32 index) noexcept
+	BigInt& BigInt::bitFlip(const uint32 index)
 	{
 		boost::multiprecision::bit_flip(pImpl->value, index);
+		auto& backend = pImpl->value.backend();
+		backend.sign(backend.sign()); // Clear the sign if the magnitude became zero.
 		return *this;
 	}
 
@@ -831,61 +897,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	asInt32, asUint32
+	//	convertTo
 	//
 	////////////////////////////////////////////////////////////////
 
-	int32 BigInt::asInt32() const noexcept
+	Optional<int64> BigInt::_convertToInt64(const int64 min, const int64 max) const noexcept
 	{
-		return pImpl->value.convert_to<int32>();
-	}
+		if ((compare(min) < 0) || (compare(max) > 0))
+		{
+			return none;
+		}
 
-	uint32 BigInt::asUint32() const noexcept
-	{
-		return pImpl->value.convert_to<uint32>();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	asInt64, asUint64
-	//
-	////////////////////////////////////////////////////////////////
-
-	int64 BigInt::asInt64() const noexcept
-	{
 		return pImpl->value.convert_to<int64>();
 	}
 
-	uint64 BigInt::asUint64() const noexcept
+	Optional<uint64> BigInt::_convertToUint64(const uint64 max) const noexcept
 	{
-		return pImpl->value.convert_to<uint64>();
-	}
+		if ((sign() < 0) || (compare(max) > 0))
+		{
+			return none;
+		}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	asFloat, asDouble
-	//
-	////////////////////////////////////////////////////////////////
-
-	float BigInt::asFloat() const noexcept
-	{
-		return pImpl->value.convert_to<float>();
-	}
-
-	double BigInt::asDouble() const noexcept
-	{
-		return pImpl->value.convert_to<double>();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	asBigFloat
-	//
-	////////////////////////////////////////////////////////////////
-
-	BigFloat BigInt::asBigFloat() const
-	{
-		return BigFloat{ *this };
+		return ToUnsigned<uint64>(pImpl->value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -896,7 +929,7 @@ namespace s3d
 
 	BigInt::operator size_t() const noexcept
 	{
-		return pImpl->value.convert_to<size_t>();
+		return ToUnsigned<size_t>(pImpl->value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -907,12 +940,12 @@ namespace s3d
 
 	BigInt::operator float() const noexcept
 	{
-		return asFloat();
+		return pImpl->value.convert_to<float>();
 	}
 
 	BigInt::operator double() const noexcept
 	{
-		return asDouble();
+		return pImpl->value.convert_to<double>();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -923,7 +956,7 @@ namespace s3d
 
 	BigInt::operator BigFloat() const
 	{
-		return asBigFloat();
+		return BigFloat{ *this };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -964,19 +997,38 @@ namespace s3d
 		return this->pImpl->value.compare(i);
 	}
 
-	int32 BigInt::compare(const float i) const noexcept
+	std::partial_ordering BigInt::compare(const float i) const
 	{
-		return this->pImpl->value.compare(i);
+		return compare(static_cast<long double>(i));
 	}
 
-	int32 BigInt::compare(const double i) const noexcept
+	std::partial_ordering BigInt::compare(const double i) const
 	{
-		return this->pImpl->value.compare(i);
+		return compare(static_cast<long double>(i));
 	}
 
-	int32 BigInt::compare(const long double i) const noexcept
+	std::partial_ordering BigInt::compare(const long double i) const
 	{
-		return this->pImpl->value.compare(i);
+		if (std::isnan(i))
+		{
+			return std::partial_ordering::unordered;
+		}
+
+		if (std::isinf(i))
+		{
+			return (i > 0) ? std::partial_ordering::less : std::partial_ordering::greater;
+		}
+
+		long double integerPart;
+		const long double fraction = std::modf(i, &integerPart);
+		const int32 result = pImpl->value.compare(BigIntDetail::value_type{ integerPart });
+
+		if (result != 0)
+		{
+			return (result <=> 0);
+		}
+
+		return (0.0L <=> fraction);
 	}
 
 	int32 BigInt::compare(const BigInt& i) const noexcept

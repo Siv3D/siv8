@@ -25,6 +25,6 @@ TEST_CASE("FunctionRef")
 {
 	static_assert(sizeof(FunctionRef<int32(int32, int32)>) == (sizeof(void*) * 2));
 
-	CHECK_EQ(Eval(1, 2, Add), 3);
-	CHECK_EQ(Eval(1, 2, [](int32 x, int32 y) { return (x + y); }), 3);
+	CHECK((Eval(1, 2, Add)) == (3));
+	CHECK((Eval(1, 2, [](int32 x, int32 y) { return (x + y); })) == (3));
 }

@@ -11,6 +11,7 @@
 
 # pragma once
 # include <memory>
+# include <compare>
 # include <ios>
 # include "Common.hpp"
 # include "Concepts.hpp"
@@ -28,6 +29,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多倍長浮動小数点数（有効桁数 100 桁）
+	/// @remark 比較演算子は NaN を比較不能として扱います。BigInt との演算・比較は BigFloat の精度で行います。
+	/// @remark ムーブ元は、破棄、代入先としての使用、swap() が可能です。値を読む操作の前に再代入してください。
 	class BigFloat
 	{
 	public:
@@ -50,7 +53,7 @@ namespace s3d
 		/// @brief 別の BigFloat から初期化します。
 		/// @param other 初期化に使う BigFloat
 		[[nodiscard]]
-		BigFloat(BigFloat&& other) noexcept = default;
+		BigFloat(BigFloat&& other) noexcept;
 
 		/// @brief 整数から初期化します。
 		/// @param i 初期化に使う整数
@@ -84,6 +87,7 @@ namespace s3d
 		
 		/// @brief 多倍長整数から初期化します。
 		/// @param i 初期化に使う多倍長整数
+		/// @remark 精度を超える下位桁は、0 方向へ切り捨てます。
 		[[nodiscard]]
 		BigFloat(const BigInt& i);
 		
@@ -124,6 +128,10 @@ namespace s3d
 
 		BigFloat& operator =(Concept::FloatingPoint auto f);
 
+		/// @brief 多倍長整数の値を代入します。
+		/// @param i 代入する多倍長整数
+		/// @return *this
+		/// @remark 精度を超える下位桁は、0 方向へ切り捨てます。
 		BigFloat& operator =(const BigInt& i);
 
 		BigFloat& operator =(const BigFloat& other);
@@ -221,7 +229,7 @@ namespace s3d
 		[[nodiscard]]
 		friend BigFloat operator -(const Concept::Arithmetic auto a, const BigFloat& b)
 		{
-			return (b - a);
+			return -(b - a);
 		}
 
 		[[nodiscard]]
@@ -435,7 +443,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		friend bool operator ==(const BigFloat& a, const BigInt& b) noexcept
+		friend bool operator ==(const BigFloat& a, const BigInt& b)
 		{
 			return (a.compare(b) == 0);
 		}
@@ -455,19 +463,19 @@ namespace s3d
 		[[nodiscard]]
 		friend auto operator <=>(const BigFloat& a, const BigFloat& b) noexcept
 		{
-			return (a.compare(b) <=> 0);
+			return a.compare(b);
 		}
 
 		[[nodiscard]]
-		friend auto operator <=>(const BigFloat& a, const BigInt& b) noexcept
+		friend auto operator <=>(const BigFloat& a, const BigInt& b)
 		{
-			return (a.compare(b) <=> 0);
+			return a.compare(b);
 		}
 
 		[[nodiscard]]
 		friend auto operator <=>(const BigFloat& a, const Concept::Arithmetic auto b) noexcept
 		{
-			return (a.compare(b) <=> 0);
+			return a.compare(b);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -563,17 +571,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief float に変換します。
-		/// @return float に変換した値
+		/// @return float に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		float asFloat() const;
 
 		/// @brief double に変換します。
-		/// @return double に変換した値
+		/// @return double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		double asDouble() const;
 
 		/// @brief long double に変換します。
-		/// @return long double に変換した値
+		/// @return long double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		long double asLongDouble() const;
 
@@ -584,14 +595,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief float に変換します。
-		/// @return float に変換した値
+		/// @return float に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
-		explicit operator float() const noexcept;
+		explicit operator float() const;
 
 		/// @brief double に変換します。
-		/// @return double に変換した値
+		/// @return double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
-		explicit operator double() const noexcept;
+		explicit operator double() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -600,9 +613,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列に変換します。
-		/// @param digits 桁数
-		/// @param fmtFlags 書式指定
+		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると元の値を復元できる桁数で出力
+		/// @param fmtFlags 書式指定。既定は固定表記。std::ios_base::fmtflags{} で値に応じて固定表記と指数表記を選択
 		/// @return 変換した文字列
+		/// @remark 既定の固定表記では 1e-101 は "0" になります。
 		[[nodiscard]]
 		std::string to_string(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 
@@ -613,9 +627,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列に変換します。
-		/// @param digits 桁数
-		/// @param fmtFlags 書式指定
+		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると元の値を復元できる桁数で出力
+		/// @param fmtFlags 書式指定。既定は固定表記。std::ios_base::fmtflags{} で値に応じて固定表記と指数表記を選択
 		/// @return 変換した文字列
+		/// @remark 既定の固定表記では 1e-101 は "0" になります。
 		[[nodiscard]]
 		String str(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 
@@ -625,29 +640,54 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値を比較します。
+		/// @param i 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(int64 i) const noexcept;
+		std::partial_ordering compare(int64 i) const noexcept;
 
+		/// @brief 値を比較します。
+		/// @param i 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(uint64 i) const noexcept;
+		std::partial_ordering compare(uint64 i) const noexcept;
 
+		/// @brief 値を比較します。
+		/// @param i 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(Concept::SignedIntegral auto i) const noexcept;
+		std::partial_ordering compare(Concept::SignedIntegral auto i) const noexcept;
 
+		/// @brief 値を比較します。
+		/// @param i 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(Concept::UnsignedIntegral auto i) const noexcept;
+		std::partial_ordering compare(Concept::UnsignedIntegral auto i) const noexcept;
 
+		/// @brief 値を比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(long double f) const noexcept;
+		std::partial_ordering compare(long double f) const noexcept;
 
+		/// @brief 値を比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(Concept::FloatingPoint auto f) const noexcept;
+		std::partial_ordering compare(Concept::FloatingPoint auto f) const noexcept;
 
+		/// @brief BigInt を BigFloat に変換して比較します。
+		/// @param i 比較する整数
+		/// @return 大小関係。この値が NaN の場合は unordered
+		/// @remark 厳密な整数比較ではありません。例えば 10^200 と 10^200 + 1 は同じ BigFloat と等価になり得ます。
 		[[nodiscard]]
-		int32 compare(const BigInt& i) const;
+		std::partial_ordering compare(const BigInt& i) const;
 		
+		/// @brief 値を比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。いずれかの値が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(const BigFloat& f) const noexcept;
+		std::partial_ordering compare(const BigFloat& f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

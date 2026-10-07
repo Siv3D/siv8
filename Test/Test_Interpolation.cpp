@@ -68,17 +68,17 @@ TEST_CASE("Math::InvLerp")
 
 TEST_CASE("Math::LerpAngle")
 {
-	CHECK(Math::LerpAngle(0.0, Math::Pi, 0.5) == doctest::Approx(-Math::HalfPi));
+	CHECK(Math::LerpAngle(0.0, Math::Pi, 0.5) == Test::Approx(-Math::HalfPi));
 	CHECK(Math::LerpAngle(uint32{ 10 }, uint32{ 0 }, 0.5)
-		== doctest::Approx(Math::LerpAngle(10.0, 0.0, 0.5)));
+		== Test::Approx(Math::LerpAngle(10.0, 0.0, 0.5)));
 }
 
 TEST_CASE("Math::Eerp")
 {
 	CHECK(Math::Eerp(2.0, 8.0, 0.0) == 2.0);
-	CHECK(Math::Eerp(2.0, 8.0, 0.5) == doctest::Approx(4.0));
+	CHECK(Math::Eerp(2.0, 8.0, 0.5) == Test::Approx(4.0));
 	CHECK(Math::Eerp(2.0, 8.0, 1.0) == 8.0);
-	CHECK(Math::Eerp(-2, -8, 0.5) == doctest::Approx(-4.0));
+	CHECK(Math::Eerp(-2, -8, 0.5) == Test::Approx(-4.0));
 }
 
 TEST_CASE("Math::Map")
@@ -111,16 +111,16 @@ TEST_CASE("Math::MoveTowards")
 TEST_CASE("Math::Damp")
 {
 	CHECK(Math::Damp(0.0, 1.0, 1.0, 0.0) == 0.0);
-	CHECK(Math::Damp(0.0, 1.0, 1.0, 1.0) == doctest::Approx(1.0 - std::exp(-1.0)));
+	CHECK(Math::Damp(0.0, 1.0, 1.0, 1.0) == Test::Approx(1.0 - std::exp(-1.0)));
 
 	const Vec2 result = Math::Damp(Vec2{ 0.0, 0.0 }, Vec2{ 1.0, 2.0 }, 1.0, 1.0);
-	CHECK(result.x == doctest::Approx(1.0 - std::exp(-1.0)));
-	CHECK(result.y == doctest::Approx(2.0 * (1.0 - std::exp(-1.0))));
+	CHECK(result.x == Test::Approx(1.0 - std::exp(-1.0)));
+	CHECK(result.y == Test::Approx(2.0 * (1.0 - std::exp(-1.0))));
 }
 
 TEST_CASE("Math::SmoothDamp")
 {
-	SUBCASE("normal")
+	SECTION("normal")
 	{
 		double velocity = 0.0;
 		const double result = Math::SmoothDamp(0.0, 1.0, velocity, 0.2, unspecified, (1.0 / 60.0));
@@ -130,7 +130,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(0.0 < velocity);
 	}
 
-	SUBCASE("zero deltaTime")
+	SECTION("zero deltaTime")
 	{
 		double velocity = 3.0;
 		const double result = Math::SmoothDamp(1.0, 1.0, velocity, 0.2, unspecified, 0.0);
@@ -139,7 +139,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(velocity == 3.0);
 	}
 
-	SUBCASE("negative deltaTime")
+	SECTION("negative deltaTime")
 	{
 		double velocity = 3.0;
 		const double result = Math::SmoothDamp(1.0, 2.0, velocity, 0.2, unspecified, -0.1);
@@ -148,7 +148,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(velocity == 3.0);
 	}
 
-	SUBCASE("HSV with zero deltaTime")
+	SECTION("HSV with zero deltaTime")
 	{
 		constexpr HSV value{ 120.0, 0.5, 0.75, 0.25 };
 		HSV velocity{ 1.0, 0.1, 0.2, 0.3 };
@@ -158,7 +158,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(velocity == HSV{ 1.0, 0.1, 0.2, 0.3 });
 	}
 
-	SUBCASE("overshoot")
+	SECTION("overshoot")
 	{
 		double velocity = 100.0;
 		const double result = Math::SmoothDamp(0.0, 1.0, velocity, 0.2, unspecified, 0.1);
@@ -167,7 +167,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(velocity == 0.0);
 	}
 
-	SUBCASE("zero smoothTime")
+	SECTION("zero smoothTime")
 	{
 		double velocity = 0.0;
 		const double result = Math::SmoothDamp(1.0, 2.0, velocity, 0.0, unspecified, 0.1);
@@ -178,7 +178,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(result <= 2.0);
 	}
 
-	SUBCASE("negative smoothTime")
+	SECTION("negative smoothTime")
 	{
 		double velocity = 0.0;
 		const double result = Math::SmoothDamp(1.0, 2.0, velocity, -1.0, unspecified, 0.1);
@@ -189,7 +189,7 @@ TEST_CASE("Math::SmoothDamp")
 		CHECK(result <= 2.0);
 	}
 
-	SUBCASE("negative maxSpeed")
+	SECTION("negative maxSpeed")
 	{
 		{
 			double velocity = 0.0;
@@ -208,7 +208,7 @@ TEST_CASE("Math::SmoothDamp")
 		}
 	}
 
-	SUBCASE("current equals target")
+	SECTION("current equals target")
 	{
 		{
 			double velocity = -1.0;

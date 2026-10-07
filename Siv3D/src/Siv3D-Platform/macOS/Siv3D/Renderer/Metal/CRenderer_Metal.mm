@@ -23,6 +23,7 @@
 # include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <cstdio>
 
 namespace s3d
 {
@@ -41,6 +42,18 @@ namespace s3d
 	CRenderer_Metal::~CRenderer_Metal()
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::~CRenderer_Metal()");
+
+		// Logger が生存している間に、送信済みフレームのエラーを最後に回収する。
+		m_frameContext.drain();
+		try
+		{
+			m_frameContext.reportErrors();
+		}
+		catch (...)
+		{
+			// ログ出力に失敗しても、残りの破棄処理を継続する。
+			std::fputs("Failed to report Metal shutdown errors\n", stderr);
+		}
 
 		m_sceneBuffers = {};
 
@@ -136,8 +149,6 @@ namespace s3d
 			
 			m_fullscreenTriangleRenderPipelineState = getRenderPipelineState().get(pipelineStateDesc);
 		}
-
-		beginFrame();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -148,7 +159,9 @@ namespace s3d
 
 	void CRenderer_Metal::waitForFrame()
 	{
-		m_pRenderer2D->waitForFrame();
+		const size_t frameIndex = m_frameContext.waitForFrame();
+		m_frameContext.reportErrors();
+		m_pRenderer2D->prepareFrame(frameIndex);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -165,14 +178,7 @@ namespace s3d
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
-		if (m_commandBuffer)
-		{
-			m_commandBuffer->release();
-		}
-		
-		m_commandBuffer = m_commandQueue->commandBuffer();
-
-		m_pRenderer2D->beginFrame(m_commandBuffer);
+		m_frameContext.beginFrame(m_commandQueue.get());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -197,18 +203,19 @@ namespace s3d
 		// SceneToBackBuffer
 		@autoreleasepool
 		{
-			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
+			MTL::CommandBuffer* commandBuffer = m_frameContext.getCommandBuffer();
 
+			if (CA::MetalDrawable* drawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable])
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				
 				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(m_metalDrawable->texture());
+				cd->setTexture(drawable->texture());
 				cd->setLoadAction(MTL::LoadActionClear);
 				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
 				cd->setStoreAction(MTL::StoreActionStore);
 				
-				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 				renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
 				const auto [s, viewRect] = getLetterboxComposition();
 				const MTL::Viewport viewport = {
@@ -223,16 +230,12 @@ namespace s3d
 				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
 				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
 				renderCommandEncoder->endEncoding();
+
+				commandBuffer->presentDrawable(drawable);
 			}
 			
-			m_commandBuffer->presentDrawable(m_metalDrawable);
-			
-			__weak dispatch_semaphore_t semaphore = m_pRenderer2D->getSemaphore();
-			m_commandBuffer->addCompletedHandler(^(MTL::CommandBuffer*) {
-				dispatch_semaphore_signal(semaphore);
-			});
-			m_commandBuffer->commit();
-			//m_commandBuffer->waitUntilCompleted();
+			// 表示先がなくてもシーン描画は送信し、スクリーンショットと GPU 完了時の枠の返却を維持する。
+			m_frameContext.submit();
 		}
 
 		return true;
@@ -386,7 +389,7 @@ namespace s3d
 			m_screenCapture.resize(sceneSize);
 		}
 		
-		m_commandBuffer->waitUntilCompleted();
+		m_frameContext.waitForLastSubmittedFrame();
 		
 		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
 												   m_screenCapture.bytesPerRow(),
@@ -443,6 +446,17 @@ namespace s3d
 	MTL::CommandQueue* CRenderer_Metal::getCommandQueue() const noexcept
 	{
 		return m_commandQueue.get();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getFrameContext
+	//
+	////////////////////////////////////////////////////////////////
+
+	const MetalFrameContext& CRenderer_Metal::getFrameContext() const noexcept
+	{
+		return m_frameContext;
 	}
 
 	////////////////////////////////////////////////////////////////

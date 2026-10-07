@@ -214,7 +214,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Image& operator =(const Image&) = default;
+		/// @brief 画像をコピー代入します。
+		/// @param other コピー元の画像
+		/// @return *this
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。代入先の画像は変更されません。
+		Image& operator =(const Image& other);
 
 		Image& operator =(Image&& other) noexcept;
 
@@ -674,11 +678,13 @@ namespace s3d
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
 		/// @remark サイズが変更された場合、画像の内容は不定になります。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resize(size_t width, size_t height);
 
 		/// @brief 画像のサイズを変更します。
 		/// @param size 新しい幅と高さ（ピクセル）
 		/// @remark サイズが変更された場合、画像の内容は不定になります。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resize(Size size);
 
 		/// @brief 画像のサイズを変更します。
@@ -686,12 +692,14 @@ namespace s3d
 		/// @param height 新しい高さ（ピクセル）
 		/// @param fillColor リサイズ後の画像を塗りつぶす色
 		/// @remark リサイズ後の画像は `fillColor` で塗りつぶされます。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resize(size_t width, size_t height, Color fillColor);
 
 		/// @brief 画像のサイズを変更します。
 		/// @param size 新しい幅と高さ（ピクセル）
 		/// @param fillColor リサイズ後の画像を塗りつぶす色
 		/// @remark リサイズ後の画像は `fillColor` で塗りつぶされます。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resize(Size size, Color fillColor);
 
 		////////////////////////////////////////////////////////////////
@@ -703,12 +711,14 @@ namespace s3d
 		/// @brief 画像の高さを変更します。
 		/// @param height 新しい高さ（ピクセル）
 		/// @remark 高さが増えた部分は `Color{ 0, 0, 0, 0 }` で塗りつぶされます。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resizeHeight(size_t height);
 
 		/// @brief 画像の高さを変更します。
 		/// @param height 新しい高さ（ピクセル）
 		/// @param fillColor 増えた部分を塗りつぶす色
 		/// @remark 高さが増えた部分は `fillColor` で塗りつぶされます。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合。画像は変更されません。
 		void resizeHeight(size_t height, Color fillColor);
 
 

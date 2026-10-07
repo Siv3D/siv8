@@ -80,7 +80,7 @@ TEST_CASE("Mesh3DBuilder::addTube")
 	const TubeOptions defaultUVOptions{ .sides = Sides };
 	const Mesh3D source = Mesh3D::Tube(path, Radius, options);
 
-	SUBCASE("Direct append reuses reserved storage")
+	SECTION("Direct append reuses reserved storage")
 	{
 		Mesh3DBuilder builder;
 		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
@@ -90,15 +90,15 @@ TEST_CASE("Mesh3DBuilder::addTube")
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
 		REQUIRE(builder.addTube(path, Radius, transform, options));
-		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+		CHECK((builder.getMesh().vertices.data()) == (vertexData));
+		CHECK((builder.getMesh().indices.data()) == (indexData));
 
 		Mesh3D expected = source;
 		REQUIRE(expected.append(source, transform));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Transform overloads")
+	SECTION("Transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -126,7 +126,7 @@ TEST_CASE("Mesh3DBuilder::addTube")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Failure leaves existing content unchanged")
+	SECTION("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox());
@@ -153,21 +153,21 @@ TEST_CASE("Mesh3D::Tube straight path and UV repeat")
 	const size_t startCapBase = (path.size() * ringStride);
 	const size_t endCapBase = (startCapBase + ringStride);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 4 * ringStride });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Sides });
+	CHECK((mesh.vertexCount()) == (size_t{ 4 * ringStride }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 * Sides }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 2.0f, -1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 0.0f, 0.0f, 1.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].bitangent(), Float3::UnitY());
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.1f, 0.2f });
-	CHECK_EQ(mesh.vertices[Sides].pos, mesh.vertices[0].pos);
-	CHECK_EQ(mesh.vertices[Sides].normal, mesh.vertices[0].normal);
-	CHECK_EQ(mesh.vertices[Sides].tex, Float2{ 2.1f, 0.2f });
-	CHECK_EQ(mesh.vertices[ringStride].tex, Float2{ 0.1f, 0.95f });
-	CHECK_EQ(mesh.vertices[startCapBase].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[endCapBase].normal, Float3::UnitY());
-	CHECK_EQ(mesh.vertices[startCapBase].tex, Float2{ 1.1f, 0.325f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ 2.0f, -1.0f, 0.0f }));
+	CHECK((mesh.vertices[0].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[0].tangent) == (Float4{ 0.0f, 0.0f, 1.0f, -1.0f }));
+	CHECK((mesh.vertices[0].bitangent()) == (Float3::UnitY()));
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.1f, 0.2f }));
+	CHECK((mesh.vertices[Sides].pos) == (mesh.vertices[0].pos));
+	CHECK((mesh.vertices[Sides].normal) == (mesh.vertices[0].normal));
+	CHECK((mesh.vertices[Sides].tex) == (Float2{ 2.1f, 0.2f }));
+	CHECK((mesh.vertices[ringStride].tex) == (Float2{ 0.1f, 0.95f }));
+	CHECK((mesh.vertices[startCapBase].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[endCapBase].normal) == (Float3::UnitY()));
+	CHECK((mesh.vertices[startCapBase].tex) == (Float2{ 1.1f, 0.325f }));
 	CheckMeshGeometry(Mesh3D::Tube(path, 2.0));
 }
 
@@ -195,18 +195,18 @@ TEST_CASE("Mesh3D::Tube end-cap options")
 	const Mesh3D endCap = Mesh3D::Tube(path, radii,
 		TubeOptions{ .sides = Sides, .endCaps = Mesh3DEndCaps::End });
 
-	CHECK_EQ(noCaps.vertexCount(), (path.size() * ringStride));
-	CHECK_EQ(noCaps.triangleCount(), (2 * Sides));
-	CHECK_EQ(startCap.vertexCount(), ((path.size() + 1) * ringStride));
-	CHECK_EQ(startCap.triangleCount(), (3 * Sides));
-	CHECK_EQ(endCap.vertexCount(), ((path.size() + 1) * ringStride));
-	CHECK_EQ(endCap.triangleCount(), (3 * Sides));
+	CHECK((noCaps.vertexCount()) == ((path.size() * ringStride)));
+	CHECK((noCaps.triangleCount()) == ((2 * Sides)));
+	CHECK((startCap.vertexCount()) == (((path.size() + 1) * ringStride)));
+	CHECK((startCap.triangleCount()) == ((3 * Sides)));
+	CHECK((endCap.vertexCount()) == (((path.size() + 1) * ringStride)));
+	CHECK((endCap.triangleCount()) == ((3 * Sides)));
 	CheckMeshGeometry(noCaps);
 	CheckMeshGeometry(startCap);
 	CheckMeshGeometry(endCap);
-	CHECK_EQ(startCap.vertices[path.size() * ringStride].normal, -Float3::UnitY());
-	CHECK_EQ(endCap.vertices[path.size() * ringStride].normal, Float3::UnitY());
-	CHECK_EQ(endCap.vertices[path.size() * ringStride + 1].pos, Float3{ 1.0f, 2.0f, 0.0f });
+	CHECK((startCap.vertices[path.size() * ringStride].normal) == (-Float3::UnitY()));
+	CHECK((endCap.vertices[path.size() * ringStride].normal) == (Float3::UnitY()));
+	CHECK((endCap.vertices[path.size() * ringStride + 1].pos) == (Float3{ 1.0f, 2.0f, 0.0f }));
 
 	CheckMeshDataEqual(
 		Mesh3D::Tube({ Vec3::Zero(), Vec3{ 0.0, 2.0, 0.0 } },
@@ -258,8 +258,8 @@ TEST_CASE("Mesh3DBuilder::addTube options placement overloads")
 	REQUIRE(builder.addTube(path, radii, offset, options));
 	REQUIRE(builder.addTube(path, radii, { offset, rotation }, options));
 	REQUIRE(builder.addTube(path, radii, transform, options));
-	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+	CHECK((builder.getMesh().vertices.data()) == (vertexData));
+	CHECK((builder.getMesh().indices.data()) == (indexData));
 
 	Mesh3D expected = constant;
 	REQUIRE(expected.append(constant));
@@ -287,20 +287,20 @@ TEST_CASE("Mesh3D::Tube per-point radii on a straight path")
 	const size_t endCapBase = (startCapBase + ringStride);
 	const Float3 expectedNormal = Float3{ 1.0f, -0.5f, 0.0f }.normalized();
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 4 * ringStride });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Sides });
+	CHECK((mesh.vertexCount()) == (size_t{ 4 * ringStride }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 * Sides }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[ringStride].pos, Float3{ 2.0f, 1.0f, 0.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ 1.0f, -1.0f, 0.0f }));
+	CHECK((mesh.vertices[ringStride].pos) == (Float3{ 2.0f, 1.0f, 0.0f }));
 	CHECK(mesh.vertices[0].normal.dot(expectedNormal)
-		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		== Test::Approx(1.0f).epsilon(FrameEpsilon));
 	CHECK(mesh.vertices[ringStride].normal.dot(expectedNormal)
-		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 0.0f, 0.0f, 1.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[startCapBase].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[endCapBase].normal, Float3::UnitY());
-	CHECK_EQ(mesh.vertices[startCapBase + 1].pos, Float3{ 1.0f, -1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[endCapBase + 1].pos, Float3{ 2.0f, 1.0f, 0.0f });
+		== Test::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[0].tangent) == (Float4{ 0.0f, 0.0f, 1.0f, -1.0f }));
+	CHECK((mesh.vertices[startCapBase].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[endCapBase].normal) == (Float3::UnitY()));
+	CHECK((mesh.vertices[startCapBase + 1].pos) == (Float3{ 1.0f, -1.0f, 0.0f }));
+	CHECK((mesh.vertices[endCapBase + 1].pos) == (Float3{ 2.0f, 1.0f, 0.0f }));
 }
 
 TEST_CASE("Mesh3D::Tube per-point equal radii preserve constant Tube data")
@@ -337,7 +337,7 @@ TEST_CASE("Mesh3D::Tube per-point radii on bent and closed paths")
 		{
 			const Vertex3D& vertex = bent.vertices[(pathIndex * ringStride) + sideIndex];
 			CHECK((vertex.pos - Float3{ bentPath[pathIndex] }).length()
-				== doctest::Approx(bentRadii[pathIndex]).epsilon(FrameEpsilon));
+				== Test::Approx(bentRadii[pathIndex]).epsilon(FrameEpsilon));
 		}
 	}
 
@@ -351,17 +351,17 @@ TEST_CASE("Mesh3D::Tube per-point radii on bent and closed paths")
 		TubeOptions{ .sides = Sides, .closeRing = CloseRing::Yes });
 	const size_t seamRingBase = (closedPath.size() * ringStride);
 
-	CHECK_EQ(closed.vertexCount(), ((closedPath.size() + 1) * ringStride));
-	CHECK_EQ(closed.triangleCount(), (2 * closedPath.size() * Sides));
+	CHECK((closed.vertexCount()) == (((closedPath.size() + 1) * ringStride)));
+	CHECK((closed.triangleCount()) == ((2 * closedPath.size() * Sides)));
 	CheckMeshGeometry(closed);
 	for (uint32 sideIndex = 0; sideIndex <= Sides; ++sideIndex)
 	{
 		const Vertex3D& first = closed.vertices[sideIndex];
 		const Vertex3D& seam = closed.vertices[seamRingBase + sideIndex];
-		CHECK_EQ(seam.pos, first.pos);
-		CHECK_EQ(seam.normal, first.normal);
-		CHECK_EQ(seam.tangent, first.tangent);
-		CHECK_EQ(seam.tex.x, first.tex.x);
+		CHECK((seam.pos) == (first.pos));
+		CHECK((seam.normal) == (first.normal));
+		CHECK((seam.tangent) == (first.tangent));
+		CHECK((seam.tex.x) == (first.tex.x));
 	}
 }
 
@@ -378,7 +378,7 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 	const TubeOptions defaultUVOptions{ .sides = Sides };
 	const Mesh3D source = Mesh3D::Tube(path, radii, options);
 
-	SUBCASE("Initializer list and reserved storage")
+	SECTION("Initializer list and reserved storage")
 	{
 		Mesh3DBuilder builder;
 		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
@@ -390,15 +390,15 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
 		REQUIRE(builder.addTube(path, radii, transform, options));
-		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+		CHECK((builder.getMesh().vertices.data()) == (vertexData));
+		CHECK((builder.getMesh().indices.data()) == (indexData));
 
 		Mesh3D expected = source;
 		REQUIRE(expected.append(source, transform));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Transform overloads")
+	SECTION("Transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -440,8 +440,8 @@ TEST_CASE("Mesh3D::Tube bent non-planar path")
 	const Mesh3D mesh = Mesh3D::Tube(path, Radius, TubeOptions{ .sides = Sides });
 	const size_t ringStride = (Sides + 1);
 
-	CHECK_EQ(mesh.vertexCount(), ((path.size() + 2) * ringStride));
-	CHECK_EQ(mesh.triangleCount(), (2 * path.size() * Sides));
+	CHECK((mesh.vertexCount()) == (((path.size() + 2) * ringStride)));
+	CHECK((mesh.triangleCount()) == ((2 * path.size() * Sides)));
 	CheckMeshGeometry(mesh);
 
 	for (size_t pathIndex = 0; pathIndex < path.size(); ++pathIndex)
@@ -450,13 +450,13 @@ TEST_CASE("Mesh3D::Tube bent non-planar path")
 		for (uint32 sideIndex = 0; sideIndex <= Sides; ++sideIndex)
 		{
 			const Vertex3D& vertex = mesh.vertices[(pathIndex * ringStride) + sideIndex];
-			CHECK((vertex.pos - center).length() == doctest::Approx(Radius).epsilon(FrameEpsilon));
+			CHECK((vertex.pos - center).length() == Test::Approx(Radius).epsilon(FrameEpsilon));
 		}
 	}
 
 	const double expectedLength = (2.0 + std::sqrt(3.0) + std::sqrt(2.0));
 	CHECK(mesh.vertices[(path.size() - 1) * ringStride].tex.y
-		== doctest::Approx(expectedLength).epsilon(FrameEpsilon));
+		== Test::Approx(expectedLength).epsilon(FrameEpsilon));
 	CHECK(mesh.vertices[0].normal.dot(mesh.vertices[ringStride].normal) > 0.0f);
 }
 
@@ -485,9 +485,9 @@ TEST_CASE("Mesh3D::Tube closed non-planar path")
 	const size_t ringStride = (Sides + 1);
 	const size_t stationCount = (path.size() + 1);
 
-	CHECK_EQ(mesh.vertexCount(), (stationCount * ringStride));
-	CHECK_EQ(mesh.triangleCount(), (2 * path.size() * Sides));
-	CHECK_EQ(defaultSides.triangleCount(), (2 * path.size() * 12));
+	CHECK((mesh.vertexCount()) == ((stationCount * ringStride)));
+	CHECK((mesh.triangleCount()) == ((2 * path.size() * Sides)));
+	CHECK((defaultSides.triangleCount()) == ((2 * path.size() * 12)));
 	CheckMeshGeometry(mesh);
 
 	const size_t seamRingBase = (path.size() * ringStride);
@@ -495,15 +495,15 @@ TEST_CASE("Mesh3D::Tube closed non-planar path")
 	{
 		const Vertex3D& first = mesh.vertices[sideIndex];
 		const Vertex3D& seam = mesh.vertices[seamRingBase + sideIndex];
-		CHECK_EQ(seam.pos, first.pos);
-		CHECK_EQ(seam.normal, first.normal);
-		CHECK_EQ(seam.tangent, first.tangent);
-		CHECK_EQ(seam.tex.x, first.tex.x);
+		CHECK((seam.pos) == (first.pos));
+		CHECK((seam.normal) == (first.normal));
+		CHECK((seam.tangent) == (first.tangent));
+		CHECK((seam.tex.x) == (first.tex.x));
 	}
 
 	const double totalLength = (2.0 + std::sqrt(5.0) + std::sqrt(5.0) + std::sqrt(8.0));
 	CHECK(mesh.vertices[seamRingBase].tex.y
-		== doctest::Approx(uvOffset.y + uvScale.y * totalLength).epsilon(FrameEpsilon));
+		== Test::Approx(uvOffset.y + uvScale.y * totalLength).epsilon(FrameEpsilon));
 	CHECK(mesh.vertices[(path.size() - 1) * ringStride].normal.dot(
 		mesh.vertices[seamRingBase].normal) > 0.0f);
 
@@ -556,8 +556,8 @@ TEST_CASE("Mesh3D::Tube minimum sides and nearly straight path")
 	};
 	const Mesh3D mesh = Mesh3D::Tube(path, 0.5, TubeOptions{ .sides = 3 });
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 5 * 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * 3 * 3 });
+	CHECK((mesh.vertexCount()) == (size_t{ 5 * 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 2 * 3 * 3 }));
 	CheckMeshGeometry(mesh);
 }
 

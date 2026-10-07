@@ -21,15 +21,19 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
+# include "BezierGeometry.hpp"
+# include "PolygonGeometry.hpp"
+# include "EllipseGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
 	namespace
 	{
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
-		inline constexpr double BezierRootTolerance = (64.0 * DoubleEpsilon);
+		using detail::CheckQuadraticRootsInUnitInterval;
+		using detail::CheckCubicRootsInUnitInterval;
 		inline constexpr double BezierPointTolerance = (64.0 * DoubleEpsilon);
-		inline constexpr double EllipseDistanceRootTolerance = (16.0 * DoubleEpsilon);
 
 		[[nodiscard]]
 		constexpr bool NearlyEqualBezierCoordinate(const double a, const double b) noexcept
@@ -43,138 +47,6 @@ namespace s3d
 		{
 			return (NearlyEqualBezierCoordinate(a.x, b.x)
 				&& NearlyEqualBezierCoordinate(a.y, b.y));
-		}
-
-		[[nodiscard]]
-		constexpr bool NearlyBetweenBezierCoordinate(const double a, const double x, const double b) noexcept
-		{
-			const double min = Min(a, b);
-			const double max = Max(a, b);
-			const double scale = Max(Max(Abs(a), Abs(x)), Max(Abs(b), 1.0));
-			const double tolerance = (BezierPointTolerance * scale);
-
-			return ((min - tolerance) <= x)
-				&& (x <= (max + tolerance));
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierRootPointIsOnSegmentRange(const Vec2& p, const Line& segment) noexcept
-		{
-			return NearlyBetweenBezierCoordinate(segment.start.x, p.x, segment.end.x)
-				&& NearlyBetweenBezierCoordinate(segment.start.y, p.y, segment.end.y);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool CheckQuadraticRootsInUnitInterval(const double a, const double b, const double c, Fty&& callback)
-		{
-			// Normalize by the polynomial's own scale. Using a fixed 1.0 floor here
-			// incorrectly classifies valid small-scale polynomials as identically zero.
-			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c) });
-
-			if (coefficientScale == 0.0)
-			{
-				return false;
-			}
-
-			const double na = (a / coefficientScale);
-			const double nb = (b / coefficientScale);
-			const double nc = (c / coefficientScale);
-
-			auto CheckRoot = [&](double t)
-			{
-				if (InRange(t, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
-				{
-					t = Clamp(t, 0.0, 1.0);
-					return callback(t);
-				}
-
-				return false;
-			};
-
-			if (Abs(na) <= BezierRootTolerance)
-			{
-				if (Abs(nb) <= BezierRootTolerance)
-				{
-					return false;
-				}
-
-				return CheckRoot(-nc / nb);
-			}
-
-			const double discriminantScale = (Abs(nb * nb) + Abs(4.0 * na * nc));
-			const double discriminantTolerance = (BezierRootTolerance * discriminantScale);
-			double discriminant = std::fma(nb, nb, -4.0 * na * nc);
-
-			if (discriminant < -discriminantTolerance)
-			{
-				return false;
-			}
-
-			if (discriminant < 0.0)
-			{
-				discriminant = 0.0;
-			}
-
-			const double s = std::sqrt(discriminant);
-
-			if (s == 0.0)
-			{
-				return CheckRoot(-nb / (2.0 * na));
-			}
-
-			const double q = (-0.5 * (nb + ((nb < 0.0) ? -s : s)));
-
-			if (q == 0.0)
-			{
-				return CheckRoot(-nb / (2.0 * na));
-			}
-
-			if (CheckRoot(q / na))
-			{
-				return true;
-			}
-
-			return CheckRoot(nc / q);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool CheckCubicRootsInUnitInterval(const double a, const double b, const double c, const double d, Fty&& callback)
-		{
-			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c), Abs(d) });
-
-			if (coefficientScale == 0.0)
-			{
-				return false;
-			}
-
-			const double na = (a / coefficientScale);
-			const double nb = (b / coefficientScale);
-			const double nc = (c / coefficientScale);
-			const double nd = (d / coefficientScale);
-
-			if (Abs(na) <= BezierRootTolerance)
-			{
-				return CheckQuadraticRootsInUnitInterval(nb, nc, nd, callback);
-			}
-
-			const auto roots = Math::SolveCubicEquation(na, nb, nc, nd);
-
-			for (const double t0 : roots)
-			{
-				if (InRange(t0, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
-				{
-					const double t = Clamp(t0, 0.0, 1.0);
-
-					if (callback(t))
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
 		}
 
 		[[nodiscard]]
@@ -211,69 +83,6 @@ namespace s3d
 		constexpr double AxisVariation(const double p0, const double p1, const double p2, const double p3) noexcept
 		{
 			return Max({ Abs(p1 - p0), Abs(p2 - p1), Abs(p3 - p2), Abs(p3 - p0) });
-		}
-
-		[[nodiscard]]
-		constexpr int32 CompareBezierPointLexicographically(const Vec2& a, const Vec2& b) noexcept
-		{
-			if (a.x < b.x)
-			{
-				return -1;
-			}
-
-			if (b.x < a.x)
-			{
-				return 1;
-			}
-
-			if (a.y < b.y)
-			{
-				return -1;
-			}
-
-			if (b.y < a.y)
-			{
-				return 1;
-			}
-
-			return 0;
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierLexicographicalLess(const Bezier2& a, const Bezier2& b) noexcept
-		{
-			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
-			{
-				return (order < 0);
-			}
-
-			return (CompareBezierPointLexicographically(a.p2, b.p2) < 0);
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierLexicographicalLess(const Bezier3& a, const Bezier3& b) noexcept
-		{
-			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p2, b.p2))
-			{
-				return (order < 0);
-			}
-
-			return (CompareBezierPointLexicographically(a.p3, b.p3) < 0);
 		}
 
 		[[nodiscard]]
@@ -396,87 +205,18 @@ namespace s3d
 			}
 		}
 
+		template <class Bezier>
 		[[nodiscard]]
-		constexpr double Bezier2AxisValue(const double p0, const double p1, const double p2, const double t) noexcept
+		bool CollinearBezierIntersectsLine(const Line& segment, const Bezier& curve) noexcept
 		{
-			const double s = (1.0 - t);
-			return ((s * s * p0) + (2.0 * s * t * p1) + (t * t * p2));
-		}
-
-		[[nodiscard]]
-		constexpr double Bezier3AxisValue(const double p0, const double p1, const double p2, const double p3, const double t) noexcept
-		{
-			const double s = (1.0 - t);
-			return ((s * s * s * p0) + (3.0 * s * s * t * p1) + (3.0 * s * t * t * p2) + (t * t * t * p3));
-		}
-
-		[[nodiscard]]
-		bool CollinearBezier2IntersectsLine(const Line& segment, const Bezier2& curve) noexcept
-		{
-			const Vec2 d = (segment.end - segment.start);
-			const bool useX = (Abs(d.y) <= Abs(d.x));
-
-			const double s0 = (useX ? segment.start.x : segment.start.y);
-			const double s1 = (useX ? segment.end.x : segment.end.y);
-			const double segmentMin = Min(s0, s1);
-			const double segmentMax = Max(s0, s1);
-
-			const double p0 = (useX ? curve.p0.x : curve.p0.y);
-			const double p1 = (useX ? curve.p1.x : curve.p1.y);
-			const double p2 = (useX ? curve.p2.x : curve.p2.y);
-
-			double curveMin = Min(p0, p2);
-			double curveMax = Max(p0, p2);
-
-			const double denominator = (p0 - 2.0 * p1 + p2);
-
-			if (denominator != 0.0)
-			{
-				const double t = ((p0 - p1) / denominator);
-
-				if (InRange(t, 0.0, 1.0))
-				{
-					const double v = Bezier2AxisValue(p0, p1, p2, t);
-					curveMin = Min(curveMin, v);
-					curveMax = Max(curveMax, v);
-				}
-			}
-
-			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
-		}
-
-		[[nodiscard]]
-		bool CollinearBezier3IntersectsLine(const Line& segment, const Bezier3& curve) noexcept
-		{
-			const Vec2 d = (segment.end - segment.start);
-			const bool useX = (Abs(d.y) <= Abs(d.x));
-
-			const double s0 = (useX ? segment.start.x : segment.start.y);
-			const double s1 = (useX ? segment.end.x : segment.end.y);
-			const double segmentMin = Min(s0, s1);
-			const double segmentMax = Max(s0, s1);
-
-			const double p0 = (useX ? curve.p0.x : curve.p0.y);
-			const double p1 = (useX ? curve.p1.x : curve.p1.y);
-			const double p2 = (useX ? curve.p2.x : curve.p2.y);
-			const double p3 = (useX ? curve.p3.x : curve.p3.y);
-
-			double curveMin = Min(p0, p3);
-			double curveMax = Max(p0, p3);
-
-			const double a = (-p0 + 3.0 * p1 - 3.0 * p2 + p3);
-			const double b = (3.0 * p0 - 6.0 * p1 + 3.0 * p2);
-			const double c = (-3.0 * p0 + 3.0 * p1);
-
-			std::ignore = CheckQuadraticRootsInUnitInterval((3.0 * a), (2.0 * b), c, [&](const double t)
-			{
-				const double v = Bezier3AxisValue(p0, p1, p2, p3, t);
-				curveMin = Min(curveMin, v);
-				curveMax = Max(curveMax, v);
-				return false;
-			});
-
-			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
+			const Vec2 direction = (segment.end - segment.start);
+			const bool useX = (Abs(direction.y) <= Abs(direction.x));
+			const Line extent = detail::BezierSegmentExtent(curve, useX);
+			const double a = (useX ? segment.start.x : segment.start.y);
+			const double b = (useX ? segment.end.x : segment.end.y);
+			const double lower = (useX ? extent.start.x : extent.start.y);
+			const double upper = (useX ? extent.end.x : extent.end.y);
+			return ((lower <= Max(a, b)) && (Min(a, b) <= upper));
 		}
 
 		[[nodiscard]]
@@ -498,12 +238,13 @@ namespace s3d
 
 			if ((a == 0.0) && (b == 0.0) && (c == 0.0))
 			{
-				return CollinearBezier2IntersectsLine(segment, curve);
+				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
+			const double tolerance = detail::BezierEvaluationTolerance(curve);
 			return CheckQuadraticRootsInUnitInterval(a, b, c, [&](const double t)
 			{
-				return BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment);
+				return detail::BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment, tolerance);
 			});
 		}
 
@@ -528,40 +269,14 @@ namespace s3d
 
 			if ((a == 0.0) && (b == 0.0) && (c == 0.0) && (e == 0.0))
 			{
-				return CollinearBezier3IntersectsLine(segment, curve);
+				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
+			const double tolerance = detail::BezierEvaluationTolerance(curve);
 			return CheckCubicRootsInUnitInterval(a, b, c, e, [&](const double t)
 			{
-				return BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment);
+				return detail::BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment, tolerance);
 			});
-		}
-
-		[[nodiscard]]
-		double SuperEllipseLocalValue(const Vec2& p, const double n) noexcept
-		{
-			return (std::pow(Abs(p.x), n) + std::pow(Abs(p.y), n));
-		}
-
-		[[nodiscard]]
-		double SuperEllipseLocalDerivative(const Vec2& p, const Vec2& d, const double n) noexcept
-		{
-			auto Term = [n](const double x, const double dx) noexcept
-			{
-				if (x < 0.0)
-				{
-					return (-dx * std::pow(-x, (n - 1.0)));
-				}
-
-				if (0.0 < x)
-				{
-					return (dx * std::pow(x, (n - 1.0)));
-				}
-
-				return 0.0;
-			};
-
-			return (n * (Term(p.x, d.x) + Term(p.y, d.y)));
 		}
 
 		[[nodiscard]]
@@ -581,110 +296,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsLineSuperEllipseArea(const Line& segment, const SuperEllipse& superEllipse) noexcept
 		{
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			const Vec2 p0{ ((segment.start.x - superEllipse.center.x) / ax), ((segment.start.y - superEllipse.center.y) / by) };
-			const Vec2 p1{ ((segment.end.x - superEllipse.center.x) / ax), ((segment.end.y - superEllipse.center.y) / by) };
-			const Vec2 d = (p1 - p0);
-
-			if ((SuperEllipseLocalValue(p0, n) <= 1.0)
-				|| (SuperEllipseLocalValue(p1, n) <= 1.0))
-			{
-				return true;
-			}
-
-			if (d == Vec2{ 0, 0 })
-			{
-				return false;
-			}
-
-			std::array<double, 4> ts{ 0.0, 1.0, 0.0, 0.0 };
-			size_t tCount = 2;
-
-			if (d.x != 0.0)
-			{
-				const double tx = (-p0.x / d.x);
-
-				if (InRange(tx, 0.0, 1.0))
-				{
-					ts[tCount++] = tx;
-				}
-			}
-
-			if (d.y != 0.0)
-			{
-				const double ty = (-p0.y / d.y);
-
-				if (InRange(ty, 0.0, 1.0))
-				{
-					ts[tCount++] = ty;
-				}
-			}
-
-			std::sort(ts.begin(), (ts.begin() + tCount));
-
-			auto ValueAt = [&](const double t) noexcept
-			{
-				return SuperEllipseLocalValue((p0 + d * t), n);
-			};
-
-			auto DerivativeAt = [&](const double t) noexcept
-			{
-				return SuperEllipseLocalDerivative((p0 + d * t), d, n);
-			};
-
-			for (size_t i = 1; i < tCount; ++i)
-			{
-				const double t0 = ts[i - 1];
-				const double t1 = ts[i];
-
-				if (t0 == t1)
-				{
-					continue;
-				}
-
-				if ((ValueAt(t0) <= 1.0) || (ValueAt(t1) <= 1.0))
-				{
-					return true;
-				}
-
-				if (n <= 1.0)
-				{
-					continue;
-				}
-
-				const double derivative0 = DerivativeAt(t0);
-				const double derivative1 = DerivativeAt(t1);
-
-				if ((derivative0 < 0.0) && (0.0 < derivative1))
-				{
-					double left = t0;
-					double right = t1;
-
-					for (int32 k = 0; k < 48; ++k)
-					{
-						const double mid = ((left + right) * 0.5);
-
-						if (DerivativeAt(mid) < 0.0)
-						{
-							left = mid;
-						}
-						else
-						{
-							right = mid;
-						}
-					}
-
-					if (ValueAt((left + right) * 0.5) <= 1.0)
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
+			return detail::TestLineSuperEllipseArea<true>(segment, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -898,18 +510,7 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				if (Geometry2D::ContainsPoint<detail::ConvexClockwise>(
-					pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2], p))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return detail::PolygonContainsPoint(detail::GetPolygonRings(polygon), p);
 		}
 
 		[[nodiscard]]
@@ -920,21 +521,11 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(segment, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(segment.start, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(segment, edge);
+					});
 		}
 
 		[[nodiscard]]
@@ -1060,8 +651,7 @@ namespace s3d
 				return false;
 			}
 
-			const double t = curve.computeClosestT(circle.center);
-			return (curve.pointAt(t).distanceFromSq(circle.center) <= (circle.r * circle.r));
+			return (detail::ClosestPointOnBezier(curve, circle.center).distanceSq <= (circle.r * circle.r));
 		}
 
 		[[nodiscard]]
@@ -1100,138 +690,27 @@ namespace s3d
 				Vec2{ ((curve.p2.x - ellipse.center.x) / ax), ((curve.p2.y - ellipse.center.y) / by) }
 			};
 
-			const double t = local.computeClosestT(Vec2{ 0, 0 });
-			return (local.pointAt(t).lengthSq() <= 1.0);
+			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
 		}
 
-		template <class Fty>
+		template <class Bezier>
 		[[nodiscard]]
-		bool VisitBezier2ApproximateLineSegments(const Bezier2& curve, Fty&& callback, const double maxError = 0.25, const int32 maxDepth = 8)
+		bool IntersectsBezierSuperEllipse(const Bezier& curve, const SuperEllipse& shape)
 		{
-			const double maxErrorSq = (maxError * maxError);
-			const double flatnessK = (4.0 * maxErrorSq);
-			const double kNearlyZeroSq = 1e-12;
-			const int32 depthLimit = Max(0, maxDepth);
-
-			auto Visit = [&](auto&& self, const Bezier2& c, const int32 depth) -> bool
-				{
-					const Vec2 chord = (c.p2 - c.p0);
-					const double chordLenSq = chord.lengthSq();
-
-					if (chordLenSq < kNearlyZeroSq)
-					{
-						const double p0p1LenSq = (c.p1 - c.p0).lengthSq();
-						const double p1p2LenSq = (c.p2 - c.p1).lengthSq();
-						const double ctrlSpanSq = Max(p0p1LenSq, p1p2LenSq);
-
-						if (ctrlSpanSq < kNearlyZeroSq)
-						{
-							return callback(Line{ c.p0, c.p2 });
-						}
-
-						if (depthLimit <= depth)
-						{
-							return (callback(Line{ c.p0, c.p1 }) || callback(Line{ c.p1, c.p2 }));
-						}
-					}
-					else
-					{
-						const Vec2 v = (c.p1 - c.p0);
-						const double cross = chord.cross(v);
-						bool acceptSegment = ((cross * cross) <= (flatnessK * chordLenSq));
-
-						if (acceptSegment)
-						{
-							const double dot = v.dot(chord);
-
-							if ((dot < 0.0) || (chordLenSq < dot))
-							{
-								acceptSegment = false;
-							}
-						}
-
-						if (acceptSegment || (depthLimit <= depth))
-						{
-							return callback(Line{ c.p0, c.p2 });
-						}
-					}
-
-					const auto [left, right] = c.split(0.5);
-					return (self(self, left, (depth + 1)) || self(self, right, (depth + 1)));
-				};
-
-			return Visit(Visit, curve, 0);
-		}
-
-		template <class Shape>
-		[[nodiscard]]
-		bool IntersectsBezier2ApproximateShape(const Bezier2& curve, const Shape& shape)
-		{
-			return VisitBezier2ApproximateLineSegments(curve, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, shape);
-			});
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier2Bezier2Approximate(const Bezier2& a, const Bezier2& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			// The approximation direction must not depend on operand order.
-			// Invalid non-finite control points are outside the geometry contract.
-			if (BezierLexicographicalLess(b, a))
-			{
-				return IntersectsBezier2ApproximateShape(b, a);
-			}
-
-			return IntersectsBezier2ApproximateShape(a, b);
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier2Bezier3Approximate(const Bezier2& a, const Bezier3& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier2ApproximateShape(a, b);
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier2SuperEllipse(const Bezier2& curve, const SuperEllipse& superEllipse)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
-
+			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
-
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(shape, kind), curve);
 			}
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
+			if (shape.n == 2.0)
 			{
-				return IntersectsBezier2Ellipse(curve, Ellipse{ superEllipse.center, ax, by });
+				return Geometry2D::Intersects(curve, Ellipse{ shape.center, shape.axes });
 			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), superEllipse.boundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier2ApproximateShape(curve, superEllipse);
+			return (detail::ClassifyBezierSuperEllipse(curve, shape).kind != detail::BezierIntersectionKind::Separated);
 		}
 
 		[[nodiscard]]
@@ -1281,8 +760,9 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, curve));
 		}
 
+		template <class Bezier>
 		[[nodiscard]]
-		bool IntersectsBezier2RoundRect(const Bezier2& curve, const RoundRect& roundRect)
+		bool IntersectsBezierRoundRect(const Bezier& curve, const RoundRect& roundRect)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
@@ -1304,12 +784,45 @@ namespace s3d
 				return Geometry2D::Intersects(rect, curve);
 			}
 
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
+			const RectF curveBounds = curve.computeBoundingRect();
+			if (not BoundsIntersectClosed(curveBounds, rect))
 			{
 				return false;
 			}
 
-			return IntersectsBezier2ApproximateShape(curve, roundRect);
+			if (Geometry2D::Intersects(curve.p0, roundRect))
+			{
+				return true;
+			}
+
+			// Two central rectangles and the corner disks cover the rounded rectangle.
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			if ((0.0 < core.w) && Geometry2D::Intersects(curve, RectF{ core.x, rect.y, core.w, rect.h }))
+			{
+				return true;
+			}
+			if ((0.0 < core.h) && Geometry2D::Intersects(curve, RectF{ rect.x, core.y, rect.w, core.h }))
+			{
+				return true;
+			}
+
+			// Circle and capsule cores have fewer distinct corner disks.
+			const int32 columns = ((core.w == 0.0) ? 1 : 2);
+			const int32 rows = ((core.h == 0.0) ? 1 : 2);
+			for (int32 y = 0; y < rows; ++y)
+			{
+				for (int32 x = 0; x < columns; ++x)
+				{
+					const Vec2 center{ (core.x + x * core.w), (core.y + y * core.h) };
+					const RectF circleBounds{ (center.x - er), (center.y - er), (2.0 * er), (2.0 * er) };
+					if (BoundsIntersectClosed(curveBounds, circleBounds)
+						&& (detail::ClosestPointOnBezier(curve, center).distanceSq <= (er * er)))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		[[nodiscard]]
@@ -1322,27 +835,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(curve.p2, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsBezier2Triangle(curve, curveBounds, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return IntersectsLineBezier2(edge, curve);
+					});
 		}
 
 		[[nodiscard]]
@@ -1357,34 +854,6 @@ namespace s3d
 			const RectF polygonBounds = polygon.boundingRect();
 
 			return IntersectsBezier2PolygonNonEmpty(curve, curveBounds, polygon, polygonBounds);
-		}
-
-		template <class Shape>
-		[[nodiscard]]
-		bool IntersectsBezier3ApproximateShape(const Bezier3& curve, const Shape& shape)
-		{
-			return VisitBezier3ApproximateLineSegments(curve, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, shape);
-			});
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier3Bezier3Approximate(const Bezier3& a, const Bezier3& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			// The approximation direction must not depend on operand order.
-			// Invalid non-finite control points are outside the geometry contract.
-			if (BezierLexicographicalLess(b, a))
-			{
-				return IntersectsBezier3ApproximateShape(b, a);
-			}
-
-			return IntersectsBezier3ApproximateShape(a, b);
 		}
 
 		[[nodiscard]]
@@ -1444,8 +913,7 @@ namespace s3d
 				return false;
 			}
 
-			const double t = curve.computeClosestT(circle.center);
-			return (curve.pointAt(t).distanceFromSq(circle.center) <= (circle.r * circle.r));
+			return (detail::ClosestPointOnBezier(curve, circle.center).distanceSq <= (circle.r * circle.r));
 		}
 
 		[[nodiscard]]
@@ -1485,107 +953,7 @@ namespace s3d
 				Vec2{ ((curve.p3.x - ellipse.center.x) / ax), ((curve.p3.y - ellipse.center.y) / by) }
 			};
 
-			const double t = local.computeClosestT(Vec2{ 0, 0 });
-			return (local.pointAt(t).lengthSq() <= 1.0);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitBezier3ApproximateLineSegments(const Bezier3& curve, Fty&& callback, const double maxError = 0.25, const int32 maxDepth = 8)
-		{
-			const double maxErrorSq = (maxError * maxError);
-			const double flatnessK = (4.0 * maxErrorSq);
-			const double kNearlyZeroSq = 1e-12;
-			const int32 depthLimit = Max(0, maxDepth);
-
-			auto Visit = [&](auto&& self, const Bezier3& c, const int32 depth) -> bool
-				{
-					const Vec2 chord = (c.p3 - c.p0);
-					const double chordLenSq = chord.lengthSq();
-
-					if (chordLenSq < kNearlyZeroSq)
-					{
-						const double p0p1LenSq = (c.p1 - c.p0).lengthSq();
-						const double p1p2LenSq = (c.p2 - c.p1).lengthSq();
-						const double p2p3LenSq = (c.p3 - c.p2).lengthSq();
-						const double ctrlSpanSq = Max(Max(p0p1LenSq, p1p2LenSq), p2p3LenSq);
-
-						if (ctrlSpanSq < kNearlyZeroSq)
-						{
-							return callback(Line{ c.p0, c.p3 });
-						}
-
-						if (depthLimit <= depth)
-						{
-							return (callback(Line{ c.p0, c.p1 })
-								|| callback(Line{ c.p1, c.p2 })
-								|| callback(Line{ c.p2, c.p3 }));
-						}
-					}
-					else
-					{
-						const Vec2 v1 = (c.p1 - c.p0);
-						const Vec2 v2 = (c.p2 - c.p0);
-						const double cross1 = chord.cross(v1);
-						const double cross2 = chord.cross(v2);
-						bool acceptSegment = (((cross1 * cross1) <= (flatnessK * chordLenSq))
-							&& ((cross2 * cross2) <= (flatnessK * chordLenSq)));
-
-						if (acceptSegment)
-						{
-							const double dot1 = v1.dot(chord);
-							const double dot2 = v2.dot(chord);
-
-							if ((dot1 < 0.0) || (chordLenSq < dot1)
-								|| (dot2 < 0.0) || (chordLenSq < dot2))
-							{
-								acceptSegment = false;
-							}
-						}
-
-						if (acceptSegment || (depthLimit <= depth))
-						{
-							return callback(Line{ c.p0, c.p3 });
-						}
-					}
-
-					const auto [left, right] = c.split(0.5);
-					return (self(self, left, (depth + 1)) || self(self, right, (depth + 1)));
-				};
-
-			return Visit(Visit, curve, 0);
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier3SuperEllipse(const Bezier3& curve, const SuperEllipse& superEllipse)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
-			}
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
-			{
-				return IntersectsBezier3Ellipse(curve, Ellipse{ superEllipse.center, ax, by });
-			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), superEllipse.boundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier3ApproximateShape(curve, superEllipse);
+			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
 		}
 
 		[[nodiscard]]
@@ -1636,37 +1004,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsBezier3RoundRect(const Bezier3& curve, const RoundRect& roundRect)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), curve);
-			}
-
-			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
-
-			if (er == 0.0)
-			{
-				return Geometry2D::Intersects(rect, curve);
-			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
-			{
-				return false;
-			}
-
-			return IntersectsBezier3ApproximateShape(curve, roundRect);
-		}
-
-		[[nodiscard]]
 		bool IntersectsBezier3PolygonNonEmpty(
 			const Bezier3& curve, const RectF& curveBounds,
 			const Polygon& polygon, const RectF& polygonBounds)
@@ -1676,27 +1013,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(curve.p3, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsBezier3Triangle(curve, curveBounds, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return IntersectsLineBezier3(edge, curve);
+					});
 		}
 
 		[[nodiscard]]
@@ -1917,8 +1238,6 @@ namespace s3d
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
 
 			const RectF polygonBounds = polygon.boundingRect();
 
@@ -1927,45 +1246,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(Vec2{ left, top }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ right, top }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ right, bottom }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ left, bottom }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (detail::IntersectsPointRectFNonEmpty(Vec2{ vertex.x, vertex.y }, rect))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsRectFTriangleArea(rect, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(Vec2{ left, top }, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, rect);
+					});
 		}
 
 		[[nodiscard]]
@@ -2013,130 +1298,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
-		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const double x = Abs(p.x - ellipse.center.x);
-			const double y = Abs(p.y - ellipse.center.y);
-
-			const double nx = (x / ax);
-			const double ny = (y / by);
-
-			if (((nx * nx) + (ny * ny)) <= 1.0)
-			{
-				return 0.0;
-			}
-
-			if (y == 0.0)
-			{
-				return (x - ax);
-			}
-
-			if (x == 0.0)
-			{
-				return (y - by);
-			}
-
-			// For an outside point, the closest ellipse point is obtained from the
-			// unique non-negative Lagrange multiplier lambda satisfying
-			//   (a*x/(lambda+a^2))^2 + (b*y/(lambda+b^2))^2 = 1.
-			// The left-hand side is strictly decreasing, so a bracketed Newton step
-			// cannot converge to the wrong stationary point as the angle-based
-			// unbracketed Newton iteration can.
-			const double scale = Max({ ax, by, x, y });
-			const double a = (ax / scale);
-			const double b = (by / scale);
-			const double px = (x / scale);
-			const double py = (y / scale);
-			const double aa = (a * a);
-			const double bb = (b * b);
-
-			double lower = 0.0;
-			double upper = 1.0;
-
-			const double ux0 = (px / a);
-			const double uy0 = (py / b);
-			const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
-			const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
-			const double initialNewton = (-f0 / df0);
-			double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
-
-			// With the normalization above, lambda = 1 is always outside the root:
-			// each squared term is at most 1/4. Newton from lambda = 0 gives a
-			// useful lower-side initial estimate, and every later step remains bracketed.
-			for (int32 i = 0; i < 64; ++i)
-			{
-				const double da = (lambda + aa);
-				const double db = (lambda + bb);
-				const double ux = ((a * px) / da);
-				const double uy = ((b * py) / db);
-				const double f = ((ux * ux) + (uy * uy) - 1.0);
-
-				if (Abs(f) <= EllipseDistanceRootTolerance)
-				{
-					lower = lambda;
-					upper = lambda;
-					break;
-				}
-
-				if (0.0 < f)
-				{
-					lower = lambda;
-				}
-				else
-				{
-					upper = lambda;
-				}
-
-				const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
-				const double newton = (lambda - (f / df));
-
-				if ((lower < newton) && (newton < upper))
-				{
-					lambda = newton;
-				}
-				else
-				{
-					lambda = ((lower + upper) * 0.5);
-				}
-			}
-
-			lambda = ((lower + upper) * 0.5);
-
-			const double closestX = ((aa * px) / (lambda + aa));
-			const double closestY = ((bb * py) / (lambda + bb));
-
-			return (scale * std::hypot((px - closestX), (py - closestY)));
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitCircleApproximateLineSegments(const Circle& circle, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 64;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			Vec2 previous{ (circle.center.x + circle.r), circle.center.y };
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const double angle = (Step * i);
-				const Vec2 current{ (circle.center.x + std::cos(angle) * circle.r), (circle.center.y + std::sin(angle) * circle.r) };
-
-				if (callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		[[nodiscard]]
 		bool IntersectsCircleEllipse(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
 			const auto circleKind = detail::ClassifyGeometry2DSizedShape(circle);
@@ -2153,12 +1314,16 @@ namespace s3d
 				return Geometry2D::Intersects(circle, detail::GetGeometry2DDegenerateSegment(ellipse, ellipseKind));
 			}
 
-			if (not BoundsIntersectClosed(circle.boundingRect(), ellipse.boundingRect()))
+			const double scale = Max({ circle.r, ellipse.a, ellipse.b });
+			const double tolerance = (detail::EllipseContactTolerance * scale);
+			if (((circle.r + ellipse.a + tolerance) < Abs(circle.x - ellipse.x))
+				|| ((circle.r + ellipse.b + tolerance) < Abs(circle.y - ellipse.y)))
 			{
 				return false;
 			}
 
-			return (DistancePointEllipse(circle.center, ellipse) <= circle.r);
+			return detail::EllipseDistanceWithinRadius<true>(
+				detail::DistancePointEllipse(circle.center, ellipse), circle.r, scale);
 		}
 
 		[[nodiscard]]
@@ -2187,23 +1352,7 @@ namespace s3d
 				return IntersectsCircleEllipse(circle, Ellipse{ superEllipse.center, ax, by });
 			}
 
-			const RectF superEllipseBounds{ (superEllipse.center.x - ax), (superEllipse.center.y - by), (ax * 2.0), (by * 2.0) };
-
-			if (not BoundsIntersectClosed(circle.boundingRect(), superEllipseBounds))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(circle.center, superEllipse)
-				|| Geometry2D::Intersects(superEllipse.center, circle))
-			{
-				return true;
-			}
-
-			return VisitCircleApproximateLineSegments(circle, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, superEllipse);
-			});
+			return detail::TestSuperEllipseAreas<true>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2331,21 +1480,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsEllipseTriangleArea(ellipse, ellipseBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, ellipse);
+				});
 		}
 
 		[[nodiscard]]
@@ -2437,7 +1575,7 @@ namespace s3d
 					superEllipse.boundingRect(), triangle);
 			}
 
-			return IntersectsSuperEllipseTriangleArea(superEllipse, superEllipse.boundingRect(), triangle);
+			return IntersectsSuperEllipseTriangleArea(superEllipse, detail::SuperEllipseLineTestBounds(superEllipse), triangle);
 		}
 
 		[[nodiscard]]
@@ -2464,7 +1602,7 @@ namespace s3d
 				return IntersectsEllipseQuad(Ellipse{ superEllipse.center, ax, by }, quad);
 			}
 
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), quad.boundingRect()))
+			if (not BoundsIntersectClosed(detail::SuperEllipseLineTestBounds(superEllipse), quad.boundingRect()))
 			{
 				return false;
 			}
@@ -2504,21 +1642,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsSuperEllipseTriangleArea(superEllipse, superEllipseBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, superEllipse);
+				});
 		}
 
 		[[nodiscard]]
@@ -2536,16 +1663,14 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), polygon);
 			}
 
-			const RectF superEllipseBounds = superEllipse.boundingRect();
-
 			if (superEllipse.n == 2.0)
 			{
 				return IntersectsEllipsePolygonArea(
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y },
-					superEllipseBounds, polygon);
+					superEllipse.boundingRect(), polygon);
 			}
 
-			return IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon);
+			return IntersectsSuperEllipsePolygonArea(superEllipse, detail::SuperEllipseLineTestBounds(superEllipse), polygon);
 		}
 
 		[[nodiscard]]
@@ -2563,11 +1688,10 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), multiPolygon);
 			}
 
-			const RectF superEllipseBounds = superEllipse.boundingRect();
-
 			if (superEllipse.n == 2.0)
 			{
 				const Ellipse ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y };
+				const RectF superEllipseBounds = superEllipse.boundingRect();
 
 				for (const auto& polygon : multiPolygon)
 				{
@@ -2580,6 +1704,7 @@ namespace s3d
 				return false;
 			}
 
+			const RectF superEllipseBounds = detail::SuperEllipseLineTestBounds(superEllipse);
 			for (const auto& polygon : multiPolygon)
 			{
 				if (IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon))
@@ -2601,43 +1726,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(triangle.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(triangle.p1, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(triangle.p2, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, triangle))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ triangle.p0, triangle.p1 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p1, triangle.p2 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p2, triangle.p0 }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(triangle, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(triangle.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, triangle);
+					});
 		}
 
 		[[nodiscard]]
@@ -2664,45 +1757,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(quad.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p1, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p2, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p3, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, quad))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ quad.p0, quad.p1 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p1, quad.p2 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p2, quad.p3 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p3, quad.p0 }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(quad, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(quad.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, quad);
+					});
 		}
 
 		[[nodiscard]]
@@ -2799,21 +1858,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsCircleTriangleArea(circle, circleBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, circle);
+				});
 		}
 
 		[[nodiscard]]
@@ -2848,34 +1896,6 @@ namespace s3d
 			return false;
 		}
 
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitEllipseApproximateLineSegments(const Ellipse& ellipse, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 64;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			Vec2 previous{ (ellipse.center.x + ax), ellipse.center.y };
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const double angle = (Step * i);
-				const Vec2 current{ (ellipse.center.x + std::cos(angle) * ax), (ellipse.center.y + std::sin(angle) * by) };
-
-				if (callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
 		[[nodiscard]]
 		bool IntersectsEllipseEllipse(const Ellipse& a, const Ellipse& b) noexcept
 		{
@@ -2898,21 +1918,7 @@ namespace s3d
 				return Geometry2D::Intersects(a, detail::GetGeometry2DDegenerateSegment(b, bKind));
 			}
 
-			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(a.center, b)
-				|| Geometry2D::Intersects(b.center, a))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(a, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, b);
-			});
+			return detail::TestEllipseEllipseArea<true>(a, b);
 		}
 
 		[[nodiscard]]
@@ -2946,23 +1952,7 @@ namespace s3d
 				return IntersectsEllipseEllipse(ellipse, Ellipse{ superEllipse.center, sx, sy });
 			}
 
-			const RectF superEllipseBounds{ (superEllipse.center.x - sx), (superEllipse.center.y - sy), (sx * 2.0), (sy * 2.0) };
-
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), superEllipseBounds))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(ellipse.center, superEllipse)
-				|| Geometry2D::Intersects(superEllipse.center, ellipse))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(ellipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, superEllipse);
-			});
+			return detail::TestSuperEllipseAreas<true>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2987,168 +1977,15 @@ namespace s3d
 				return Geometry2D::Intersects(ellipse, detail::GetGeometry2DDegenerateSegment(roundRect, roundRectKind));
 			}
 
-			const RectF& rect = roundRect.rect;
 			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
-				return Geometry2D::Intersects(ellipse, rect);
+				return Geometry2D::Intersects(ellipse, roundRect.rect);
 			}
 
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), rect))
-			{
-				return false;
-			}
-
-			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
-
-			if (Geometry2D::Intersects(ellipse.center, roundRect)
-				|| Geometry2D::Intersects(roundRectCenter, ellipse))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(ellipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, roundRect);
-			});
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitSuperEllipseApproximateLineSegments(const SuperEllipse& superEllipse, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 96;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double exponent = (2.0 / superEllipse.n);
-
-			auto SignedUnitPower = [exponent](const double v) noexcept
-			{
-				const double p = std::pow(Abs(v), exponent);
-				return ((v < 0.0) ? -p : p);
-			};
-
-			auto PointAtAngle = [&](const double angle) noexcept
-			{
-				return Vec2{
-					(superEllipse.center.x + ax * SignedUnitPower(std::cos(angle))),
-					(superEllipse.center.y + by * SignedUnitPower(std::sin(angle)))
-				};
-			};
-
-			Vec2 previous = PointAtAngle(0.0);
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const Vec2 current = PointAtAngle(Step * i);
-
-				if ((previous != current) && callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		[[nodiscard]]
-		double SuperEllipseVerticalRadiusAtX(const SuperEllipse& shape, const double x) noexcept
-		{
-			const double normalizedX = Abs((x - shape.center.x) / shape.axes.x);
-
-			if (1.0 <= normalizedX)
-			{
-				return 0.0;
-			}
-
-			const double remaining = Max(0.0, (1.0 - std::pow(normalizedX, shape.n)));
-			return (shape.axes.y * std::pow(remaining, (1.0 / shape.n)));
-		}
-
-		[[nodiscard]]
-		double MaximumSuperEllipseVerticalRadiusInInterval(const SuperEllipse& shape, const double left, const double right) noexcept
-		{
-			return SuperEllipseVerticalRadiusAtX(shape, Clamp(shape.center.x, left, right));
-		}
-
-		[[nodiscard]]
-		bool IntersectsPositiveAreaSuperEllipses(const SuperEllipse& a, const SuperEllipse& b) noexcept
-		{
-			const double left = Max((a.center.x - a.axes.x), (b.center.x - b.axes.x));
-			const double right = Min((a.center.x + a.axes.x), (b.center.x + b.axes.x));
-
-			if (right < left)
-			{
-				return false;
-			}
-
-			const double centerDistanceY = Abs(a.center.y - b.center.y);
-
-			auto VerticalIntervalsOverlapAt = [&](const double x) noexcept
-			{
-				return (centerDistanceY <= (SuperEllipseVerticalRadiusAtX(a, x)
-					+ SuperEllipseVerticalRadiusAtX(b, x)));
-			};
-
-			// These points include the interval endpoints and both possible cusp / maximum locations.
-			if (VerticalIntervalsOverlapAt(left)
-				|| VerticalIntervalsOverlapAt(right)
-				|| VerticalIntervalsOverlapAt(Clamp(a.center.x, left, right))
-				|| VerticalIntervalsOverlapAt(Clamp(b.center.x, left, right)))
-			{
-				return true;
-			}
-
-			struct Interval
-			{
-				double left;
-				double right;
-				int32 depth;
-			};
-
-			constexpr int32 MaxDepth = 64;
-			std::array<Interval, (MaxDepth + 2)> stack;
-			size_t stackSize = 0;
-			stack[stackSize++] = Interval{ left, right, 0 };
-
-			while (stackSize)
-			{
-				const Interval interval = stack[--stackSize];
-				const double upperBound = (MaximumSuperEllipseVerticalRadiusInInterval(a, interval.left, interval.right)
-					+ MaximumSuperEllipseVerticalRadiusInInterval(b, interval.left, interval.right));
-
-				if (upperBound < centerDistanceY)
-				{
-					continue;
-				}
-
-				const double middle = (interval.left + ((interval.right - interval.left) * 0.5));
-
-				if (VerticalIntervalsOverlapAt(middle))
-				{
-					return true;
-				}
-
-				if ((MaxDepth <= interval.depth)
-					|| (middle == interval.left)
-					|| (middle == interval.right))
-				{
-					// At machine-resolution ambiguity, prefer the closed-set result.
-					return true;
-				}
-
-				assert((stackSize + 2) <= stack.size());
-				stack[stackSize++] = Interval{ middle, interval.right, (interval.depth + 1) };
-				stack[stackSize++] = Interval{ interval.left, middle, (interval.depth + 1) };
-			}
-
-			return false;
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			return detail::TestEllipseRoundRectArea<true>(ellipse, core, er);
 		}
 
 		[[nodiscard]]
@@ -3188,7 +2025,7 @@ namespace s3d
 				return IntersectsEllipseSuperEllipse(Ellipse{ b.center, bx, by }, a);
 			}
 
-			return IntersectsPositiveAreaSuperEllipses(a, b);
+			return detail::TestSuperEllipseAreas<true>(a, b);
 		}
 
 		[[nodiscard]]
@@ -3229,23 +2066,8 @@ namespace s3d
 				return IntersectsRectFSuperEllipse(rect, superEllipse);
 			}
 
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), rect))
-			{
-				return false;
-			}
-
-			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
-
-			if (Geometry2D::Intersects(superEllipse.center, roundRect)
-				|| Geometry2D::Intersects(roundRectCenter, superEllipse))
-			{
-				return true;
-			}
-
-			return VisitSuperEllipseApproximateLineSegments(superEllipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, roundRect);
-			});
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			return detail::TestSuperEllipseRoundRectArea<true>(superEllipse, core, er);
 		}
 
 		[[nodiscard]]
@@ -3409,21 +2231,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsTriangleRoundRectArea(Triangle{ p0, p1, p2 }, roundRect, effectiveRadius))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return detail::IntersectsLineRoundRectArea(edge, roundRect, effectiveRadius);
+				});
 		}
 
 		[[nodiscard]]
@@ -3482,23 +2293,20 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = a.vertices().data();
-
-			for (const auto& triangleIndex : a.indices())
+			if (IntersectsPointPolygonNonEmpty(a.outer().front(), b, bBounds)
+				|| IntersectsPointPolygonNonEmpty(b.outer().front(), a, aBounds))
 			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-				const Triangle triangle{ p0, p1, p2 };
-				const RectF triangleBounds = triangle.boundingRect();
-
-				if (IntersectsTrianglePolygonNonEmpty(triangle, triangleBounds, b, bBounds))
-				{
-					return true;
-				}
+				return true;
 			}
 
-			return false;
+			return detail::AnyPolygonEdge(a, [&](const Line& edgeA)
+				{
+					return detail::IntersectsLineRectFNonEmpty(edgeA, bBounds)
+						&& detail::AnyPolygonEdge(b, [&](const Line& edgeB)
+							{
+								return Geometry2D::Intersects(edgeA, edgeB);
+							});
+				});
 		}
 
 		[[nodiscard]]
@@ -3829,12 +2637,34 @@ namespace s3d
 
 		bool Intersects(const Bezier2& curve1, const Bezier2& curve2)
 		{
-			return IntersectsBezier2Bezier2Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier2>)
+				{
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve1, const Bezier3& curve2)
 		{
-			return IntersectsBezier2Bezier3Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
+				{
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve, const Rect& rect)
@@ -3869,12 +2699,23 @@ namespace s3d
 
 		bool Intersects(const Bezier2& curve, const SuperEllipse& superEllipse)
 		{
-			return IntersectsBezier2SuperEllipse(curve, superEllipse);
+			return detail::WithSimpleBezierPair(curve, superEllipse, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
+				{
+					return IntersectsBezierSuperEllipse(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve, const RoundRect& roundRect)
 		{
-			return IntersectsBezier2RoundRect(curve, roundRect);
+			return IntersectsBezierRoundRect(curve, roundRect);
 		}
 
 		bool Intersects(const Bezier2& curve, const Polygon& polygon)
@@ -3928,7 +2769,18 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve1, const Bezier3& curve2)
 		{
-			return IntersectsBezier3Bezier3Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
+				{
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier3& curve, const Rect& rect)
@@ -3953,7 +2805,18 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve, const SuperEllipse& superEllipse)
 		{
-			return IntersectsBezier3SuperEllipse(curve, superEllipse);
+			return detail::WithSimpleBezierPair(curve, superEllipse, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
+					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
+				{
+					return IntersectsBezierSuperEllipse(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier3& curve, const Triangle& triangle)
@@ -3968,7 +2831,7 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve, const RoundRect& roundRect)
 		{
-			return IntersectsBezier3RoundRect(curve, roundRect);
+			return IntersectsBezierRoundRect(curve, roundRect);
 		}
 
 		bool Intersects(const Bezier3& curve, const Polygon& polygon)

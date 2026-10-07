@@ -800,7 +800,7 @@ namespace s3d
 
 		/// @brief 線分を太らせて作成した、新しい Polygon を返します。
 		/// @param distance 太らせる距離
-		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		/// @return 線分に垂直な端をもつ長方形。distance が 0 以下、または線分の長さが 0 の場合は空の Polygon
 		[[nodiscard]]
 		Polygon computeMiterBufferPolygon(double distance) const;
 
@@ -810,10 +810,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分を丸く太らせて作成した、新しい Polygon を返します。分割数は半径に応じて自動的に決定されます。
+		/// @brief 線分の両端を半円で丸く太らせた、カプセル形状の Polygon を返します。
 		/// @param distance 太らせる距離
-		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		/// @param qualityFactor 半円の分割品質。同じ半径の Circle::asPolygon() と同じ品質指定です。
+		/// @return カプセル形状の Polygon。distance が 0 以下の場合は空の Polygon
+		/// @remark 線分の長さが 0 の場合は、始点を中心、distance を半径とする Circle::asPolygon(qualityFactor) と同じ多角形を返します。
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
@@ -851,6 +852,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -861,10 +863,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;

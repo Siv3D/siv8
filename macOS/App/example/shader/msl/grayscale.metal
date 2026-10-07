@@ -1,3 +1,18 @@
+//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+// PS_Grayscale: Convert the final tinted/added texture color to grayscale.
+// Ordinary textures only. Uses the standard PS buffer, texture 0, and sampler 0.
+// Vertex color and standard color multiplication/addition precede the effect.
+
 #include <metal_stdlib>
 using namespace metal;
 
@@ -17,14 +32,14 @@ struct PSConstants2D
 	float4 g_sdfShadowColorPMA;
 };
 
-inline float4 s3d_textureColor(float4 vertexColor, float4 textureColor, constant PSConstants2D* c)
+inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorPMA, constant PSConstants2D* c)
 {
-	vertexColor *= textureColor;
-	return (vertexColor + (c->g_colorAdd * vertexColor.a));
+	vertexColorPMA *= textureColorPMA;
+	return (vertexColorPMA + (c->g_colorAdd * vertexColorPMA.a));
 }
 
 fragment
-float4 Grayscale(	PSInput input [[stage_in]],
+float4 PS_Grayscale(	PSInput input [[stage_in]],
 					constant PSConstants2D* c0 [[buffer(0)]],
 					texture2d<float> texture0 [[texture(0)]],
 					sampler sampler0 [[sampler(0)]])

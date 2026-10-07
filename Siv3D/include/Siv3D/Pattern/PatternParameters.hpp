@@ -19,12 +19,19 @@
 
 namespace s3d
 {
+	/// @brief 図形の塗りつぶしや枠に使用する模様の描画パラメータです。
+	/// @remark ローカル・カメラ変換前の共通の描画座標を基準とし、模様も図形と同じ変換を受けます。
+	/// 図形ごとの原点は設定されません。図形の座標自体を変更する操作は、模様の原点を移動しません。
+	/// @remark 組み込み Pattern ピクセルシェーダとカスタム頂点シェーダを組み合わせる場合、
+	/// 頂点シェーダは出力の float2 uv に変換前の描画座標を渡す必要があります。
+	/// Pattern 描画でピクセルシェーダのみを置き換えた場合も、uv にはこの座標が渡されます。
 	struct PatternParameters
 	{
 		Float4 primaryColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		Float4 backgroundColor{ 0.0f, 0.0f, 0.0f, 0.0f };
 
+		/// @brief 模様の基準座標を、模様を評価する UV 座標に変換する行列です。
 		Mat3x2 uvTransform = Mat3x2::Identity();
 
 		float param0 = 0.0f;
@@ -33,8 +40,15 @@ namespace s3d
 
 		PatternType type = PatternType::PolkaDot;
 
+		/// @brief 模様固有の追加パラメータです。
+		/// @remark 組み込みの PolkaDot, Stripe, Grid, Checker, Triangle, HexGrid, Ripple, Weave はこの値を使用しません。
+		Float4 extraParams{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+		/// @brief UV 変換・模様固有のパラメータ・背景色をシェーダ定数用に格納します。
+		/// @return { m11, m12, m31, m32 }, { m21, m22, param0, param1 }, backgroundColor, extraParams の 4 要素。primaryColor と type は含みません。
 		[[nodiscard]]
-		constexpr std::array<Float4, 3> toFloat4Array(float maxScalingInv) const noexcept;
+		constexpr std::array<Float4, 4> toFloat4Array() const noexcept;
+
 	};
 }
 

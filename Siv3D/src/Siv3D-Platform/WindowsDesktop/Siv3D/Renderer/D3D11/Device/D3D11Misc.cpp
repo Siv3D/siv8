@@ -11,126 +11,29 @@
 
 # include <Siv3D/Optional.hpp>
 # include "D3D11Misc.hpp"
-# include "D3D11AdapterCache.hpp"
-# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
+# include "../D3D11Diagnostics.hpp"
 # include <Siv3D/FormatUtility.hpp>
-# include <Siv3D/FileSystem.hpp>
-# include <Siv3D/BinaryFileReader.hpp>
-# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <span>
 
 namespace s3d
 {
 	namespace
 	{
-		inline constexpr D3D_FEATURE_LEVEL MinimumD3DFeatureLevel = D3D_FEATURE_LEVEL_11_0;
-
-		[[nodiscard]]
-		static Optional<D3D11AdapterCache> LoadAdapterCache()
+		inline constexpr D3D_FEATURE_LEVEL FeatureLevels[] =
 		{
-			LOG_SCOPED_DEBUG("LoadAdapterCache()");
+			D3D_FEATURE_LEVEL_12_1,
+			D3D_FEATURE_LEVEL_12_0,
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_10_1,
+		};
 
-			const FilePath adapterCacheFilePath = (CacheDirectory::Engine() + U"gpu/adapter.cache");
-
-			if (not FileSystem::Exists(adapterCacheFilePath))
-			{
-				LOG_INFO("ℹ️ Adapter cache file not found");
-				return none;
-			}
-
-			if (const auto lastWrite = FileSystem::WriteTime(adapterCacheFilePath))
-			{
-				const Days duration = DurationCast<Days>(DateTime::Now() - *lastWrite);
-
-				if (Days{ 14 } <= duration)
-				{
-					// 2 週間以上前のキャッシュファイルの場合、再更新を行う
-					LOG_INFO("ℹ️ 14 days or older cache file found");
-					FileSystem::Remove(adapterCacheFilePath);
-
-					return none;
-				}
-			}
-
-			BinaryFileReader reader{ adapterCacheFilePath };
-
-			if (not reader)
-			{
-				return none;
-			}
-
-			if (D3D11AdapterCache cache{}; reader.readExact(cache))
-			{
-				const size_t adapterNameLength = (reader.size() - reader.getPos());
-				std::string adapterName(adapterNameLength, '\0');
-				reader.read(adapterName.data(), adapterName.size());
-
-				LOG_INFO(fmt::format("ℹ️ Adapter cache loaded ({})", adapterName));
-				return cache;
-			}
-
-			return none;
-		}
-
-		static void SaveAdapterCache(const D3D11Adapter& adapter)
-		{
-			LOG_SCOPED_DEBUG("SaveAdapterCache()");
-
-			const FilePath adapterCacheFilePath = (CacheDirectory::Engine() + U"gpu/adapter.cache");
-			
-			if (FileSystem::Exists(adapterCacheFilePath))
-			{
-				LOG_INFO("ℹ️ Adapter cache file already exists");
-				return;
-			}
-
-			const D3D11AdapterCache cacheData =
-			{
-				.luid			= adapter.desc.AdapterLuid,
-				.vendorId		= adapter.desc.VendorId,
-				.deviceId		= adapter.desc.DeviceId,
-				.subSysId		= adapter.desc.SubSysId,
-				.revision		= adapter.desc.Revision,
-				.featureLevel	= adapter.featureLevel,
-			};
-
-			BinaryFileWriter writer{ adapterCacheFilePath };
-			writer.write(cacheData);
-
-			const std::string adapterName = Unicode::ToUTF8(adapter.name);
-			writer.write(adapterName.data(), adapterName.size());
-
-			LOG_INFO(fmt::format("ℹ️ Adapter cache saved ({})", adapterName));
-		}
-
-		[[nodiscard]]
-		static bool Match(const DXGI_ADAPTER_DESC1& adapterDesc, const D3D11AdapterCache& cache) noexcept
-		{
-			return ((std::memcmp(&adapterDesc.AdapterLuid, &cache.luid, sizeof(LUID)) == 0)
-				&& (adapterDesc.VendorId == cache.vendorId)
-				&& (adapterDesc.DeviceId == cache.deviceId)
-				&& (adapterDesc.SubSysId == cache.subSysId)
-				&& (adapterDesc.Revision == cache.revision));
-		}
-
-		[[nodiscard]]
-		static constexpr D3D11Adapter::Vendor ToVendor(const uint32 vendorId) noexcept
-		{
-			switch (vendorId)
-			{
-			case 0x10DE:
-				return D3D11Adapter::Vendor::NVIDIA;
-			case 0x1002:
-				return D3D11Adapter::Vendor::AMD;
-			case 0x8086:
-				return D3D11Adapter::Vendor::Intel;
-			case 0x1414:
-				return D3D11Adapter::Vendor::Microsoft;
-			default:
-				return D3D11Adapter::Vendor::Unknown;
-			}
-		}
+		// Hardware requires 11_0; keep the existing software-driver feature-level ranges.
+		inline constexpr auto HardwareFeatureLevels = std::span{ FeatureLevels }.first<4>();
+		inline constexpr auto WARPFeatureLevels = std::span{ FeatureLevels };
+		inline constexpr auto ReferenceFeatureLevels = std::span{ FeatureLevels }.subspan<2>();
 
 		[[nodiscard]]
 		static std::string ToString(const DXGI_ADAPTER_DESC1& desc)
@@ -171,410 +74,147 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static constexpr std::string_view ToString(const D3D_DRIVER_TYPE driverType) noexcept
+		{
+			switch (driverType)
+			{
+			case D3D_DRIVER_TYPE_UNKNOWN:
+				return "UNKNOWN";
+			case D3D_DRIVER_TYPE_HARDWARE:
+				return "HARDWARE";
+			case D3D_DRIVER_TYPE_REFERENCE:
+				return "REFERENCE";
+			case D3D_DRIVER_TYPE_NULL:
+				return "NULL";
+			case D3D_DRIVER_TYPE_SOFTWARE:
+				return "SOFTWARE";
+			case D3D_DRIVER_TYPE_WARP:
+				return "WARP";
+			default:
+				return "Unknown";
+			}
+		}
+
+		[[nodiscard]]
+		static std::string ToString(const std::span<const D3D_FEATURE_LEVEL> featureLevels)
+		{
+			std::string result = "[";
+			for (size_t i = 0; i < featureLevels.size(); ++i)
+			{
+				if (i)
+				{
+					result += ", ";
+				}
+				result += ToString(featureLevels[i]);
+			}
+			result += ']';
+			return result;
+		}
+
+		[[nodiscard]]
 		static ComPtr<IDXGIDevice1> GetDXGIDevice1(ID3D11Device* pDevice)
 		{
 			ComPtr<IDXGIDevice1> dxgiDevice;
-			pDevice->QueryInterface(__uuidof(IDXGIDevice1), &dxgiDevice);
+			if (const HRESULT hr = pDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice)); FAILED(hr))
+			{
+				throw InternalEngineError{ fmt::format(
+					"ID3D11Device::QueryInterface(IDXGIDevice1) failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
+			}
 			return dxgiDevice;
 		}
 
 		[[nodiscard]]
-		static D3D_FEATURE_LEVEL CheckFeatureLevel(IDXGIAdapter1* pAdapter, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice)
+		static Optional<D3D11DeviceInfo> TryCreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			const D3D11Adapter* adapter, const D3D_DRIVER_TYPE driverType,
+			std::span<const D3D_FEATURE_LEVEL> featureLevels, const uint32 createDeviceFlag,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
-			LOG_SCOPED_DEBUG("CheckFeatureLevel()");
-
-			static constexpr D3D_FEATURE_LEVEL FeatureLevels[] =
+			IDXGIAdapter1* pAdapter = (adapter ? adapter->pAdapter.Get() : nullptr);
+			for (;;)
 			{
-				D3D_FEATURE_LEVEL_12_1,
-				D3D_FEATURE_LEVEL_12_0,
-				D3D_FEATURE_LEVEL_11_1,
-				D3D_FEATURE_LEVEL_11_0,
-				D3D_FEATURE_LEVEL_10_1,
-				D3D_FEATURE_LEVEL_10_0
-			};
-
-			ComPtr<ID3D11Device> pDevice;
-			ComPtr<ID3D11DeviceContext> pDeviceContext;
-			D3D_FEATURE_LEVEL maxLevel = D3D_FEATURE_LEVEL_9_1;
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			HRESULT hr = pD3D11CreateDevice(pAdapter,
-				D3D_DRIVER_TYPE_UNKNOWN,
-				nullptr,
-				0,
-				FeatureLevels,
-				static_cast<UINT>(std::size(FeatureLevels)),
-				D3D11_SDK_VERSION,
-				&pDevice,
-				&maxLevel,
-				&pDeviceContext);
-
-			if (hr == E_INVALIDARG)
-			{
+				D3D11DeviceInfo deviceInfo;
 				LOG_TRACE("D3D11CreateDevice()");
+				const HRESULT hr = pD3D11CreateDevice(pAdapter, driverType, nullptr, createDeviceFlag,
+					featureLevels.data(), static_cast<UINT>(featureLevels.size()), D3D11_SDK_VERSION,
+					&deviceInfo.device, &deviceInfo.featureLevel, &deviceInfo.context);
 
-				// DirectX 11.1 ランタイムは D3D_FEATURE_LEVEL_12_0 以上を認識しないので、除外してやり直す
-				hr = pD3D11CreateDevice(pAdapter,
-					D3D_DRIVER_TYPE_UNKNOWN,
-					nullptr,
-					0,
-					&FeatureLevels[2],
-					static_cast<UINT>(std::size(FeatureLevels) - 2),
-					D3D11_SDK_VERSION,
-					&pDevice,
-					&maxLevel,
-					&pDeviceContext);
-
-				if (hr == E_INVALIDARG)
+				if (SUCCEEDED(hr))
 				{
-					LOG_TRACE("D3D11CreateDevice()");
-
-					// DirectX 11.0 ランタイムは D3D_FEATURE_LEVEL_11_1 以上を認識しないので、除外してやり直す
-					hr = pD3D11CreateDevice(pAdapter,
-						D3D_DRIVER_TYPE_UNKNOWN,
-						nullptr,
-						0,
-						&FeatureLevels[3],
-						static_cast<UINT>(std::size(FeatureLevels) - 3),
-						D3D11_SDK_VERSION,
-						&pDevice,
-						&maxLevel,
-						&pDeviceContext);
+					deviceInfo.dxgiDevice = GetDXGIDevice1(deviceInfo.device.Get());
+					deviceInfo.deviceType = (pAdapter ? D3D_DRIVER_TYPE_HARDWARE : driverType);
+					return deviceInfo;
 				}
-			}
 
-			if (FAILED(hr))
-			{
-				LOG_FAIL("❌ - D3D11CreateDevice() failed");
-				return D3D_FEATURE_LEVEL_9_1;
-			}
+				// Use the existing candidate metadata, and record this call's list before shortening it.
+				const std::string adapterName = (adapter
+					? fmt::format("[{}] \"{}\"", adapter->adapterIndex, Unicode::FromWstring(adapter->desc.Description))
+					: ((driverType == D3D_DRIVER_TYPE_HARDWARE) ? "default (nullptr)" : "none (nullptr)"));
+				writeLog(LogLevel::Info, fmt::format(
+					"D3D11CreateDevice failed: adapter={}, driver={}, flags=0x{:08X} (debug={}), featureLevels={}, HRESULT={}",
+					adapterName, ToString(driverType), createDeviceFlag, !!(createDeviceFlag & D3D11_CREATE_DEVICE_DEBUG),
+					ToString(featureLevels), D3D11Diagnostics::FormatHRESULT(hr)));
 
-			return maxLevel;
-		}
-
-		[[nodiscard]]
-		static Array<D3D11Adapter> EnumHardwareAdapters_impl(IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
-			const Optional<D3D11AdapterCache>& cache, const DXGI_GPU_PREFERENCE GPU_Preference)
-		{
-			LOG_SCOPED_DEBUG("EnumHardwareAdapters_impl()");
-
-			Array<D3D11Adapter> adapters;
-
-			for (uint32 adapterIndex = 0; ; ++adapterIndex)
-			{
-				ComPtr<IDXGIAdapter1> pAdapter;
-
-				// リストの最後で DXGIERR_NOT_FOUND が返る
+				if (hr != E_INVALIDARG)
 				{
-					HRESULT hr = DXGI_ERROR_NOT_FOUND;
+					return none;
+				}
 
-					if (pDXGIFactory6)
+				// Older runtimes reject unrecognized feature levels instead of trying the next one.
+				if (D3D_FEATURE_LEVEL_12_0 <= featureLevels.front())
+				{
+					while (D3D_FEATURE_LEVEL_11_1 < featureLevels.front())
 					{
-						LOG_TRACE("IDXGIFactory6::EnumAdapterByGpuPreference()");
-						hr = pDXGIFactory6->EnumAdapterByGpuPreference(adapterIndex, GPU_Preference, IID_PPV_ARGS(&pAdapter));
-					}
-					else
-					{
-						LOG_TRACE("IDXGIFactory2::EnumAdapters1()");
-						hr = pDXGIFactory2->EnumAdapters1(adapterIndex, &pAdapter);
-					}
-
-					if (hr == DXGI_ERROR_NOT_FOUND)
-					{
-						LOG_TRACE("-> DXGI_ERROR_NOT_FOUND");
-						break;
+						featureLevels = featureLevels.subspan(1);
 					}
 				}
-			
-				DXGI_ADAPTER_DESC1 adapterDesc;
-				pAdapter->GetDesc1(&adapterDesc);
-
-				// キャッシュされたアダプターと一致したらこれ以上調べない
-				if (cache && Match(adapterDesc, *cache))
+				else if (featureLevels.front() == D3D_FEATURE_LEVEL_11_1)
 				{
-					LOG_INFO("ℹ️ Found a cached hardware adapter");
-
-					D3D11Adapter adapter =
-					{
-						.pAdapter		= pAdapter,
-						.adapterIndex	= adapterIndex,
-						.name			= Unicode::FromWstring(adapterDesc.Description),
-						.featureLevel	= cache->featureLevel,
-						.vendor			= ToVendor(adapterDesc.VendorId),
-						.desc			= adapterDesc,
-					};
-
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
-					adapters.push_back(std::move(adapter));
-					
-					// 残りのアダプターをスキップする
-					LOG_INFO("ℹ️ Skipped the remaining adapters");
-					return adapters;
+					featureLevels = featureLevels.subspan(1);
+				}
+				else
+				{
+					return none;
 				}
 
-				// Microsoft Basics Display Driver はスキップする
-				if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-				{
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: software adapter (skipped)", adapterIndex));
-					continue;
-				}
-
-				D3D11Adapter adapter =
-				{
-					.pAdapter		= pAdapter,
-					.adapterIndex	= adapterIndex,
-					.name			= Unicode::FromWstring(adapterDesc.Description),
-					.featureLevel	= CheckFeatureLevel(pAdapter.Get(), pD3D11CreateDevice),
-					.vendor			= ToVendor(adapterDesc.VendorId),
-					.desc			= adapterDesc,
-				};
-
-				if (adapter.featureLevel < MinimumD3DFeatureLevel)
-				{
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}] does not support D3D_FEATURE_LEVEL_{} (skipped)", adapterIndex, ToString(MinimumD3DFeatureLevel)));
-					continue;
-				}
-
-				LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
-				adapters.push_back(std::move(adapter));
-			}
-
-			LOG_INFO(fmt::format("ℹ️ {} hardware adapter{} available", adapters.size(), ((adapters.size() == 1) ? "" : "s")));
-			return adapters;
-		}
-
-		[[nodiscard]]
-		static D3D_FEATURE_LEVEL GetWARPFeatureLevel(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice)
-		{
-			LOG_SCOPED_DEBUG("GetWARPFeatureLevel()");
-
-			D3D_FEATURE_LEVEL result = D3D_FEATURE_LEVEL_10_1;
-
-			static constexpr D3D_FEATURE_LEVEL FeatureLevels[] =
-			{
-				D3D_FEATURE_LEVEL_12_1,
-				D3D_FEATURE_LEVEL_12_0,
-				D3D_FEATURE_LEVEL_11_1,
-				D3D_FEATURE_LEVEL_11_0,
-				D3D_FEATURE_LEVEL_10_1
-			};
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			ComPtr<ID3D11Device> pDevice;
-			HRESULT hr = pD3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP,
-				0, 0, FeatureLevels, static_cast<UINT>(std::size(FeatureLevels)),
-				D3D11_SDK_VERSION, &pDevice, &result, nullptr);
-
-			if (hr == E_INVALIDARG)
-			{
-				LOG_TRACE("D3D11CreateDevice()");
-
-				// DirectX 11.1 ランタイムは D3D_FEATURE_LEVEL_12_0 以上を認識しないので、除外してやり直す
-				hr = pD3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP,
-					0, 0, &FeatureLevels[2], static_cast<UINT>(std::size(FeatureLevels) - 2),
-					D3D11_SDK_VERSION, &pDevice, &result, nullptr);
-
-				if (hr == E_INVALIDARG)
-				{
-					LOG_TRACE("D3D11CreateDevice()");
-
-					// DirectX 11.0 ランタイムは D3D_FEATURE_LEVEL_11_1 を認識しないので、除外してやり直す
-					hr = pD3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP,
-						0, 0, &FeatureLevels[3], static_cast<UINT>(std::size(FeatureLevels) - 3),
-						D3D11_SDK_VERSION, &pDevice, &result, nullptr);
-				}
-			}
-
-			if (FAILED(hr))
-			{
-				return D3D_FEATURE_LEVEL_10_1;
-			}
-			else
-			{
-				return result;
+				writeLog(LogLevel::Info, fmt::format(
+					"Retrying D3D11CreateDevice after E_INVALIDARG with featureLevels={}", ToString(featureLevels)));
 			}
 		}
 
 		[[nodiscard]]
-		static D3D_FEATURE_LEVEL GetReferenceFeatureLevel(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice)
+		static D3D11DeviceInfo FinishHardwareDevice(D3D11DeviceInfo deviceInfo, const Array<D3D11Adapter>& hardwareAdapters,
+			const uint32 createDeviceFlag, const bool usedDefaultAdapter,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
-			LOG_SCOPED_DEBUG("GetReferenceFeatureLevel()");
-
-			D3D_FEATURE_LEVEL result = D3D_FEATURE_LEVEL_10_1;
-
-			static constexpr D3D_FEATURE_LEVEL FeatureLevels[] =
+			// Query the created device: the default adapter need not be one of the enumerated candidates.
+			ComPtr<IDXGIAdapter> adapter;
+			if (const HRESULT hr = deviceInfo.dxgiDevice->GetAdapter(&adapter); FAILED(hr))
 			{
-				D3D_FEATURE_LEVEL_11_1,
-				D3D_FEATURE_LEVEL_11_0,
-				D3D_FEATURE_LEVEL_10_1
-			};
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			ComPtr<ID3D11Device> pDevice;
-			HRESULT hr = pD3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_REFERENCE,
-				0, 0, FeatureLevels, static_cast<UINT>(std::size(FeatureLevels)),
-				D3D11_SDK_VERSION, &pDevice, &result, nullptr);
-
-			if (hr == E_INVALIDARG)
-			{
-				LOG_TRACE("D3D11CreateDevice()");
-
-				// DirectX 11.0 ランタイムは D3D_FEATURE_LEVEL_11_1 を認識しないので、除外してやり直す
-				hr = pD3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_REFERENCE,
-					0, 0, &FeatureLevels[1], static_cast<UINT>(std::size(FeatureLevels) - 1),
-					D3D11_SDK_VERSION, &pDevice, &result, nullptr);
+				throw InternalEngineError{ fmt::format("IDXGIDevice::GetAdapter() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 
-			if (FAILED(hr))
+			DXGI_ADAPTER_DESC desc{};
+			if (const HRESULT hr = adapter->GetDesc(&desc); FAILED(hr))
 			{
-				LOG_FAIL("❌ Failed to create D3D11 device with Reference driver");
-				return D3D_FEATURE_LEVEL_10_1;
+				throw InternalEngineError{ fmt::format("IDXGIAdapter::GetDesc() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
-			else
+
+			for (const auto& candidate : hardwareAdapters)
 			{
-				return result;
-			}
-		}
-
-		[[nodiscard]]
-		static Optional<D3D11DeviceInfo> CreateHardwareDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, IDXGIAdapter1* pAdapter, const uint32 adapterIndex, const D3D_FEATURE_LEVEL targetFeatureLevel, const uint32 createDeviceFlag)
-		{
-			LOG_SCOPED_DEBUG("CreateHardwareDevice()");
-
-			D3D_FEATURE_LEVEL featureLevel;
-			ComPtr<ID3D11Device> device;
-			ComPtr<ID3D11DeviceContext> context;
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			if (SUCCEEDED(pD3D11CreateDevice(
-				pAdapter,
-				D3D_DRIVER_TYPE_UNKNOWN,
-				nullptr,
-				createDeviceFlag,
-				&targetFeatureLevel,
-				1,
-				D3D11_SDK_VERSION,
-				&device,
-				&featureLevel,
-				&context)))
-			{
-				return D3D11DeviceInfo
+				if ((candidate.desc.AdapterLuid.LowPart == desc.AdapterLuid.LowPart)
+					&& (candidate.desc.AdapterLuid.HighPart == desc.AdapterLuid.HighPart))
 				{
-					.device					= device,
-					.dxgiDevice				= GetDXGIDevice1(device.Get()),
-					.context				= context,
-					.adapterIndex			= adapterIndex,
-					.deviceType				= D3D_DRIVER_TYPE_HARDWARE,
-					.featureLevel			= featureLevel,
-				};
-			}
-			else
-			{
-				LOG_TRACE("D3D11CreateDevice()");
-
-				if (SUCCEEDED(pD3D11CreateDevice(
-					nullptr,
-					D3D_DRIVER_TYPE_HARDWARE,
-					nullptr,
-					createDeviceFlag,
-					&targetFeatureLevel,
-					1,
-					D3D11_SDK_VERSION,
-					&device,
-					&featureLevel,
-					&context)))
-				{
-					return D3D11DeviceInfo
-					{
-						.device					= device,
-						.dxgiDevice				= GetDXGIDevice1(device.Get()),
-						.context				= context,
-						.adapterIndex			= adapterIndex,
-						.deviceType				= D3D_DRIVER_TYPE_HARDWARE,
-						.featureLevel			= featureLevel,
-					};
+					deviceInfo.adapterIndex = candidate.adapterIndex;
+					break;
 				}
 			}
 
-			return none;
-		}
+			writeLog(LogLevel::Info, fmt::format("✅ D3D11 device{} created. Driver type: Hardware ({}) (feature level: {}){}",
+				((createDeviceFlag & D3D11_CREATE_DEVICE_DEBUG) ? " with debug layer" : ""),
+				Unicode::FromWstring(desc.Description), ToString(deviceInfo.featureLevel),
+				(usedDefaultAdapter ? " (default adapter fallback)" : "")));
 
-		[[nodiscard]]
-		static Optional<D3D11DeviceInfo> CreateWARPDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const D3D_FEATURE_LEVEL targetFeatureLevel, const uint32 createDeviceFlag)
-		{
-			LOG_SCOPED_DEBUG("CreateWARPDevice()");
-
-			D3D_FEATURE_LEVEL featureLevel;
-			ComPtr<ID3D11Device> device;
-			ComPtr<ID3D11DeviceContext> context;
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			if (SUCCEEDED(pD3D11CreateDevice(
-				nullptr,
-				D3D_DRIVER_TYPE_WARP,
-				nullptr,
-				createDeviceFlag,
-				&targetFeatureLevel,
-				1,
-				D3D11_SDK_VERSION,
-				&device,
-				&featureLevel,
-				&context)))
-			{
-				return D3D11DeviceInfo
-				{
-					.device					= device,
-					.dxgiDevice				= GetDXGIDevice1(device.Get()),
-					.context				= context,
-					.adapterIndex			= none,
-					.deviceType				= D3D_DRIVER_TYPE_WARP,
-					.featureLevel			= featureLevel,
-				};
-			}
-
-			return none;
-		}
-
-		[[nodiscard]]
-		static Optional<D3D11DeviceInfo> CreateReferenceDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const D3D_FEATURE_LEVEL targetFeatureLevel, const uint32 createDeviceFlag)
-		{
-			LOG_SCOPED_DEBUG("CreateReferenceDevice()");
-
-			D3D_FEATURE_LEVEL featureLevel;
-			ComPtr<ID3D11Device> device;
-			ComPtr<ID3D11DeviceContext> context;
-
-			LOG_TRACE("D3D11CreateDevice()");
-
-			if (SUCCEEDED(pD3D11CreateDevice(
-				nullptr,
-				D3D_DRIVER_TYPE_REFERENCE,
-				nullptr,
-				createDeviceFlag,
-				&targetFeatureLevel,
-				1,
-				D3D11_SDK_VERSION,
-				&device,
-				&featureLevel,
-				&context)))
-			{
-				return D3D11DeviceInfo
-				{
-					.device					= device,
-					.dxgiDevice				= GetDXGIDevice1(device.Get()),
-					.context				= context,
-					.adapterIndex			= none,
-					.deviceType				= D3D_DRIVER_TYPE_REFERENCE,
-					.featureLevel			= featureLevel,
-				};
-			}
-
-			return none;
+			return deviceInfo;
 		}
 	}
 
@@ -586,18 +226,67 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Array<D3D11Adapter> EnumHardwareAdapters(IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const DXGI_GPU_PREFERENCE GPU_Preference)
+		void EnumHardwareAdapters(Array<D3D11Adapter>& result, IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2,
+			const DXGI_GPU_PREFERENCE GPU_Preference)
 		{
 			LOG_SCOPED_DEBUG("EnumHardwareAdapters()");
+			result.clear();
 
-			Optional<D3D11AdapterCache> cache;
-
-			if (GPU_Preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE)
+			for (uint32 adapterIndex = 0; ; ++adapterIndex)
 			{
-				cache = LoadAdapterCache();
+				ComPtr<IDXGIAdapter1> pAdapter;
+				HRESULT hr;
+
+				if (pDXGIFactory6)
+				{
+					LOG_TRACE("IDXGIFactory6::EnumAdapterByGpuPreference()");
+					hr = pDXGIFactory6->EnumAdapterByGpuPreference(adapterIndex, GPU_Preference, IID_PPV_ARGS(&pAdapter));
+				}
+				else
+				{
+					LOG_TRACE("IDXGIFactory2::EnumAdapters1()");
+					hr = pDXGIFactory2->EnumAdapters1(adapterIndex, &pAdapter);
+				}
+
+				if (hr == DXGI_ERROR_NOT_FOUND)
+				{
+					LOG_TRACE("-> DXGI_ERROR_NOT_FOUND");
+					break;
+				}
+
+				if (FAILED(hr))
+				{
+					LOG_WARN(fmt::format("{} failed: adapterIndex={}, HRESULT={}",
+						(pDXGIFactory6 ? "IDXGIFactory6::EnumAdapterByGpuPreference()" : "IDXGIFactory2::EnumAdapters1()"),
+						adapterIndex, D3D11Diagnostics::FormatHRESULT(hr)));
+					break;
+				}
+
+				DXGI_ADAPTER_DESC1 adapterDesc{};
+				if (const HRESULT descResult = pAdapter->GetDesc1(&adapterDesc); FAILED(descResult))
+				{
+					LOG_WARN(fmt::format("IDXGIAdapter1::GetDesc1() failed: adapterIndex={}, HRESULT={}",
+						adapterIndex, D3D11Diagnostics::FormatHRESULT(descResult)));
+					continue;
+				}
+
+				// Microsoft Basic Render Driver is handled by the WARP fallback.
+				if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+				{
+					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (skipped)", adapterIndex, ToString(adapterDesc)));
+					continue;
+				}
+
+				LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {}", adapterIndex, ToString(adapterDesc)));
+				result.push_back(D3D11Adapter
+				{
+					.pAdapter = std::move(pAdapter),
+					.adapterIndex = adapterIndex,
+					.desc = adapterDesc,
+				});
 			}
 
-			return EnumHardwareAdapters_impl(pDXGIFactory6, pDXGIFactory2, pD3D11CreateDevice, cache, GPU_Preference);
+			LOG_INFO(fmt::format("ℹ️ {} hardware adapter candidate{}", result.size(), ((result.size() == 1) ? "" : "s")));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -606,99 +295,82 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const Array<D3D11Adapter>& hardwareAdapters,
-			EngineOption::D3D11Driver targetDriverType, bool useDebugLayer)
+		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
+			const EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer)
+		{
+			return CreateDevice(pD3D11CreateDevice, enumHardwareAdapters, targetDriverType, useDebugLayer,
+				[](const LogLevel level, const std::string_view message)
+				{
+					Internal::OutputEngineLog(level, message);
+				});
+		}
+
+		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
+			EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
 			LOG_SCOPED_DEBUG("CreateDevice()");
-
 			constexpr uint32 BaseCreateDeviceFlag = 0;
-			const bool saveAdapterCache = (targetDriverType == EngineOption::D3D11Driver::Hardware);
 
-			// ハードウェアアダプタ
 			if ((targetDriverType == EngineOption::D3D11Driver::Hardware)
 				|| (targetDriverType == EngineOption::D3D11Driver::Hardware_FavorIntegrated))
 			{
-				// デバッグレイヤー有効
-				if (useDebugLayer)
+				constexpr uint32 CreateDeviceFlags[] = { (BaseCreateDeviceFlag | D3D11_CREATE_DEVICE_DEBUG), BaseCreateDeviceFlag };
+				const auto attempts = std::span{ CreateDeviceFlags }.subspan(useDebugLayer ? 0 : 1);
+
+				Array<D3D11Adapter> hardwareAdapters;
+				enumHardwareAdapters(hardwareAdapters);
+
+				// Try every explicit candidate in both debug modes before the default adapter.
+				for (const uint32 flags : attempts)
 				{
-					constexpr uint32 CreateDeviceFlag = (BaseCreateDeviceFlag | D3D11_CREATE_DEVICE_DEBUG);
-
-					for (const auto& hardwareAdapter : hardwareAdapters)
+					for (const auto& adapter : hardwareAdapters)
 					{
-						if (const auto deviceInfo = CreateHardwareDevice(pD3D11CreateDevice,
-							hardwareAdapter.pAdapter.Get(), hardwareAdapter.adapterIndex, hardwareAdapter.featureLevel, CreateDeviceFlag))
+						if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, &adapter,
+							D3D_DRIVER_TYPE_UNKNOWN, HardwareFeatureLevels, flags, writeLog))
 						{
-							LOG_INFO(fmt::format("✅ D3D11 device with debug layer created. Driver type: Hardware ({0}) (feature level: {1})",
-								hardwareAdapter.name, ToString(deviceInfo->featureLevel)));
-
-							if (saveAdapterCache)
-							{
-								SaveAdapterCache(hardwareAdapter);
-							}
-
-							return *deviceInfo;
-						}
-					}
-
-					useDebugLayer = false;
-				}
-
-				// デバッグレイヤー無効
-				{
-					for (const auto& hardwareAdapter : hardwareAdapters)
-					{
-						if (const auto deviceInfo = CreateHardwareDevice(pD3D11CreateDevice,
-							hardwareAdapter.pAdapter.Get(), hardwareAdapter.adapterIndex, hardwareAdapter.featureLevel, BaseCreateDeviceFlag))
-						{
-							LOG_INFO(fmt::format("✅ D3D11 device created. Driver type: Hardware ({0}) (feature level: {1})",
-								hardwareAdapter.name, ToString(deviceInfo->featureLevel)));
-							
-							if (saveAdapterCache)
-							{
-								SaveAdapterCache(hardwareAdapter);
-							}
-
-							return *deviceInfo;
+							return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, false, writeLog);
 						}
 					}
 				}
 
-				// ハードウェアアダプタでデバイスを作成できなかった場合、WARP ドライバにフォールバックする
-				LOG_WARN("ℹ️ Failed to create D3D11 device with hardware adapters. Fallback to WARP driver");
+				// Keep nullptr + HARDWARE for drivers that may reject explicit selection, even with no candidates.
+				writeLog(LogLevel::Info, "ℹ️ Explicit hardware adapters failed. Trying the default adapter (nullptr + HARDWARE)");
+				for (const uint32 flags : attempts)
+				{
+					if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_HARDWARE, HardwareFeatureLevels, flags, writeLog))
+					{
+						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, true, writeLog);
+					}
+				}
+
+				writeLog(LogLevel::Warning, "ℹ️ Failed to create D3D11 device with hardware adapters. Fallback to WARP driver");
 				targetDriverType = EngineOption::D3D11Driver::WARP;
 			}
 
-			// WARP ドライバ
 			if (targetDriverType == EngineOption::D3D11Driver::WARP)
 			{
-				// WARP ドライバの feature level を取得する
-				const D3D_FEATURE_LEVEL warpFeatureLevel = GetWARPFeatureLevel(pD3D11CreateDevice);
-				LOG_INFO(fmt::format("ℹ️ [D3D_DRIVER_TYPE_WARP] supports D3D_FEATURE_LEVEL_{}", ToString(warpFeatureLevel)));
-
-				if (const auto deviceInfo = CreateWARPDevice(pD3D11CreateDevice, warpFeatureLevel, BaseCreateDeviceFlag))
+				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_WARP, WARPFeatureLevels, BaseCreateDeviceFlag, writeLog))
 				{
-					LOG_INFO(fmt::format("✅ D3D11 device created. Driver type: WARP (feature level: {0})", ToString(deviceInfo->featureLevel)));
-					return *deviceInfo;
+					writeLog(LogLevel::Info, fmt::format("✅ D3D11 device created. Driver type: WARP (feature level: {})", ToString(deviceInfo->featureLevel)));
+					return std::move(*deviceInfo);
 				}
 
-				// WARP ドライバでデバイスを作成できなかった場合、Reference ドライバにフォールバックする
-				LOG_WARN("ℹ️ Failed to create D3D11 device with WARP driver. Fallback to Reference driver");
+				writeLog(LogLevel::Warning, "ℹ️ Failed to create D3D11 device with WARP driver. Fallback to Reference driver");
 				targetDriverType = EngineOption::D3D11Driver::Reference;
 			}
 
-			// Reference ドライバ
 			if (targetDriverType == EngineOption::D3D11Driver::Reference)
 			{
-				// Reference ドライバの feature level を取得する
-				const D3D_FEATURE_LEVEL referenceFeatureLevel = GetReferenceFeatureLevel(pD3D11CreateDevice);
-				LOG_INFO(fmt::format("ℹ️ [D3D_DRIVER_TYPE_REFERENCE] supports D3D_FEATURE_LEVEL_{}", ToString(referenceFeatureLevel)));
-
-				if (const auto deviceInfo = CreateReferenceDevice(pD3D11CreateDevice, referenceFeatureLevel, BaseCreateDeviceFlag))
+				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_REFERENCE, ReferenceFeatureLevels, BaseCreateDeviceFlag, writeLog))
 				{
-					return *deviceInfo;
+					writeLog(LogLevel::Info, fmt::format("✅ D3D11 device created. Driver type: Reference (feature level: {})", ToString(deviceInfo->featureLevel)));
+					return std::move(*deviceInfo);
 				}
 
-				LOG_FAIL("❌ Failed to create D3D11 device with Reference driver");
+				writeLog(LogLevel::Fail, "❌ Failed to create D3D11 device with Reference driver");
 			}
 
 			throw InternalEngineError{ "D3D11Misc::CreateDevice() failed" };

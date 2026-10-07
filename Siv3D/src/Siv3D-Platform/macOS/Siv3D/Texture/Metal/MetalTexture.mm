@@ -36,6 +36,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
@@ -54,8 +56,8 @@ namespace s3d
 		const NSUInteger dataSize = (image.bytesPerRow() * image.height());
 		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
 			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.bytesPerRow(), 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -78,6 +80,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
@@ -97,8 +101,8 @@ namespace s3d
 		const NSUInteger dataSize = (image.bytesPerRow() * image.height());
 		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
 			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.bytesPerRow(), 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -123,6 +127,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
@@ -139,8 +145,8 @@ namespace s3d
 			return;
 		}
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			// base
 			{
@@ -181,6 +187,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
@@ -200,8 +208,8 @@ namespace s3d
 		const NSUInteger dataSize = (rowPitch * size.y);
 		auto uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -224,6 +232,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
@@ -244,8 +254,8 @@ namespace s3d
 		const NSUInteger dataSize = (rowPitch * size.y);
 		auto uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 	
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -270,6 +280,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
@@ -286,8 +298,8 @@ namespace s3d
 			return;
 		}
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			for (uint32 i = 0; i < bcnData.textures.size(); ++i)
 			{
@@ -323,6 +335,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
@@ -351,8 +365,8 @@ namespace s3d
 			m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
 		}
 		
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -375,6 +389,8 @@ namespace s3d
 			false
 		}
 	{
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
@@ -404,8 +420,8 @@ namespace s3d
 			m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
 		}
 
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -482,8 +498,10 @@ namespace s3d
 
 		FillWithColor(ptr, totalBytes, color, m_desc.format);
 
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -491,7 +509,7 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
-		m_uploadCommandBuffer = std::move(commandBuffer);
+		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
 
 		return true;
 	}
@@ -518,8 +536,10 @@ namespace s3d
 		
 		FillWithImage(ptr, m_desc.size, bytesPerRow, data, srcBytesPerRow);
 
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
 			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
@@ -527,7 +547,7 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
-		m_uploadCommandBuffer = std::move(commandBuffer);
+		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
 
 		return true;
 	}
@@ -641,14 +661,16 @@ namespace s3d
 
 	bool MetalTexture::uploadRegion(MTL::CommandQueue* commandQueue, const uint32 bytesPerRow, const Rect& rect)
 	{
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
 
 		if (not commandBuffer)
 		{
 			return false;
 		}
 
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 
 		if (not blitCommandEncoder)
 		{
@@ -673,7 +695,7 @@ namespace s3d
 		blitCommandEncoder->endEncoding();
 
 		commandBuffer->commit();
-		m_uploadCommandBuffer = std::move(commandBuffer);
+		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
 
 		return true;
 	}
@@ -691,8 +713,10 @@ namespace s3d
 			return;
 		}
 
-		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+
+		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
 			blitCommandEncoder->generateMipmaps(m_texture.get());
 			blitCommandEncoder->endEncoding();

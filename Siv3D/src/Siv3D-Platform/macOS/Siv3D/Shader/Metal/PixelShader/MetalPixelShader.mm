@@ -25,15 +25,7 @@ namespace s3d
 
 	MetalPixelShader::MetalPixelShader(MTL::Library* library, const std::string& name)
 	{
-		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(name.c_str(), NS::UTF8StringEncoding)));
-
-		if (not m_shader)
-		{
-			LOG_FAIL(fmt::format("MetalPixelShader: Failed to create a pixel shader `{}`", name));
-			return;
-		}
-
-		m_initialized = true;
+		loadFunction(library, name);
 	}
 
 	MetalPixelShader::MetalPixelShader(MTL::Device* device, const std::string& source, const std::string& entryPoint)
@@ -48,15 +40,7 @@ namespace s3d
 			return;
 		}
 		
-		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(entryPoint.c_str(), NS::UTF8StringEncoding)));
-		
-		if (not m_shader)
-		{
-			LOG_FAIL(fmt::format("MetalPixelShader: Failed to create a pixel shader `{}`", entryPoint));
-			return;
-		}
-		
-		m_initialized = true;
+		loadFunction(library.get(), entryPoint);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -79,5 +63,29 @@ namespace s3d
 	MTL::Function* MetalPixelShader::getShader() const
 	{
 		return m_shader.get();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	loadFunction
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalPixelShader::loadFunction(MTL::Library* library, const std::string& name)
+	{
+		auto function = NS::TransferPtr(library->newFunction(NS::String::string(name.c_str(), NS::UTF8StringEncoding)));
+		if (not function)
+		{
+			LOG_FAIL(fmt::format("MetalPixelShader: Failed to create a pixel shader `{}`", name));
+			return;
+		}
+		if (function->functionType() != MTL::FunctionTypeFragment)
+		{
+			LOG_FAIL(fmt::format("MetalPixelShader: Function `{}` is not a fragment function", name));
+			return;
+		}
+
+		m_shader = std::move(function);
+		m_initialized = true;
 	}
 }

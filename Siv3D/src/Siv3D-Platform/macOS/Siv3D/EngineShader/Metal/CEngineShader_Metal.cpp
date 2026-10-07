@@ -40,7 +40,7 @@ namespace s3d
 		{
 			m_vertexShaders << MSL{ U"VS_FullscreenTriangle" };
 			m_vertexShaders << MSL{ U"VS_Shape" };
-			m_vertexShaders << MSL{ U"VS_QuadWarp" };
+			m_vertexShaders << MSL{ U"VS_Pattern" };
 			
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
@@ -52,7 +52,6 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_FullscreenTriangle" };
 			m_pixelShaders << MSL{ U"PS_Shape" };
 			m_pixelShaders << MSL{ U"PS_Texture" };
-			m_pixelShaders << MSL{ U"PS_QuadWarp" };
 			m_pixelShaders << MSL{ U"PS_LineDot" };
 			m_pixelShaders << MSL{ U"PS_LineDash" };
 			m_pixelShaders << MSL{ U"PS_LineLongDash" };
@@ -70,6 +69,11 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_MSDFFont_OutlineShadow" };
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Glow" };
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Print" };
+			m_pixelShaders << MSL{ U"PS_PatternHalftone" };
+			m_pixelShaders << MSL{ U"PS_PatternWave" };
+			m_pixelShaders << MSL{ U"PS_PatternRipple" };
+			m_pixelShaders << MSL{ U"PS_PatternWeave" };
+			m_pixelShaders << MSL{ U"PS_PatternTruchet" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

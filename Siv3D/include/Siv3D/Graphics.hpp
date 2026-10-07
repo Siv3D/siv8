@@ -19,6 +19,9 @@ namespace s3d
 		/// @brief シェーダの最大テクスチャスロット数
 		inline constexpr uint32 TextureSlotCount = 8;
 
+		/// @brief シェーダステージごとの定数バッファスロット数（0～13）
+		inline constexpr uint32 ConstantBufferSlotCount = 14;
+
 		/// @brief シェーダの最大出力レンダーターゲット数
 		inline constexpr uint32 RenderTargetCount = 8;
 

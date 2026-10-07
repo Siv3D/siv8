@@ -10,17 +10,16 @@
 //-----------------------------------------------
 
 # pragma once
-# include "../Common.hpp"
-# include "../2DShapes.hpp"
-# include "Geometry2DCommon.hpp"
+# include "../Concepts.hpp"
+# include "../2DShapesFwd.hpp"
 
 namespace s3d
 {
-	class Polygon;
-	class MultiPolygon;
-
 	namespace Geometry2D
 	{
+		/// @addtogroup geometry2d_queries
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Contains(Rect, _)
@@ -500,5 +499,7 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Contains(const MultiPolygon& a, const MultiPolygon& b) noexcept;
+
+		/// @}
 	}
 }

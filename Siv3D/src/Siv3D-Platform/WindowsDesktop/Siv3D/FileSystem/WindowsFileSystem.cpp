@@ -13,6 +13,8 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Resource.hpp>
+# include <Siv3D/ScopeExit.hpp>
+# include <Siv3D/SpecialFolder.hpp>
 # include <Shlobj.h>
 
 namespace s3d
@@ -29,6 +31,15 @@ namespace s3d
 		{
 			return ((data.cFileName[0] == L'.') &&
 				((data.cFileName[1] == L'\0') || ((data.cFileName[1] == L'.') && (data.cFileName[2] == L'\0'))));
+		}
+
+		[[nodiscard]]
+		static constexpr bool IsNameSurrogate(const WIN32_FIND_DATAW& data)
+		{
+			// dwReserved0 is valid only for reparse points. Other reparse tags may
+			// represent ordinary directories (for example, cloud placeholders).
+			return ((data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+				&& IsReparseTagNameSurrogate(data.dwReserved0));
 		}
 
 		FilePathCache::FilePathCache()
@@ -51,7 +62,7 @@ namespace s3d
 
 			specialFolderPaths = []()
 			{
-				static constexpr int ids[SpecialFolderCount] = {
+				static constexpr int ids[] = {
 					CSIDL_DESKTOP,
 					CSIDL_MYDOCUMENTS,
 					CSIDL_LOCAL_APPDATA,
@@ -63,12 +74,11 @@ namespace s3d
 					CSIDL_FONTS,
 					CSIDL_PROFILE,
 					CSIDL_PROGRAM_FILES,
-					CSIDL_PROFILE, // Downloads の親フォルダ
 				};
 
 				std::array<FilePath, SpecialFolderCount> paths;
 
-				for (size_t i = 0; i < paths.size(); ++i)
+				for (size_t i = 0; i < std::size(ids); ++i)
 				{
 					wchar_t path[MAX_PATH];
 
@@ -80,7 +90,13 @@ namespace s3d
 					paths[i] = Unicode::FromWstring(NormalizePath(path, PathType::Directory));
 				}
 
-				paths[11].append(U"Downloads/");
+				PWSTR downloads = nullptr;
+				const HRESULT result = ::SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &downloads);
+				const ScopeExit freeDownloads{ [downloads] { ::CoTaskMemFree(downloads); } };
+				if (SUCCEEDED(result))
+				{
+					paths[FromEnum(SpecialFolder::Downloads)] = Unicode::FromWstring(NormalizePath(downloads, PathType::Directory));
+				}
 
 				return paths;
 			}();
@@ -89,7 +105,8 @@ namespace s3d
 		[[nodiscard]]
 		std::filesystem::file_status GetStatus(const std::wstring_view path)
 		{
-			return std::filesystem::status(std::filesystem::path{ path });
+			std::error_code error;
+			return std::filesystem::status(std::filesystem::path{ path }, error);
 		}
 
 		[[nodiscard]]
@@ -129,13 +146,14 @@ namespace s3d
 				return{};
 			}
 
-			if (std::size(result) < length)
+			// Success excludes the terminating NUL, so the length must be below capacity.
+			if (std::size(result) <= length)
 			{
 				std::wstring result2((length - 1), L'\0');
 				const DWORD length2 = ::GetFullPathNameW(pathW.c_str(), length, result2.data(), &pFilePart);
 
 				if ((length2 == 0)
-					|| (length < (length2 + 1)))
+					|| (length <= length2))
 				{
 					return{};
 				}
@@ -151,32 +169,50 @@ namespace s3d
 			return std::wstring{ result, length };
 		}
 
-		std::wstring NormalizePath(std::wstring path, const PathType pathType)
+		std::wstring NormalizePath(std::wstring path, PathType pathType)
 		{
 			std::replace(path.begin(), path.end(), L'\\', L'/');
 
-			if ((not path.ends_with(L'/'))
-				&& ((pathType == PathType::Directory) || (GetStatus(path).type() == std::filesystem::file_type::directory)))
+			if (not path.ends_with(L'/'))
 			{
-				path.push_back(L'/');
+				if (pathType == PathType::Unknown)
+				{
+					const auto type = GetStatus(path).type();
+					if (type == std::filesystem::file_type::none)
+					{
+						return{};
+					}
+					if (type == std::filesystem::file_type::directory)
+					{
+						pathType = PathType::Directory;
+					}
+				}
+
+				if (pathType == PathType::Directory)
+				{
+					path.push_back(L'/');
+				}
 			}
 
 			return path;
 		}
 
-		uint64 DirectorySizeRecursive(const std::wstring& directoryPath)
+		bool DirectorySizeRecursive(const std::wstring& directoryPath, uint64& result)
 		{
 			assert(directoryPath.ends_with(L'/'));
 
 			WIN32_FIND_DATAW data;
-			HANDLE sh = ::FindFirstFileW((directoryPath + L'*').c_str(), &data);
-
-			if (sh == INVALID_HANDLE_VALUE)
+			HANDLE sh;
 			{
-				return 0;
+				const std::wstring pattern = (directoryPath + L'*');
+				sh = ::FindFirstFileW(pattern.c_str(), &data);
+				if (sh == INVALID_HANDLE_VALUE)
+				{
+					return (::GetLastError() == ERROR_FILE_NOT_FOUND);
+				}
 			}
 
-			uint64 result = 0;
+			const ScopeExit closeSearch{ [sh] { ::FindClose(sh); } };
 
 			do
 			{
@@ -188,7 +224,13 @@ namespace s3d
 
 				if (IsDirectory(data.dwFileAttributes)) // ディレクトリ
 				{
-					result += DirectorySizeRecursive((directoryPath + data.cFileName) + L'/');
+					if (not IsNameSurrogate(data))
+					{
+						if (not DirectorySizeRecursive((directoryPath + data.cFileName) + L'/', result))
+						{
+							return false;
+						}
+					}
 				}
 				else // ファイル
 				{
@@ -197,9 +239,7 @@ namespace s3d
 
 			} while (::FindNextFileW(sh, &data));
 
-			::FindClose(sh);
-
-			return result;
+			return (::GetLastError() == ERROR_NO_MORE_FILES);
 		}
 
 		Optional<WIN32_FILE_ATTRIBUTE_DATA> GetFileAttributeData(const std::wstring& path)
@@ -214,27 +254,36 @@ namespace s3d
 			return fad;
 		}
 
-		DateTime FileTimeToTime(FILETIME in)
+		Optional<DateTime> FileTimeToTime(const FILETIME in)
 		{
+			SYSTEMTIME utc;
 			SYSTEMTIME systemTime;
-			::FileTimeToLocalFileTime(&in, &in);
-			::FileTimeToSystemTime(&in, &systemTime);
+			if ((not ::FileTimeToSystemTime(&in, &utc))
+				|| (not ::SystemTimeToTzSpecificLocalTimeEx(nullptr, &utc, &systemTime)))
+			{
+				return none;
+			}
 
-			return{ systemTime.wYear, systemTime.wMonth, systemTime.wDay,
+			return DateTime{ systemTime.wYear, systemTime.wMonth, systemTime.wDay,
 				systemTime.wHour, systemTime.wMinute, systemTime.wSecond, systemTime.wMilliseconds };
 		}
 
-		void DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, const Recursive recursive)
+		bool DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, const Recursive recursive)
 		{
 			assert(directoryPath.ends_with(L'/'));
 
 			WIN32_FIND_DATAW data;
-			HANDLE hFind = ::FindFirstFileW((directoryPath + L'*').c_str(), &data);
-
-			if (hFind == INVALID_HANDLE_VALUE)
+			HANDLE hFind;
 			{
-				return;
+				const std::wstring pattern = (directoryPath + L'*');
+				hFind = ::FindFirstFileW(pattern.c_str(), &data);
+				if (hFind == INVALID_HANDLE_VALUE)
+				{
+					return (::GetLastError() == ERROR_FILE_NOT_FOUND);
+				}
 			}
+
+			const ScopeExit closeSearch{ [hFind] { ::FindClose(hFind); } };
 
 			do
 			{
@@ -257,14 +306,17 @@ namespace s3d
 				paths << Unicode::FromWstring(path);
 
 				// 再帰的に検索する
-				if (recursive && isDirectory)
+				if (recursive && isDirectory && (not IsNameSurrogate(data)))
 				{
-					DirectoryContentsDetail(path, paths, Recursive::Yes);
+					if (not DirectoryContentsDetail(path, paths, Recursive::Yes))
+					{
+						return false;
+					}
 				}
 
 			} while (::FindNextFileW(hFind, &data));
 
-			::FindClose(hFind);
+			return (::GetLastError() == ERROR_NO_MORE_FILES);
 		}
 	}
 }

@@ -31,8 +31,6 @@ namespace s3d
 
 		ColorAdd,
 
-		QuadWarpParameters,
-
 		PatternParameters,
 
 		BlendState,
@@ -89,7 +87,7 @@ namespace s3d
 
 		Transform,
 
-		//SetConstantBuffer,
+		SetConstantBuffer,
 
 		VSTexture0,
 
@@ -136,6 +134,9 @@ namespace s3d
 
 	struct D3D11DrawCommand
 	{
+		// 現在のバッチ内での開始位置（インデックス単位）
+		uint32 startIndex = 0;
+
 		uint32 indexCount = 0;
 	};
 }

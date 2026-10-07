@@ -20,7 +20,7 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
-		QuadWarp,
+		Pattern2D,
 	};
 
 	enum class EnginePS
@@ -28,7 +28,6 @@ namespace s3d
 		FullScreenTriangle,
 		Shape2D,
 		Texture2D,
-		QuadWarp,
 		LineDot,
 		LineDash,
 		LineLongDash,
@@ -46,6 +45,11 @@ namespace s3d
 		FontMSDF_OutlineShadow,
 		FontMSDF_Glow,
 		FontPrint,
+		PatternHalftone,
+		PatternWave,
+		PatternRipple,
+		PatternWeave,
+		PatternTruchet,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

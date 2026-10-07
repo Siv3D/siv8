@@ -19,6 +19,28 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		/// @defgroup geometry2d_distance 図形間の距離・最近点対
+		/// @brief Distance() / ClosestPoints() の共通契約。
+		/// @pre 図形の入力条件と空・縮退の分類は @ref geometry2d_queries に従います。
+		///
+		/// | 関数 | 戻り値 | どちらかが空の場合 |
+		/// |---|---|---|
+		/// | Distance(a, b) | 図形間の最短距離。 | 正の無限大。 |
+		/// | ClosestPoints(a, b) | 各図形上の最近点対とその距離。 | none。 |
+		///
+		/// 面積を持つ図形は内部を含めて扱います。包含・接触を含む共通部分があれば距離は 0 で、最近点対には共通点を返します。
+		/// 穴の内部は図形に含めません。MultiPolygon の空要素は無視します。
+		/// 最近点対が一意でない場合、どの点対を返すかは未規定です。
+		/// 境界への距離や内部からの符号付き距離は @ref geometry2d_boundary_distance を参照してください。
+		///
+		/// @par 数値計算
+		/// 曲線を含む計算には数値誤差があり、ごく小さな隙間でも距離 0 と共通点を返す場合があります。
+		/// Bezier 曲線同士、Bezier と Ellipse / SuperEllipse、および 0 < n < 1 の SuperEllipse と
+		/// Ellipse または n > 1 の SuperEllipse の組み合わせでは、真の最短距離を過大評価したり、
+		/// 大域的な最近点対を得られなかったりする場合があります。
+		/// Intersects() が保守的に true を返した組み合わせでは、距離が正になる場合があります。
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Distance / ClosestPoints(Point, _)
@@ -1650,5 +1672,7 @@ namespace s3d
 
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const MultiPolygon& a, const MultiPolygon& b);
+
+		/// @}
 	}
 }

@@ -1199,9 +1199,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した値と等しい要素があるかを返します。
-		/// @param value 検索する値
-		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		/// @brief 格納された頂点に指定した座標と等しいものがあるかを返します。
+		/// @param value 検索する座標
+		/// @return value と等しい頂点がある場合 true, それ以外の場合は false
+		/// @remark 線分上にある点も含めて判定するには intersects(value) を使います。
 		[[nodiscard]]
 		constexpr bool contains(const value_type& value) const;
 
@@ -2478,10 +2479,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 連続する線分を単純化した LineString を返します。
-		/// @param maxDistance 単純化の大きさ
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return 単純化した LineString
+		/// @brief Douglas–Peucker 法で連続する線分を単純化した LineString を返します。
+		/// @param maxDistance 頂点を省略するときに許容する線分からの距離。有限の値。負の場合は元の点列を返します。
+		/// @param closeRing 終点と始点を結ぶ区間も単純化の対象にするか
+		/// @return 入力の頂点を順序を保って間引いた LineString
+		/// @remark 始点は保持します。開いた点列では終点も保持します。2 頂点が同じ位置に縮退した結果は 1 頂点にまとめます。
+		/// @remark 閉じた点列の末尾に始点を重複して追加しません。入力にある閉じ点は、結果が 1 頂点になる場合を除いて保持します。
+		/// @remark 自己交差の発生や、閉じた点列の面積・向きの維持は保証しません。
 		[[nodiscard]]
 		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
 
@@ -2491,10 +2495,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 頂点間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
-		/// @param maxSegmentLength 分割後の各線分の最大長
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return 分割した結果
+		/// @brief 各線分が `maxSegmentLength` 以下になる最小の区間数に均等分割した結果を返します。
+		/// @param maxSegmentLength 分割後の各線分の最大長。有限の正の値。
+		/// @param closeRing 終点と始点を結ぶ区間も分割の対象にするか
+		/// @return 元の頂点の間に分割点を追加した LineString。頂点が 2 個未満の場合は元の点列。
+		/// @throws std::invalid_argument 頂点が 2 個以上あり、maxSegmentLength が 0 以下の場合
+		/// @remark 元の頂点とその順序を保持します。長さ 4 の線分に最大長 2 を指定すると、長さ 2 の 2 区間になります。
+		/// @remark 閉じた点列の末尾に始点を重複して追加しません。入力にある閉じ点は保持します。
 		[[nodiscard]]
 		LineString densified(double maxSegmentLength, CloseRing closeRing = CloseRing::No) const;
 
@@ -2634,6 +2641,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -2644,10 +2652,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;

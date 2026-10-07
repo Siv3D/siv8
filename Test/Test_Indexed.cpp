@@ -20,7 +20,7 @@ TEST_CASE("Indexed")
 		{
 			static_assert(std::is_same_v<decltype(i), int32>);
 			static_assert(std::is_same_v<decltype(elem), int32&>);
-			CHECK(i == (elem / 10));
+			CHECK(i == static_cast<decltype(i)>(elem / 10));
 		}
 	}
 
@@ -42,7 +42,7 @@ TEST_CASE("Indexed")
 		{
 			static_assert(std::is_same_v<decltype(i), int32>);
 			static_assert(std::is_same_v<decltype(elem), const int32&>);
-			CHECK(i == (elem / 10));
+			CHECK(i == static_cast<decltype(i)>(elem / 10));
 		}
 	}
 
@@ -64,7 +64,7 @@ TEST_CASE("Indexed")
 		{
 			static_assert(std::is_same_v<decltype(i), uint16>);
 			static_assert(std::is_same_v<decltype(elem), const int32&>);
-			CHECK(i == (elem / 10));
+			CHECK(i == static_cast<decltype(i)>(elem / 10));
 		}
 	}
 
@@ -75,7 +75,7 @@ TEST_CASE("Indexed")
 		{
 			static_assert(std::is_same_v<decltype(i), size_t>);
 			static_assert(std::is_same_v<decltype(elem), const int32&>);
-			CHECK(i == (elem / 10));
+			CHECK(i == static_cast<decltype(i)>(elem / 10));
 		}
 	}
 }

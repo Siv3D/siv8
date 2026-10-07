@@ -364,19 +364,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	addQuadWarp
-		//
-		////////////////////////////////////////////////////////////////
-
-		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) override;
-
-		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) override;
-		
-		////////////////////////////////////////////////////////////////
-		//
 		//	flush
 		//
 		////////////////////////////////////////////////////////////////
+
+		void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+
+		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous) override;
 
 		void flush() override;
 
@@ -508,13 +504,16 @@ namespace s3d
 
 		void setCameraTransform(const Mat3x2& matrix) override;
 
+		const Mat3x3& getQuadWarpTransform() const override;
+		void setQuadWarpTransform(const Mat3x3& matrix) override;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	getMaxScaling
+		//	getRMSScaling
 		//
 		////////////////////////////////////////////////////////////////
 
-		float getMaxScaling() const noexcept override;
+		float getRMSScaling() const noexcept override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -526,27 +525,11 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	waitForFrame
+		//	prepareFrame
 		//
 		////////////////////////////////////////////////////////////////
 
-		void waitForFrame();
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	beginFrame
-		//
-		////////////////////////////////////////////////////////////////
-
-		void beginFrame(MTL::CommandBuffer* commandBuffer);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getSemaphore
-		//
-		////////////////////////////////////////////////////////////////
-
-		dispatch_semaphore_t getSemaphore() const;
+		void prepareFrame(size_t frameIndex);
 
 	private:
 
@@ -562,20 +545,34 @@ namespace s3d
 
 		MetalRenderer2DCommandManager m_commandManager;
 
-		MTL::CommandBuffer* m_commandBuffer = nullptr;
+		struct ConstantBufferFrame
+		{
+			Array<NS::SharedPtr<MTL::Buffer>> pages;
+			size_t pageIndex = 0;
+			size_t offset = 0;
+		};
+
+		std::array<ConstantBufferFrame, MetalFrameContext::MaxInflightFrames> m_constantBufferFrames;
+
+		size_t m_constantBufferFrameIndex = 0;
+
+		uint32 m_indexReadPos = 0;
+
+		bool m_scenePassStarted = false;
+
+		void bindCustomConstantBuffer(MTL::RenderCommandEncoder* encoder, const ConstantBuffer2DCommand& command, const void* data);
+
 
 		struct EngineShader
 		{
 			VertexShader::IDType vsShape;
-			
-			VertexShader::IDType vsQuadWarp;
+
+			VertexShader::IDType vsPattern;
 			
 			PixelShader::IDType psShape;
 
 			PixelShader::IDType psTexture;
-						
-			PixelShader::IDType psQuadWarp;
-			
+
 			PixelShader::IDType psLineDot;
 			
 			PixelShader::IDType psLineDash;
@@ -597,6 +594,16 @@ namespace s3d
 			PixelShader::IDType psPatternTriangle;
 
 			PixelShader::IDType psPatternHexGrid;
+
+			PixelShader::IDType psPatternHalftone;
+
+			PixelShader::IDType psPatternWave;
+
+			PixelShader::IDType psPatternRipple;
+
+			PixelShader::IDType psPatternWeave;
+
+			PixelShader::IDType psPatternTruchet;
 			
 			[[nodiscard]]
 			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;

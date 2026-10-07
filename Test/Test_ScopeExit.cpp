@@ -63,10 +63,10 @@ TEST_CASE("ScopeExit")
 		int32 i = 0;
 		{
 			const ScopeExit se = [&i]() { ++i; };
-			CHECK_EQ(i, 0);
+			CHECK((i) == (0));
 		}
 
-		CHECK_EQ(i, 1);
+		CHECK((i) == (1));
 	}
 
 	{
@@ -74,10 +74,10 @@ TEST_CASE("ScopeExit")
 		{
 			ScopeExit se = [&i]() { ++i; };
 			se.release();
-			CHECK_EQ(i, 0);
+			CHECK((i) == (0));
 		}
 
-		CHECK_EQ(i, 0);
+		CHECK((i) == (0));
 	}
 
 	{
@@ -87,7 +87,7 @@ TEST_CASE("ScopeExit")
 			ScopeExit se2 = [&i]() { ++i; };
 		}
 
-		CHECK_EQ(i, 2);
+		CHECK((i) == (2));
 	}
 
 	{
@@ -97,7 +97,7 @@ TEST_CASE("ScopeExit")
 			ScopeExit se2{ std::move(se1) };
 		}
 
-		CHECK_EQ(i, 1);
+		CHECK((i) == (1));
 	}
 
 	{
@@ -108,7 +108,7 @@ TEST_CASE("ScopeExit")
 			ScopeExit se2{ std::move(se1) };
 		}
 
-		CHECK_EQ(i, 0);
+		CHECK((i) == (0));
 	}
 
 	// [Siv3D ToDo] add more tests

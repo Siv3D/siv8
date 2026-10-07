@@ -15,15 +15,15 @@ TEST_CASE("Hash.rapidhash")
 {
 	{
 		const int32 n = 123456789;
-		CHECK_EQ(rapidhash::BitwiseHash(&n, sizeof(n)), rapidhash::BitwiseHash(&n, sizeof(n), rapidhash::DefaultSeed));
-		CHECK_EQ(rapidhash::BitwiseHash(&n, sizeof(n)), rapidhash::BitwiseHash(&n, sizeof(n), rapidhash::DefaultSeed, rapidhash::DefaultHashSecret));
-		CHECK_EQ(rapidhash::BitwiseHash(&n, sizeof(n)), rapidhash::Hash(n));
+		CHECK((rapidhash::BitwiseHash(&n, sizeof(n))) == (rapidhash::BitwiseHash(&n, sizeof(n), rapidhash::DefaultSeed)));
+		CHECK((rapidhash::BitwiseHash(&n, sizeof(n))) == (rapidhash::BitwiseHash(&n, sizeof(n), rapidhash::DefaultSeed, rapidhash::DefaultHashSecret)));
+		CHECK((rapidhash::BitwiseHash(&n, sizeof(n))) == (rapidhash::Hash(n)));
 	}
 
 	{
 		const std::string s = "Hello, Siv3D!";
-		CHECK_EQ(rapidhash::BitwiseHash(s.data(), s.size()), rapidhash::BitwiseHash(s.data(), s.size(), rapidhash::DefaultSeed));
-		CHECK_EQ(rapidhash::BitwiseHash(s.data(), s.size()), rapidhash::BitwiseHash(s.data(), s.size(), rapidhash::DefaultSeed, rapidhash::DefaultHashSecret));
+		CHECK((rapidhash::BitwiseHash(s.data(), s.size())) == (rapidhash::BitwiseHash(s.data(), s.size(), rapidhash::DefaultSeed)));
+		CHECK((rapidhash::BitwiseHash(s.data(), s.size())) == (rapidhash::BitwiseHash(s.data(), s.size(), rapidhash::DefaultSeed, rapidhash::DefaultHashSecret)));
 	}
 }
 
@@ -31,13 +31,13 @@ TEST_CASE("Hash.xxHash")
 {
 	{
 		const int32 n = 123456789;
-		CHECK_EQ(xxHash3::BitwiseHash(&n, sizeof(n)), xxHash3::BitwiseHash(&n, sizeof(n), xxHash3::DefaultSeed));
-		CHECK_EQ(xxHash3::BitwiseHash(&n, sizeof(n)), xxHash3::Hash(n));
+		CHECK((xxHash3::BitwiseHash(&n, sizeof(n))) == (xxHash3::BitwiseHash(&n, sizeof(n), xxHash3::DefaultSeed)));
+		CHECK((xxHash3::BitwiseHash(&n, sizeof(n))) == (xxHash3::Hash(n)));
 	}
 
 	{
 		const std::string s = "Hello, Siv3D!";
-		CHECK_EQ(xxHash3::BitwiseHash(s.data(), s.size()), xxHash3::BitwiseHash(s.data(), s.size(), xxHash3::DefaultSeed));
+		CHECK((xxHash3::BitwiseHash(s.data(), s.size())) == (xxHash3::BitwiseHash(s.data(), s.size(), xxHash3::DefaultSeed)));
 	}
 }
 
@@ -46,20 +46,20 @@ TEST_CASE("MixHash")
 	constexpr uint64 a = 1234567890123456789ull;
 	constexpr uint64 b = 9876543210987654321ull;
 
-	CHECK_NE(MixHash(a, 0), a);
-	CHECK_NE(MixHash(0, a), a);
+	CHECK((MixHash(a, 0)) != (a));
+	CHECK((MixHash(0, a)) != (a));
 
-	CHECK_NE(MixHash(a, b), a);
-	CHECK_NE(MixHash(b, a), a);
+	CHECK((MixHash(a, b)) != (a));
+	CHECK((MixHash(b, a)) != (a));
 	
-	CHECK_NE(MixHash(a, b), b);
-	CHECK_NE(MixHash(b, a), b);
+	CHECK((MixHash(a, b)) != (b));
+	CHECK((MixHash(b, a)) != (b));
 
-	CHECK_NE(MixHash(a, 0), MixHash(0, a));
-	CHECK_NE(MixHash(a, 0), MixHash(0, b));
-	CHECK_NE(MixHash(a, 0), MixHash(a, b));
-	CHECK_NE(MixHash(a, 0), MixHash(b, a));
-	CHECK_NE(MixHash(a, b), MixHash(b, a));
+	CHECK((MixHash(a, 0)) != (MixHash(0, a)));
+	CHECK((MixHash(a, 0)) != (MixHash(0, b)));
+	CHECK((MixHash(a, 0)) != (MixHash(a, b)));
+	CHECK((MixHash(a, 0)) != (MixHash(b, a)));
+	CHECK((MixHash(a, b)) != (MixHash(b, a)));
 }
 
 # if SIV3D_RUN_BENCHMARK

@@ -17,3 +17,5 @@
 # endif
 
 # include <Siv3D.hpp>
+
+# include "ThirdParty/Catch2/catch_amalgamated.hpp"

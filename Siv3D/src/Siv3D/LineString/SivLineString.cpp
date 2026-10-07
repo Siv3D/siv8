@@ -20,6 +20,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "LineStringParser.hpp"
+# include "SimplifyLineString.hpp"
 
 namespace s3d
 {
@@ -346,6 +347,61 @@ namespace s3d
 	RectF LineString::computeBoundingRect() const noexcept
 	{
 		return Geometry2D::BoundingRect(m_vertices);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::simplified(const double maxDistance, const CloseRing closeRing) const
+	{
+		LineString result;
+		Array<size_t> pendingEnds;
+		detail::SimplifyLineString(m_vertices, maxDistance, closeRing, result.m_vertices, pendingEnds);
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	densified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::densified(const double maxSegmentLength, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+		if (maxSegmentLength <= 0.0)
+		{
+			throw std::invalid_argument{ "LineString::densified(): maxSegmentLength must be positive" };
+		}
+
+		LineString result{ Arg::reserve = size() };
+		auto AppendInteriorPoints = [&](const Vec2& start, const Vec2& end)
+		{
+			const Vec2 direction = (end - start);
+			const size_t parts = static_cast<size_t>(std::ceil(direction.length() / maxSegmentLength));
+			for (size_t i = 1; i < parts; ++i)
+			{
+				result.push_back(start + direction * (static_cast<double>(i) / static_cast<double>(parts)));
+			}
+		};
+
+		result.push_back(front());
+		for (size_t i = 1; i < size(); ++i)
+		{
+			AppendInteriorPoints(m_vertices[i - 1], m_vertices[i]);
+			result.push_back(m_vertices[i]);
+		}
+		if (closeRing && (front() != back()))
+		{
+			AppendInteriorPoints(back(), front());
+		}
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -93,22 +93,31 @@ namespace s3d
 		}
 		else
 		{
-			// ファイルのオープン
-			{
-				m_file.file.open(path.toWstr(), std::ios_base::binary);
-				m_file.readPos = 0;
+			FilePath fullPath = FileSystem::FullPath(path);
+			// Match the CRT's read/write sharing and handle inheritance.
+			SECURITY_ATTRIBUTES security{ sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
+			const HANDLE handle = ::CreateFileW(path.toWstr().c_str(), GENERIC_READ,
+				(FILE_SHARE_READ | FILE_SHARE_WRITE), &security, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-				if (not m_file.file)
-				{
-					LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path.toUTF8()));
-					return false;
-				}
+			if (handle == INVALID_HANDLE_VALUE)
+			{
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path.toUTF8()));
+				return false;
 			}
 
+			LARGE_INTEGER fileSize;
+			if (not ::GetFileSizeEx(handle, &fileSize))
+			{
+				::CloseHandle(handle);
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to get the size of file `{0}`", path.toUTF8()));
+				return false;
+			}
+
+			m_file.handle = handle;
 			m_info =
 			{
-				.fullPath = FileSystem::FullPath(path),
-				.fileSize = static_cast<int64>(FileSystem::FileSize(path)),
+				.fullPath = std::move(fullPath),
+				.fileSize = fileSize.QuadPart,
 				.isOpen = true,
 			};
 
@@ -138,8 +147,7 @@ namespace s3d
 		}
 		else
 		{
-			m_file.file.close();
-			m_file.readPos = 0;
+			m_file.close();
 			LOG_INFO(fmt::format("📥 BinaryFileReader: File `{0}` closed", m_info.fullPath));
 		}
 
@@ -189,21 +197,7 @@ namespace s3d
 		}
 		else
 		{
-			if (m_file.readPos == clampedPos)
-			{
-				return m_file.readPos;
-			}
-
-			m_file.file.clear();
-			m_file.file.seekg(clampedPos);
-
-			if (not m_file.file)
-			{
-				m_file.file.clear();
-				return m_file.readPos;
-			}
-
-			return (m_file.readPos = clampedPos);
+			return m_file.setPos(clampedPos);
 		}
 	}
 
@@ -287,6 +281,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	readExact
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BinaryFileReader::BinaryFileReaderDetail::readExact(const NonNull<void*> dst, const int64 pos, const int64 readSize)
+	{
+		if (isResource())
+		{
+			return (m_resource.read(dst, pos, readSize, m_info.fileSize) == readSize);
+		}
+
+		// Commit the logical position only after a complete read. Failure needs no
+		// rollback seek, which could itself fail after an I/O error.
+		if (m_file.lookaheadAt(dst, pos, readSize, m_info.fileSize, m_info.fullPath) != readSize)
+		{
+			return false;
+		}
+
+		m_file.readPos = (pos + readSize);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	lookahead
 	//
 	////////////////////////////////////////////////////////////////
@@ -362,105 +380,163 @@ namespace s3d
 		return readBytes;
 	}
 
+	BinaryFileReader::BinaryFileReaderDetail::File::~File()
+	{
+		close();
+	}
+
+	void BinaryFileReader::BinaryFileReaderDetail::File::close()
+	{
+		if (handle != INVALID_HANDLE_VALUE)
+		{
+			::CloseHandle(handle);
+			handle = INVALID_HANDLE_VALUE;
+		}
+
+		readPos = nativePos = bufferBegin = 0;
+		bufferLength = 0;
+		// Reuse allocated storage across open()/close(); cached bytes never survive close().
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::setPos(const int64 pos)
+	{
+		if (readPos == pos)
+		{
+			return readPos;
+		}
+
+		const uint64 offset = static_cast<uint64>(pos - bufferBegin);
+		if ((offset < bufferLength) || seekNative(pos))
+		{
+			readPos = pos;
+		}
+
+		return readPos;
+	}
+
+	bool BinaryFileReader::BinaryFileReaderDetail::File::seekNative(const int64 pos)
+	{
+		if (nativePos == pos)
+		{
+			return true;
+		}
+
+		LARGE_INTEGER distance;
+		distance.QuadPart = pos;
+		if (not ::SetFilePointerEx(handle, distance, nullptr, FILE_BEGIN))
+		{
+			nativePos = -1;
+			return false;
+		}
+
+		nativePos = pos;
+		return true;
+	}
+
+	bool BinaryFileReader::BinaryFileReaderDetail::File::readNative(void* const dst, const DWORD size, DWORD& actual)
+	{
+		actual = 0;
+		if (not ::ReadFile(handle, dst, size, &actual, nullptr))
+		{
+			// Do not rely on the native file pointer after a failed I/O operation.
+			nativePos = -1;
+			actual = 0;
+			return false;
+		}
+
+		nativePos += actual;
+		return true;
+	}
+
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::read(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
-		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - readPos));
-
-		if (readBytes <= 0)
-		{
-			return 0;
-		}
-
-		file.read(static_cast<char*>(dst.get()), static_cast<std::streamsize>(readBytes));
-
-		const int64 actual = static_cast<int64>(file.gcount());
+		const int64 actual = readAt(dst, readPos, readSize, fileSize, fullPath);
 		readPos += actual;
-
-		if (actual == readBytes)
-		{
-			return actual;
-		}
-
-		if (file.eof())
-		{
-			file.clear();
-			return actual;
-		}
-
-		LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
-		file.clear();
-
 		return actual;
 	}
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
-		const int64 previousReadPos = readPos;
-
-		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
-
-		file.clear();
-		file.seekg(previousReadPos);
-
-		if (not file)
-		{
-			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: Failed to restore the read position", fullPath));
-			file.clear();
-			return 0;
-		}
-
-		readPos = previousReadPos;
-		return readBytes;
+		return readAt(dst, readPos, readSize, fileSize, fullPath);
 	}
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookaheadAt(const NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
-		const int64 previousReadPos = readPos;
+		return readAt(dst, pos, readSize, fileSize, fullPath);
+	}
 
-		const auto RestoreReadPos = [&]() -> bool
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::readAt(const NonNull<void*> dst, int64 pos, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	{
+		const int64 requested = Clamp<int64>(readSize, 0, (fileSize - pos));
+		Byte* const destination = static_cast<Byte*>(dst.get());
+		int64 total = 0;
+
+		while (total < requested)
 		{
-			file.clear();
-			file.seekg(previousReadPos);
-
-			if (not file)
+			const int64 remaining = (requested - total);
+			const uint64 offset = static_cast<uint64>(pos - bufferBegin);
+			if (offset < bufferLength)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: Failed to restore the read position", fullPath));
-				file.clear();
-				return false;
+				const int64 count = Min<int64>(remaining, (bufferLength - offset));
+				std::memcpy((destination + total), (buffer.get() + offset), static_cast<size_t>(count));
+				pos += count;
+				total += count;
+				continue;
 			}
 
-			readPos = previousReadPos;
-			return true;
-		};
-
-		if (pos != previousReadPos)
-		{
-			file.clear();
-			file.seekg(pos);
-
-			if (not file)
+			if (not seekNative(pos))
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: seekg() failed", fullPath));
-				file.clear();
+				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: seek failed (error: {1})", fullPath, ::GetLastError()));
+				break;
+			}
 
-				if (not RestoreReadPos())
+			if (remaining < BufferSize)
+			{
+				if (not buffer)
 				{
-					return 0;
+					buffer = std::make_unique_for_overwrite<Byte[]>(BufferSize);
 				}
 
-				return 0;
+				bufferBegin = pos;
+				bufferLength = 0;
+				const DWORD prefetchSize = static_cast<DWORD>(Min<int64>(BufferSize, (fileSize - pos)));
+				if (readNative(buffer.get(), prefetchSize, bufferLength))
+				{
+					if (bufferLength == 0)
+					{
+						break;
+					}
+
+					// A short prefetch is not a failed caller request. Consume its valid
+					// bytes first; EOF requires no persistent stream error flags.
+					continue;
+				}
+
+				// Read-ahead can overlap a locked range beyond the caller's request.
+				// Retry only the requested bytes, after restoring the native position.
+				if (not seekNative(pos))
+				{
+					LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: seek failed (error: {1})", fullPath, ::GetLastError()));
+					break;
+				}
 			}
 
-			readPos = pos;
+			const DWORD count = static_cast<DWORD>(Min<int64>(remaining, MAXDWORD));
+			DWORD actual = 0;
+			if (not readNative((destination + total), count, actual))
+			{
+				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read failed (error: {1})", fullPath, ::GetLastError()));
+				break;
+			}
+
+			pos += actual;
+			total += actual;
+			if (actual < count)
+			{
+				break;
+			}
 		}
 
-		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
-
-		if (not RestoreReadPos())
-		{
-			return 0;
-		}
-
-		return readBytes;
+		return total;
 	}
 }

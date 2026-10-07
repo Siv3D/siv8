@@ -54,7 +54,7 @@ namespace s3d
 				return detail::ResourceExists(path);
 			}
 
-			return (detail::GetStatus(path).type() != std::filesystem::file_type::not_found);
+			return std::filesystem::exists(detail::GetStatus(path));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -129,9 +129,13 @@ namespace s3d
 				return path.toString();
 			}
 
-			const std::wstring nativeFullPath = detail::GetNativeFullPath(path);
+			std::wstring nativeFullPath = detail::GetNativeFullPath(path);
+			if (nativeFullPath.empty())
+			{
+				return{};
+			}
 
-			return Unicode::FromWstring(detail::NormalizePath(nativeFullPath, detail::PathType::Unknown));
+			return Unicode::FromWstring(detail::NormalizePath(std::move(nativeFullPath), detail::PathType::Unknown));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -218,7 +222,19 @@ namespace s3d
 			}
 			else if (type == std::filesystem::file_type::directory)
 			{
-				return detail::DirectorySizeRecursive(Unicode::ToWstring(FullPath(path)));
+				const FilePath fullPath = FullPath(path);
+				if (fullPath.isEmpty())
+				{
+					return 0;
+				}
+
+				uint64 result = 0;
+				if (not detail::DirectorySizeRecursive(Unicode::ToWstring(fullPath), result))
+				{
+					return 0;
+				}
+
+				return result;
 			}
 			else
 			{
@@ -396,9 +412,17 @@ namespace s3d
 				return{};
 			}
 
-			Array<FilePath> paths;
+			const FilePath fullPath = FullPath(path);
+			if (fullPath.isEmpty())
+			{
+				return{};
+			}
 
-			detail::DirectoryContentsDetail(Unicode::ToWstring(FullPath(path)), paths, recursive);
+			Array<FilePath> paths;
+			if (not detail::DirectoryContentsDetail(Unicode::ToWstring(fullPath), paths, recursive))
+			{
+				return{};
+			}
 
 			return paths;
 		}
@@ -451,13 +475,14 @@ namespace s3d
 			{
 				return{};
 			}
-			else if (std::size(result) < length)
+			// Success excludes the terminating NUL, so the length must be below capacity.
+			else if (std::size(result) <= length)
 			{
 				std::wstring result2((length - 1), L'\0');
 				const DWORD length2 = ::GetCurrentDirectoryW(length, result2.data());
 
 				if ((length2 == 0)
-					|| (length < (length2 + 1)))
+					|| (length <= length2))
 				{
 					return{};
 				}

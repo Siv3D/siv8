@@ -12,7 +12,7 @@
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/LineCap.hpp>
-# include <Siv3D/PolynomialSolver.hpp>
+# include <Siv3D/Geometry2D/BezierGeometry.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -262,69 +262,7 @@ namespace s3d
 
 	double Bezier2::computeClosestT(const position_type& targetPoint) const
 	{
-		constexpr double Eps = 1e-12;
-		constexpr double DegenerateRel = 1e-24; // relative threshold for M.dot(M)
-
-		const Vec2 M = (p0 - 2.0 * p1 + p2);
-		const Vec2 N = (p1 - p0);
-		const Vec2 K = (targetPoint - p0);
-
-		// 退化: (ほぼ)直線 → 線分 [p0, p2] への射影
-		{
-			const Vec2 chord = (p2 - p0);
-			const double chordLenSq = chord.dot(chord);
-			const double scale = Max(1.0, chordLenSq);
-
-			if (M.dot(M) <= (DegenerateRel * scale))
-			{
-				if (chordLenSq <= Eps)
-				{
-					return 0.0; // ほぼ一点
-				}
-
-				const double t = (K.dot(chord) / chordLenSq);
-				return Clamp(t, 0.0, 1.0);
-			}
-		}
-
-		// 端点を初期最良に
-		double bestT = 0.0;
-		double bestDistSq = targetPoint.distanceFromSq(p0);
-
-		{
-			const double d2 = targetPoint.distanceFromSq(p2);
-			if (d2 < bestDistSq)
-			{
-				bestDistSq = d2;
-				bestT = 1.0;
-			}
-		}
-
-		// D'(t)=0 の 3次方程式:
-		// (M·M)t^3 + 3(M·N)t^2 + (2N·N - M·K)t - N·K = 0
-		const double c3 = M.dot(M);
-		const double c2 = 3.0 * M.dot(N);
-		const double c1 = (2.0 * N.dot(N) - M.dot(K));
-		const double c0 = -N.dot(K);
-
-		const PolynomialRoots roots = Math::SolveCubicEquation(c3, c2, c1, c0);
-
-		for (const double x : roots)
-		{
-			if (InRange(x, -Eps, (1.0 + Eps)))
-			{
-				const double t = Clamp(x, 0.0, 1.0);
-				const double d2 = targetPoint.distanceFromSq(pointAt(t));
-
-				if (d2 < bestDistSq)
-				{
-					bestDistSq = d2;
-					bestT = t;
-				}
-			}
-		}
-
-		return bestT; // 既に [0, 1]
+		return detail::ClosestPointOnBezier(*this, targetPoint).parameter;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -335,7 +273,7 @@ namespace s3d
 
 	Bezier2::position_type Bezier2::computeClosestPoint(const position_type& targetPoint) const
 	{
-		return pointAt(computeClosestT(targetPoint));
+		return detail::ClosestPointOnBezier(*this, targetPoint).point;
 	}
 
 	////////////////////////////////////////////////////////////////

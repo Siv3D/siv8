@@ -32,19 +32,16 @@ namespace s3d::WindowMisc
 		if (decltype(SetProcessDpiAwarenessContext) * p_SetProcessDpiAwarenessContext = DLL::GetFunctionNoThrow(user32, "SetProcessDpiAwarenessContext"))
 		{
 			LOG_DEBUG("SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)");
-			p_SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-			return;
-		}
-
-		// Windows 10 1607-
-		if (decltype(SetThreadDpiAwarenessContext) * p_SetThreadDpiAwarenessContext = DLL::GetFunctionNoThrow(user32, "SetThreadDpiAwarenessContext"))
-		{
-			LOG_DEBUG("SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)");
-			p_SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-
-			LOG_DEBUG("SetProcessDPIAware()");
-			::SetProcessDPIAware();
-			return;
+			if (p_SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+			{
+				return;
+			}
+			// A manifest or an earlier API call already selected the process default.
+			if (const DWORD error = ::GetLastError(); error == ERROR_ACCESS_DENIED)
+			{
+				LOG_DEBUG("Process DPI awareness is already configured");
+				return;
+			}
 		}
 
 		// Windows 8.1-
@@ -53,7 +50,11 @@ namespace s3d::WindowMisc
 			if (decltype(SetProcessDpiAwareness) * p_SetProcessDpiAwareness = DLL::GetFunctionNoThrow(shcore, "SetProcessDpiAwareness"))
 			{
 				LOG_DEBUG("SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)");
-				p_SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+				if (const HRESULT hr = p_SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+					FAILED(hr) && (hr != E_ACCESSDENIED))
+				{
+					LOG_WARN(fmt::format("SetProcessDpiAwareness() failed: HRESULT=0x{:08X}", static_cast<uint32>(hr)));
+				}
 			}
 
 			DLL::Unload(shcore);
@@ -114,7 +115,7 @@ namespace s3d::WindowMisc
 	{
 		const int32 offsetX = Max<int32>((monitor.workArea.w - frameBufferSize.x) / 2, 0);
 		const int32 offsetY = Max<int32>((monitor.workArea.h - frameBufferSize.y) / 2, 0);
-		return (monitor.displayRect.pos + Point{ offsetX, offsetY });
+		return (monitor.workArea.pos + Point{ offsetX, offsetY });
 	}
 
 	////////////////////////////////////////////////////////////////

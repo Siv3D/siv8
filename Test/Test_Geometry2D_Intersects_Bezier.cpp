@@ -450,6 +450,27 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_RoundShapes")
 	}
 }
 
+TEST_CASE("Geometry2D.Intersects.Bezier3_ClosedAndRetracingRoundShapes")
+{
+	for (const auto& [curve, query] : {
+		std::pair{ Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, Vec2{ 0, 151 } },
+		std::pair{ Bezier3{ { 0, 0 }, { 100, 0 }, { -50, 0 }, { 50, 0 } }, Vec2{ 10, 1 } },
+		std::pair{ Bezier3{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 100, 0 } }, Vec2{ 10, 1 } } })
+	{
+		for (const double radius : { 0.5, 1.0, 2.0 })
+		{
+			CAPTURE(curve, query, radius);
+			const bool expected = (1.0 <= radius);
+			const Circle circle{ query, radius };
+			const Ellipse ellipse{ query, (2 * radius), radius };
+			CHECK(Geometry2D::Intersects(curve, circle) == expected);
+			CHECK(Geometry2D::Intersects(circle, curve) == expected);
+			CHECK(Geometry2D::Intersects(curve, ellipse) == expected);
+			CHECK(Geometry2D::Intersects(ellipse, curve) == expected);
+		}
+	}
+}
+
 // Bezier2 と Triangle / Quad は、内部通過、境界接触、仕様で許可された単純な退化を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_PolygonalShapes")
 {
@@ -641,6 +662,102 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_RoundRect")
 	}
 }
 
+namespace
+{
+	template <class Bezier>
+	void CheckBezierRoundRect(const Bezier& curve, const RoundRect& shape, const bool expected)
+	{
+		CHECK(Geometry2D::Intersects(curve, shape) == expected);
+		CHECK(Geometry2D::Intersects(shape, curve) == expected);
+		CHECK(Geometry2D::Intersects(curve.reversed(), shape) == expected);
+		CHECK(Geometry2D::Intersects(shape, curve.reversed()) == expected);
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.ApproximationRegression")
+{
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const Vec2 offset = (Vec2{ 3, -5 } * scale);
+		const auto Transform = [&](const Vec2& p) { return (p * scale + offset); };
+		const auto CheckQuadratic = [&](const Bezier2& curve, const RoundRect& shape, const bool expected)
+		{
+			const Bezier2 q{ Transform(curve.p0), Transform(curve.p1), Transform(curve.p2) };
+			const Bezier3 c{ q.p0, (q.p0 + (q.p1 - q.p0) * (2.0 / 3)),
+				(q.p2 + (q.p1 - q.p2) * (2.0 / 3)), q.p2 };
+			const RoundRect r{ RectF{ Transform(shape.rect.pos), (shape.rect.size * scale) }, (shape.r * scale) };
+			CheckBezierRoundRect(q, r, expected);
+			CheckBezierRoundRect(c, r, expected);
+		};
+		// The chord crosses the rectangle while the curve stays above it.
+		CheckQuadratic(Bezier2{ { -1, 0 }, { 0, 0.1 }, { 1, 0 } }, RoundRect{ -0.02, -0.01, 0.04, 0.02, 0.005 }, false);
+
+		constexpr double u = 0.371;
+		const Vec2 c0{ (-100 * u), (100 * u * u) }, c1{ 100, (-200 * u) }, c2{ 0, 100 };
+		const Bezier2 parabola{ c0, (c0 + c1 / 2), (c0 + c1 + c2) };
+		for (const double gap : { -1e-8, 1e-8 })
+		{
+			CheckQuadratic(parabola, RoundRect{ -1, (-6 - gap), 2, 6, 1 }, (gap < 0.0));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.Corners")
+{
+	for (const double scale : { 0.125, 1.0, 1024.0 })
+	{
+		for (const bool reflectX : { false, true })
+		{
+			for (const bool reflectY : { false, true })
+			{
+				const Vec2 offset = (Vec2{ 17, -23 } * scale);
+				const auto Transform = [&](Vec2 p)
+				{
+					if (reflectX) { p.x = (30 - p.x); }
+					if (reflectY) { p.y = (40 - p.y); }
+					return (p * scale + offset);
+				};
+				const RoundRect rounded{ RectF{ offset, SizeF{ 30 * scale, 40 * scale } }, (5 * scale) };
+				for (const double gap : { -1e-6, 0.0, 1e-6 })
+				{
+					const Vec2 p = (Vec2{ 2, 1 } + Vec2{ -3, -4 } * gap);
+					const Vec2 tangent{ 4, -3 };
+					CheckBezierRoundRect(Bezier2{ Transform(p - tangent), Transform(p), Transform(p + tangent) }, rounded, (gap <= 0.0));
+					CheckBezierRoundRect(Bezier3{ Transform(p - 3 * tangent), Transform(p - tangent),
+						Transform(p + tangent), Transform(p + 3 * tangent) }, rounded, (gap <= 0.0));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.Boundaries")
+{
+	const auto CheckCurve = [&](const auto& curve)
+	{
+		for (const auto& rounded : { RoundRect{ 0, 0, 10, 10, 2 }, RoundRect{ 0, 0, 10, 10, 100 },
+			RoundRect{ 0, 0, 10, 20, 100 }, RoundRect{ 0, 0, 20, 10, 100 }, RoundRect{ 0, 0, 10, 10, 0 } })
+		{
+			CheckBezierRoundRect(curve, rounded, true);
+			CheckBezierRoundRect(curve, rounded.movedBy(0, 6), false);
+		}
+		CheckBezierRoundRect(curve, RoundRect{ 5, 0, 0, 10, 2 }, true);
+		CheckBezierRoundRect(curve, RoundRect{ 0, 5, 10, 0, 2 }, true);
+		CheckBezierRoundRect(curve, RoundRect{ 0, 6, 10, 0, 2 }, false);
+		CheckBezierRoundRect(curve, RoundRect{ 5, 5, 0, 0, 2 }, false);
+	};
+	CheckCurve(Bezier2{ { -1, 5 }, { 5, 5 }, { 11, 5 } });
+	CheckCurve(Bezier3{ { -1, 5 }, { 100, 5 }, { -100, 5 }, { 11, 5 } });
+	CheckCurve(Bezier2{ { 5, 5 }, { 5, 5 }, { 5, 5 } });
+	CheckCurve(Bezier3{ { 5, 5 }, { 5, 5 }, { 5, 5 }, { 5, 5 } });
+	CheckBezierRoundRect(Bezier2{ { 5, 4 }, { 6, 8 }, { 4, 6 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+	CheckBezierRoundRect(Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, RoundRect{ -1, 149.9, 2, 6, 1 }, true);
+	CheckBezierRoundRect(Bezier2{ { 0, 0 }, { 0, 0 }, { 0, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, false);
+	CheckBezierRoundRect(Bezier3{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, false);
+	CheckBezierRoundRect(Bezier2{ { -1, 0 }, { 5, 0 }, { 11, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+	CheckBezierRoundRect(Bezier3{ { -1, 0 }, { 3, 0 }, { 7, 0 }, { 11, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+}
+
 // Bezier2 と Bezier2 / Bezier3 は、近似線分化と既存 Line x Bezier kernel による交差判定を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
 {
@@ -696,4 +813,229 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
 
 		CHECK(Geometry2D::Intersects(a, b) == Geometry2D::Intersects(b, a));
 	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier.SimpleGeometry")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const bool expected)
+	{
+		CHECK(Geometry2D::Intersects(a, b) == expected);
+		CHECK(Geometry2D::Intersects(b, a) == expected);
+		CHECK(Geometry2D::Intersects(a.reversed(), b) == expected);
+		CHECK(Geometry2D::Intersects(a, b.reversed()) == expected);
+	};
+	for (const double scale : { 1.0e-4, 1.0, 1.0e4 })
+	{
+		const Bezier2 arch{ Vec2{ -1, 0 } * scale, Vec2{ 0, 0.2 } * scale, Vec2{ 1, 0 } * scale };
+		for (const double y : { 0.0, 0.099, 0.1, 0.101 })
+		{
+			CAPTURE(scale, y);
+			const Bezier2 straight{ Vec2{ -0.2, y } * scale, Vec2{ 0, y } * scale, Vec2{ 0.2, y } * scale };
+			const bool expected = ((y == 0.099) || (y == 0.1));
+			CheckPair(arch, straight, expected);
+			CheckPair(arch, Elevate(straight), expected);
+			CheckPair(Elevate(arch), straight, expected);
+			CheckPair(Elevate(arch), Elevate(straight), expected);
+		}
+		for (const double gap : { 0.0, (1.0e-4 * scale) })
+		{
+			const Vec2 p = (arch.pointAt(0.371) + Vec2{ 0, gap });
+			const Bezier2 point{ p, p, p };
+			CheckPair(arch, point, (gap == 0.0));
+			CheckPair(arch, Elevate(point), (gap == 0.0));
+			CheckPair(Elevate(arch), point, (gap == 0.0));
+			CheckPair(Elevate(arch), Elevate(point), (gap == 0.0));
+		}
+	}
+	const auto CheckRetracing = [&](const auto& curve, const double inside, const double outside)
+	{
+		for (const double x : { inside, outside })
+		{
+			const Bezier2 point{ { x, 0 }, { x, 0 }, { x, 0 } };
+			CheckPair(curve, point, (x == inside));
+			CheckPair(curve, Elevate(point), (x == inside));
+		}
+	};
+	CheckRetracing(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, 50.0, 50.01);
+	CheckRetracing(Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, 28.8, 29.0);
+	CheckRetracing(Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, -28.8, -29.0);
+	CheckPair(Bezier2{ { 0, 0 }, { 0, 100 }, { 0, 0 } }, Bezier3{ { 0, 50 }, { 0, 51 }, { 0, 52 }, { 0, 53 } }, true);
+	CheckPair(Bezier2{ { 0, 0 }, { 100, 100 }, { 0, 0 } }, Bezier2{ { 50, 50 }, { 51, 51 }, { 52, 52 } }, true);
+	CheckPair(Bezier2{ { 1, 2 }, { 1, 2 }, { 1, 2 } }, Bezier3{ { 1, 2 }, { 1, 2 }, { 1, 2 }, { 1, 2 } }, true);
+	CheckPair(Bezier2{ { 1, 2 }, { 1, 2 }, { 1, 2 } }, Bezier3{ { 1, 3 }, { 1, 3 }, { 1, 3 }, { 1, 3 } }, false);
+	CheckPair(Bezier3{ { 20, 76 }, { -63, 13 }, { -18, -66 }, { 43, 60 } },
+		Bezier3{ { 2, -2 }, { 2, 2 }, { 2, 5 }, { 2, 3 } }, true);
+	CheckPair(Bezier3{ { -29, 8 }, { 60, 72 }, { -88, 36 }, { 55, 54 } },
+		Bezier2{ { 5, 23 }, { 5, 41 }, { 5, 54 } }, true);
+	// A small but nonzero curvature must not become the endpoint chord.
+	CheckPair(Bezier2{ { -1, 0 }, { 0, 1.0e-15 }, { 1, 0 } }, Bezier2{ { -0.2, 0 }, { 0, 0 }, { 0.2, 0 } }, false);
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier.Diamond")
+{
+	const auto Check = [](const auto& curve)
+	{
+		for (const double scale : { (1.0 / 16384), 1.0, 16384.0 })
+		{
+			for (const auto [centerY, axisY, expected] : { std::tuple{ 0.0, 0.01, false },
+				std::tuple{ 0.1, 0.001, true }, std::tuple{ 0.11, 0.01, true }, std::tuple{ 0.111, 0.01, false } })
+			{
+				const auto a = [&]
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(curve)>, Bezier2>)
+					{
+						return Bezier2{ curve.p0 * scale, curve.p1 * scale, curve.p2 * scale };
+					}
+					else
+					{
+						return Bezier3{ curve.p0 * scale, curve.p1 * scale, curve.p2 * scale, curve.p3 * scale };
+					}
+				}();
+				const SuperEllipse b{ Vec2{ 0, centerY * scale }, Vec2{ 0.02, axisY } * scale, 1.0 };
+				CAPTURE(scale, centerY);
+				CHECK(Geometry2D::Intersects(a, b) == expected);
+				CHECK(Geometry2D::Intersects(b, a) == expected);
+				CHECK(Geometry2D::Intersects(a.reversed(), b) == expected);
+			}
+		}
+	};
+	Check(Bezier2{ { -1, 0 }, { 0, 0.2 }, { 1, 0 } });
+	Check(Bezier3{ { -1, 0 }, { -1.0 / 3, 0.4 / 3 }, { 1.0 / 3, 0.4 / 3 }, { 1, 0 } });
+	for (const double n : { 0.5, 1.0, 2.0, 4.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 49, 0 }, Vec2{ 1, 2 }, n };
+		CHECK(Geometry2D::Intersects(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, shape));
+		CHECK(not Geometry2D::Intersects(Bezier2{ { 51, 0 }, { 51, 0 }, { 51, 0 } }, shape));
+	}
+	const Bezier2 curve{ { -1, 0 }, { 0, 1 }, { 1, 0 } };
+	CHECK(not Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 0, 1 }));
+	CHECK(Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 1, 1 }));
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier.GeneralPairs")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const bool expected)
+	{
+		for (const auto& aa : { a, a.reversed() })
+		{
+			for (const auto& bb : { b, b.reversed() })
+			{
+				CHECK(Geometry2D::Intersects(aa, bb) == expected);
+				CHECK(Geometry2D::Intersects(bb, aa) == expected);
+			}
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& a, const Bezier2& b, const bool expected)
+	{
+		CheckPair(a, b, expected);
+		CheckPair(a, Elevate(b), expected);
+		CheckPair(Elevate(a), b, expected);
+		CheckPair(Elevate(a), Elevate(b), expected);
+	};
+	const Bezier2 a{ { -1, 0.1 }, { 0, -0.1 }, { 1, 0.1 } };
+	const Bezier2 crossing{ { -1, -0.098 }, { 0, 0.102 }, { 1, -0.098 } };
+	const Bezier2 tangent{ { -1, -0.1 }, { 0, 0.1 }, { 1, -0.1 } };
+	constexpr double X = 0.27;
+	const Bezier2 offCenterTangent{ { -1, -0.1 - 0.4 * X - 0.2 * X * X },
+		{ 0, 0.1 - 0.2 * X * X }, { 1, -0.1 + 0.4 * X - 0.2 * X * X } };
+	for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+	{
+		for (const Vec2& offset : { Vec2{ 0, 0 }, Vec2{ 13, -7 } * scale })
+		{
+			const auto Transform = [&](const Bezier2& q)
+			{
+				return Bezier2{ q.p0 * scale + offset, q.p1 * scale + offset, q.p2 * scale + offset };
+			};
+			const Bezier2 transformed = Transform(a);
+			CheckDegrees(transformed, Transform(crossing), true);
+			CheckDegrees(transformed, Transform(tangent), true);
+			CheckDegrees(transformed, Transform(offCenterTangent), true);
+			CheckDegrees(transformed, Transform(tangent.movedBy(0, -1.0e-8)), false);
+			CheckDegrees(transformed, Transform(a.movedBy(0, 1.0e-3)), false);
+			CheckDegrees(transformed, transformed, true);
+			CheckDegrees(transformed, Transform(a.split(0.371).second), true);
+		}
+	}
+	for (const double gap : { 1.0e-6, 1.0e-8, 1.0e-12 })
+	{
+		CheckDegrees(a, a.movedBy(0, gap), false);
+	}
+	CheckDegrees(a, a.movedBy(0, 1.0e-15), true);
+	CheckDegrees(a, Bezier2{ a.p2, { 2, -1 }, { 3, 1 } }, true);
+	CheckDegrees(a, a.movedBy(0, 10), false);
+
+	const Bezier3 loop{ { 0, 0 }, { 3, 4 }, { -3, 4 }, { 0, 0 } };
+	CheckPair(loop, loop.reversed(), true);
+	CheckPair(loop, loop.split(0.371).second, true);
+	CheckPair(loop, Bezier3{ loop.pointAt(0.23), { 4, 2 }, { 2, -1 }, { 4, -3 } }, true);
+	// x = (t - 1/2)^2, y = (t - 1/2)^3 has a cusp at the origin.
+	const Bezier3 cusp{ { 0.25, -0.125 }, { -1.0 / 12, 0.125 }, { -1.0 / 12, -0.125 }, { 0.25, 0.125 } };
+	CheckPair(cusp, Bezier2{ { -1, 1 }, { 0, -1 }, { 1, 1 } }, true);
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier.GeneralSuperEllipse")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& curve, const SuperEllipse& shape, const bool expected)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			CHECK(Geometry2D::Intersects(c, shape) == expected);
+			CHECK(Geometry2D::Intersects(shape, c) == expected);
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& q, const SuperEllipse& shape, const bool expected)
+	{
+		CheckPair(q, shape, expected);
+		CheckPair(Elevate(q), shape, expected);
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.25 }, { 1, 0 } };
+	for (const double n : { 0.25, 0.5, 0.9, 1.1, 1.5, 4.0, 16.0, 64.0 })
+	{
+		for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+		{
+			const Vec2 offset = (Vec2{ 7, -3 } * scale);
+			const Bezier2 curve{ arch.p0 * scale + offset, arch.p1 * scale + offset, arch.p2 * scale + offset };
+			for (const double t : { 0.0, 0.125, 0.371, 0.5, 0.731, 1.0 })
+			{
+				CheckDegrees(curve, SuperEllipse{ curve.pointAt(t), Vec2{ (1.0 / 1024), (1.0 / 8192) } * scale, n }, true);
+			}
+			CheckDegrees(curve, SuperEllipse{ offset, Vec2{ 0.02, 0.01 } * scale, n }, false);
+		}
+		const SuperEllipse tip{ 0, 0.25, 0.125, 0.125, n };
+		CheckDegrees(arch, tip, true);
+		CheckDegrees(arch, tip.movedBy(0, 1.0e-15), true);
+		CheckDegrees(arch, tip.movedBy(0, 1.0e-8), false);
+		CheckDegrees(arch, tip.movedBy(0, -1.0e-8), true);
+
+		const double x = std::pow(0.5, (1.0 / n));
+		const Vec2 contact{ x, x }, tangent{ (0.2 * x), (-0.2 * x) };
+		const double curvature = Max(1.0, ((1.0 - n) / x + 1.0));
+		const Vec2 bend = (Vec2{ 1, 1 } * (0.04 * x * x * curvature));
+		for (const double t : { 0.125, 0.371, 0.5, 0.731 })
+		{
+			const Bezier2 curve{ contact - tangent * t + bend * (t * t),
+				contact + tangent * (0.5 - t) + bend * (t * t - t),
+				contact + tangent * (1.0 - t) + bend * ((1.0 - t) * (1.0 - t)) };
+			CheckDegrees(curve, SuperEllipse{ 0, 0, 1, 1, n }, true);
+			CheckDegrees(curve.movedBy(1.0e-8, 1.0e-8), SuperEllipse{ 0, 0, 1, 1, n }, false);
+			CheckDegrees(curve.movedBy(-1.0e-8, -1.0e-8), SuperEllipse{ 0, 0, 1, 1, n }, true);
+		}
+		const Bezier3 loop{ { 0, 0 }, { 3, 4 }, { -3, 4 }, { 0, 0 } };
+		CheckPair(loop, SuperEllipse{ loop.pointAt(0.371), 0.001, 0.001, n }, true);
+		CheckPair(loop, SuperEllipse{ 0, -1, 0.1, 0.1, n }, false);
+	}
+	CheckDegrees(arch, SuperEllipse{ 0, 0, 0, 0, 4 }, false);
+	CheckDegrees(arch, SuperEllipse{ 0, 0.125, 0, 1, 4 }, true);
 }

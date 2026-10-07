@@ -20,6 +20,14 @@ namespace s3d
 {
 	namespace
 	{
+		static void ValidateConstantBufferSlot(const uint32 slot)
+		{
+			if ((slot < 2) || (Graphics::ConstantBufferSlotCount <= slot))
+			{
+				throw Error{ "Constant buffer slot must be in [2, 13]" };
+			}
+		}
+
 		[[noreturn]]
 		static void ThrowVSSamplerIndexOutOfRange()
 		{
@@ -35,6 +43,16 @@ namespace s3d
 
 	namespace Graphics2D
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	Flush
+		//
+		////////////////////////////////////////////////////////////////
+
+		void Flush()
+		{
+			SIV3D_ENGINE(Renderer2D)->flush();
+		}
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetColorMul
@@ -195,15 +213,20 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getCameraTransform();
 		}
 
+		const Mat3x3& GetQuadWarpTransform()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getQuadWarpTransform();
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	GetMaxScaling
+		//	GetRMSScaling
 		//
 		////////////////////////////////////////////////////////////////
 
-		float GetMaxScaling() noexcept
+		float GetRMSScaling() noexcept
 		{
-			return SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+			return SIV3D_ENGINE(Renderer2D)->getRMSScaling();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -238,6 +261,24 @@ namespace s3d
 
 		namespace Internal
 		{
+			void SetConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			{
+				ValidateConstantBufferSlot(slot);
+
+				SIV3D_ENGINE(Renderer2D)->setConstantBuffer(stage, slot, data, size);
+			}
+
+			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			{
+				ValidateConstantBufferSlot(slot);
+				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size);
+			}
+
+			void EndConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
+			{
+				SIV3D_ENGINE(Renderer2D)->endConstantBufferScope(stage, slot, previous);
+			}
+
 			void SetColorMul(const Float4& color)
 			{
 				SIV3D_ENGINE(Renderer2D)->setColorMul(color);
@@ -323,6 +364,11 @@ namespace s3d
 			void SetCameraTransform(const Mat3x2& transform)
 			{
 				SIV3D_ENGINE(Renderer2D)->setCameraTransform(transform);
+			}
+
+			void SetQuadWarpTransform(const Mat3x3& transform)
+			{
+				SIV3D_ENGINE(Renderer2D)->setQuadWarpTransform(transform);
 			}
 		}
 	}

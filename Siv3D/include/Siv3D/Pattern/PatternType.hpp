@@ -27,5 +27,15 @@ namespace s3d
 		Triangle,
 
 		HexGrid,
+
+		Halftone,
+
+		Wave,
+
+		Ripple,
+
+		Weave,
+
+		Truchet,
 	};
 }

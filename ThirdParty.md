@@ -10,7 +10,6 @@ Name | Version
 [cpu_features](https://github.com/google/cpu_features) | v0.11.0
 [DirectXMath](https://github.com/microsoft/DirectXMath) | June 2026
 [DirectXMesh](https://github.com/microsoft/directxmesh) | May 7, 2026
-[doctest](https://github.com/doctest/doctest) | v2.5.2
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
@@ -21,7 +20,7 @@ Name | Version
 [fmt](https://github.com/fmtlib/fmt) | 12.2.0
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
-[GLFW](https://github.com/glfw/glfw) | 3.4
+[GLFW](https://github.com/glfw/glfw) | 3.5.1
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 12.3.2
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
@@ -33,9 +32,8 @@ Name | Version
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [MikkTSpace](https://github.com/mmikk/MikkTSpace) | 
-[mimalloc](https://github.com/microsoft/mimalloc) | v3.3.2
+[mimalloc](https://github.com/microsoft/mimalloc) | v3.4.5
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
-[miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
 [muparser](https://github.com/beltoforion/muparser) | 
@@ -72,3 +70,11 @@ Name | Version
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
 [zlib](https://www.zlib.net/) | 1.3.2
 [Zstandard](https://github.com/facebook/zstd) | v1.5.7
+
+## Test dependencies
+
+These dependencies are used by the test executable only.
+
+Name | Version
+--- | ---
+[Catch2](https://github.com/catchorg/Catch2) | v3.16.0

@@ -17,7 +17,7 @@ struct PSInput
 
 struct VSConstants2D
 {
-	float2x4 g_transform;
+	float3x4 g_transform;
 	float4 g_colorMul;
 };
 
@@ -32,18 +32,27 @@ struct PSConstants2D
 
 struct PSEffectConstants2D
 {
+	// [0] = (m11, m12, m31, m32); [1] = (m21, m22, param0, param1).
 	float2x4 g_patternUVTransform;
 	float4 g_patternBackgroundColor;
-	float3x3 g_quadWarpInvHomography;
-	float4 g_quadWarpUVTransform;
+	// Type-specific payload, decoded by the selected pattern shader.
+	float4 g_patternExtraParams;
 };
 
-inline float4 s3d_positionTransform(float2 pos, float2x4 t)
+static_assert(sizeof(PSEffectConstants2D) == 64, "PSEffectConstants2D layout must match the CPU buffer");
+
+inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
 {
-	const float2 t_13_14 = float2(t[0][2], t[0][3]);
-	const float2 t_11_12 = float2(t[0][0], t[0][1]);
-	const float2 t_21_22 = float2(t[1][0], t[1][1]);
-	return float4((t_13_14 + (pos.x * t_11_12) + (pos.y * t_21_22)), 0.0f, 1.0f);
+	const float2 translation = transform[0].zw;
+	const float2 basisX = transform[0].xy;
+	const float2 basisY = transform[1].xy;
+	return (translation + (position.x * basisX) + (position.y * basisY));
+}
+
+inline float4 s3d_positionTransform(const float2 position, const float3x4 transform)
+{
+	const float4 clip = transform * float3(position, 1.0f);
+	return float4(clip.xy, 0.0f, clip.w);
 }
 
 inline float4 s3d_premultiplyAlpha(float4 color)
@@ -51,15 +60,15 @@ inline float4 s3d_premultiplyAlpha(float4 color)
 	return float4((color.rgb * color.a), color.a);
 }
 
-inline float4 s3d_shapeColor(float4 vertexColor, constant PSConstants2D* c)
+inline float4 s3d_applyColorAdd(const float4 colorPMA, const float4 colorAdd)
 {
-	return (vertexColor + (c->g_colorAdd * vertexColor.a));
+	return (colorPMA + (colorAdd * colorPMA.a));
 }
 
-inline float4 s3d_textureColor(float4 vertexColor, float4 textureColor, constant PSConstants2D* c)
+inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorPMA, constant PSConstants2D* c)
 {
-	vertexColor *= textureColor;
-	return (vertexColor + (c->g_colorAdd * vertexColor.a));
+	vertexColorPMA *= textureColorPMA;
+	return s3d_applyColorAdd(vertexColorPMA, c->g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -80,10 +89,11 @@ PSInput VS_Shape(	uint vertexID [[vertex_id]],
 	return result;
 }
 
+// Pass drawing coordinates for perspective-correct pattern interpolation.
 vertex
-PSInput VS_QuadWarp(	uint vertexID [[vertex_id]],
-						constant VSInput* vertices,
-						constant VSConstants2D* c0)
+PSInput VS_Pattern(	uint vertexID [[vertex_id]],
+					constant VSInput* vertices,
+					constant VSConstants2D* c0)
 {
 	PSInput result;
 	result.position	= s3d_positionTransform(vertices[vertexID].position, c0->g_transform);
@@ -96,7 +106,7 @@ fragment
 float4 PS_Shape(	PSInput input [[stage_in]],
 					constant PSConstants2D* c0 [[buffer(0)]])
 {
-	return s3d_shapeColor(input.colorPMA, c0);
+	return s3d_applyColorAdd(input.colorPMA, c0->g_colorAdd);
 }
 
 fragment
@@ -106,18 +116,6 @@ float4 PS_Texture(	PSInput input [[stage_in]],
 					sampler sampler0 [[sampler(0)]])
 {
 	return s3d_textureColor(input.colorPMA, texture0.sample(sampler0, input.uv), c0);
-}
-
-fragment
-float4 PS_QuadWarp(	PSInput input [[stage_in]],
-					constant PSConstants2D* c0 [[buffer(0)]],
-					constant PSEffectConstants2D* c1 [[buffer(1)]],
-					texture2d<float> texture0 [[texture(0)]],
-					sampler sampler0 [[sampler(0)]])
-{
-	const float3 t = (c1->g_quadWarpInvHomography * float3(input.uv, 1.0f));
-	const float2 uv = ((t.xy / t.z) * c1->g_quadWarpUVTransform.xy + c1->g_quadWarpUVTransform.zw);
-	return s3d_textureColor(input.colorPMA, texture0.sample(sampler0, uv), c0);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -138,7 +136,7 @@ float4 PS_LineDot(	PSInput input [[stage_in]],
 	const float alpha = smoothstep((0.5f - w), (0.5f + w), distance);
 	result *= alpha;
 
-	return s3d_shapeColor(result, c0);
+	return s3d_applyColorAdd(result, c0->g_colorAdd);
 }
 
 fragment
@@ -153,7 +151,7 @@ float4 PS_LineDash(	PSInput input [[stage_in]],
 	const float alpha = smoothstep((0.4f - w), (0.4f + w), distance);
 	result *= alpha;
 
-	return s3d_shapeColor(result, c0);
+	return s3d_applyColorAdd(result, c0->g_colorAdd);
 }
 
 fragment
@@ -168,7 +166,7 @@ float4 PS_LineLongDash(	PSInput input [[stage_in]],
 	const float alpha = smoothstep((0.3f - w), (0.3f + w), distance);
 	result *= alpha;
 
-	return s3d_shapeColor(result, c0);
+	return s3d_applyColorAdd(result, c0->g_colorAdd);
 }
 
 fragment
@@ -186,7 +184,7 @@ float4 PS_LineDashDot(	PSInput input [[stage_in]],
 	const float alpha2 = smoothstep((0.9f - w), (0.9f + w), distance2);
 	result *= max(alpha1, alpha2);
 
-	return s3d_shapeColor(result, c0);
+	return s3d_applyColorAdd(result, c0->g_colorAdd);
 }
 
 fragment
@@ -201,7 +199,7 @@ float4 PS_LineRoundDot(	PSInput input [[stage_in]],
 	const float alpha = (1.0f - smoothstep((1.0f - w), (1.0f + w), distance));
 	result *= alpha;
 
-	return s3d_shapeColor(result, c0);
+	return s3d_applyColorAdd(result, c0->g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -210,18 +208,14 @@ float4 PS_LineRoundDot(	PSInput input [[stage_in]],
 //
 ////////////////////////////////////////////////////////////////
 	
-inline float4 Pattern_BackgroundColor(float4 backgroundColor, constant PSConstants2D* c)
+inline float4 Pattern_BackgroundColorPMA(float4 backgroundColor, constant PSConstants2D* c)
 {
-	const float4 color = s3d_premultiplyAlpha(backgroundColor * c->g_patternBackgroundColorMul);
-	return (color + (c->g_colorAdd * color.a));
+	return s3d_premultiplyAlpha(backgroundColor * c->g_patternBackgroundColorMul);
 }
 
-inline float2 Pattern_UVTransform(float2 uv, float2x4 t)
+inline float2 Pattern_UVTransform(const float2 drawingPosition, const float2x4 transform)
 {
-	const float2 t_13_14 = float2(t[0][2], t[0][3]);
-	const float2 t_11_12 = float2(t[0][0], t[0][1]);
-	const float2 t_21_22 = float2(t[1][0], t[1][1]);
-	return (t_13_14 + (uv.x * t_11_12) + (uv.y * t_21_22));
+	return s3d_transformPoint2D(drawingPosition, transform);
 }
 
 inline float2 Pattern_Integral(float2 v)
@@ -230,12 +224,12 @@ inline float2 Pattern_Integral(float2 v)
 	return (floor(v) + max((2.0f * fract(v) - 1.0f), 0.0f));
 }
 
-inline float Pattern_CheckersFiltered(float2 p, float2 hv)
+inline float Pattern_CheckersFiltered(float2 p, float2 axisIntensity)
 {
 	const float2 fw = fwidth(p);
 	const float w = max(fw.x, fw.y);
 	float2 i = (Pattern_Integral(p + 0.5f * w) - Pattern_Integral(p - 0.5f * w));
-	i *= hv;
+	i *= axisIntensity;
 	i /= w;
 	return (i.x + i.y - 2.0f * i.x * i.y);
 }
@@ -260,18 +254,183 @@ float4 PS_PatternPolkaDot(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
-	const float2 repeat = (2.0f * fract(uv) - 1.0f);
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 repeat = (2.0f * fract(patternUV) - 1.0f);
 	const float value = length(repeat);
 	const float fw = (length(float2(dfdx(value), dfdy(value))) * 0.70710678118);
 	
-	const float radiusScale = c1->g_patternUVTransform[1].z;
-	const float c_val = smoothstep((radiusScale - fw), (radiusScale + fw), value);
+	// Radius in centered cell coordinates spanning [-1, 1].
+	const float normalizedRadius = c1->g_patternUVTransform[1].z;
+	const float c_val = smoothstep((normalizedRadius - fw), (normalizedRadius + fw), value);
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 	
-	return mix(primary, background, c_val);
+	return s3d_applyColorAdd(mix(primary, background, c_val), c0->g_colorAdd);
+}
+
+fragment
+float4 PS_PatternHalftone(PSInput input [[stage_in]],
+							constant PSConstants2D* c0 [[buffer(0)]],
+							constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float normalizedMinRadius = c1->g_patternUVTransform[1].z; // 2 * minRadius / pitch
+	const float normalizedMaxRadius = c1->g_patternUVTransform[1].w; // 2 * maxRadius / pitch
+	// Linear radius field expressed in pattern UV coordinates.
+	const float2 radiusFieldGradient = c1->g_patternExtraParams.xy;
+	const float radiusFieldBias = c1->g_patternExtraParams.z;
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 cellCenter = (floor(patternUV) + 0.5f);
+	const float2 repeat = (2.0f * (patternUV - cellCenter));
+	const float radiusBlend = saturate(dot(cellCenter, radiusFieldGradient) + radiusFieldBias);
+	const float normalizedRadius = mix(normalizedMinRadius, normalizedMaxRadius,
+		(radiusBlend * radiusBlend * (3.0f - 2.0f * radiusBlend)));
+	// Differentiate continuous UVs, not the radius that changes between cells.
+	const float fw = length(fwidth(patternUV));
+	const float coverage = ((1.0f - smoothstep(normalizedRadius - fw, normalizedRadius + fw, length(repeat)))
+		* saturate(normalizedRadius / fw));
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
+	return s3d_applyColorAdd(mix(background, primary, coverage), c0->g_colorAdd);
+}
+
+fragment
+float4 PS_PatternWave(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float normalizedThickness = c1->g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedAmplitude = c1->g_patternUVTransform[1].w; // amplitude / pitch
+	const float slopeAmplitude = c1->g_patternExtraParams.x; // 2 * pi * amplitude / wavelength
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float phase = (6.28318530718f * patternUV.x);
+	const float waveCoord = (patternUV.y - normalizedAmplitude * sin(phase) + 0.5f);
+	const float slope = (slopeAmplitude * cos(phase));
+	// First-order normal-width correction, not an exact distance to the sine curve.
+	const float width = saturate(normalizedThickness * sqrt(1.0f + slope * slope));
+	// Differentiate before wrapping; zero amplitude uses the Stripe filter.
+	const float fw = fwidth(waveCoord);
+	const float value = abs(2.0f * fract(waveCoord) - 1.0f);
+	const float thickness = (width * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
+	return s3d_applyColorAdd(mix(primary, background, t), c0->g_colorAdd);
+}
+
+fragment
+float4 PS_PatternRipple(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float normalizedThickness = c1->g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedRadiusOffset = c1->g_patternUVTransform[1].w; // radiusOffset / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float ringCoord = (length(patternUV) - normalizedRadiusOffset + 0.5f);
+	// Continuous UV derivatives remain defined at the radial center, including
+	// a 2x2 fragment quad whose four samples have equal distance to the center.
+	const float fw = length(fwidth(patternUV));
+	const float value = abs(2.0f * fract(ringCoord) - 1.0f);
+	const float thickness = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
+	return s3d_applyColorAdd(mix(primary, background, t), c0->g_colorAdd);
+}
+
+fragment
+float4 PS_PatternWeave(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float normalizedBandWidth = c1->g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedClearanceWidth = c1->g_patternUVTransform[1].w; // (thickness + 2 * gap) / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 fw = fwidth(patternUV);
+	const float2 value = abs(2.0f * fract(patternUV + 0.5f) - 1.0f);
+	const float2 width = (normalizedBandWidth * (1.0f + 2.0f * fw) - fw);
+	const float2 clearance = (normalizedClearanceWidth * (1.0f + 2.0f * fw) - fw);
+	const float2 band = (1.0f - smoothstep(width - fw, width + fw, value));
+	const float2 expanded = (1.0f - smoothstep(clearance - fw, clearance + fw, value));
+	// Filter the crossing parity too: at maximum gap, cuts reach cell boundaries.
+	const float horizontalOver = Pattern_CheckersFiltered(patternUV + 0.5f, float2(1.0f));
+	const float verticalCut = ((expanded.x - band.x) * band.y);
+	const float horizontalCut = ((expanded.y - band.y) * band.x);
+	const float coverage = (max(band.x, band.y) - mix(verticalCut, horizontalCut, horizontalOver));
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
+	return s3d_applyColorAdd(mix(background, primary, coverage), c0->g_colorAdd);
+}
+
+// Matches Pattern::Truchet::Layout.
+constant uint Pattern_TruchetLayoutRandom = 0u;
+constant uint Pattern_TruchetLayoutAlternating = 2u;
+
+inline uint Pattern_DecodeTruchetSeed(float2 seedHalves)
+{
+	// The CPU stores finite numeric 16-bit halves, not bit-cast float payloads.
+	const uint seedLow = uint(seedHalves.x);
+	const uint seedHigh = uint(seedHalves.y);
+	return (seedLow | (seedHigh << 16));
+}
+
+inline uint Pattern_TruchetHash(float2 cell, uint seed)
+{
+	// Hash exact IEEE-754 bits of half-integer cell centers. This avoids signed
+	// float-to-int conversion limits and gives +0/-0 the same key at the origin.
+	const uint2 key = as_type<uint2>(cell + 0.5f);
+	uint h = ((key.x * 0x9E3779B9u) ^ (key.y * 0x85EBCA6Bu) ^ seed);
+	h ^= (h >> 16);
+	h *= 0x7FEB352Du;
+	h ^= (h >> 15);
+	h *= 0x846CA68Bu;
+	h ^= (h >> 16);
+	return h;
+}
+
+fragment
+float4 PS_PatternTruchet(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float normalizedThickness = c1->g_patternUVTransform[1].z; // thickness / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 cell = floor(patternUV);
+	float2 tilePosition = (patternUV - cell);
+	const uint layout = uint(c1->g_patternExtraParams.z);
+	bool flip = false; // Uniform (1) keeps the original orientation.
+	if (layout == Pattern_TruchetLayoutRandom)
+	{
+		const uint seed = Pattern_DecodeTruchetSeed(c1->g_patternExtraParams.xy);
+		flip = ((Pattern_TruchetHash(cell, seed) & 1u) != 0u);
+	}
+	else if (layout == Pattern_TruchetLayoutAlternating)
+	{
+		flip = (fract(dot(cell, float2(0.5f))) > 0.25f);
+	}
+	tilePosition.x = (flip ? (1.0f - tilePosition.x) : tilePosition.x);
+	// These equal-radius circles are disjoint, so the nearer center gives the nearer arc.
+	const float2 oppositeCornerOffset = (tilePosition - 1.0f);
+	const float distance = abs(sqrt(min(dot(tilePosition, tilePosition),
+		dot(oppositeCornerOffset, oppositeCornerOffset))) - 0.5f);
+	// Differentiate the continuous coordinates, not tile-dependent arc distances.
+	const float fw = length(fwidth(patternUV));
+	const float width = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
+	const float coverage = (1.0f - smoothstep(width - fw, width + fw, 2.0f * distance));
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
+	return s3d_applyColorAdd(mix(background, primary, coverage), c0->g_colorAdd);
 }
 
 fragment
@@ -279,18 +438,21 @@ float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float u = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform).x;
-	const float fw = fwidth(u);
-	const float repeat = (2.0f * fract(u) - 1.0f);
+	const float normalizedThickness = c1->g_patternUVTransform[1].z; // thicknessScale / 2
+
+	const float2 drawingPosition = input.uv;
+	const float stripeCoord = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform).x;
+	const float fw = fwidth(stripeCoord);
+	const float repeat = (2.0f * fract(stripeCoord) - 1.0f);
 	const float value = abs(repeat);
 	
-	const float thicknessScale = (c1->g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float thicknessScale = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
 	const float t = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 
-	return mix(primary, background, t);
+	return s3d_applyColorAdd(mix(primary, background, t), c0->g_colorAdd);
 }
 
 fragment
@@ -298,19 +460,22 @@ float4 PS_PatternGrid(	PSInput input [[stage_in]],
 						constant PSConstants2D* c0 [[buffer(0)]],
 						constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
-	const float2 fw = fwidth(uv);
-	const float2 repeat = (2.0f * fract(uv) - 1.0f);
+	const float2 normalizedThickness = c1->g_patternUVTransform[1].zz; // thicknessScale / 2 on both axes
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 fw = fwidth(patternUV);
+	const float2 repeat = (2.0f * fract(patternUV) - 1.0f);
 	const float2 value = abs(repeat);
 	
-	const float2 thicknessScale = (c1->g_patternUVTransform[1].zz * float2(1.0f + fw) - fw);
+	const float2 thicknessScale = (normalizedThickness * float2(1.0f + fw) - fw);
 	const float2 t1 = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 	const float t2 = min(t1.x, t1.y);
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 
-	return mix(primary, background, t2);
+	return s3d_applyColorAdd(mix(primary, background, t2), c0->g_colorAdd);
 }
 
 fragment
@@ -318,13 +483,16 @@ float4 PS_PatternChecker(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
-	const float t = Pattern_CheckersFiltered(uv, c1->g_patternUVTransform[1].zw);
+	const float2 axisIntensity = c1->g_patternUVTransform[1].zw; // (verticalIntensity, horizontalIntensity)
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float t = Pattern_CheckersFiltered(patternUV, axisIntensity);
+
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 	
-	return mix(primary, background, t);
+	return s3d_applyColorAdd(mix(primary, background, t), c0->g_colorAdd);
 }
 
 fragment
@@ -332,23 +500,24 @@ float4 PS_PatternTriangle(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
-	const float2 fw = (fwidth(uv) * 0.25f);
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 fw = (fwidth(patternUV) * 0.25f);
 
-	const float2 s1 = Pattern_Skew(uv + float2(-fw.x, -fw.y));
-	const float2 s2 = Pattern_Skew(uv + float2(fw.x, fw.y));
-	const float2 s3 = Pattern_Skew(uv + float2(-fw.x, fw.y));
-	const float2 s4 = Pattern_Skew(uv + float2(fw.x, -fw.y));
+	const float2 s1 = Pattern_Skew(patternUV + float2(-fw.x, -fw.y));
+	const float2 s2 = Pattern_Skew(patternUV + float2(fw.x, fw.y));
+	const float2 s3 = Pattern_Skew(patternUV + float2(-fw.x, fw.y));
+	const float2 s4 = Pattern_Skew(patternUV + float2(fw.x, -fw.y));
 
 	const float4 f1 = fract(float4(s1, s2));
 	const float4 f2 = fract(float4(s3, s4));
 	const float4 ss = float4(step(f1.x, f1.y), step(f1.z, f1.w), step(f2.x, f2.y), step(f2.z, f2.w));
 	const float t = dot(ss, 0.25f);
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 	
-	return mix(primary, background, t);
+	return s3d_applyColorAdd(mix(primary, background, t), c0->g_colorAdd);
 }
 
 fragment
@@ -356,18 +525,21 @@ float4 PS_PatternHexGrid(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
-	const float2 fw = fwidth(uv);
+	const float cellEdgeThreshold = c1->g_patternUVTransform[1].z; // 0.5 - thicknessScale * 0.25
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition, c1->g_patternUVTransform);
+	const float2 fw = fwidth(patternUV);
 	const float w = (max(fw.x, fw.y) * 0.5f);
 
-	const float thicknessScale = (c1->g_patternUVTransform[1].z * (1 + 2 * w));
-	const float h = Pattern_Hex(uv);
-	const float t = smoothstep((thicknessScale - w), (thicknessScale + w), h);
+	const float filteredEdgeThreshold = (cellEdgeThreshold * (1 + 2 * w));
+	const float h = Pattern_Hex(patternUV);
+	const float t = smoothstep((filteredEdgeThreshold - w), (filteredEdgeThreshold + w), h);
 
-	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
-	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	const float4 primary = input.colorPMA;
+	const float4 background = Pattern_BackgroundColorPMA(c1->g_patternBackgroundColor, c0);
 	
-	return mix(background, primary, t);
+	return s3d_applyColorAdd(mix(background, primary, t), c0->g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -381,22 +553,22 @@ constant float MSDF_TextThreshold = 0.5f;
 
 struct MSDFState
 {
-	float2 textureSize;
 	float2 invTextureSize;
-	float scale;
+	float coverageScale;
 };
 
 inline MSDFState MSDF_Init(texture2d<float> texture, float2 uv)
 {
-	MSDFState st;
-	st.textureSize = float2(texture.get_width(), texture.get_height());
-	st.invTextureSize = (1.0f / (st.textureSize));
-	
-	const float2 msdfUnit = (MSDF_PixelRange * st.invTextureSize);
-	const float2 screenPixelRange = (0.5f / fwidth(uv));
-	st.scale = dot(msdfUnit, screenPixelRange);
+	const float2 textureSize = float2(texture.get_width(), texture.get_height());
 
-	return st;
+	MSDFState state;
+	state.invTextureSize = (1.0f / (textureSize));
+	
+	// Combine atlas dimensions and UV derivatives before taking the reciprocal.
+	const float2 screenPixelRange = ((0.5f * MSDF_PixelRange) / (textureSize * fwidth(uv)));
+	state.coverageScale = (screenPixelRange.x + screenPixelRange.y);
+
+	return state;
 }
 
 inline float MSDF_Median(const float3 rgb)
@@ -409,19 +581,14 @@ inline float MSDF_SampleDistance(const texture2d<float> texture, const sampler s
 	return MSDF_Median(texture.sample(sampler, uv).rgb);
 }
 
-inline float MSDF_Coverage(const float d, const float threshold, const float scale)
+inline float MSDF_Coverage(const float sampledDistance, const float threshold, const float coverageScale)
 {
-	return saturate((d - threshold) * scale + 0.5);
+	return saturate((sampledDistance - threshold) * coverageScale + 0.5);
 }
 
-inline float MSDF_AlphaAt(const texture2d<float> texture, const sampler sampler, const float2 uv, const float threshold, const MSDFState st)
+inline float MSDF_AlphaAt(const texture2d<float> texture, const sampler sampler, const float2 uv, const float threshold, const MSDFState state)
 {
-	return MSDF_Coverage(MSDF_SampleDistance(texture, sampler, uv), threshold, st.scale);
-}
-
-inline float4 MSDF_PremulAdd(const float4 colorPMA, const float4 g_colorAdd)
-{
-	return (colorPMA + (g_colorAdd * colorPMA.a));
+	return MSDF_Coverage(MSDF_SampleDistance(texture, sampler, uv), threshold, state.coverageScale);
 }
 
 fragment
@@ -430,12 +597,12 @@ float4 PS_MSDFFont( PSInput input [[stage_in]],
 					texture2d<float> texture0 [[texture(0)]],
 					sampler sampler0 [[sampler(0)]])
 {
-	const MSDFState st = MSDF_Init(texture0, input.uv);
+	const MSDFState state = MSDF_Init(texture0, input.uv);
 	
-	const float textAlpha = MSDF_AlphaAt(texture0, sampler0, input.uv, MSDF_TextThreshold, st);
+	const float textAlpha = MSDF_AlphaAt(texture0, sampler0, input.uv, MSDF_TextThreshold, state);
 	
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	return MSDF_PremulAdd(textPMA, c0->g_colorAdd);
+	return s3d_applyColorAdd(textPMA, c0->g_colorAdd);
 }
 
 fragment
@@ -444,17 +611,19 @@ float4 PS_MSDFFont_Outline( PSInput input [[stage_in]],
 							texture2d<float> texture0 [[texture(0)]],
 							sampler sampler0 [[sampler(0)]])
 {
-	const MSDFState st = MSDF_Init(texture0, input.uv);
-	const float d = MSDF_SampleDistance(texture0, sampler0, input.uv);
-	
-	const float outlineAlpha = MSDF_Coverage(d, c0->g_sdfParam.y, st.scale);
-	const float textAlpha = MSDF_Coverage(d, c0->g_sdfParam.x, st.scale);
+	const float textThreshold = c0->g_sdfParam.x;
+	const float outlineThreshold = c0->g_sdfParam.y;
 
-	const float blend = textAlpha;
-	float4 colorPMA = mix(c0->g_sdfOutlineColorPMA, input.colorPMA, blend);
+	const MSDFState state = MSDF_Init(texture0, input.uv);
+	const float sampledDistance = MSDF_SampleDistance(texture0, sampler0, input.uv);
+	
+	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
+	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
+
+	float4 colorPMA = mix(c0->g_sdfOutlineColorPMA, input.colorPMA, textAlpha);
 	colorPMA *= outlineAlpha;
 	
-	return MSDF_PremulAdd(colorPMA, c0->g_colorAdd);
+	return s3d_applyColorAdd(colorPMA, c0->g_colorAdd);
 }
 
 fragment
@@ -463,19 +632,21 @@ float4 PS_MSDFFont_Shadow(	PSInput input [[stage_in]],
 							texture2d<float> texture0 [[texture(0)]],
 							sampler sampler0 [[sampler(0)]])
 {
-	const MSDFState st = MSDF_Init(texture0, input.uv);
+	const float2 shadowOffsetTexels = c0->g_sdfParam.zw;
 
-	const float textAlpha = MSDF_AlphaAt(texture0, sampler0, input.uv, MSDF_TextThreshold, st);
+	const MSDFState state = MSDF_Init(texture0, input.uv);
 
-	const float2 shadowOffset = (c0->g_sdfParam.zw * st.invTextureSize);
-	const float shadowAlpha = MSDF_AlphaAt(texture0, sampler0, (input.uv - shadowOffset), MSDF_TextThreshold, st);
+	const float textAlpha = MSDF_AlphaAt(texture0, sampler0, input.uv, MSDF_TextThreshold, state);
 
-	const float sBase = (shadowAlpha * (1.0 - textAlpha));
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowAlpha = MSDF_AlphaAt(texture0, sampler0, (input.uv - shadowOffsetUV), MSDF_TextThreshold, state);
+
+	const float shadowOnlyAlpha = (shadowAlpha * (1.0 - textAlpha));
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	const float4 shadowPMA = (c0->g_sdfShadowColorPMA * sBase);
+	const float4 shadowPMA = (c0->g_sdfShadowColorPMA * shadowOnlyAlpha);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
-	return MSDF_PremulAdd(finalPMA, c0->g_colorAdd);
+	return s3d_applyColorAdd(finalPMA, c0->g_colorAdd);
 }
 
 fragment
@@ -484,14 +655,18 @@ float4 PS_MSDFFont_OutlineShadow(	PSInput input [[stage_in]],
 									texture2d<float> texture0 [[texture(0)]],
 									sampler sampler0 [[sampler(0)]])
 {
-	const MSDFState st = MSDF_Init(texture0, input.uv);
-	const float d = MSDF_SampleDistance(texture0, sampler0, input.uv);
+	const float textThreshold = c0->g_sdfParam.x;
+	const float outlineThreshold = c0->g_sdfParam.y;
+	const float2 shadowOffsetTexels = c0->g_sdfParam.zw;
 
-	const float outlineAlpha = MSDF_Coverage(d, c0->g_sdfParam.y, st.scale);
-	const float textAlpha = MSDF_Coverage(d, c0->g_sdfParam.x, st.scale);
+	const MSDFState state = MSDF_Init(texture0, input.uv);
+	const float sampledDistance = MSDF_SampleDistance(texture0, sampler0, input.uv);
 
-	const float2 shadowOffset = (c0->g_sdfParam.zw * st.invTextureSize);
-	const float shadowAlpha = MSDF_AlphaAt(texture0, sampler0, (input.uv - shadowOffset), c0->g_sdfParam.y, st);
+	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
+	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
+
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowAlpha = MSDF_AlphaAt(texture0, sampler0, (input.uv - shadowOffsetUV), outlineThreshold, state);
 
 	const float4 textPMA = (input.colorPMA * textAlpha);
 
@@ -502,20 +677,22 @@ float4 PS_MSDFFont_OutlineShadow(	PSInput input [[stage_in]],
 	const float4 shadowPMA = (c0->g_sdfShadowColorPMA * shadowCoverage);
 
 	const float4 finalPMA = (textPMA + outlinePMA + shadowPMA);
-	return MSDF_PremulAdd(finalPMA, c0->g_colorAdd);
+	return s3d_applyColorAdd(finalPMA, c0->g_colorAdd);
 }
 
 fragment
-float4 PS_MSDFFont_Glow( PSInput in [[stage_in]],
+float4 PS_MSDFFont_Glow( PSInput input [[stage_in]],
 						 constant PSConstants2D* c0 [[buffer(0)]],
 						 texture2d<float> texture0 [[texture(0)]],
 						 sampler sampler0 [[sampler(0)]])
 {
-	const float d = saturate(texture0.sample(sampler0, in.uv).a * 2.0);
-	const float pd = pow(d, c0->g_sdfParam.x);
+	const float glowExponent = c0->g_sdfParam.x;
 
-	const float4 finalPMA = float4((in.colorPMA.rgb * pd), (in.colorPMA.a * pd));
-	return MSDF_PremulAdd(finalPMA, c0->g_colorAdd);
+	const float glowBase = saturate(texture0.sample(sampler0, input.uv).a * 2.0);
+	const float glowFactor = pow(glowBase, glowExponent);
+
+	const float4 finalPMA = float4((input.colorPMA.rgb * glowFactor), (input.colorPMA.a * glowFactor));
+	return s3d_applyColorAdd(finalPMA, c0->g_colorAdd);
 }
 
 fragment
@@ -524,18 +701,19 @@ float4 PS_MSDFFont_Print(	PSInput input [[stage_in]],
 							texture2d<float> texture0 [[texture(0)]],
 							sampler sampler0 [[sampler(0)]])
 {
-	const MSDFState st = MSDF_Init(texture0, input.uv);
-	const float d = MSDF_SampleDistance(texture0, sampler0, input.uv);
+	const MSDFState state = MSDF_Init(texture0, input.uv);
+	const float sampledDistance = MSDF_SampleDistance(texture0, sampler0, input.uv);
 
-	const float outlineDistance = 0.04;
-	const float outlineThreshold = (MSDF_TextThreshold - outlineDistance);
+	const float outlineDistanceOffset = 0.04;
+	const float outlineThreshold = (MSDF_TextThreshold - outlineDistanceOffset);
 
-	const float textAlpha = sqrt(saturate((d - 0.5) * st.scale + 0.5));
-	const float outlineAlpha = sqrt(saturate((d - outlineThreshold) * st.scale + 0.5));
+	const float textAlpha = sqrt(saturate((sampledDistance - 0.5) * state.coverageScale + 0.5));
+	const float outlineAlpha = sqrt(saturate((sampledDistance - outlineThreshold) * state.coverageScale + 0.5));
 
-	const float2 shadowOffset = (float2(0.625, 0.625) * st.invTextureSize);
-	const float d2 = MSDF_SampleDistance(texture0, sampler0, (input.uv - shadowOffset));
-	const float shadowAlpha = sqrt(saturate((d2 - outlineThreshold) * st.scale + 0.5));
+	const float2 shadowOffsetTexels = float2(0.625, 0.625);
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowDistance = MSDF_SampleDistance(texture0, sampler0, (input.uv - shadowOffsetUV));
+	const float shadowAlpha = sqrt(saturate((shadowDistance - outlineThreshold) * state.coverageScale + 0.5));
 
 	float3 color = mix(float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0), textAlpha);
 	const float hollowShadowAlpha = saturate(shadowAlpha * (1.0 - outlineAlpha));

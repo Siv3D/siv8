@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Array.hpp>
 # include <Siv3D/HashMap.hpp>
+# include <Siv3D/Optional.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/BlendState.hpp>
@@ -19,12 +20,13 @@
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
-# include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Mat3x3.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 # include "D3D11Renderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
+# include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
 
 namespace s3d
 {
@@ -34,15 +36,20 @@ namespace s3d
 
 		D3D11Renderer2DCommandManager();
 
+		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
+		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
+
 		void reset();
 
 		void flush();
 
 		const Array<D3D11Renderer2DCommand>& getCommands() const noexcept;
 
-		void pushUpdateBuffers(uint32 batchIndex);
+		void deferUpdateBuffers(uint32 batchIndex);
 
-		void pushDraw(Vertex2D::IndexType indexCount);
+		void pushDraw(uint32 indexCount);
 		const D3D11DrawCommand& getDraw(uint32 index) const noexcept;
 
 		void pushColorMul(const Float4& color);
@@ -53,13 +60,9 @@ namespace s3d
 		const Float3& getColorAdd(uint32 index) const;
 		const Float3& getCurrentColorAdd() const;
 
-		void pushQuadWarpParameter(const std::array<Float4, 3>& color);
-		const std::array<Float4, 3>& getQuadWarpParameter(uint32 index) const;
-		const std::array<Float4, 3>& getQuadWarpParameter() const;
-
-		void pushPatternParameter(const std::array<Float4, 3>& color);
-		const std::array<Float4, 3>& getPatternParameter(uint32 index) const;
-		const std::array<Float4, 3>& getPatternParameter() const;
+		void pushPatternParameter(const std::array<Float4, 4>& patternParameter);
+		const std::array<Float4, 4>& getPatternParameter(uint32 index) const;
+		const std::array<Float4, 4>& getPatternParameter() const;
 
 		void pushBlendState(const BlendState& state);
 		const BlendState& getBlendState(uint32 index) const;
@@ -103,9 +106,12 @@ namespace s3d
 		void pushCameraTransform(const Mat3x2& camera);
 		const Mat3x2& getCurrentCameraTransform() const;
 
-		const Mat3x2& getCombinedTransform(uint32 index) const;
-		const Mat3x2& getCurrentCombinedTransform() const;
-		float getCurrentMaxScaling() const noexcept;
+		const Mat3x3& getCombinedTransform(uint32 index) const;
+		const Mat3x3& getCurrentCombinedTransform() const;
+		void pushQuadWarpTransform(const Mat3x3& warp);
+		const Mat3x3& getCurrentQuadWarpTransform() const;
+
+		float getCurrentRMSScaling() const noexcept;
 
 		void pushVSTextureUnbind(uint32 slot);
 		void pushVSTexture(uint32 slot, const Texture& texture);
@@ -119,6 +125,14 @@ namespace s3d
 
 	private:
 
+		void updateAffineTransform();
+		void updateTransform();
+
+		ConstantBuffer2DCommands m_constantBuffers;
+
+		// 次の Draw が使うバッチ。描画を伴わない確保が続いても、最後の切り替え先だけ保持する。
+		Optional<uint32> m_pendingBatchIndex;
+
 		Array<D3D11Renderer2DCommand> m_commands;
 
 		BatchStateTracker<D3D11Renderer2DCommandType> m_stateTracker;
@@ -131,9 +145,7 @@ namespace s3d
 			
 			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
 
-			Array<std::array<Float4, 3>> quadWarpParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 1.0f, 0.0f }, Float4{ 1.0f, 1.0f, 0.0f, 1.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
-
-			Array<std::array<Float4, 3>> patternParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
+			Array<std::array<Float4, 4>> patternParameters	= { std::array<Float4, 4>{} };
 
 			Array<BlendState> blendStates			= { BlendState::Default2D };
 
@@ -153,7 +165,7 @@ namespace s3d
 
 			Array<PixelShader::IDType> pixelShaders;
 
-			Array<Mat3x2> combinedTransforms		= { Mat3x2::Identity() };
+			Array<Mat3x3> combinedTransforms		= { Mat3x3::Identity() };
 
 			std::array<Array<Texture::IDType>, Graphics::TextureSlotCount> vsTextures = MakeDefaultTextures();
 
@@ -169,9 +181,7 @@ namespace s3d
 			
 			Float3 colorAdd						= Float3{ 0.0f, 0.0f, 0.0f };
 
-			std::array<Float4, 3> quadWarpParameter	= { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
-
-			std::array<Float4, 3> patternParameter	= { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
+			std::array<Float4, 4> patternParameter{};
 		
 			BlendState blendState				= BlendState::Default2D;
 
@@ -195,9 +205,13 @@ namespace s3d
 			
 			Mat3x2 cameraTransform				= Mat3x2::Identity();
 			
-			Mat3x2 combinedTransform			= Mat3x2::Identity();
+			Mat3x2 affineTransform = Mat3x2::Identity();
 
-			float maxScaling					= 1.0f;
+			Mat3x3 quadWarpTransform = Mat3x3::Identity();
+
+			Mat3x3 combinedTransform			= Mat3x3::Identity();
+
+			float rmsScaling					= 1.0f;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

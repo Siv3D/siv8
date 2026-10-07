@@ -41,14 +41,14 @@ TEST_CASE("Mat4x4::constructors")
 		Float4{ 1, 2, 3, 4 }, Float4{ 5, 6, 7, 8 },
 		Float4{ 9, 10, 11, 12 }, Float4{ 13, 14, 15, 16 }
 	};
-	CHECK_EQ(GetRow(rows, 0), (Float4{ 1, 2, 3, 4 }));
-	CHECK_EQ(GetRow(rows, 3), (Float4{ 13, 14, 15, 16 }));
+	CHECK((GetRow(rows, 0)) == ((Float4{ 1, 2, 3, 4 })));
+	CHECK((GetRow(rows, 3)) == ((Float4{ 13, 14, 15, 16 })));
 
 	const Mat4x4 simdRows{
 		SimdFloat4{ 1, 2, 3, 4 }, SimdFloat4{ 5, 6, 7, 8 },
 		SimdFloat4{ 9, 10, 11, 12 }, SimdFloat4{ 13, 14, 15, 16 }
 	};
-	CHECK_EQ(simdRows, rows);
+	CHECK((simdRows) == (rows));
 
 	const Mat4x4 elements{
 		1, 2, 3, 4,
@@ -56,7 +56,7 @@ TEST_CASE("Mat4x4::constructors")
 		9, 10, 11, 12,
 		13, 14, 15, 16
 	};
-	CHECK_EQ(elements, rows);
+	CHECK((elements) == (rows));
 
 	const std::array<float, 16> array{
 		1, 2, 3, 4,
@@ -64,29 +64,29 @@ TEST_CASE("Mat4x4::constructors")
 		9, 10, 11, 12,
 		13, 14, 15, 16
 	};
-	CHECK_EQ(Mat4x4{ std::span<const float, 16>{ array } }, rows);
-	CHECK_EQ(Mat4x4{ rows.value }, rows);
-	CHECK_EQ(Mat4x4{ rows }, rows);
+	CHECK((Mat4x4{ std::span<const float, 16>{ array } }) == (rows));
+	CHECK((Mat4x4{ rows.value }) == (rows));
+	CHECK((Mat4x4{ rows }) == (rows));
 }
 
 TEST_CASE("Mat4x4::arithmetic_and_comparison")
 {
 	const Mat4x4 identity = Mat4x4::Identity();
 	const Mat4x4 twice = (identity * 2.0f);
-	CHECK_EQ(+identity, identity);
-	CHECK_EQ(-(-identity), identity);
-	CHECK_EQ(identity + identity, twice);
-	CHECK_EQ(twice - identity, identity);
-	CHECK_EQ(2.0f * identity, twice);
-	CHECK_EQ(twice / 2.0f, identity);
+	CHECK((+identity) == (identity));
+	CHECK((-(-identity)) == (identity));
+	CHECK((identity + identity) == (twice));
+	CHECK((twice - identity) == (identity));
+	CHECK((2.0f * identity) == (twice));
+	CHECK((twice / 2.0f) == (identity));
 
 	Mat4x4 value = identity;
-	CHECK_EQ(&(value += identity), &value);
-	CHECK_EQ(value, twice);
-	CHECK_EQ(&(value -= identity), &value);
-	CHECK_EQ(&(value *= 2.0f), &value);
-	CHECK_EQ(&(value /= 2.0f), &value);
-	CHECK_EQ(value, identity);
+	CHECK((&(value += identity)) == (&value));
+	CHECK((value) == (twice));
+	CHECK((&(value -= identity)) == (&value));
+	CHECK((&(value *= 2.0f)) == (&value));
+	CHECK((&(value /= 2.0f)) == (&value));
+	CHECK((value) == (identity));
 
 	const Mat4x4 nearIdentity{
 		1.000001f, 0, 0, 0,
@@ -144,10 +144,10 @@ TEST_CASE("Mat4x4::inverse_and_decompose")
 	const Float3 expectedTranslation{ 5.0f, -6.0f, 7.0f };
 	const Mat4x4 matrix = Mat4x4::AffineTransform(expectedScale, expectedRotation, expectedTranslation);
 
-	CHECK(matrix.determinant() == doctest::Approx(24.0f).epsilon(MatrixEpsilon));
+	CHECK(matrix.determinant() == Test::Approx(24.0f).epsilon(MatrixEpsilon));
 	float inverseDeterminant = 0.0f;
 	const Mat4x4 inverse = matrix.inverse(inverseDeterminant);
-	CHECK(inverseDeterminant == doctest::Approx(24.0f).epsilon(MatrixEpsilon));
+	CHECK(inverseDeterminant == Test::Approx(24.0f).epsilon(MatrixEpsilon));
 	CHECK((matrix * inverse).epsilonEquals(Mat4x4::Identity(), MatrixEpsilon));
 	CHECK(matrix.inverse().epsilonEquals(inverse, MatrixEpsilon));
 
@@ -155,7 +155,7 @@ TEST_CASE("Mat4x4::inverse_and_decompose")
 	float tryDeterminant = 0.0f;
 	CHECK(matrix.tryInverse(tryResult, tryDeterminant));
 	CHECK(tryResult.epsilonEquals(inverse, MatrixEpsilon));
-	CHECK(tryDeterminant == doctest::Approx(24.0f).epsilon(MatrixEpsilon));
+	CHECK(tryDeterminant == Test::Approx(24.0f).epsilon(MatrixEpsilon));
 	CHECK(matrix.tryInverse(tryResult));
 
 	Float3 scale;
@@ -172,10 +172,10 @@ TEST_CASE("Mat4x4::inverse_and_decompose")
 	tryResult = sentinel;
 	tryDeterminant = 1.0f;
 	CHECK_FALSE(singular.tryInverse(tryResult, tryDeterminant));
-	CHECK_EQ(tryResult, sentinel);
-	CHECK_EQ(tryDeterminant, 0.0f);
+	CHECK((tryResult) == (sentinel));
+	CHECK((tryDeterminant) == (0.0f));
 	CHECK_FALSE(singular.tryInverse(tryResult));
-	CHECK_EQ(tryResult, sentinel);
+	CHECK((tryResult) == (sentinel));
 
 	const Mat4x4 shear{
 		1, 1, 0, 0,
@@ -204,7 +204,7 @@ TEST_CASE("Mat4x4::composition_and_transform")
 	CHECK(Mat4x4::Identity().scaled(2.0f).epsilonEquals(Mat4x4::Scale(2.0f), MatrixEpsilon));
 
 	Mat4x4 mutableValue = translate;
-	CHECK_EQ(&(mutableValue *= scale), &mutableValue);
+	CHECK((&(mutableValue *= scale)) == (&mutableValue));
 	CHECK(mutableValue.epsilonEquals(composed, MatrixEpsilon));
 
 	const Mat4x4 transposed = composed.transposed();
@@ -276,8 +276,8 @@ TEST_CASE("Mat4x4::stream_transform")
 		&stridedInput[0].value, sizeof(StridedVector), stridedInput.size());
 	CheckVector(stridedOutput[0].value, points[0]);
 	CheckVector(stridedOutput[1].value, points[1]);
-	CHECK_EQ(stridedOutput[0].padding, 321.0f);
-	CHECK_EQ(stridedOutput[1].padding, 654.0f);
+	CHECK((stridedOutput[0].padding) == (321.0f));
+	CHECK((stridedOutput[1].padding) == (654.0f));
 
 	matrix.transformVectors(&stridedOutput[0].value, sizeof(StridedVector),
 		&stridedInput[0].value, sizeof(StridedVector), stridedInput.size());
@@ -296,11 +296,11 @@ TEST_CASE("Mat4x4::format_and_stream")
 {
 	const Mat4x4 identity = Mat4x4::Identity();
 	const String expected = U"((1, 0, 0, 0),(0, 1, 0, 0),(0, 0, 1, 0),(0, 0, 0, 1))";
-	CHECK_EQ(Format(identity), expected);
+	CHECK((Format(identity)) == (expected));
 
 	std::stringstream output;
 	output << identity;
-	CHECK_EQ(output.str(), "((1, 0, 0, 0),(0, 1, 0, 0),(0, 0, 1, 0),(0, 0, 0, 1))");
+	CHECK((output.str()) == ("((1, 0, 0, 0),(0, 1, 0, 0),(0, 0, 1, 0),(0, 0, 0, 1))"));
 
 	std::stringstream input{ "((1, 0, 0, 0),(0, 2, 0, 0),(0, 0, 3, 0),(4, 5, 6, 1))" };
 	Mat4x4 parsed;

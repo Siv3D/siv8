@@ -50,8 +50,8 @@ namespace s3d
 
 		/// @brief ファイルパスがリソースのパスであるかを返します。
 		/// @param path ファイルパス
-		/// @remark 実際に存在するリソースのパスである必要はありません
-		/// @return リソースのパスである場合 true, それ以外の場合は false
+		/// @remark 実際に存在するリソースのパスである必要はありません。
+		/// @return リソースのパスである場合 true, 該当しない場合や判定できない場合は false
 		[[nodiscard]]
 		bool IsResourcePath(FilePathView path) noexcept;
 
@@ -63,7 +63,7 @@ namespace s3d
 
 		/// @brief 指定されたパスのファイルまたはディレクトリが存在するかを返します。
 		/// @param path パス
-		/// @return 指定されたパスのファイルまたはディレクトリが存在する場合 true, それ以外の場合は false
+		/// @return 存在する場合 true, 存在しない場合や判定できない場合は false
 		[[nodiscard]]
 		bool Exists(FilePathView path);
 
@@ -75,7 +75,7 @@ namespace s3d
 
 		/// @brief 指定したパスのディレクトリが存在するかを返します。
 		/// @param path ディレクトリのパス
-		/// @return 指定したパスのディレクトリが存在する場合 true, それ以外の場合は false
+		/// @return ディレクトリが存在する場合 true, 該当しない場合や判定できない場合は false
 		[[nodiscard]]
 		bool IsDirectory(FilePathView path);
 
@@ -87,7 +87,7 @@ namespace s3d
 
 		/// @brief 指定したパスのファイルが存在するかを返します。
 		/// @param path ファイルパス
-		/// @return 指定したパスのファイルが存在する場合 true, それ以外の場合は false
+		/// @return ファイルが存在する場合 true, 該当しない場合や判定できない場合は false
 		[[nodiscard]]
 		bool IsFile(FilePathView path);
 
@@ -111,8 +111,7 @@ namespace s3d
 
 		/// @brief 絶対パスを返します。
 		/// @param path パス
-		/// @remark 実際に存在するファイルやディレクトリのパスである必要はありません
-		/// @remark 例: "C:/Users/Siv/Desktop/picture.png"
+		/// @remark 実際に存在するファイルやディレクトリのパスである必要はありません。
 		/// @return 絶対パス。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath FullPath(FilePathView path);
@@ -137,15 +136,18 @@ namespace s3d
 
 		/// @brief ファイルの拡張子（.を含まない）を小文字にして返します。
 		/// @param path ファイルパス
-		/// @remark 例: "png"
-		/// @return 小文字の拡張子。失敗した場合は空の文字列
+		/// @remark 例: `dir/picture.PNG` → `png`。
+		/// @remark ファイル名の先頭に連続する `.` は拡張子の区切りとして扱いません。例: `.gitignore` は空、`dir/.config.txt` は `txt`。
+		/// @return 小文字の拡張子。拡張子がない場合は空の文字列
 		[[nodiscard]]
 		String Extension(FilePathView path);
 
 		/// @brief ファイルの拡張子（.を含まない）を返します。
 		/// @param path ファイルパス
 		/// @param preserveCase 大文字小文字を保持するか
-		/// @return 拡張子。失敗した場合は空の文字列
+		/// @remark 例: `dir/picture.PNG` は `PreserveCase::Yes` で `PNG`、`PreserveCase::No` で `png`。
+		/// @remark ファイル名の先頭に連続する `.` は拡張子の区切りとして扱いません。例: `.gitignore` は空、`dir/.config.txt` は `txt`。
+		/// @return 拡張子。拡張子がない場合は空の文字列
 		[[nodiscard]]
 		String Extension(FilePathView path, PreserveCase preserveCase);
 
@@ -157,8 +159,8 @@ namespace s3d
 
 		/// @brief 親ディレクトリを含まずに、ファイル名を返します。
 		/// @param path ファイルパス
-		/// @remark 例: "picture.png"
-		/// @return ファイル名。失敗した場合は空の文字列
+		/// @remark 例: `dir/picture.png` → `picture.png`、`dir/archive.tar.gz` → `archive.tar.gz`。
+		/// @return ファイル名。パスが空または区切り文字で終わる場合は空の文字列
 		[[nodiscard]]
 		String FileName(FilePathView path);
 
@@ -170,8 +172,8 @@ namespace s3d
 
 		/// @brief 親ディレクトリを含まずに、拡張子を除いたファイル名を返します。
 		/// @param path ファイルパス
-		/// @remark 例: "picture"
-		/// @return ファイル名。失敗した場合は空の文字列
+		/// @remark 例: `dir/picture.png` → `picture`、`dir/archive.tar.gz` → `archive.tar`、`.gitignore` → `.gitignore`。
+		/// @return 拡張子を除いたファイル名。パスが空または区切り文字で終わる場合は空の文字列
 		[[nodiscard]]
 		String BaseName(FilePathView path);
 
@@ -183,19 +185,15 @@ namespace s3d
 
 		/// @brief 指定したパスの親ディレクトリを返します。
 		/// @param path パス
-		/// @param level 親のレベル。大きいほど上位の親ディレクトリ
-		/// @remark level が 0 の場合は、指定したパスの親ディレクトリを返します。
-		/// @remark level が 1 の場合は、指定したパスの親ディレクトリの親ディレクトリを返します。
+		/// @param level 親のレベル。0 は親ディレクトリ、1 はその親ディレクトリ
 		/// @return 親ディレクトリ。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath ParentPath(FilePathView path, size_t level = 0);
 
 		/// @brief 指定したパスの親ディレクトリを返します。合わせて、渡したパスのフルパスを取得します。
 		/// @param path パス
-		/// @param level 親のレベル。大きいほど上位の親ディレクトリ
-		/// @param baseFullPath 渡したパスのフルパスを格納する変数への参照
-		/// @remark level が 0 の場合は、指定したパスの親ディレクトリを返します。
-		/// @remark level が 1 の場合は、指定したパスの親ディレクトリの親ディレクトリを返します。
+		/// @param level 親のレベル。0 は親ディレクトリ、1 はその親ディレクトリ
+		/// @param baseFullPath 渡したパスのフルパスを格納する変数への参照。パスが空またはフルパス取得に失敗した場合は空の文字列を格納します。
 		/// @return 親ディレクトリ。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath ParentPath(FilePathView path, size_t level, FilePath& baseFullPath);
@@ -233,7 +231,7 @@ namespace s3d
 
 		/// @brief 指定したパスが空のディレクトリであるかを返します。
 		/// @param path パス
-		/// @return 空のディレクトリである場合 true, それ以外の場合は false
+		/// @return 空のディレクトリである場合 true, 該当しない場合や中身を列挙できない場合は false
 		[[nodiscard]]
 		bool IsEmptyDirectory(FilePathView path);
 
@@ -245,7 +243,11 @@ namespace s3d
 
 		/// @brief 指定したファイルやディレクトリのサイズを返します。
 		/// @param path パス
-		/// @return ファイルやディレクトリのサイズ
+		/// @remark OS エラーで取得に失敗した場合は、部分合計を返さず 0 を返します。
+		/// @remark macOS / Linux では、集計中に見つかったディレクトリへのシンボリックリンクには再帰しません。ファイルへのシンボリックリンクはリンク先のサイズを加算します。
+		/// @remark Windows では、集計中に見つかったディレクトリのジャンクションやシンボリックリンクなど、別の場所を指す再解析ポイントには再帰しません。
+		/// @remark path に直接指定したディレクトリへのリンクはたどって集計します。
+		/// @return ファイルやディレクトリのサイズ（バイト）
 		[[nodiscard]]
 		uint64 Size(FilePathView path);
 
@@ -257,9 +259,7 @@ namespace s3d
 
 		/// @brief ファイルのサイズを返します。
 		/// @param path ファイルパス
-		/// @remark `FileSystem::Size()` と異なり、ディレクトリのサイズは取得できません。
-		/// @remark ファイルが存在しなかったり、空である場合は 0 を返します。
-		/// @return ファイルのサイズ
+		/// @return ファイルのサイズ（バイト）。ファイルが存在しない場合、ディレクトリの場合、取得に失敗した場合は 0
 		[[nodiscard]]
 		uint64 FileSize(FilePathView path);
 
@@ -271,7 +271,7 @@ namespace s3d
 
 		/// @brief ファイルの作成日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの作成日時。取得に失敗した場合 none
+		/// @return ファイルの作成日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> CreationTime(FilePathView path);
 
@@ -283,7 +283,7 @@ namespace s3d
 
 		/// @brief ファイルの最終更新日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの最終更新日時。取得に失敗した場合 none
+		/// @return ファイルの最終更新日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> WriteTime(FilePathView path);
 
@@ -295,7 +295,7 @@ namespace s3d
 
 		/// @brief ファイルの最終アクセス日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの最終アクセス日時。取得に失敗した場合 none
+		/// @return ファイルの最終アクセス日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> AccessTime(FilePathView path);
 
@@ -308,6 +308,8 @@ namespace s3d
 		/// @brief 指定したディレクトリの中身（パス）を取得します。
 		/// @param path ディレクトリのパス
 		/// @param recursive ディレクトリの中身にあるディレクトリの中身も取得する場合は `Recursive::Yes`, それ以外の場合は `Recursive::No`
+		/// @remark OS エラーで取得に失敗した場合は、部分結果を返さず空の一覧を返します。
+		/// @remark Windows では、列挙中に見つかったディレクトリのジャンクションやシンボリックリンクなど、別の場所を指す再解析ポイントは一覧に含めますが、その中には再帰しません。path に直接指定したディレクトリへのリンクはたどって列挙します。
 		/// @return 指定したディレクトリの中身（パス）の一覧
 		[[nodiscard]]
 		Array<FilePath> DirectoryContents(FilePathView path, Recursive recursive = Recursive::Yes);
@@ -352,7 +354,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在のカレントディレクトリを返します。
-		/// @return 現在のカレントディレクトリ
+		/// @return 現在のカレントディレクトリ。取得に失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath CurrentDirectory();
 
@@ -411,6 +413,9 @@ namespace s3d
 		/// @brief 相対パスを作成して返します。
 		/// @param path パス
 		/// @param start 相対パスの基準となるパス
+		/// @remark 相対パスの末尾の `/` は、対象の path がディレクトリであるかに基づいて付加されます。
+		/// @remark path または start の絶対パス取得に失敗した場合は空の文字列を返します。
+		/// @remark start の絶対パスを取得できてもディレクトリが存在しない場合は、path の絶対パスを返します。
 		/// @return start からみた path の相対パス
 		[[nodiscard]]
 		FilePath RelativePath(FilePathView path, FilePathView start = CurrentDirectory());
@@ -436,6 +441,7 @@ namespace s3d
 		/// @brief 指定したパスの親ディレクトリを作成します。
 		/// @param path パス
 		/// @remark 間のディレクトリが存在しない場合は自動的に作成します。
+		/// @remark 親ディレクトリがすでに存在する場合、書き込み可能かどうかは確認しません。
 		/// @return 作成に成功したか、すでに同名のディレクトリが存在する場合 true, それ以外の場合は false
 		bool CreateParentDirectories(FilePathView path);
 
@@ -473,7 +479,9 @@ namespace s3d
 		/// @brief 指定したディレクトリの中身を削除します。
 		/// @param path 中身を削除するディレクトリのパス
 		/// @param moveToTrash 削除したファイルやディレクトリをゴミ箱に送る場合 `MoveToTrash::Yes`, それ以外の場合は `MoveToTrash::No`
-		/// @remark この関数の実行後、指定したディレクトリは空の状態になります。
+		/// @remark ディレクトリ本体は削除・再作成しません。
+		/// @remark macOS / Linux では、path がディレクトリへのシンボリックリンクの場合、リンクとリンク先のディレクトリ本体を残して中身を削除します。中にあるシンボリックリンクはリンク自体を削除します。
+		/// @remark 途中で失敗した場合、すでに削除した項目は元に戻しません。
 		/// @return 削除に成功した場合 true, それ以外の場合は false
 		bool RemoveContents(FilePathView path, MoveToTrash moveToTrash = MoveToTrash::No);
 

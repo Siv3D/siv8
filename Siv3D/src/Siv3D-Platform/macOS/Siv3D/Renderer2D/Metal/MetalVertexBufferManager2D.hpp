@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Vertex2D.hpp>
-# include <Siv3D/Renderer/Metal/Metal.hpp>
+# include <Siv3D/Renderer/Metal/MetalFrameContext.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 
 namespace s3d
@@ -21,18 +21,13 @@ namespace s3d
 	{
 	public:
 		
-		static constexpr size_t MaxInflightBuffers = 3;
+		static constexpr size_t MaxInflightBuffers = MetalFrameContext::MaxInflightFrames;
 
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
 	
 		void init(MTL::Device* device);
 
-		void waitForFrame();
-		
-		dispatch_semaphore_t getSemaphore() const
-		{
-			return m_frameBoundarySemaphore;
-		}
+		void prepareFrame(size_t frameIndex);
 
 		const MTL::Buffer* getVertexBuffer() const
 		{
@@ -45,6 +40,8 @@ namespace s3d
 		}
 
 		Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
+
+		uint32 getBaseVertex() const noexcept;
 		
 		bool hasBatch() const noexcept;
 		
@@ -60,7 +57,8 @@ namespace s3d
 		
 		static constexpr uint32 MaxIndexBufferSize		= (1 << 22);	// 4,194,304
 		
-		static constexpr uint32 MaxVertexCountPerDraw	= 65535;
+		// GPU バッファの容量とは独立した、16 ビットで参照できる頂点区間の長さ
+		static constexpr uint32 MaxVertexCountPerRange	= (1 << 16);
 		
 		struct VertexBuffer
 		{
@@ -127,6 +125,8 @@ namespace s3d
 			VertexBuffer vertexBuffer;
 			
 			IndexBuffer indexBuffer;
+
+			uint32 baseVertex = 0;
 			
 			Vertex2DBufferPointer requestBuffer(MTL::Device* device, uint16 vertexCount, uint32 indexCount);
 		};
@@ -134,8 +134,6 @@ namespace s3d
 		MTL::Device* m_device = nullptr;
 	
 		std::array<Buffer, MaxInflightBuffers> m_buffers;
-		
-		dispatch_semaphore_t m_frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 		
 		size_t m_bufferIndex = 0;	
 	};

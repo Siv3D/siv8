@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "MetalInternalTexture2D.hpp"
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -51,6 +52,11 @@ namespace s3d
 
 		MetalInternalTexture2D texture;
 		texture.m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		if (not texture.m_texture)
+		{
+			throw InternalEngineError{ fmt::format("MTL::Device::newTexture() failed (size = {}x{}, sampleCount = 1)", size.x, size.y) };
+		}
+
 		texture.m_size = size;
 		texture.m_sampleCount = 1;
 
@@ -78,6 +84,11 @@ namespace s3d
 
 		MetalInternalTexture2D texture;
 		texture.m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		if (not texture.m_texture)
+		{
+			throw InternalEngineError{ fmt::format("MTL::Device::newTexture() failed (size = {}x{}, sampleCount = {})", size.x, size.y, sampleCount) };
+		}
+
 		texture.m_size = size;
 		texture.m_sampleCount = sampleCount;
 		

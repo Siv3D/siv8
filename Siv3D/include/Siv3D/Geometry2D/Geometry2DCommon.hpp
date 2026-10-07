@@ -17,6 +17,8 @@ namespace s3d
 {
 	namespace detail
 	{
+		inline constexpr double EllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
+
 		// Shared semantic classification for valid size-parameterized 2D shapes.
 		// Cheap local validity checks are Debug assertions only. NaN / infinity
 		// checks remain outside predicate hot paths.

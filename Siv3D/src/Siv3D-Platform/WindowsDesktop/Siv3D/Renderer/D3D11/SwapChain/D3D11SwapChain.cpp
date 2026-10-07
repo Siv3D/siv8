@@ -10,75 +10,29 @@
 //-----------------------------------------------
 
 # include "D3D11SwapChain.hpp"
+# include "../D3D11Diagnostics.hpp"
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
-# include <dwmapi.h>
 
 namespace s3d
 {
 	namespace
 	{
 		[[nodiscard]]
-		static bool CheckTearingSupport(const D3D11Device& device)
+		static bool CheckTearingSupport(IDXGIFactory2* factory)
 		{
-			if (IDXGIFactory6* factory = device.getDXGIFactory6())
-			{
-				BOOL allowTearing = FALSE;
-				
-				const HRESULT hr = factory->CheckFeatureSupport(
-					DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-					&allowTearing, sizeof(allowTearing));
-				
-				return (SUCCEEDED(hr) && (allowTearing == TRUE));
-			}
-			else
+			ComPtr<IDXGIFactory5> factory5;
+			if (FAILED(factory->QueryInterface(IID_PPV_ARGS(&factory5))))
 			{
 				return false;
 			}
-		}
 
-		[[nodiscard]]
-		static double ToRefreshRateHz(const uint64 count)
-		{
-			::LARGE_INTEGER frequency;
-			::QueryPerformanceFrequency(&frequency);
-			return (static_cast<double>(frequency.QuadPart) / count);
-		}
-
-		[[nodiscard]]
-		static double GetDisplayFrequency(IDXGISwapChain1* swapChain1)
-		{
-			ComPtr<IDXGIOutput> pOutput;
-
-			LOG_TRACE("IDXGISwapChain::GetContainingOutput()");
-
-			if (SUCCEEDED(swapChain1->GetContainingOutput(&pOutput)))
-			{
-				DXGI_OUTPUT_DESC desc;
-
-				LOG_TRACE("IDXGIOutput::GetDesc()");
-
-				if (SUCCEEDED(pOutput->GetDesc(&desc)))
-				{
-					LOG_TRACE("EnumDisplaySettingsW()");
-
-					DEVMODE devMode{};
-					devMode.dmSize = sizeof(DEVMODE);
-					::EnumDisplaySettingsW(desc.DeviceName, ENUM_CURRENT_SETTINGS, &devMode);
-
-					return devMode.dmDisplayFrequency;
-				}
-			}
-
-			LOG_TRACE("DwmGetCompositionTimingInfo()");
-
-			DWM_TIMING_INFO timingInfo{};
-			timingInfo.cbSize = sizeof(DWM_TIMING_INFO);
-			::DwmGetCompositionTimingInfo(nullptr, &timingInfo);
-
-			return ToRefreshRateHz(timingInfo.qpcRefreshPeriod);
+			BOOL allowTearing = FALSE;
+			const HRESULT hr = factory5->CheckFeatureSupport(
+				DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
+			return (SUCCEEDED(hr) && (allowTearing == TRUE));
 		}
 	}
 
@@ -98,19 +52,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11SwapChain::init(const HWND hWnd, const D3D11Device& device, const Size& frameBufferSize)
+	void D3D11SwapChain::init(const HWND hWnd, IDXGIFactory2* factory, ID3D11Device* device, const Size& frameBufferSize)
 	{
 		LOG_SCOPED_DEBUG("D3D11SwapChain::init()");
 
 		m_hWnd = hWnd;
-		m_device = device.getDevice();
-		m_context = device.getContext();
-		m_dxgiDevice1 = device.getDXGIDevice1();
-		m_tearingSupport = CheckTearingSupport(device);
 
-		const bool useFlipModel = device.supportsDXGI1_4();
-		const bool useWaitableObject = useFlipModel;
+		const bool allowTearing = CheckTearingSupport(factory);
 
+		// Windows 10 and later support flip discard and frame-latency waitable objects.
 		const DXGI_SWAP_CHAIN_DESC1 desc =
 		{
 			.Width				= static_cast<uint32>(frameBufferSize.x),
@@ -121,39 +71,45 @@ namespace s3d
 			.BufferUsage		= DXGI_USAGE_RENDER_TARGET_OUTPUT,
 			.BufferCount		= 3,
 			.Scaling			= DXGI_SCALING_STRETCH,
-			.SwapEffect			= (useFlipModel ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD),
+			.SwapEffect			= DXGI_SWAP_EFFECT_FLIP_DISCARD,
 			.AlphaMode			= DXGI_ALPHA_MODE_IGNORE,
 			.Flags				= static_cast<uint32>(
-									 (useFlipModel && m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0) |
-									 (useWaitableObject ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT : 0))
+									 (allowTearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0) |
+									 DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT)
 		};
 
 		// Swap chain を作成する
 		{
 			LOG_DEBUG("IDXGIFactory2::CreateSwapChainForHwnd()");
 
-			if (FAILED(device.getDXGIFactory2()->CreateSwapChainForHwnd(
-				m_device,
+			if (const HRESULT hr = factory->CreateSwapChainForHwnd(
+				device,
 				hWnd,
 				&desc,
 				nullptr,
 				nullptr,
-				&m_swapChain1)))
+				&m_swapChain1); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIFactory2::CreateSwapChainForHwnd() failed" };
+				throw InternalEngineError{ fmt::format(
+					"IDXGIFactory2::CreateSwapChainForHwnd() failed: size={}x{}, format={}, buffers={}, swapEffect={}, flags=0x{:08X}, HRESULT={}",
+					desc.Width, desc.Height, static_cast<uint32>(desc.Format), desc.BufferCount,
+					static_cast<uint32>(desc.SwapEffect), desc.Flags, D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 		}
 
-		if (useWaitableObject)
-		{
-			if (SUCCEEDED(m_swapChain1.As(&m_swapChain2)))
-			{
-				LOG_TRACE(fmt::format("IDXGISwapChain2::SetMaximumFrameLatency({})", m_maximumFrameLatency));
-				m_swapChain2->SetMaximumFrameLatency(m_maximumFrameLatency);
+		// Present must use the flags enabled for this swap chain, not just the factory's capabilities.
+		m_nonVSyncPresentFlags = ((desc.Flags & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING) ? DXGI_PRESENT_ALLOW_TEARING : 0);
 
-				LOG_TRACE("IDXGISwapChain2::GetFrameLatencyWaitableObject()");
-				m_waitableObject = m_swapChain2->GetFrameLatencyWaitableObject();
-			}
+		ComPtr<IDXGISwapChain2> swapChain2;
+		if (const HRESULT hr = m_swapChain1.As(&swapChain2); FAILED(hr))
+		{
+			throw InternalEngineError{ fmt::format("IDXGISwapChain1::QueryInterface(IDXGISwapChain2) failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
+		}
+
+		LOG_TRACE(fmt::format("IDXGISwapChain2::SetMaximumFrameLatency({})", DefaultMaximumFrameLatency));
+		if (const HRESULT hr = swapChain2->SetMaximumFrameLatency(DefaultMaximumFrameLatency); FAILED(hr))
+		{
+			throw InternalEngineError{ fmt::format("IDXGISwapChain2::SetMaximumFrameLatency() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 		}
 
 		{
@@ -161,20 +117,20 @@ namespace s3d
 
 			constexpr uint32 Flags = (DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
-			if (FAILED(device.getDXGIFactory2()->MakeWindowAssociation(hWnd, Flags)))
+			if (const HRESULT hr = factory->MakeWindowAssociation(hWnd, Flags); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIFactory::MakeWindowAssociation() failed" };
+				throw InternalEngineError{ fmt::format("IDXGIFactory::MakeWindowAssociation() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 		}
 
+		LOG_TRACE("IDXGISwapChain2::GetFrameLatencyWaitableObject()");
+		m_waitableObject = swapChain2->GetFrameLatencyWaitableObject();
 		if (not m_waitableObject)
 		{
-			LOG_TRACE(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
-			m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
+			throw InternalEngineError{ "IDXGISwapChain2::GetFrameLatencyWaitableObject() failed" };
 		}
 
-		m_displayFrequency = GetDisplayFrequency(m_swapChain1.Get());
-		LOG_INFO(fmt::format("ℹ️ Display refresh rate: {:.1f} Hz", m_displayFrequency));
+		m_displayFrequency.update(m_hWnd);
 
 		m_previousWindowBounds = Window::GetState().bounds;
 	}
@@ -190,20 +146,27 @@ namespace s3d
 		if (const Rect windowBounds = Window::GetState().bounds;
 			windowBounds != m_previousWindowBounds)
 		{
-			m_displayFrequency		= GetDisplayFrequency(m_swapChain1.Get());
-			m_previousWindowBounds	= windowBounds;
-			
-			LOG_INFO(fmt::format("ℹ️ Display refresh rate: {:.1f} Hz", m_displayFrequency));
+			m_displayFrequency.update(m_hWnd);
+			m_previousWindowBounds = windowBounds;
 		}
 
-		if (m_vSyncEnabled)
+		const uint32 syncInterval = (m_vSyncEnabled ? 1u : 0u);
+		const uint32 flags = (m_vSyncEnabled ? 0u : m_nonVSyncPresentFlags);
+		const HRESULT hr = m_swapChain1->Present(syncInterval, flags);
+
+		if (hr == DXGI_STATUS_OCCLUDED)
 		{
-			return presentVSync();
+			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
+			return true;
 		}
-		else
+
+		if (FAILED(hr))
 		{
-			return presentNonVSync();
+			LOG_FAIL(D3D11Diagnostics::GetPresentFailureMessage(m_swapChain1.Get(), hr, syncInterval, flags));
+			return false;
 		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -242,55 +205,4 @@ namespace s3d
 		return m_vSyncEnabled;
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool D3D11SwapChain::presentVSync()
-	{
-		const HRESULT hr = m_swapChain1->Present(1, 0);
-
-		if (hr == DXGI_STATUS_OCCLUDED)
-		{
-			::Sleep(static_cast<int32>((1000 / m_displayFrequency) * 0.9));
-		}
-		else if (hr == DXGI_ERROR_DEVICE_RESET)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
-			return false;
-		}
-		else if (hr == DXGI_ERROR_DEVICE_REMOVED)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
-			return false;
-		}
-
-		return true;
-	}
-
-	bool D3D11SwapChain::presentNonVSync()
-	{
-		const UINT presentFlags = (m_tearingSupport ? DXGI_PRESENT_ALLOW_TEARING : 0);
-		
-		const HRESULT hr = m_swapChain1->Present(0, presentFlags);
-
-		if (hr == DXGI_STATUS_OCCLUDED)
-		{
-			::Sleep(static_cast<int32>((1000 / m_displayFrequency) * 0.9));
-		}
-		else if (hr == DXGI_ERROR_DEVICE_RESET)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
-			return false;
-		}
-		else if (hr == DXGI_ERROR_DEVICE_REMOVED)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
-			return false;
-		}
-
-		return true;
-	}
 }

@@ -18,7 +18,7 @@ namespace s3d::Mesh3DTest
 	template <class Sections, class Heights>
 	Array<LoftSection> LoftSections(const Sections& sections, const Heights& heights)
 	{
-		REQUIRE_EQ(sections.size(), heights.size());
+		REQUIRE((sections.size()) == (heights.size()));
 		Array<LoftSection> result;
 		result.reserve(sections.size());
 		for (size_t i = 0; i < sections.size(); ++i)
@@ -46,8 +46,8 @@ namespace s3d::Mesh3DTest
 		CHECK(std::isfinite(vertex.pos.z));
 		CHECK(std::isfinite(vertex.tex.x));
 		CHECK(std::isfinite(vertex.tex.y));
-		CHECK(vertex.normal.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-		CHECK(vertex.tangent.xyz().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.length() == Test::Approx(1.0f).epsilon(FrameEpsilon));
+		CHECK(vertex.tangent.xyz().length() == Test::Approx(1.0f).epsilon(FrameEpsilon));
 		CHECK(std::abs(vertex.normal.dot(vertex.tangent.xyz())) < FrameEpsilon);
 
 		if (tangentHandedness == TangentHandedness::Positive)
@@ -59,7 +59,7 @@ namespace s3d::Mesh3DTest
 			CHECK(std::abs(std::abs(vertex.tangent.w) - 1.0f) < FrameEpsilon);
 		}
 
-		CHECK(vertex.bitangent().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		CHECK(vertex.bitangent().length() == Test::Approx(1.0f).epsilon(FrameEpsilon));
 	}
 
 	inline void CheckMeshGeometry(
@@ -89,22 +89,22 @@ namespace s3d::Mesh3DTest
 
 	inline void CheckMeshDataEqual(const Mesh3D& actual, const Mesh3D& expected)
 	{
-		REQUIRE_EQ(actual.vertexCount(), expected.vertexCount());
-		REQUIRE_EQ(actual.triangleCount(), expected.triangleCount());
+		REQUIRE((actual.vertexCount()) == (expected.vertexCount()));
+		REQUIRE((actual.triangleCount()) == (expected.triangleCount()));
 
 		for (size_t i = 0; i < actual.vertexCount(); ++i)
 		{
-			CHECK_EQ(actual.vertices[i].pos, expected.vertices[i].pos);
-			CHECK_EQ(actual.vertices[i].normal, expected.vertices[i].normal);
-			CHECK_EQ(actual.vertices[i].tex, expected.vertices[i].tex);
-			CHECK_EQ(actual.vertices[i].tangent, expected.vertices[i].tangent);
+			CHECK((actual.vertices[i].pos) == (expected.vertices[i].pos));
+			CHECK((actual.vertices[i].normal) == (expected.vertices[i].normal));
+			CHECK((actual.vertices[i].tex) == (expected.vertices[i].tex));
+			CHECK((actual.vertices[i].tangent) == (expected.vertices[i].tangent));
 		}
 
 		for (size_t i = 0; i < actual.triangleCount(); ++i)
 		{
-			CHECK_EQ(actual.indices[i].i0, expected.indices[i].i0);
-			CHECK_EQ(actual.indices[i].i1, expected.indices[i].i1);
-			CHECK_EQ(actual.indices[i].i2, expected.indices[i].i2);
+			CHECK((actual.indices[i].i0) == (expected.indices[i].i0));
+			CHECK((actual.indices[i].i1) == (expected.indices[i].i1));
+			CHECK((actual.indices[i].i2) == (expected.indices[i].i2));
 		}
 	}
 }

@@ -17,6 +17,8 @@ namespace s3d
 	namespace TextEffect
 	{
 		/// @brief 文字を四角形にワープさせるテキスト描画エフェクト
+		/// @remark Local と Camera の適用後に射影変換を行い、外側の ScopedQuadWarp2D と合成します。
+		/// @remark 変換先が非凸または退化している場合や、Local と Camera によってグリフが潰れる場合は描画しません。
 		class QuadWarp : public BasicTextEffect
 		{
 		public:

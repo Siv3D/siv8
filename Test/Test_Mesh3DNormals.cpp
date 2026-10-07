@@ -50,16 +50,16 @@ namespace
 			vertex.tangent = Float4{ 0.0f, 0.0f, 0.0f, 0.0f };
 		}
 
-		CHECK_EQ(&mesh.computeTangents(), &mesh);
+		CHECK((&mesh.computeTangents()) == (&mesh));
 		REQUIRE(mesh.validate());
-		CHECK_EQ(mesh.triangleCount(), source.triangleCount());
+		CHECK((mesh.triangleCount()) == (source.triangleCount()));
 		REQUIRE(mesh.vertexCount() >= source.vertexCount());
 
 		for (size_t i = 0; i < source.vertexCount(); ++i)
 		{
-			CHECK_EQ(mesh.vertices[i].pos, source.vertices[i].pos);
-			CHECK_EQ(mesh.vertices[i].tex, source.vertices[i].tex);
-			CHECK_EQ(mesh.vertices[i].normal, source.vertices[i].normal);
+			CHECK((mesh.vertices[i].pos) == (source.vertices[i].pos));
+			CHECK((mesh.vertices[i].tex) == (source.vertices[i].tex));
+			CHECK((mesh.vertices[i].normal) == (source.vertices[i].normal));
 		}
 
 		for (size_t i = 0; i < mesh.vertexCount(); ++i)
@@ -98,7 +98,7 @@ namespace
 			{
 				const Float3 expectedBitangent = (
 					actual.normal.cross(expectedTangent.xyz()) * expectedTangent.w);
-				CHECK(actual.tangent.w == doctest::Approx(expectedTangent.w).epsilon(Epsilon));
+				CHECK(actual.tangent.w == Test::Approx(expectedTangent.w).epsilon(Epsilon));
 				CHECK(actual.tangent.xyz().dot(expectedTangent.xyz()) > 0.0f);
 				CHECK(actual.bitangent().dot(expectedBitangent) > 0.0f);
 			}
@@ -114,7 +114,7 @@ TEST_CASE("Mesh3D::computeNormals winding")
 		vertex.normal = Float3{ 0.25f, 0.5f, 0.75f };
 	}
 
-	CHECK_EQ(&mesh.computeNormals(), &mesh);
+	CHECK((&mesh.computeNormals()) == (&mesh));
 
 	const std::array<Float3, 6> expectedNormals{
 		-Float3::UnitZ(),
@@ -155,7 +155,7 @@ TEST_CASE("Mesh3D::computeNormals shared vertices")
 
 	mesh.computeNormals();
 
-	REQUIRE_EQ(mesh.vertexCount(), size_t{ 9 });
+	REQUIRE((mesh.vertexCount()) == (size_t{ 9 }));
 	for (const Vertex3D& vertex : mesh.vertices)
 	{
 		CHECK(vertex.normal.epsilonEquals(Float3::UnitY(), Epsilon));
@@ -177,9 +177,9 @@ TEST_CASE("Mesh3D::computeNormals weighting")
 	const Float3 areaNormal = area.vertices[0].normal;
 	const Float3 uniformNormal = uniform.vertices[0].normal;
 
-	CHECK(angleNormal.length() == doctest::Approx(1.0f).epsilon(Epsilon));
-	CHECK(areaNormal.length() == doctest::Approx(1.0f).epsilon(Epsilon));
-	CHECK(uniformNormal.length() == doctest::Approx(1.0f).epsilon(Epsilon));
+	CHECK(angleNormal.length() == Test::Approx(1.0f).epsilon(Epsilon));
+	CHECK(areaNormal.length() == Test::Approx(1.0f).epsilon(Epsilon));
+	CHECK(uniformNormal.length() == Test::Approx(1.0f).epsilon(Epsilon));
 	CHECK_FALSE(angleNormal.epsilonEquals(areaNormal, Epsilon));
 	CHECK_FALSE(angleNormal.epsilonEquals(uniformNormal, Epsilon));
 	CHECK_FALSE(areaNormal.epsilonEquals(uniformNormal, Epsilon));
@@ -191,31 +191,31 @@ TEST_CASE("Mesh3D::computeNormals weighting")
 
 TEST_CASE("Mesh3D::computeNormals boundaries and failure")
 {
-	SUBCASE("Empty mesh")
+	SECTION("Empty mesh")
 	{
 		Mesh3D mesh;
-		CHECK_EQ(&mesh.computeNormals(), &mesh);
+		CHECK((&mesh.computeNormals()) == (&mesh));
 		CHECK(mesh.isEmpty());
 	}
 
-	SUBCASE("Vertices without triangles")
+	SECTION("Vertices without triangles")
 	{
 		Mesh3D mesh = Mesh3D::Plane(SizeF{ 2.0, 2.0 });
 		mesh.indices.clear();
 		const Array<Vertex3D> expectedVertices = mesh.vertices;
 
-		CHECK_EQ(&mesh.computeNormals(), &mesh);
-		REQUIRE_EQ(mesh.vertices.size(), expectedVertices.size());
+		CHECK((&mesh.computeNormals()) == (&mesh));
+		REQUIRE((mesh.vertices.size()) == (expectedVertices.size()));
 		for (size_t i = 0; i < mesh.vertices.size(); ++i)
 		{
-			CHECK_EQ(mesh.vertices[i].pos, expectedVertices[i].pos);
-			CHECK_EQ(mesh.vertices[i].normal, expectedVertices[i].normal);
-			CHECK_EQ(mesh.vertices[i].tex, expectedVertices[i].tex);
-			CHECK_EQ(mesh.vertices[i].tangent, expectedVertices[i].tangent);
+			CHECK((mesh.vertices[i].pos) == (expectedVertices[i].pos));
+			CHECK((mesh.vertices[i].normal) == (expectedVertices[i].normal));
+			CHECK((mesh.vertices[i].tex) == (expectedVertices[i].tex));
+			CHECK((mesh.vertices[i].tangent) == (expectedVertices[i].tangent));
 		}
 	}
 
-	SUBCASE("Degenerate triangle mixed with a valid triangle")
+	SECTION("Degenerate triangle mixed with a valid triangle")
 	{
 		Mesh3D mesh{
 			{
@@ -234,10 +234,10 @@ TEST_CASE("Mesh3D::computeNormals boundaries and failure")
 		CHECK(mesh.vertices[0].normal.epsilonEquals(Float3::UnitZ(), Epsilon));
 		CHECK(mesh.vertices[1].normal.epsilonEquals(Float3::UnitZ(), Epsilon));
 		CHECK(mesh.vertices[2].normal.epsilonEquals(Float3::UnitZ(), Epsilon));
-		CHECK_EQ(mesh.vertices[3].normal, Float3::Zero());
+		CHECK((mesh.vertices[3].normal) == (Float3::Zero()));
 	}
 
-	SUBCASE("Invalid index")
+	SECTION("Invalid index")
 	{
 		Mesh3D mesh{
 			{
@@ -253,27 +253,27 @@ TEST_CASE("Mesh3D::computeNormals boundaries and failure")
 		const Array<Vertex3D> expectedVertices = mesh.vertices;
 
 		CHECK_THROWS_AS(mesh.computeNormals(), Error);
-		REQUIRE_EQ(mesh.vertices.size(), expectedVertices.size());
+		REQUIRE((mesh.vertices.size()) == (expectedVertices.size()));
 		for (size_t i = 0; i < mesh.vertices.size(); ++i)
 		{
-			CHECK_EQ(mesh.vertices[i].normal, expectedVertices[i].normal);
+			CHECK((mesh.vertices[i].normal) == (expectedVertices[i].normal));
 		}
 	}
 }
 
 TEST_CASE("Mesh3D::computeTangents generated mesh conventions")
 {
-	SUBCASE("Box")
+	SECTION("Box")
 	{
 		CheckComputedTangents("Box", Mesh3D::Box());
 	}
 
-	SUBCASE("Grid")
+	SECTION("Grid")
 	{
 		CheckComputedTangents("Grid", Mesh3D::Grid(SizeF{ 2.0, 2.0 }, 2, 2));
 	}
 
-	SUBCASE("Sphere")
+	SECTION("Sphere")
 	{
 		CheckComputedTangents(
 			"Sphere",
@@ -281,7 +281,7 @@ TEST_CASE("Mesh3D::computeTangents generated mesh conventions")
 			TangentComparison::Orientation);
 	}
 
-	SUBCASE("Revolve")
+	SECTION("Revolve")
 	{
 		const Array<Vec2> profile{ { 1.0, -1.0 }, { 1.0, 1.0 } };
 		CheckComputedTangents("Revolve", Mesh3D::Revolve(profile, RevolveOptions{ .segments = 16 }));
@@ -290,31 +290,31 @@ TEST_CASE("Mesh3D::computeTangents generated mesh conventions")
 
 TEST_CASE("Mesh3D::computeTangents boundaries and failure")
 {
-	SUBCASE("Empty mesh")
+	SECTION("Empty mesh")
 	{
 		Mesh3D mesh;
-		CHECK_EQ(&mesh.computeTangents(), &mesh);
+		CHECK((&mesh.computeTangents()) == (&mesh));
 		CHECK(mesh.isEmpty());
 	}
 
-	SUBCASE("Vertices without triangles")
+	SECTION("Vertices without triangles")
 	{
 		Mesh3D mesh = Mesh3D::Plane(SizeF{ 2.0, 2.0 });
 		mesh.indices.clear();
 		const Array<Vertex3D> expectedVertices = mesh.vertices;
 
-		CHECK_EQ(&mesh.computeTangents(), &mesh);
-		REQUIRE_EQ(mesh.vertices.size(), expectedVertices.size());
+		CHECK((&mesh.computeTangents()) == (&mesh));
+		REQUIRE((mesh.vertices.size()) == (expectedVertices.size()));
 		for (size_t i = 0; i < mesh.vertices.size(); ++i)
 		{
-			CHECK_EQ(mesh.vertices[i].pos, expectedVertices[i].pos);
-			CHECK_EQ(mesh.vertices[i].normal, expectedVertices[i].normal);
-			CHECK_EQ(mesh.vertices[i].tex, expectedVertices[i].tex);
-			CHECK_EQ(mesh.vertices[i].tangent, expectedVertices[i].tangent);
+			CHECK((mesh.vertices[i].pos) == (expectedVertices[i].pos));
+			CHECK((mesh.vertices[i].normal) == (expectedVertices[i].normal));
+			CHECK((mesh.vertices[i].tex) == (expectedVertices[i].tex));
+			CHECK((mesh.vertices[i].tangent) == (expectedVertices[i].tangent));
 		}
 	}
 
-	SUBCASE("Degenerate UV basis")
+	SECTION("Degenerate UV basis")
 	{
 		Mesh3D mesh = Mesh3D::Grid(SizeF{ 2.0, 2.0 }, 2, 2);
 		for (Vertex3D& vertex : mesh.vertices)
@@ -329,7 +329,7 @@ TEST_CASE("Mesh3D::computeTangents boundaries and failure")
 		}
 	}
 
-	SUBCASE("Invalid normal")
+	SECTION("Invalid normal")
 	{
 		Mesh3D mesh = Mesh3D::Plane(SizeF{ 2.0, 2.0 });
 		mesh.vertices[0].normal = Float3::Zero();

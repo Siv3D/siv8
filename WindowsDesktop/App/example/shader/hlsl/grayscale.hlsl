@@ -1,4 +1,19 @@
-﻿Texture2D		g_texture0 : register(t0);
+//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+// PS_Grayscale: Convert the final tinted/added texture color to grayscale.
+// Ordinary textures only. Uses the standard PS buffer, texture 0, and sampler 0.
+// Vertex color and standard color multiplication/addition precede the effect.
+
+Texture2D		g_texture0 : register(t0);
 SamplerState	g_sampler0 : register(s0);
 
 struct PSInput
@@ -26,6 +41,6 @@ inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorP
 float4 PS_Grayscale(PSInput input) : SV_TARGET
 {
 	const float4 colorPMA = s3d_textureColor(input.colorPMA, g_texture0.Sample(g_sampler0, input.uv));
-	const float yPMA = dot(colorPMA.rgb, float3(0.299, 0.587, 0.114));
+	const float yPMA = dot(colorPMA.rgb, float3(0.299f, 0.587f, 0.114f));
 	return float4(yPMA, yPMA, yPMA, colorPMA.a);
 }

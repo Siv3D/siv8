@@ -12,7 +12,7 @@
 # pragma once
 
 namespace s3d
-{		
+{
 	////////////////////////////////////////////////////////////////
 	//
 	//	get
@@ -34,6 +34,11 @@ namespace s3d
 		return m_buffer;
 	}
 
+	inline const char8* UTF32toUTF8_Converter::data() const noexcept
+	{
+		return m_buffer.data();
+	}
+
 	inline std::array<char8, 4>::const_iterator UTF32toUTF8_Converter::begin() const noexcept
 	{
 		return m_buffer.begin();
@@ -42,6 +47,11 @@ namespace s3d
 	inline std::array<char16, 2> UTF32toUTF16_Converter::get() const noexcept
 	{
 		return m_buffer;
+	}
+
+	inline const char16* UTF32toUTF16_Converter::data() const noexcept
+	{
+		return m_buffer.data();
 	}
 
 	inline std::array<char16, 2>::const_iterator UTF32toUTF16_Converter::begin() const noexcept

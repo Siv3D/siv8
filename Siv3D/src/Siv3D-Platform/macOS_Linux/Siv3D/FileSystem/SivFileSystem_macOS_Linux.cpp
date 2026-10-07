@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # include <sys/stat.h>
+# include <algorithm>
 # include <filesystem>
+# include <limits>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 
@@ -25,18 +27,55 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static bool GetStat(const FilePathView _path, struct stat& s)
+		static bool GetStat(std::string path, struct stat& s)
 		{
-			const std::string path = Unicode::ToUTF8(FilePath{ _path }.replaced(U'\\', U'/'));
+			std::replace(path.begin(), path.end(), '\\', '/');
 			return (::stat(path.c_str(), &s) == 0);
+		}
+
+		[[nodiscard]]
+		static bool GetStat(const FilePathView path, struct stat& s)
+		{
+			return GetStat(Unicode::ToUTF8(path), s);
 		}
 	
 		[[nodiscard]]
-		static DateTime ToDateTime(const ::timespec& tv)
+		static FilePath GetFullPath(const std::filesystem::path& path)
+		{
+			if (path.empty())
+			{
+				return{};
+			}
+
+			std::error_code error;
+			const std::filesystem::path nativeFullPath = std::filesystem::weakly_canonical(path, error);
+			if (error)
+			{
+				return{};
+			}
+
+			FilePath fullpath = Unicode::FromUTF8(nativeFullPath.native());
+
+			struct stat s;
+			if (fullpath && GetStat(nativeFullPath.native(), s)
+				&& S_ISDIR(s.st_mode) && (not fullpath.ends_with(U'/')))
+			{
+				fullpath.push_back(U'/');
+			}
+
+			return fullpath;
+		}
+
+		[[nodiscard]]
+		static Optional<DateTime> ToDateTime(const ::timespec& tv)
 		{
 			::tm lt;
-			::localtime_r(&tv.tv_sec, &lt);
-			return{ (1900 + lt.tm_year),
+			if ((not ::localtime_r(&tv.tv_sec, &lt))
+				|| (lt.tm_year > (std::numeric_limits<int32>::max() - 1900)))
+			{
+				return none;
+			}
+			return DateTime{ (1900 + lt.tm_year),
 					(1 + lt.tm_mon),
 					(lt.tm_mday),
 					lt.tm_hour,
@@ -56,19 +95,7 @@ namespace s3d
 
 		FilePath FullPath(const FilePathView path)
 		{
-			if (path.isEmpty())
-			{
-				return{};
-			}
-
-			FilePath fullpath = Unicode::FromUTF8(std::filesystem::weakly_canonical(detail::ToPath(path)).string());
-			
-			if (IsDirectory(fullpath) && (not fullpath.ends_with(U'/')))
-			{
-				fullpath.push_back(U'/');
-			}
-			
-			return fullpath;
+			return detail::GetFullPath(detail::ToPath(path));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -142,7 +169,14 @@ namespace s3d
 	
 		FilePath CurrentDirectory()
 		{
-			FilePath currentDirectory = Unicode::FromUTF8(std::filesystem::current_path().string());
+			std::error_code error;
+			const std::filesystem::path nativeCurrentDirectory = std::filesystem::current_path(error);
+			if (error)
+			{
+				return{};
+			}
+
+			FilePath currentDirectory = Unicode::FromUTF8(nativeCurrentDirectory.native());
 			
 			if (not currentDirectory.ends_with(U'/'))
 			{
@@ -165,10 +199,16 @@ namespace s3d
 				return 0;
 			}
 
-			const FilePath fullPath = FullPath(path);
+			// Keep link and .. resolution consistent with FullPath().
+			std::error_code error;
+			const std::filesystem::path fullPath = std::filesystem::weakly_canonical(detail::ToPath(path), error);
+			if (error)
+			{
+				return 0;
+			}
 			
 			struct stat s;
-			if (not detail::GetStat(fullPath, s))
+			if (not detail::GetStat(fullPath.native(), s))
 			{
 				return 0;
 			}
@@ -180,17 +220,30 @@ namespace s3d
 			else if (S_ISDIR(s.st_mode))
 			{
 				uint64 result = 0;
-
-				for (const auto& v : std::filesystem::recursive_directory_iterator(Unicode::ToUTF8(path)))
+				std::filesystem::recursive_directory_iterator it{ fullPath, error };
+				if (error)
 				{
-					struct stat s;
-					
-					if ((::stat(v.path().c_str(), &s) != 0) || S_ISDIR(s.st_mode))
+					return 0;
+				}
+
+				const std::filesystem::recursive_directory_iterator end;
+				while (it != end)
+				{
+					struct stat entryStat;
+					if (::stat(it->path().c_str(), &entryStat) != 0)
 					{
-						continue;
+						return 0;
+					}
+					if (not S_ISDIR(entryStat.st_mode))
+					{
+						result += entryStat.st_size;
 					}
 
-					result += s.st_size;
+					it.increment(error);
+					if (error)
+					{
+						return 0;
+					}
 				}
 				
 				return result;
@@ -230,23 +283,105 @@ namespace s3d
 	
 		////////////////////////////////////////////////////////////////
 		//
+		//	DirectoryContents
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
+		{
+			Array<FilePath> paths;
+
+			if (path.isEmpty())
+			{
+				return paths;
+			}
+
+			std::error_code error;
+			const auto appendPaths = [&paths, &error](auto it)
+			{
+				const decltype(it) end;
+				while (it != end)
+				{
+					FilePath fullPath = detail::GetFullPath(it->path());
+					if (fullPath.isEmpty())
+					{
+						return false;
+					}
+					paths.push_back(std::move(fullPath));
+					it.increment(error);
+					if (error)
+					{
+						return false;
+					}
+				}
+				return (not error);
+			};
+
+			if (recursive)
+			{
+				if (not appendPaths(std::filesystem::recursive_directory_iterator{ detail::ToPath(path), error }))
+				{
+					return{};
+				}
+			}
+			else
+			{
+				if (not appendPaths(std::filesystem::directory_iterator{ detail::ToPath(path), error }))
+				{
+					return{};
+				}
+			}
+
+			return paths;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	RemoveContents
 		//
 		////////////////////////////////////////////////////////////////
 	
 		bool RemoveContents(const FilePathView path, const MoveToTrash moveToTrash)
 		{
-			if (not IsDirectory(path))
+			if (path.isEmpty() || IsResourcePath(path))
 			{
 				return false;
 			}
 
-			if (not Remove(path, moveToTrash))
+			std::error_code error;
+			std::filesystem::directory_iterator it{ detail::ToPath(path), error };
+			if (error)
 			{
 				return false;
 			}
 
-			return CreateDirectories(path);
+			const std::filesystem::directory_iterator end;
+			while (it != end)
+			{
+				if (moveToTrash)
+				{
+					if (not Remove(Unicode::FromUTF8(it->path().native()), MoveToTrash::Yes))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					std::filesystem::remove_all(it->path(), error);
+					if (error)
+					{
+						return false;
+					}
+				}
+
+				it.increment(error);
+				if (error)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

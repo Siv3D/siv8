@@ -20,6 +20,26 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		/// @defgroup geometry2d_intersection_points 交点配列の取得
+		/// @ingroup geometry2d_queries
+		/// @brief IntersectsAt() と各図形の intersectsAt() の返り値。
+		///
+		/// | 返り値 | 意味 |
+		/// |---|---|
+		/// | none | Intersects() が false と判定した。 |
+		/// | 空配列 | Intersects() は true だが、列挙できた孤立点はない。 |
+		/// | 空でない配列 | 列挙できた孤立点の座標。 |
+		///
+		/// 図形同士の共有部分の孤立点、および境界同士の孤立した交点を返します。
+		/// 点・線分・曲線では、その点集合全体を境界として扱います。共有線分・共有曲線とその端点は列挙しません。
+		/// 例えば、長方形の内部にある点との交差はその点を返し、内部に収まる長さのある線分との交差は空配列を返します。
+		/// 境界を横切る線分では境界上の交点を返します。返す座標の順序は未規定で、近接した交点を一つにまとめる場合があります。
+		///
+		/// Bezier 曲線同士、および n が 1, 2 以外の SuperEllipse と曲線との交点は、処理量に上限を設けた近似計算です。
+		/// 交点を取りこぼす場合があるため、空配列は数学的な孤立点が存在しないことを保証しません。
+		/// @see @ref geometry2d_queries
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	IntersectsAt(Point, _)
@@ -883,5 +903,7 @@ namespace s3d
 
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const MultiPolygon& a, const MultiPolygon& b);
+
+		/// @}
 	}
 }

@@ -157,12 +157,12 @@ namespace s3d
 					if (const size_t length = translator.put(codePoint);
 						length == 1)
 					{
-						buffer.push_back(translator.get()[0]);
+						buffer.push_back(translator.data()[0]);
 					}
 					else
 					{
-						buffer.push_back(translator.get()[0]);
-						buffer.push_back(translator.get()[1]);
+						buffer.push_back(translator.data()[0]);
+						buffer.push_back(translator.data()[1]);
 					}
 				}
 
@@ -201,11 +201,11 @@ namespace s3d
 					if (const size_t length = translator.put(codePoint);
 						length == 1)
 					{
-						buffer.push_back(translator.get()[0]);
+						buffer.push_back(translator.data()[0]);
 					}
 					else
 					{
-						buffer.append(translator.get().begin(), (translator.get().begin() + length));
+						buffer.append(translator.data(), (translator.data() + length));
 					}
 				}
 

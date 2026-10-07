@@ -13,6 +13,7 @@
 # include <memory>
 # include "Array.hpp"
 # include "Common.hpp"
+# include "Geometry2D/Geometry2DConcepts.hpp"
 # include "Optional.hpp"
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
@@ -35,10 +36,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多角形（穴をもつことも可能）
+	/// @remark 幾何判定では outer() と inners() の頂点座標が表す領域を使います。外周と穴の境界を含み、穴の内部は含みません。
 	/// @remark 外周は、末尾から先頭へ戻る辺を含む符号付き面積の 2 倍 `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
 	/// @remark 各穴は、同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
 	/// @remark 向きは Geometry2D::IsClockwise() で判定できます。単純な非退化輪郭の向きだけを変える場合は頂点列を reverse() します。これは自己交差や重複点の修復にはなりません。
 	/// @remark 構築前に Validate() を使うと WrongOrientation、SelfIntersections などの失敗理由を調べられます。Correct() は形状を修復し、複数の多角形を返す場合があります。Loft などで頂点の対応を保ちたい場合、Correct() による修復を単なる向きの反転の代用にしないでください。
+	/// @remark 拡縮で点・線分に縮退しても、空の Polygon にはなりません。
+	/// @remark 変形後も面積を持つ場合は、外周・穴の向きを維持します。向きが反転する拡縮では、各輪郭の先頭頂点を保って残りの頂点順を反転します。
 	/// @code
 	/// const Polygon polygon{ Array<Vec2>{
 	///     { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 }
@@ -278,6 +282,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形のすべての頂点を返します。
+		/// @remark 描画用の頂点配列です。outer() と inners() を連結した順序とは限りません。拡縮による反転でもこの配列順は変わりません。
 		/// @return 多角形のすべての頂点
 		[[nodiscard]]
 		const Array<Float2>& vertices() const noexcept;
@@ -759,7 +764,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の面積を返します。
-		/// @return 多角形の面積
+		/// @remark outer() と inners() の頂点座標に基づき、穴の面積を除いて計算します。
+		/// @return 多角形の面積。空の場合は 0
 		[[nodiscard]]
 		double area() const noexcept;
 
@@ -781,6 +787,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の重心の座標を返します。
+		/// @remark outer() と inners() の頂点座標に基づき、穴を除いた領域の重心を計算します。
 		/// @return 多角形の重心の座標、面積を持たない場合は none
 		[[nodiscard]]
 		Optional<Vec2> centroid() const noexcept;
@@ -792,7 +799,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の凸包を計算して返します。
-		/// @return 多角形の凸包
+		/// @return 多角形の凸包。空の多角形、または外周の頂点がすべて一直線上にある場合は空の Polygon
+		/// @remark 重複点と、凸包の直線辺の途中にある点は頂点列に含まれません。
 		[[nodiscard]]
 		Polygon computeConvexHull() const;
 
@@ -803,8 +811,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形を太らせた、新しい多角形を返します。
-		/// @param distance 太らせる距離。負の場合は細らせます。
-		/// @return 新しい多角形
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @return 新しい多角形。入力が空、領域が消滅、複数の成分に分離、または結果を構築できない場合は空の Polygon。距離が 0 の場合は元の多角形。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @see computeMiterBufferMultiPolygon()
 		[[nodiscard]]
 		Polygon computeMiterBufferPolygon(double distance) const;
 
@@ -815,11 +825,44 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形を丸く太らせた、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
-		/// @param distance 太らせる距離。負の場合は細らせます。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい多角形
+		/// @return 新しい多角形。入力が空、領域が消滅、複数の成分に分離、または結果を構築できない場合は空の Polygon。距離が 0 の場合は元の多角形。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @see computeRoundBufferMultiPolygon()
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeMiterBufferMultiPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を太らせ、分離した成分も含むすべての多角形を返します。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @return バッファの全成分。入力が空、領域が消滅、またはいずれかの成分を構築できない場合は空の MultiPolygon。空でない入力で距離が 0 の場合は元の多角形を 1 個含む MultiPolygon。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @remark 成分の順序は保証しません。拡大・縮小によって穴が消滅する場合があります。
+		/// @see computeMiterBufferPolygon()
+		[[nodiscard]]
+		MultiPolygon computeMiterBufferMultiPolygon(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeRoundBufferMultiPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を丸く太らせ、分離した成分も含むすべての多角形を返します。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return バッファの全成分。入力が空、領域が消滅、またはいずれかの成分を構築できない場合は空の MultiPolygon。空でない入力で距離が 0 の場合は元の多角形を 1 個含む MultiPolygon。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @remark 成分の順序は保証しません。拡大・縮小によって穴が消滅する場合があります。
+		/// @see computeRoundBufferPolygon()
+		[[nodiscard]]
+		MultiPolygon computeRoundBufferMultiPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -827,9 +870,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 多角形を単純化した、新しい多角形を返します。
-		/// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
-		/// @return 新しい多角形
+		/// @brief 外周と穴の頂点を間引き、多角形を単純化します。
+		/// @param maxDistance 頂点を省略するときに許容する線分からの距離。有限の値。0 以下の場合は元の多角形を返します。
+		/// @return 単純化した多角形。頂点を削減できない場合や、結果を構築できない場合は元の多角形。空の多角形は空のまま返します。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @remark 穴の数と順序、各輪郭の始点を保持します。輪郭が縮退したり、自己交差や他の輪郭との不正な交差を生じたりする簡略化は採用しません。
+		/// @remark 外周は時計回り、穴は反時計回りを維持します。輪郭同士の位置関係によっては、指定した距離で簡略化できる頂点も保持します。
 		[[nodiscard]]
 		Polygon simplified(double maxDistance = 2.0) const;
 
@@ -848,7 +894,7 @@ namespace s3d
 		/// @brief 多角形の外周の一部を LineString で返します。
 		/// @param distanceFromOrigin 取得の開始位置（Polygon 外周の最初の頂点からの距離）
 		/// @param length 取得する LineString の長さ
-		/// @return 取得した多角形の外周の一部
+		/// @return 取得した多角形の外周の一部。空の多角形の場合は空の LineString
 		[[nodiscard]]
 		LineString outline(double distanceFromOrigin, double length) const;
 
@@ -878,6 +924,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -889,10 +936,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の図形と交差する領域が面積を持つかを返します。
-		/// @tparam Shape2DType 別の図形の型
+		/// @tparam Shape2DType `Geometry2D::Overlaps(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
+			requires detail::SupportsOverlaps<Polygon, Shape2DType>
 		[[nodiscard]]
 		constexpr bool overlaps(const Shape2DType& other) const;
 
@@ -903,10 +952,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の図形を完全に含んでいるかを返します。
-		/// @tparam Shape2DType 別の図形の型
+		/// @tparam Shape2DType `Geometry2D::Contains(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
+			requires detail::SupportsContains<Polygon, Shape2DType>
 		[[nodiscard]]
 		constexpr bool contains(const Shape2DType& other) const;
 
@@ -916,10 +967,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
@@ -1304,8 +1355,8 @@ namespace s3d
 		/// @brief 頂点配列を修正して多角形を生成し、最も面積の大きい多角形を返します。
 		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
-		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
-		/// @remark Correct() の結果から選択します。複数の多角形に分かれた場合、最大面積以外は返しません。
+		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形。修復できなければ空の Polygon
+		/// @remark Correct() の結果を area() で比較したときの最大の多角形を返します。同面積の場合は、先に現れる多角形を返します。
 		[[nodiscard]]
 		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 

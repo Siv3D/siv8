@@ -114,15 +114,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 既定の Metal ライブラリからピクセルシェーダを作成します。
+		/// @param entryPoint エントリーポイント
+		/// @return 作成したピクセルシェーダ。作成に失敗した場合、または entryPoint が fragment 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static PixelShader MSL(StringView entryPoint);
 
+		/// @brief MSL ファイルからピクセルシェーダを作成します。
+		/// @param path MSL ファイルのパス
+		/// @param entryPoint エントリーポイント
+		/// @return 作成したピクセルシェーダ。作成に失敗した場合、または entryPoint が fragment 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static PixelShader MSL(FilePathView path, StringView entryPoint);
 
+		/// @brief Reader から MSL ソースコードを読み込み、ピクセルシェーダを作成します。
+		/// @param reader MSL ソースコードを読み込む Reader。所有権を受け取ります。
+		/// @param entryPoint エントリーポイント
+		/// @return 作成したピクセルシェーダ。作成に失敗した場合、または entryPoint が fragment 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static PixelShader MSL(std::unique_ptr<IReader> reader, StringView entryPoint);
 
+		/// @brief Reader から MSL ソースコードを読み込み、ピクセルシェーダを作成します。
+		/// @tparam Reader Reader の型
+		/// @param reader MSL ソースコードを読み込む Reader
+		/// @param entryPoint エントリーポイント
+		/// @return 作成したピクセルシェーダ。作成に失敗した場合、または entryPoint が fragment 関数でない場合は空のシェーダ
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		static PixelShader MSL(Reader&& reader, StringView entryPoint);
@@ -130,7 +146,7 @@ namespace s3d
 		/// @brief MSL ソースコードからピクセルシェーダを作成します。
 		/// @param source MSL ソースコード
 		/// @param entryPoint エントリーポイント
-		/// @return ピクセルシェーダ
+		/// @return 作成したピクセルシェーダ。作成に失敗した場合、または entryPoint が fragment 関数でない場合は空のシェーダ
 		[[nodiscard]]
 		static PixelShader MSL(const std::string& source, StringView entryPoint);
 

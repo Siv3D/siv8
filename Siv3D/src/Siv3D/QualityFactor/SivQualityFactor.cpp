@@ -22,6 +22,6 @@ namespace s3d
 
 	QualityFactor QualityFactor::FromSceneScaling(const double s) noexcept
 	{
-		return QualityFactor{ Graphics2D::GetMaxScaling() * s };
+		return QualityFactor{ Graphics2D::GetRMSScaling() * s };
 	}
 }

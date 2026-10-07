@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/PointVector.hpp>
+# include "CursorTransform.hpp"
 
 namespace s3d
 {
@@ -23,14 +24,14 @@ namespace s3d
 
 	struct CursorState
 	{
-		template <class VectrorType>
+		template <class VectorType>
 		struct Internal
 		{
-			VectrorType previous{ 0,0 };
-			VectrorType current{ 0,0 };
-			VectrorType delta{ 0,0 };
+			VectorType previous{ 0,0 };
+			VectorType current{ 0,0 };
+			VectorType delta{ 0,0 };
 
-			constexpr void update(const VectrorType& newPos) noexcept
+			constexpr void update(const VectorType& newPos) noexcept
 			{
 				previous	= current;
 				current		= newPos;
@@ -50,12 +51,21 @@ namespace s3d
 		/// @brief vec2 の整数座標
 		Internal<Point> point;
 
-		constexpr void update(const Point& _screen, const Point& _raw, const Vec2& _vec2) noexcept
+		constexpr void advanceRaw(const Point screenPos, const Point rawPos) noexcept
 		{
-			screen.update(_screen);
-			raw.update(_raw);
-			vec2.update(_vec2);
-			point.update(_vec2.asPoint());
+			screen.update(screenPos);
+			raw.update(rawPos);
+		}
+
+		constexpr void refreshTransformed(const CursorTransform& transform) noexcept
+		{
+			vec2.previous = transform.allInv.transformPoint(Vec2{ raw.previous });
+			vec2.current = transform.allInv.transformPoint(Vec2{ raw.current });
+			vec2.delta = (vec2.current - vec2.previous);
+
+			point.previous = vec2.previous.asPoint();
+			point.current = vec2.current.asPoint();
+			point.delta = (point.current - point.previous);
 		}
 	};
 }

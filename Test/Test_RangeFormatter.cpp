@@ -21,19 +21,19 @@ TEST_CASE("RangeFormatter")
 		{
 			FormatData formatData;
 			Formatter(formatData, ia);
-			CHECK_EQ(formatData.string, U"[1, 2, 3]");
+			CHECK((formatData.string) == (U"[1, 2, 3]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, da);
-			CHECK_EQ(formatData.string, U"[1.111, 2.222, 3.333]");
+			CHECK((formatData.string) == (U"[1.111, 2.222, 3.333]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, sa);
-			CHECK_EQ(formatData.string, U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]");
+			CHECK((formatData.string) == (U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]"));
 		}
 	}
 
@@ -45,19 +45,19 @@ TEST_CASE("RangeFormatter")
 		{
 			FormatData formatData;
 			Formatter(formatData, ai);
-			CHECK_EQ(formatData.string, U"[1, 2, 3]");
+			CHECK((formatData.string) == (U"[1, 2, 3]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, ad);
-			CHECK_EQ(formatData.string, U"[1.111, 2.222, 3.333]");
+			CHECK((formatData.string) == (U"[1.111, 2.222, 3.333]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, as);
-			CHECK_EQ(formatData.string, U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]");
+			CHECK((formatData.string) == (U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]"));
 		}
 	}
 
@@ -69,19 +69,19 @@ TEST_CASE("RangeFormatter")
 		{
 			FormatData formatData;
 			Formatter(formatData, vi);
-			CHECK_EQ(formatData.string, U"[1, 2, 3]");
+			CHECK((formatData.string) == (U"[1, 2, 3]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, vd);
-			CHECK_EQ(formatData.string, U"[1.111, 2.222, 3.333]");
+			CHECK((formatData.string) == (U"[1.111, 2.222, 3.333]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, vs);
-			CHECK_EQ(formatData.string, U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]");
+			CHECK((formatData.string) == (U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]"));
 		}
 	}
 
@@ -93,19 +93,19 @@ TEST_CASE("RangeFormatter")
 		{
 			FormatData formatData;
 			Formatter(formatData, ai);
-			CHECK_EQ(formatData.string, U"[1, 2, 3]");
+			CHECK((formatData.string) == (U"[1, 2, 3]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, ad);
-			CHECK_EQ(formatData.string, U"[1.111, 2.222, 3.333]");
+			CHECK((formatData.string) == (U"[1.111, 2.222, 3.333]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, as);
-			CHECK_EQ(formatData.string, U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]");
+			CHECK((formatData.string) == (U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]"));
 		}
 	}
 
@@ -117,19 +117,19 @@ TEST_CASE("RangeFormatter")
 		{
 			FormatData formatData;
 			Formatter(formatData, il);
-			CHECK_EQ(formatData.string, U"[1, 2, 3]");
+			CHECK((formatData.string) == (U"[1, 2, 3]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, dl);
-			CHECK_EQ(formatData.string, U"[1.111, 2.222, 3.333]");
+			CHECK((formatData.string) == (U"[1.111, 2.222, 3.333]"));
 		}
 
 		{
 			FormatData formatData;
 			Formatter(formatData, sl);
-			CHECK_EQ(formatData.string, U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]");
+			CHECK((formatData.string) == (U"[\"aaa\", \"bbb\", \"あああ\", \"いいい\"]"));
 		}
 	}
 }

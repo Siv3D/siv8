@@ -16,22 +16,15 @@
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/Contains.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
 	namespace
 	{
 		inline constexpr int32 CurvedContainmentSegments = 128;
-		inline constexpr int32 SuperEllipseSearchIterations = 64;
 		inline constexpr double TwoPi = 6.2831853071795864769252867665590058;
-		inline constexpr double ParameterMergeTolerance = 1.0e-11;
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
-
-		[[nodiscard]]
-		constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
-		{
-			return ((b - a).cross(c - a));
-		}
 
 
 		[[nodiscard]]
@@ -74,11 +67,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool BoundsContainsClosed(const RectF& outer, const RectF& inner) noexcept
 		{
-			if (IsEmpty(outer))
-			{
-				return false;
-			}
-
 			const double outerRight = (outer.pos.x + outer.size.x);
 			const double outerBottom = (outer.pos.y + outer.size.y);
 			const double innerRight = (inner.pos.x + inner.size.x);
@@ -203,32 +191,20 @@ namespace s3d
 
 		template <class Container>
 		[[nodiscard]]
-		bool ContainsPolygonByTriangles(const Container& container, const Polygon& polygon) noexcept
+		bool ContainsPolygonByVertices(const Container& container, const Polygon& polygon) noexcept
 		{
 			if (polygon.isEmpty())
 			{
 				return false;
 			}
-
-			bool hasTriangle = false;
-			const Float2* vertices = polygon.vertices().data();
-
-			for (const auto& index : polygon.indices())
+			for (const Vec2& point : polygon.outer())
 			{
-				hasTriangle = true;
-				const Triangle triangle{
-					Vec2{ vertices[index.i0].x, vertices[index.i0].y },
-					Vec2{ vertices[index.i1].x, vertices[index.i1].y },
-					Vec2{ vertices[index.i2].x, vertices[index.i2].y }
-				};
-
-				if (not Geometry2D::Contains(container, triangle))
+				if (not Geometry2D::Contains(container, point))
 				{
 					return false;
 				}
 			}
-
-			return hasTriangle;
+			return true;
 		}
 
 		[[nodiscard]]
@@ -281,6 +257,13 @@ namespace s3d
 			return Geometry2D::Contains(container, Triangle{ center, previous, first });
 		}
 
+		[[nodiscard]]
+		bool IsCircularRoundRect(const RoundRect& roundRect) noexcept
+		{
+			return (roundRect.rect.w == roundRect.rect.h)
+				&& ((roundRect.rect.w * 0.5) <= roundRect.r);
+		}
+
 		template <class Container>
 		[[nodiscard]]
 		bool ContainsCircleByApproximation(const Container& container, const Circle& circle) noexcept
@@ -301,6 +284,11 @@ namespace s3d
 		[[nodiscard]]
 		bool ContainsEllipseByApproximation(const Container& container, const Ellipse& ellipse) noexcept
 		{
+			if (ellipse.axes.x == ellipse.axes.y)
+			{
+				return Geometry2D::Contains(container, Circle{ ellipse.center, ellipse.axes.x });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -328,6 +316,11 @@ namespace s3d
 		bool ContainsSuperEllipseByApproximation(
 			const Container& container, const SuperEllipse& superEllipse) noexcept
 		{
+			if (superEllipse.n == 2.0)
+			{
+				return Geometry2D::Contains(container, Ellipse{ superEllipse.center, superEllipse.axes });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -341,31 +334,51 @@ namespace s3d
 					detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
 			}
 
+			auto Diamond = [&](const Vec2& axes) noexcept
+			{
+				return Quad{
+					{ (superEllipse.x + axes.x), superEllipse.y },
+					{ superEllipse.x, (superEllipse.y + axes.y) },
+					{ (superEllipse.x - axes.x), superEllipse.y },
+					{ superEllipse.x, (superEllipse.y - axes.y) } };
+			};
 			if (superEllipse.n < 1.0)
 			{
-				// The non-convex case uses its bounding box as a conservative superset.
-				return Geometry2D::Contains(container, superEllipse.boundingRect());
+				// The four tips form the convex hull. This is exact for convex
+				// containers; testing the whole hull also respects polygon holes.
+				return Geometry2D::Contains(container, Diamond(superEllipse.axes));
 			}
 
+			// For n >= 1, |x/a| + |y/b| <= 2^(1-1/n). For n <= 2 this
+			// expanded diamond is tight enough to cheaply establish containment.
+			// Failure still needs the finer support polygon, especially for a
+			// concave container. No false result is inferred from this bound.
+			if ((superEllipse.n <= 2.0) && Geometry2D::Contains(container,
+				Diamond(superEllipse.axes * std::exp2(1.0 - 1.0 / superEllipse.n))))
+			{
+				return true;
+			}
+
+			if (superEllipse.n == 1.0)
+			{
+				return ContainsConvexSupportShape(container, superEllipse.center,
+					[&](const Vec2& normal) noexcept
+					{
+						return (superEllipse.center.dot(normal) + Max(
+							(superEllipse.a * Abs(normal.x)), (superEllipse.b * Abs(normal.y))));
+					});
+			}
+
+			const double q = (superEllipse.n / (superEllipse.n - 1.0));
+			const double inverseQ = (1.0 / q);
 			return ContainsConvexSupportShape(container, superEllipse.center,
 				[&](const Vec2& normal) noexcept
 				{
-					double radialSupport = 0.0;
-
-					if (superEllipse.n == 1.0)
-					{
-						radialSupport = Max(
-							superEllipse.axes.x * Abs(normal.x),
-							superEllipse.axes.y * Abs(normal.y));
-					}
-					else
-					{
-						const double q = (superEllipse.n / (superEllipse.n - 1.0));
-						const double x = std::pow(superEllipse.axes.x * Abs(normal.x), q);
-						const double y = std::pow(superEllipse.axes.y * Abs(normal.y), q);
-						radialSupport = std::pow((x + y), (1.0 / q));
-					}
-
+					const double x = (superEllipse.a * Abs(normal.x)), y = (superEllipse.b * Abs(normal.y));
+					const double scale = Max(x, y);
+					// Factoring out the larger term keeps the powered base <= 1,
+					// including ordinary-sized shapes with n close to 1 (large q).
+					const double radialSupport = (scale * std::pow((1.0 + std::pow((Min(x, y) / scale), q)), inverseQ));
 					return (superEllipse.center.dot(normal) + radialSupport);
 				});
 		}
@@ -375,6 +388,11 @@ namespace s3d
 		bool ContainsRoundRectByApproximation(
 			const Container& container, const RoundRect& roundRect) noexcept
 		{
+			if (IsCircularRoundRect(roundRect))
+			{
+				return Geometry2D::Contains(container, Circle{ roundRect.rect.center(), (roundRect.rect.w * 0.5) });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -412,380 +430,230 @@ namespace s3d
 				});
 		}
 
+		template <class Container, class Shape>
 		[[nodiscard]]
-		double SuperEllipseValueAt(
-			const SuperEllipse& superEllipse, const Line& segment, const double t) noexcept
+		bool ContainsCurvedShape(const Container& container, const Shape& shape) noexcept
 		{
-			const Vec2 p = (segment.start + (segment.end - segment.start) * t);
-			const double x = Abs((p.x - superEllipse.center.x) / superEllipse.axes.x);
-			const double y = Abs((p.y - superEllipse.center.y) / superEllipse.axes.y);
-			return (std::pow(x, superEllipse.n) + std::pow(y, superEllipse.n));
-		}
-
-		[[nodiscard]]
-		bool ContainsLineNonConvexSuperEllipse(
-			const SuperEllipse& superEllipse, const Line& segment) noexcept
-		{
-			if ((not Geometry2D::Contains(superEllipse, segment.start))
-				|| (not Geometry2D::Contains(superEllipse, segment.end)))
+			// Reduce the container before approximating the target. Each delegation
+			// removes a representation: SuperEllipse -> Ellipse -> Circle, RoundRect -> Circle.
+			if constexpr (std::is_same_v<Container, Ellipse>)
 			{
-				return false;
+				if (container.axes.x == container.axes.y)
+				{
+					return Geometry2D::Contains(Circle{ container.center, container.axes.x }, shape);
+				}
+			}
+			else if constexpr (std::is_same_v<Container, SuperEllipse>)
+			{
+				if (container.n == 2.0)
+				{
+					return Geometry2D::Contains(Ellipse{ container.center, container.axes }, shape);
+				}
+			}
+			else if constexpr (std::is_same_v<Container, RoundRect>)
+			{
+				if (IsCircularRoundRect(container))
+				{
+					return Geometry2D::Contains(Circle{ container.rect.center(), (container.rect.w * 0.5) }, shape);
+				}
 			}
 
-			if (segment.start == segment.end)
+			if constexpr (std::is_same_v<Shape, Circle>)
+			{
+				return ContainsCircleByApproximation(container, shape);
+			}
+			else if constexpr (std::is_same_v<Shape, Ellipse>)
+			{
+				return ContainsEllipseByApproximation(container, shape);
+			}
+			else if constexpr (std::is_same_v<Shape, SuperEllipse>)
+			{
+				return ContainsSuperEllipseByApproximation(container, shape);
+			}
+			else
+			{
+				return ContainsRoundRectByApproximation(container, shape);
+			}
+		}
+
+		// Endpoints are already contained; coordinates are normalized by the axes.
+		[[nodiscard]]
+		bool ContainsNonConvexSuperEllipseSegmentInterior(Vec2 a, Vec2 b, const double n) noexcept
+		{
+			if ((b.x < a.x) || ((b.x == a.x) && (b.y < a.y)))
+			{
+				std::swap(a, b);
+			}
+
+			Vec2 d = (b - a);
+
+			if (Abs(d.x) < Abs(d.y))
+			{
+				std::swap(a.x, a.y);
+				std::swap(b.x, b.y);
+				std::swap(d.x, d.y);
+			}
+
+			if (d.y == 0.0)
 			{
 				return true;
 			}
 
-			std::array<double, 4> breaks{ 0.0, 1.0, 0.0, 0.0 };
-			size_t count = 2;
-			const Vec2 d = (segment.end - segment.start);
+			// For 0 < n < 1, axis crossings are minima. The only possible interior
+			// maximum satisfies y = -sign(slope) * |slope|^(1 / (1 - n)) * x.
+			const double slope = (d.y / d.x);
+			const double ratio = std::copysign(std::pow(Abs(slope), (1.0 / (1.0 - n))), slope);
+			const double x = ((slope * a.x - a.y) / (slope + ratio));
 
-			auto AddAxisCrossing = [&](const double start, const double delta, const double center) noexcept
+			if ((x <= Min(a.x, b.x)) || (Max(a.x, b.x) <= x))
 			{
-				if (delta == 0.0)
+				return true;
+			}
+
+			// Use the stationary relation to avoid cancellation near an axis.
+			const double y = (-ratio * x);
+			return ((std::pow(Abs(x), n) + std::pow(Abs(y), n)) <= (1.0 + 64.0 * DoubleEpsilon));
+		}
+
+		template <bool CloseRing, size_t N>
+		[[nodiscard]]
+		bool ContainsSuperEllipsePolyline(const SuperEllipse& superEllipse, std::array<Vec2, N> points) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind) || (1.0 <= superEllipse.n))
+			{
+				for (const Vec2& point : points)
 				{
-					return;
+					if (not Geometry2D::Contains(superEllipse, point))
+					{
+						return false;
+					}
 				}
 
-				const double t = ((center - start) / delta);
+				return true;
+			}
 
-				if ((0.0 < t) && (t < 1.0))
-				{
-					breaks[count++] = t;
-				}
-			};
+			Vec2 bounds{ 0, 0 };
 
-			AddAxisCrossing(segment.start.x, d.x, superEllipse.center.x);
-			AddAxisCrossing(segment.start.y, d.y, superEllipse.center.y);
-			std::sort(breaks.begin(), breaks.begin() + count);
-
-			size_t uniqueCount = 1;
-
-			for (size_t i = 1; i < count; ++i)
+			for (Vec2& point : points)
 			{
-				if (breaks[i] != breaks[uniqueCount - 1])
+				point = ((point - superEllipse.center) / superEllipse.axes);
+
+				if constexpr (CloseRing)
 				{
-					breaks[uniqueCount++] = breaks[i];
+					bounds.x = Max(bounds.x, Abs(point.x));
+					bounds.y = Max(bounds.y, Abs(point.y));
 				}
 			}
 
-			const double tolerance = (64.0 * DoubleEpsilon);
-
-			for (size_t i = 0; i < (uniqueCount - 1); ++i)
+			if constexpr (CloseRing)
 			{
-				double left = breaks[i];
-				double right = breaks[i + 1];
-
-				for (int32 iteration = 0; iteration < SuperEllipseSearchIterations; ++iteration)
+				if ((1.0 < bounds.x) || (1.0 < bounds.y))
 				{
-					const double third = ((right - left) / 3.0);
-					const double m0 = (left + third);
-					const double m1 = (right - third);
+					return false;
+				}
 
-					if (SuperEllipseValueAt(superEllipse, segment, m0)
-						< SuperEllipseValueAt(superEllipse, segment, m1))
+				// If the bounding box is contained, no edge maximum needs evaluation.
+				if ((std::pow(bounds.x, superEllipse.n) + std::pow(bounds.y, superEllipse.n)) <= 1.0)
+				{
+					return true;
+				}
+			}
+
+			for (const Vec2& point : points)
+			{
+				if constexpr (not CloseRing)
+				{
+					if ((1.0 < Abs(point.x)) || (1.0 < Abs(point.y)))
 					{
-						left = m0;
-					}
-					else
-					{
-						right = m1;
+						return false;
 					}
 				}
 
-				const double maximum = Max({
-					SuperEllipseValueAt(superEllipse, segment, breaks[i]),
-					SuperEllipseValueAt(superEllipse, segment, breaks[i + 1]),
-					SuperEllipseValueAt(superEllipse, segment, (left + right) * 0.5)
-				});
-
-				if ((1.0 + tolerance) < maximum)
+				if (1.0 < (std::pow(Abs(point.x), superEllipse.n) + std::pow(Abs(point.y), superEllipse.n)))
 				{
 					return false;
 				}
 			}
 
-			return true;
-		}
-
-		[[nodiscard]]
-		bool ContainsTriangleNonConvexSuperEllipse(
-			const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
-		{
-			const RectF bounds = triangle.boundingRect();
-			const double right = (bounds.pos.x + bounds.size.x);
-			const double bottom = (bounds.pos.y + bounds.size.y);
-
-			return Geometry2D::Contains(superEllipse, bounds.pos)
-				&& Geometry2D::Contains(superEllipse, Vec2{ right, bounds.pos.y })
-				&& Geometry2D::Contains(superEllipse, Vec2{ right, bottom })
-				&& Geometry2D::Contains(superEllipse, Vec2{ bounds.pos.x, bottom });
-		}
-
-		[[nodiscard]]
-		bool ClipSegmentToTriangle(
-			const Line& segment, const Triangle& triangle,
-			double& t0, double& t1) noexcept
-		{
-			const double orientation = Cross(triangle.p0, triangle.p1, triangle.p2);
-			assert(orientation != 0.0);
-			const double sign = ((0.0 < orientation) ? 1.0 : -1.0);
-			const Vec2 direction = (segment.end - segment.start);
-			t0 = 0.0;
-			t1 = 1.0;
-
-			auto ClipEdge = [&](const Vec2& a, const Vec2& b) noexcept
+			for (size_t i = 1; i < N; ++i)
 			{
-				const double q0 = (sign * Cross(a, b, segment.start));
-				const double qd = (sign * (b - a).cross(direction));
-
-				if (qd == 0.0)
+				if (not ContainsNonConvexSuperEllipseSegmentInterior(points[i - 1], points[i], superEllipse.n))
 				{
-					return (0.0 <= q0);
+					return false;
 				}
+			}
 
-				const double t = (-q0 / qd);
+			// Any exterior point has a ray to infinity outside the superellipse,
+			// so a closed boundary inside it cannot enclose an exterior point.
+			if constexpr (CloseRing)
+			{
+				return ContainsNonConvexSuperEllipseSegmentInterior(points.back(), points.front(), superEllipse.n);
+			}
+			else
+			{
+				return true;
+			}
+		}
 
-				if (0.0 < qd)
-				{
-					t0 = Max(t0, t);
-				}
-				else
-				{
-					t1 = Min(t1, t);
-				}
-
-				return (t0 <= t1);
-			};
-
-			return ClipEdge(triangle.p0, triangle.p1)
-				&& ClipEdge(triangle.p1, triangle.p2)
-				&& ClipEdge(triangle.p2, triangle.p0);
+		[[nodiscard]]
+		bool ContainsLinePolygonNonEmpty(const Polygon& polygon, const Line& segment, Array<detail::PolygonSegmentEvent>& events)
+		{
+			const RectF& bounds = polygon.boundingRect();
+			return detail::IntersectsPointRectFNonEmpty(segment.start, bounds)
+				&& detail::IntersectsPointRectFNonEmpty(segment.end, bounds)
+				&& detail::TestPolygonSegment<detail::PolygonSegmentTest::Covered>(detail::GetPolygonRings(polygon), segment, events);
 		}
 
 		[[nodiscard]]
 		bool ContainsLinePolygonNonEmpty(const Polygon& polygon, const Line& segment) noexcept
 		{
-			if (segment.start == segment.end)
-			{
-				return Geometry2D::Contains(polygon, segment.start);
-			}
+			Array<detail::PolygonSegmentEvent> events;
+			return ContainsLinePolygonNonEmpty(polygon, segment, events);
+		}
 
-			const RectF segmentBounds{
-				Min(segment.start.x, segment.end.x),
-				Min(segment.start.y, segment.end.y),
-				Abs(segment.end.x - segment.start.x),
-				Abs(segment.end.y - segment.start.y)
-			};
-
-			if (not BoundsContainsClosed(polygon.boundingRect(), segmentBounds))
-			{
-				return false;
-			}
-
-			Array<std::pair<double, double>> intervals;
-			intervals.reserve(polygon.indices().size());
-			const Float2* vertices = polygon.vertices().data();
-
-			for (const auto& index : polygon.indices())
-			{
-				const Triangle part{
-					Vec2{ vertices[index.i0].x, vertices[index.i0].y },
-					Vec2{ vertices[index.i1].x, vertices[index.i1].y },
-					Vec2{ vertices[index.i2].x, vertices[index.i2].y }
-				};
-				double t0 = 0.0;
-				double t1 = 0.0;
-
-				if (ClipSegmentToTriangle(segment, part, t0, t1))
+		[[nodiscard]]
+		bool ContainsPolygonRings(const detail::PolygonRingsView container, const detail::PolygonRingsView target)
+		{
+			Array<detail::PolygonSegmentEvent> events;
+			const int32 requiredDirection = (detail::PolygonRingOrientation(container.outer) * detail::PolygonRingOrientation(target.outer));
+			if (detail::AnyPolylineSegment<true>(target.outer, [&](const Line& edge)
 				{
-					intervals.emplace_back(Max(0.0, t0), Min(1.0, t1));
-				}
-			}
-
-			if (intervals.isEmpty())
+					return not detail::TestPolygonSegment<detail::PolygonSegmentTest::Covered>(container, edge, events, requiredDirection);
+				}))
 			{
 				return false;
 			}
-
-			std::sort(intervals.begin(), intervals.end(),
-				[](const auto& a, const auto& b) noexcept
-				{
-					return (a.first < b.first)
-						|| ((a.first == b.first) && (a.second < b.second));
-				});
-
-			if (ParameterMergeTolerance < intervals.front().first)
+			// The target's outer boundary is covered. Only container holes can
+			// exclude more area; target holes are excluded by this interior test.
+			for (const auto& hole : container.holes)
 			{
-				return false;
-			}
-
-			double coveredEnd = intervals.front().second;
-
-			for (size_t i = 1; i < intervals.size(); ++i)
-			{
-				if ((coveredEnd + ParameterMergeTolerance) < intervals[i].first)
+				if (detail::AnyPolylineSegment<true>(hole, [&](const Line& edge)
+					{
+						return detail::TestPolygonSegment<detail::PolygonSegmentTest::InteriorIntersection>(target, edge, events);
+					}))
 				{
 					return false;
 				}
-
-				coveredEnd = Max(coveredEnd, intervals[i].second);
 			}
-
-			return ((1.0 - ParameterMergeTolerance) <= coveredEnd);
+			return true;
 		}
 
 		[[nodiscard]]
-		Line GetTriangleDegenerateExtent(const Triangle& triangle) noexcept
+		bool ContainsTrianglePolygonNonEmpty(const Polygon& polygon, const Triangle& triangle) noexcept
 		{
-			const double d01 = triangle.p0.distanceFromSq(triangle.p1);
-			const double d12 = triangle.p1.distanceFromSq(triangle.p2);
-			const double d20 = triangle.p2.distanceFromSq(triangle.p0);
-
-			if ((d12 <= d01) && (d20 <= d01))
-			{
-				return Line{ triangle.p0, triangle.p1 };
-			}
-
-			if (d20 <= d12)
-			{
-				return Line{ triangle.p1, triangle.p2 };
-			}
-
-			return Line{ triangle.p2, triangle.p0 };
-		}
-
-		using ClipBuffer = std::array<Vec2, 8>;
-
-		[[nodiscard]]
-		size_t ClipPolygonAgainstEdge(
-			const ClipBuffer& input, const size_t inputCount,
-			ClipBuffer& output, const Vec2& edgeStart, const Vec2& edgeEnd,
-			const double sign) noexcept
-		{
-			if (inputCount == 0)
-			{
-				return 0;
-			}
-
-			size_t outputCount = 0;
-			Vec2 previous = input[inputCount - 1];
-			double previousDistance = (sign * Cross(edgeStart, edgeEnd, previous));
-			bool previousInside = (0.0 <= previousDistance);
-
-			for (size_t i = 0; i < inputCount; ++i)
-			{
-				const Vec2 current = input[i];
-				const double currentDistance = (sign * Cross(edgeStart, edgeEnd, current));
-				const bool currentInside = (0.0 <= currentDistance);
-
-				if (previousInside != currentInside)
-				{
-					const double denominator = (previousDistance - currentDistance);
-					assert(denominator != 0.0);
-					const double t = (previousDistance / denominator);
-					output[outputCount++] = (previous + (current - previous) * t);
-				}
-
-				if (currentInside)
-				{
-					output[outputCount++] = current;
-				}
-
-				previous = current;
-				previousDistance = currentDistance;
-				previousInside = currentInside;
-			}
-
-			return outputCount;
-		}
-
-		[[nodiscard]]
-		double PolygonArea(const ClipBuffer& points, const size_t count) noexcept
-		{
-			if (count < 3)
-			{
-				return 0.0;
-			}
-
-			double twiceArea = 0.0;
-
-			for (size_t i = 0; i < count; ++i)
-			{
-				twiceArea += points[i].cross(points[(i + 1) % count]);
-			}
-
-			return (Abs(twiceArea) * 0.5);
-		}
-
-		[[nodiscard]]
-		double TriangleIntersectionArea(const Triangle& subject, const Triangle& clip) noexcept
-		{
-			const double orientation = Cross(clip.p0, clip.p1, clip.p2);
-			assert(orientation != 0.0);
-			const double sign = ((0.0 < orientation) ? 1.0 : -1.0);
-			ClipBuffer a{};
-			ClipBuffer b{};
-			a[0] = subject.p0;
-			a[1] = subject.p1;
-			a[2] = subject.p2;
-			size_t count = 3;
-
-			count = ClipPolygonAgainstEdge(a, count, b, clip.p0, clip.p1, sign);
-			count = ClipPolygonAgainstEdge(b, count, a, clip.p1, clip.p2, sign);
-			count = ClipPolygonAgainstEdge(a, count, b, clip.p2, clip.p0, sign);
-			return PolygonArea(b, count);
-		}
-
-		[[nodiscard]]
-		bool ContainsTrianglePolygonNonEmpty(
-			const Polygon& polygon, const Triangle& triangle) noexcept
-		{
-			const double twiceArea = Abs(Cross(triangle.p0, triangle.p1, triangle.p2));
-
-			if (twiceArea == 0.0)
-			{
-				return ContainsLinePolygonNonEmpty(polygon, GetTriangleDegenerateExtent(triangle));
-			}
-
 			if (not BoundsContainsClosed(polygon.boundingRect(), triangle.boundingRect()))
 			{
 				return false;
 			}
-
-			if ((not ContainsLinePolygonNonEmpty(polygon, Line{ triangle.p0, triangle.p1 }))
-				|| (not ContainsLinePolygonNonEmpty(polygon, Line{ triangle.p1, triangle.p2 }))
-				|| (not ContainsLinePolygonNonEmpty(polygon, Line{ triangle.p2, triangle.p0 })))
-			{
-				return false;
-			}
-
-			const double targetArea = (twiceArea * 0.5);
-			double coveredArea = 0.0;
-			const Float2* vertices = polygon.vertices().data();
-
-			for (const auto& index : polygon.indices())
-			{
-				const Triangle part{
-					Vec2{ vertices[index.i0].x, vertices[index.i0].y },
-					Vec2{ vertices[index.i1].x, vertices[index.i1].y },
-					Vec2{ vertices[index.i2].x, vertices[index.i2].y }
-				};
-				coveredArea += TriangleIntersectionArea(triangle, part);
-			}
-
-			const RectF bounds = triangle.boundingRect();
-			const double coordinateScale = Max({
-				Abs(bounds.pos.x), Abs(bounds.pos.y),
-				Abs(bounds.pos.x + bounds.size.x),
-				Abs(bounds.pos.y + bounds.size.y), 1.0
-			});
-			const double tolerance = Max(
-				targetArea * 1.0e-10,
-				256.0 * DoubleEpsilon * coordinateScale * coordinateScale);
-
-			return ((targetArea - coveredArea) <= tolerance);
+			const std::array<Vec2, 3> outer{ triangle.p0, triangle.p1, triangle.p2 };
+			return ContainsPolygonRings(detail::GetPolygonRings(polygon), { outer, {} });
 		}
 
 		[[nodiscard]]
@@ -924,47 +792,47 @@ namespace s3d
 
 		bool Contains(const RectF& a, const RectF& b) noexcept
 		{
-			return (not IsEmpty(b))
+			return (not IsEmpty(a)) && (not IsEmpty(b))
 				&& BoundsContainsClosed(a, b);
 		}
 
 		bool Contains(const RectF& a, const Circle& b) noexcept
 		{
-			return (not IsEmpty(b))
+			return (not IsEmpty(a)) && (not IsEmpty(b))
 				&& BoundsContainsClosed(a, b.boundingRect());
 		}
 
 		bool Contains(const RectF& a, const Ellipse& b) noexcept
 		{
-			return (not IsEmpty(b))
+			return (not IsEmpty(a)) && (not IsEmpty(b))
 				&& BoundsContainsClosed(a, b.boundingRect());
 		}
 
 		bool Contains(const RectF& a, const SuperEllipse& b) noexcept
 		{
-			return (not IsEmpty(b))
+			return (not IsEmpty(a)) && (not IsEmpty(b))
 				&& BoundsContainsClosed(a, b.boundingRect());
 		}
 
 		bool Contains(const RectF& a, const Triangle& b) noexcept
 		{
-			return BoundsContainsClosed(a, b.boundingRect());
+			return (not IsEmpty(a)) && BoundsContainsClosed(a, b.boundingRect());
 		}
 
 		bool Contains(const RectF& a, const Quad& b) noexcept
 		{
-			return BoundsContainsClosed(a, b.boundingRect());
+			return (not IsEmpty(a)) && BoundsContainsClosed(a, b.boundingRect());
 		}
 
 		bool Contains(const RectF& a, const RoundRect& b) noexcept
 		{
-			return (not IsEmpty(b))
+			return (not IsEmpty(a)) && (not IsEmpty(b))
 				&& BoundsContainsClosed(a, b.rect);
 		}
 
 		bool Contains(const RectF& a, const Polygon& b) noexcept
 		{
-			return (not b.isEmpty())
+			return (not IsEmpty(a)) && (not b.isEmpty())
 				&& BoundsContainsClosed(a, b.boundingRect());
 		}
 
@@ -1028,12 +896,12 @@ namespace s3d
 
 		bool Contains(const Circle& a, const Ellipse& b) noexcept
 		{
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const Triangle& b) noexcept
@@ -1050,12 +918,12 @@ namespace s3d
 
 		bool Contains(const Circle& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			return ContainsPolygonByVertices(a, b);
 		}
 
 		bool Contains(const Circle& a, const MultiPolygon& b) noexcept
@@ -1101,7 +969,7 @@ namespace s3d
 
 		bool Contains(const Ellipse& a, const Circle& b) noexcept
 		{
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Ellipse& b) noexcept
@@ -1112,12 +980,12 @@ namespace s3d
 			}
 
 			return SameEllipse(a, b)
-				|| ContainsEllipseByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Triangle& b) noexcept
@@ -1134,12 +1002,12 @@ namespace s3d
 
 		bool Contains(const Ellipse& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			return ContainsPolygonByVertices(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const MultiPolygon& b) noexcept
@@ -1165,19 +1033,7 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const Line& b) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(a);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind) || (1.0 <= a.n))
-			{
-				return Contains(a, b.start) && Contains(a, b.end);
-			}
-
-			return ContainsLineNonConvexSuperEllipse(a, b);
+			return ContainsSuperEllipsePolyline<false>(a, std::array{ b.start, b.end });
 		}
 
 		bool Contains(const SuperEllipse& a, const LineString& b) noexcept
@@ -1197,12 +1053,12 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const Circle& b) noexcept
 		{
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Ellipse& b) noexcept
 		{
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const SuperEllipse& b) noexcept
@@ -1213,41 +1069,32 @@ namespace s3d
 			}
 
 			return SameSuperEllipse(a, b)
-				|| ContainsSuperEllipseByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Triangle& b) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(a);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind) || (1.0 <= a.n))
-			{
-				return Contains(a, b.p0)
-					&& Contains(a, b.p1)
-					&& Contains(a, b.p2);
-			}
-
-			return ContainsTriangleNonConvexSuperEllipse(a, b);
+			return ContainsSuperEllipsePolyline<true>(a, std::array{ b.p0, b.p1, b.p2 });
 		}
 
 		bool Contains(const SuperEllipse& a, const Quad& b) noexcept
 		{
-			return ContainsQuadByDecomposition(a, b);
+			return ContainsSuperEllipsePolyline<true>(a, std::array{ b.p0, b.p1, b.p2, b.p3 });
 		}
 
 		bool Contains(const SuperEllipse& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			if (1.0 <= a.n)
+			{
+				return ContainsPolygonByVertices(a, b);
+			}
+			return (not b.isEmpty()) && not detail::AnyPolylineSegment<true>(b.outer(),
+				[&](const Line& edge) { return not Contains(a, edge); });
 		}
 
 		bool Contains(const SuperEllipse& a, const MultiPolygon& b) noexcept
@@ -1325,7 +1172,7 @@ namespace s3d
 
 		bool Contains(const Triangle& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			return ContainsPolygonByVertices(a, b);
 		}
 
 		bool Contains(const Triangle& a, const MultiPolygon& b) noexcept
@@ -1403,7 +1250,12 @@ namespace s3d
 
 		bool Contains(const Quad& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			if (b.isEmpty())
+			{
+				return false;
+			}
+			const std::array<Vec2, 4> outer{ a.p0, a.p1, a.p2, a.p3 };
+			return ContainsPolygonRings({ outer, {} }, detail::GetPolygonRings(b));
 		}
 
 		bool Contains(const Quad& a, const MultiPolygon& b) noexcept
@@ -1449,17 +1301,17 @@ namespace s3d
 
 		bool Contains(const RoundRect& a, const Circle& b) noexcept
 		{
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Ellipse& b) noexcept
 		{
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Triangle& b) noexcept
@@ -1482,12 +1334,12 @@ namespace s3d
 			}
 
 			return SameRoundRect(a, b)
-				|| ContainsRoundRectByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			return ContainsPolygonByVertices(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const MultiPolygon& b) noexcept
@@ -1519,17 +1371,38 @@ namespace s3d
 
 		bool Contains(const Polygon& a, const LineString& b) noexcept
 		{
-			return ContainsLineStringBySegments(a, b);
+			if (a.isEmpty() || b.isEmpty())
+			{
+				return false;
+			}
+			if (b.size() == 1)
+			{
+				return Contains(a, b.front());
+			}
+			Array<detail::PolygonSegmentEvent> events;
+			return not detail::AnyPolylineSegment<false>(b, [&](const Line& edge)
+				{
+					return not ContainsLinePolygonNonEmpty(a, edge, events);
+				});
 		}
 
 		bool Contains(const Polygon& a, const Rect& b) noexcept
 		{
-			return ContainsRectFByDecomposition(a, RectF{ b });
+			return Contains(a, RectF{ b });
 		}
 
 		bool Contains(const Polygon& a, const RectF& b) noexcept
 		{
-			return ContainsRectFByDecomposition(a, b);
+			const auto kind = detail::ClassifyGeometry2DSizedShape(b);
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Contains(a, detail::GetGeometry2DDegenerateSegment(b, kind));
+			}
+			return Contains(a, b.asQuad());
 		}
 
 		bool Contains(const Polygon& a, const Circle& b) noexcept
@@ -1555,7 +1428,12 @@ namespace s3d
 
 		bool Contains(const Polygon& a, const Quad& b) noexcept
 		{
-			return ContainsQuadByDecomposition(a, b);
+			if (a.isEmpty() || not BoundsContainsClosed(a.boundingRect(), b.boundingRect()))
+			{
+				return false;
+			}
+			const std::array<Vec2, 4> outer{ b.p0, b.p1, b.p2, b.p3 };
+			return ContainsPolygonRings(detail::GetPolygonRings(a), { outer, {} });
 		}
 
 		bool Contains(const Polygon& a, const RoundRect& b) noexcept
@@ -1565,7 +1443,9 @@ namespace s3d
 
 		bool Contains(const Polygon& a, const Polygon& b) noexcept
 		{
-			return ContainsPolygonByTriangles(a, b);
+			return (not a.isEmpty()) && (not b.isEmpty())
+				&& BoundsContainsClosed(a.boundingRect(), b.boundingRect())
+				&& ContainsPolygonRings(detail::GetPolygonRings(a), detail::GetPolygonRings(b));
 		}
 
 		bool Contains(const Polygon& a, const MultiPolygon& b) noexcept

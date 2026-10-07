@@ -22,6 +22,12 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\ThirdParty\Catch2\catch_amalgamated.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TestFramework.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_TestEnvironment.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -44,6 +50,12 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Utility.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BigInt.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BigFloat.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Byte.cpp">
@@ -97,6 +109,12 @@
     <ClCompile Include="..\Test\Test_Unicode.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_UnicodeConverter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextFileWriter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Platform.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -127,27 +145,111 @@
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalShader.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalPresentation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_GLFW.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Keyboard.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ScopeExit.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Smooth.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-	<ClCompile Include="..\Test\Test_Quaternion.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Cylindrical.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Spherical.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Mat4x4.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_SimdFloat4.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
+    <ClCompile Include="..\Test\Test_Quaternion.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Cylindrical.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Spherical.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat3x2.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat3x3.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_QuadWarp.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_CursorTransform.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Transformer2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Pattern.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MSDFFont.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_FontGlyph.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_D3D11Device.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_D3D11SwapChain.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_D3D11DisplayFrequency.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MonitorInfo.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat4x4.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SimdFloat4.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Compression.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -173,6 +275,15 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_ArrayLike.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Polygon.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Polygon.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_LineBufferPolygon.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MultiPolygon.cpp">
@@ -205,7 +316,13 @@
     <ClCompile Include="..\Test\Test_Interpolation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Bezier.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Geometry2D.cpp">
@@ -227,6 +344,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Availability.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp">
@@ -280,9 +400,9 @@
     <ClCompile Include="..\Test\Test_Mesh3D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -368,6 +488,12 @@
       <Filter>Precompiled Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\Siv3DTest.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\ThirdParty\Catch2\catch_amalgamated.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\Siv3DTestFramework.hpp">
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>

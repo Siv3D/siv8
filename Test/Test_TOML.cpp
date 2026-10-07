@@ -39,8 +39,8 @@ TEST_CASE("TOML.default")
 	CHECK(toml.isInvalid());
 	CHECK(not toml.isValid());
 	CHECK(not toml.hasValue());
-	CHECK_EQ(toml.getType(), TOMLValueType::Invalid);
-	CHECK_EQ(toml.type(), TOMLValueType::Invalid);
+	CHECK((toml.getType()) == (TOMLValueType::Invalid));
+	CHECK((toml.type()) == (TOMLValueType::Invalid));
 
 	CHECK(not toml.isBool());
 	CHECK(not toml.isInt());
@@ -59,8 +59,8 @@ TEST_CASE("TOML.Load.basic")
 
 	REQUIRE(toml);
 	CHECK(toml.isTable());
-	CHECK_EQ(toml.getType(), TOMLValueType::Table);
-	CHECK_EQ(toml.size(), 5u);
+	CHECK((toml.getType()) == (TOMLValueType::Table));
+	CHECK((toml.size()) == (5u));
 
 	CHECK(toml.contains(U"title"));
 	CHECK(toml.contains(U"server"));
@@ -69,22 +69,22 @@ TEST_CASE("TOML.Load.basic")
 	CHECK(toml.contains(U"users"));
 	CHECK(not toml.contains(U"missing"));
 
-	CHECK_EQ(toml[U"title"].get<String>(), U"TOML test");
+	CHECK((toml[U"title"].get<String>()) == (U"TOML test"));
 
 	const TOML server = toml[U"server"];
 	REQUIRE(server);
 	CHECK(server.isTable());
-	CHECK_EQ(server[U"host"].get<String>(), U"localhost");
-	CHECK_EQ(server[U"host"].getUTF8(), std::string{ "localhost" });
-	CHECK_EQ(server[U"port"].get<int32>(), 8080);
-	CHECK_EQ(server[U"enabled"].get<bool>(), true);
+	CHECK((server[U"host"].get<String>()) == (U"localhost"));
+	CHECK((server[U"host"].getUTF8()) == (std::string{ "localhost" }));
+	CHECK((server[U"port"].get<int32>()) == (8080));
+	CHECK((server[U"enabled"].get<bool>()) == (true));
 
 	const TOML database = toml[U"database"];
 	REQUIRE(database);
-	CHECK_EQ(database[U"user"].get<String>(), U"test_user");
-	CHECK_EQ(database[U"password"].get<String>(), U"secret");
-	CHECK_EQ(database[U"max_connections"].get<int32>(), 10);
-	CHECK_EQ(database[U"timeout_seconds"].get<double>(), 30.5);
+	CHECK((database[U"user"].get<String>()) == (U"test_user"));
+	CHECK((database[U"password"].get<String>()) == (U"secret"));
+	CHECK((database[U"max_connections"].get<int32>()) == (10));
+	CHECK((database[U"timeout_seconds"].get<double>()) == (30.5));
 
 	const TOML features = toml[U"features"];
 	REQUIRE(features);
@@ -94,11 +94,11 @@ TEST_CASE("TOML.Load.basic")
 	const TOML users = toml[U"users"];
 	REQUIRE(users);
 	CHECK(users.isArray());
-	CHECK_EQ(users.size(), 2u);
-	CHECK_EQ(users[0][U"name"].get<String>(), U"Alice");
-	CHECK_EQ(users[0][U"admin"].get<bool>(), true);
-	CHECK_EQ(users[1][U"name"].get<String>(), U"Bob");
-	CHECK_EQ(users[1][U"admin"].get<bool>(), false);
+	CHECK((users.size()) == (2u));
+	CHECK((users[0][U"name"].get<String>()) == (U"Alice"));
+	CHECK((users[0][U"admin"].get<bool>()) == (true));
+	CHECK((users[1][U"name"].get<String>()) == (U"Bob"));
+	CHECK((users[1][U"admin"].get<bool>()) == (false));
 }
 
 TEST_CASE("TOML.Parse")
@@ -108,8 +108,8 @@ TEST_CASE("TOML.Parse")
 
 		REQUIRE(toml);
 		CHECK(toml.isTable());
-		CHECK_EQ(toml[U"title"].get<String>(), U"Siv3D");
-		CHECK_EQ(toml[U"value"].get<int32>(), 42);
+		CHECK((toml[U"title"].get<String>()) == (U"Siv3D"));
+		CHECK((toml[U"value"].get<int32>()) == (42));
 	}
 
 	{
@@ -117,8 +117,8 @@ TEST_CASE("TOML.Parse")
 
 		REQUIRE(toml);
 		CHECK(toml.isTable());
-		CHECK_EQ(toml[U"title"].get<String>(), U"Siv3D");
-		CHECK_EQ(toml[U"value"].get<int32>(), 42);
+		CHECK((toml[U"title"].get<String>()) == (U"Siv3D"));
+		CHECK((toml[U"value"].get<int32>()) == (42));
 	}
 
 	{
@@ -127,7 +127,7 @@ TEST_CASE("TOML.Parse")
 		REQUIRE(toml);
 		CHECK(toml.isTable());
 		CHECK(toml.isEmptyTable());
-		CHECK_EQ(toml.size(), 0u);
+		CHECK((toml.size()) == (0u));
 	}
 
 	{
@@ -213,75 +213,75 @@ TEST_CASE("TOML.types")
 
 	CHECK(toml[U"bool_true"].isBool());
 	CHECK(toml[U"bool_false"].isBool());
-	CHECK_EQ(toml[U"bool_true"].get<bool>(), true);
-	CHECK_EQ(toml[U"bool_false"].get<bool>(), false);
+	CHECK((toml[U"bool_true"].get<bool>()) == (true));
+	CHECK((toml[U"bool_false"].get<bool>()) == (false));
 
 	CHECK(toml[U"int_zero"].isInt());
 	CHECK(toml[U"int_positive"].isInt());
 	CHECK(toml[U"int_negative"].isInt());
 	CHECK(toml[U"int_with_underscores"].isInt());
-	CHECK_EQ(toml[U"int_zero"].get<int32>(), 0);
-	CHECK_EQ(toml[U"int_positive"].get<int32>(), 123456);
-	CHECK_EQ(toml[U"int_negative"].get<int32>(), -98765);
-	CHECK_EQ(toml[U"int_with_underscores"].get<int32>(), 1'000'000);
+	CHECK((toml[U"int_zero"].get<int32>()) == (0));
+	CHECK((toml[U"int_positive"].get<int32>()) == (123456));
+	CHECK((toml[U"int_negative"].get<int32>()) == (-98765));
+	CHECK((toml[U"int_with_underscores"].get<int32>()) == (1'000'000));
 
 	CHECK(toml[U"float_plain"].isFloat());
 	CHECK(toml[U"float_negative"].isFloat());
 	CHECK(toml[U"float_exponent"].isFloat());
 	CHECK(toml[U"float_inf"].isFloat());
 	CHECK(toml[U"float_nan"].isFloat());
-	CHECK(toml[U"float_plain"].get<double>() == doctest::Approx(3.14159));
-	CHECK(toml[U"float_negative"].get<double>() == doctest::Approx(-0.25));
+	CHECK(toml[U"float_plain"].get<double>() == Test::Approx(3.14159));
+	CHECK(toml[U"float_negative"].get<double>() == Test::Approx(-0.25));
 	CHECK(std::isinf(toml[U"float_inf"].get<double>()));
 	CHECK(std::isnan(toml[U"float_nan"].get<double>()));
 
 	CHECK(toml[U"string_basic"].isString());
 	CHECK(toml[U"string_unicode"].isString());
-	CHECK_EQ(toml[U"string_basic"].get<String>(), U"hello");
-	CHECK_EQ(toml[U"string_unicode"].get<String>(), U"こんにちは Siv3D 🌏");
+	CHECK((toml[U"string_basic"].get<String>()) == (U"hello"));
+	CHECK((toml[U"string_unicode"].get<String>()) == (U"こんにちは Siv3D 🌏"));
 
 	CHECK(toml[U"local_date"].isLocalDate());
-	CHECK_EQ(toml[U"local_date"].get<Date>(), Date{ 2026, 5, 4 });
+	CHECK((toml[U"local_date"].get<Date>()) == (Date{ 2026, 5, 4 }));
 
 	CHECK(toml[U"local_time"].isLocalTime());
 	{
 		const TOML::LocalTime time = toml[U"local_time"].getLocalTime();
-		CHECK_EQ(time.hour, 12);
-		CHECK_EQ(time.minute, 34);
-		CHECK_EQ(time.second, 56);
-		CHECK_EQ(time.millisecond, 789);
-		CHECK_EQ(time.microsecond, 123);
-		CHECK_EQ(time.nanosecond, 456);
+		CHECK((time.hour) == (12));
+		CHECK((time.minute) == (34));
+		CHECK((time.second) == (56));
+		CHECK((time.millisecond) == (789));
+		CHECK((time.microsecond) == (123));
+		CHECK((time.nanosecond) == (456));
 	}
 
 	CHECK(toml[U"local_datetime"].isLocalDateTime());
 	{
 		const TOML::LocalDateTime dateTime = toml[U"local_datetime"].getLocalDateTime();
-		CHECK_EQ(dateTime.date, Date{ 2026, 5, 4 });
-		CHECK_EQ(dateTime.time.hour, 12);
-		CHECK_EQ(dateTime.time.minute, 34);
-		CHECK_EQ(dateTime.time.second, 56);
-		CHECK_EQ(dateTime.time.millisecond, 789);
+		CHECK((dateTime.date) == (Date{ 2026, 5, 4 }));
+		CHECK((dateTime.time.hour) == (12));
+		CHECK((dateTime.time.minute) == (34));
+		CHECK((dateTime.time.second) == (56));
+		CHECK((dateTime.time.millisecond) == (789));
 	}
 
 	CHECK(toml[U"offset_datetime_utc"].isOffsetDateTime());
 	{
 		const TOML::OffsetDateTime dateTime = toml[U"offset_datetime_utc"].getOffsetDateTime();
-		CHECK_EQ(dateTime.localDateTime.date, Date{ 2026, 5, 4 });
-		CHECK_EQ(dateTime.localDateTime.time.hour, 12);
-		CHECK_EQ(dateTime.localDateTime.time.minute, 34);
-		CHECK_EQ(dateTime.localDateTime.time.second, 56);
-		CHECK_EQ(dateTime.offsetMinutes, 0);
+		CHECK((dateTime.localDateTime.date) == (Date{ 2026, 5, 4 }));
+		CHECK((dateTime.localDateTime.time.hour) == (12));
+		CHECK((dateTime.localDateTime.time.minute) == (34));
+		CHECK((dateTime.localDateTime.time.second) == (56));
+		CHECK((dateTime.offsetMinutes) == (0));
 	}
 
 	CHECK(toml[U"offset_datetime_jst"].isOffsetDateTime());
 	{
 		const TOML::OffsetDateTime dateTime = toml[U"offset_datetime_jst"].getOffsetDateTime();
-		CHECK_EQ(dateTime.localDateTime.date, Date{ 2026, 5, 4 });
-		CHECK_EQ(dateTime.localDateTime.time.hour, 21);
-		CHECK_EQ(dateTime.localDateTime.time.minute, 34);
-		CHECK_EQ(dateTime.localDateTime.time.second, 56);
-		CHECK_EQ(dateTime.offsetMinutes, 9 * 60);
+		CHECK((dateTime.localDateTime.date) == (Date{ 2026, 5, 4 }));
+		CHECK((dateTime.localDateTime.time.hour) == (21));
+		CHECK((dateTime.localDateTime.time.minute) == (34));
+		CHECK((dateTime.localDateTime.time.second) == (56));
+		CHECK((dateTime.offsetMinutes) == (9 * 60));
 	}
 }
 
@@ -292,7 +292,7 @@ TEST_CASE("TOML.operator_at")
 
 	CHECK(toml[U"server"]);
 	CHECK(toml[U"server"][U"host"]);
-	CHECK_EQ(toml[U"server"][U"host"].get<String>(), U"localhost");
+	CHECK((toml[U"server"][U"host"].get<String>()) == (U"localhost"));
 
 	CHECK(not toml[U"missing"]);
 	CHECK(toml[U"missing"].isInvalid());
@@ -301,8 +301,8 @@ TEST_CASE("TOML.operator_at")
 	CHECK(not toml[U"server"][0]);
 	CHECK(not toml[U"users"][999]);
 
-	CHECK_EQ(toml.at(U"server").at(U"host").get<String>(), U"localhost");
-	CHECK_EQ(toml.at(U"users").at(0).at(U"name").get<String>(), U"Alice");
+	CHECK((toml.at(U"server").at(U"host").get<String>()) == (U"localhost"));
+	CHECK((toml.at(U"users").at(0).at(U"name").get<String>()) == (U"Alice"));
 
 	CHECK_THROWS_AS((void)toml.at(U"missing"), Error);
 	CHECK_THROWS_AS((void)toml[U"server"].at(0), Error);
@@ -318,13 +318,13 @@ TEST_CASE("TOML.getOpt_getOr_get")
 	{
 		const Optional<int32> opt = toml[U"as_int"].getOpt<int32>();
 		REQUIRE(opt);
-		CHECK_EQ(*opt, 123);
+		CHECK((*opt) == (123));
 	}
 
 	{
 		const Optional<String> opt = toml[U"as_string_number"].getOpt<String>();
 		REQUIRE(opt);
-		CHECK_EQ(*opt, U"123");
+		CHECK((*opt) == (U"123"));
 	}
 
 	CHECK(not toml[U"as_string_number"].getOpt<int32>());
@@ -332,8 +332,8 @@ TEST_CASE("TOML.getOpt_getOr_get")
 	CHECK(not toml[U"as_bool"].getOpt<int32>());
 	CHECK(not toml[U"missing"].getOpt<int32>());
 
-	CHECK_EQ(toml[U"as_string_number"].getOr<int32>(456), 456);
-	CHECK_EQ(toml[U"missing"].getOr<String>(U"default"), U"default");
+	CHECK((toml[U"as_string_number"].getOr<int32>(456)) == (456));
+	CHECK((toml[U"missing"].getOr<String>(U"default")) == (U"default"));
 
 	CHECK_THROWS_AS((void)toml[U"as_string_number"].get<int32>(), Error);
 	CHECK_THROWS_AS((void)toml[U"as_float"].get<int32>(), Error);
@@ -348,14 +348,14 @@ TEST_CASE("TOML.getParsed")
 	{
 		const Optional<int32> opt = toml[U"as_string_number"].getParsedOpt<int32>();
 		REQUIRE(opt);
-		CHECK_EQ(*opt, 123);
+		CHECK((*opt) == (123));
 	}
 
 	CHECK(not toml[U"as_int"].getParsedOpt<int32>());
 	CHECK(not toml[U"missing"].getParsedOpt<int32>());
 
-	CHECK_EQ(toml[U"as_string_number"].getParsed<int32>(), 123);
-	CHECK_EQ(toml[U"as_int"].getParsedOr<int32>(456), 456);
+	CHECK((toml[U"as_string_number"].getParsed<int32>()) == (123));
+	CHECK((toml[U"as_int"].getParsedOr<int32>(456)) == (456));
 	CHECK_THROWS_AS((void)toml[U"as_int"].getParsed<int32>(), Error);
 }
 
@@ -375,9 +375,9 @@ TEST_CASE("TOML.getArray")
 	REQUIRE(basic);
 
 	const Array<TOML> users = basic[U"users"].getArray<TOML>();
-	REQUIRE_EQ(users.size(), 2u);
-	CHECK_EQ(users[0][U"name"].get<String>(), U"Alice");
-	CHECK_EQ(users[1][U"name"].get<String>(), U"Bob");
+	REQUIRE((users.size()) == (2u));
+	CHECK((users[0][U"name"].get<String>()) == (U"Alice"));
+	CHECK((users[1][U"name"].get<String>()) == (U"Bob"));
 }
 
 TEST_CASE("TOML.arrayView")
@@ -432,15 +432,15 @@ TEST_CASE("TOML.lifetime")
 
 	REQUIRE(server);
 	CHECK(server.isTable());
-	CHECK_EQ(server[U"host"].get<String>(), U"localhost");
-	CHECK_EQ(server[U"port"].get<int32>(), 8080);
+	CHECK((server[U"host"].get<String>()) == (U"localhost"));
+	CHECK((server[U"port"].get<int32>()) == (8080));
 
 	const TOML firstUser = TOML::Load(ValidBasic)[U"users"][0];
 
 	REQUIRE(firstUser);
 	CHECK(firstUser.isTable());
-	CHECK_EQ(firstUser[U"name"].get<String>(), U"Alice");
-	CHECK_EQ(firstUser[U"admin"].get<bool>(), true);
+	CHECK((firstUser[U"name"].get<String>()) == (U"Alice"));
+	CHECK((firstUser[U"admin"].get<bool>()) == (true));
 }
 
 TEST_CASE("TOML.nested")
@@ -448,26 +448,26 @@ TEST_CASE("TOML.nested")
 	const TOML toml = TOML::Load(ValidNested);
 	REQUIRE(toml);
 
-	CHECK_EQ(toml[U"window"][U"title"].get<String>(), U"Game");
+	CHECK((toml[U"window"][U"title"].get<String>()) == (U"Game"));
 	CHECK(toml[U"window"][U"size"].getArray<int32>() == Array<int32>{ 1280, 720 });
-	CHECK_EQ(toml[U"window"][U"fullscreen"].get<bool>(), false);
+	CHECK((toml[U"window"][U"fullscreen"].get<bool>()) == (false));
 
-	CHECK_EQ(toml[U"graphics"][U"vsync"].get<bool>(), true);
+	CHECK((toml[U"graphics"][U"vsync"].get<bool>()) == (true));
 	CHECK(toml[U"graphics"][U"clear_color"].isTable());
-	CHECK(toml[U"graphics"][U"clear_color"][U"r"].get<double>() == doctest::Approx(0.1));
-	CHECK(toml[U"graphics"][U"clear_color"][U"g"].get<double>() == doctest::Approx(0.2));
-	CHECK(toml[U"graphics"][U"clear_color"][U"b"].get<double>() == doctest::Approx(0.3));
-	CHECK(toml[U"graphics"][U"clear_color"][U"a"].get<double>() == doctest::Approx(1.0));
+	CHECK(toml[U"graphics"][U"clear_color"][U"r"].get<double>() == Test::Approx(0.1));
+	CHECK(toml[U"graphics"][U"clear_color"][U"g"].get<double>() == Test::Approx(0.2));
+	CHECK(toml[U"graphics"][U"clear_color"][U"b"].get<double>() == Test::Approx(0.3));
+	CHECK(toml[U"graphics"][U"clear_color"][U"a"].get<double>() == Test::Approx(1.0));
 
-	CHECK_EQ(toml[U"stages"].size(), 2u);
-	CHECK_EQ(toml[U"stages"][0][U"name"].get<String>(), U"forest");
-	CHECK_EQ(toml[U"stages"][0][U"difficulty"].get<int32>(), 1);
-	CHECK_EQ(toml[U"stages"][0][U"spawn_points"].size(), 3u);
+	CHECK((toml[U"stages"].size()) == (2u));
+	CHECK((toml[U"stages"][0][U"name"].get<String>()) == (U"forest"));
+	CHECK((toml[U"stages"][0][U"difficulty"].get<int32>()) == (1));
+	CHECK((toml[U"stages"][0][U"spawn_points"].size()) == (3u));
 	CHECK(toml[U"stages"][0][U"spawn_points"][0].getArray<int32>() == Array<int32>{ 0, 0 });
 
-	CHECK_EQ(toml[U"stages"][1][U"name"].get<String>(), U"desert");
-	CHECK_EQ(toml[U"stages"][1][U"difficulty"].get<int32>(), 3);
-	CHECK_EQ(toml[U"stages"][1][U"spawn_points"].size(), 2u);
+	CHECK((toml[U"stages"][1][U"name"].get<String>()) == (U"desert"));
+	CHECK((toml[U"stages"][1][U"difficulty"].get<int32>()) == (3));
+	CHECK((toml[U"stages"][1][U"spawn_points"].size()) == (2u));
 	CHECK(toml[U"stages"][1][U"spawn_points"][1].getArray<int32>() == Array<int32>{ 200, 160 });
 }
 
@@ -476,18 +476,18 @@ TEST_CASE("TOML.unicode_bom_empty")
 	{
 		const TOML toml = TOML::Load(ValidUnicode);
 		REQUIRE(toml);
-		CHECK_EQ(toml[U"title"].get<String>(), U"日本語タイトル");
-		CHECK_EQ(toml[U"description"].get<String>(), U"Unicode / 絵文字 / 記号のテスト: あいうえお、αβγ、🎮");
-		CHECK_EQ(toml[U"names"][U"player"].get<String>(), U"太郎");
-		CHECK_EQ(toml[U"messages"][U"game_over"].get<String>(), U"ゲームオーバー");
+		CHECK((toml[U"title"].get<String>()) == (U"日本語タイトル"));
+		CHECK((toml[U"description"].get<String>()) == (U"Unicode / 絵文字 / 記号のテスト: あいうえお、αβγ、🎮"));
+		CHECK((toml[U"names"][U"player"].get<String>()) == (U"太郎"));
+		CHECK((toml[U"messages"][U"game_over"].get<String>()) == (U"ゲームオーバー"));
 	}
 
 	{
 		const TOML toml = TOML::Load(ValidUTF8BOM);
 		REQUIRE(toml);
-		CHECK_EQ(toml[U"title"].get<String>(), U"UTF-8 BOM test");
-		CHECK_EQ(toml[U"value"].get<int32>(), 42);
-		CHECK_EQ(toml[U"message"].get<String>(), U"BOM 付き UTF-8");
+		CHECK((toml[U"title"].get<String>()) == (U"UTF-8 BOM test"));
+		CHECK((toml[U"value"].get<int32>()) == (42));
+		CHECK((toml[U"message"].get<String>()) == (U"BOM 付き UTF-8"));
 	}
 
 	{
@@ -495,7 +495,7 @@ TEST_CASE("TOML.unicode_bom_empty")
 		REQUIRE(toml);
 		CHECK(toml.isTable());
 		CHECK(toml.isEmptyTable());
-		CHECK_EQ(toml.size(), 0u);
+		CHECK((toml.size()) == (0u));
 	}
 
 	{
@@ -503,7 +503,7 @@ TEST_CASE("TOML.unicode_bom_empty")
 		REQUIRE(toml);
 		CHECK(toml[U"empty_table"].isTable());
 		CHECK(toml[U"empty_table"].isEmptyTable());
-		CHECK_EQ(toml[U"config"][U"value"].get<int32>(), 42);
+		CHECK((toml[U"config"][U"value"].get<int32>()) == (42));
 		CHECK(toml[U"config"][U"array"].getArray<int32>() == Array<int32>{ 1, 2, 3 });
 	}
 }

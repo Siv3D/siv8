@@ -99,26 +99,26 @@ TEST_CASE("Mesh3D::Revolve open cylinder side")
 	const Mesh3D mesh = Mesh3D::Revolve(profile, FullRevolve(Segments));
 	const size_t ringStride = (Segments + 1);
 
-	CHECK_EQ(mesh.vertexCount(), (ringStride * 2));
-	CHECK_EQ(mesh.triangleCount(), (Segments * 2));
+	CHECK((mesh.vertexCount()) == ((ringStride * 2)));
+	CHECK((mesh.triangleCount()) == ((Segments * 2)));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -2.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 0.0f, 0.0f, -1.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[0].bitangent(), Float3::UnitY());
-	CHECK_EQ(mesh.vertices[Segments].pos, mesh.vertices[0].pos);
-	CHECK_EQ(mesh.vertices[Segments].normal, mesh.vertices[0].normal);
-	CHECK_EQ(mesh.vertices[Segments].tangent, mesh.vertices[0].tangent);
-	CHECK_EQ(mesh.vertices[Segments].tex, Float2{ 1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[ringStride].pos, Float3{ 1.0f, 3.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[ringStride].tex, Float2{ 0.0f, 1.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ 1.0f, -2.0f, 0.0f }));
+	CHECK((mesh.vertices[0].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[0].tangent) == (Float4{ 0.0f, 0.0f, -1.0f, 1.0f }));
+	CHECK((mesh.vertices[0].bitangent()) == (Float3::UnitY()));
+	CHECK((mesh.vertices[Segments].pos) == (mesh.vertices[0].pos));
+	CHECK((mesh.vertices[Segments].normal) == (mesh.vertices[0].normal));
+	CHECK((mesh.vertices[Segments].tangent) == (mesh.vertices[0].tangent));
+	CHECK((mesh.vertices[Segments].tex) == (Float2{ 1.0f, 0.0f }));
+	CHECK((mesh.vertices[ringStride].pos) == (Float3{ 1.0f, 3.0f, 0.0f }));
+	CHECK((mesh.vertices[ringStride].tex) == (Float2{ 0.0f, 1.0f }));
 	CheckMeshGeometry(Mesh3D::Revolve(profile));
 
 	const Mesh3D reversed = Mesh3D::Revolve(
 		Array<Vec2>{ { 1.0, 3.0 }, { 1.0, -2.0 } }, FullRevolve(Segments));
 	CheckMeshGeometry(reversed);
-	CHECK_EQ(reversed.vertices[0].normal, -Float3::UnitX());
+	CHECK((reversed.vertices[0].normal) == (-Float3::UnitX()));
 }
 
 TEST_CASE("Mesh3D::Revolve solid cylinder")
@@ -132,15 +132,15 @@ TEST_CASE("Mesh3D::Revolve solid cylinder")
 	const size_t secondSegmentBase = firstSegmentVertexCount;
 	const size_t thirdSegmentBase = (secondSegmentBase + (2 * (Segments + 1)));
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (6 * Segments) + 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ (6 * Segments) + 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 * Segments }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 0.0f, -1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[0].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[Segments].pos, Float3{ 2.0f, -1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[Segments].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[secondSegmentBase].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[thirdSegmentBase].normal, Float3::UnitY());
+	CHECK((mesh.vertices[0].pos) == (Float3{ 0.0f, -1.0f, 0.0f }));
+	CHECK((mesh.vertices[0].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[Segments].pos) == (Float3{ 2.0f, -1.0f, 0.0f }));
+	CHECK((mesh.vertices[Segments].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[secondSegmentBase].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[thirdSegmentBase].normal) == (Float3::UnitY()));
 }
 
 TEST_CASE("Mesh3D::Revolve cone and annulus")
@@ -148,16 +148,16 @@ TEST_CASE("Mesh3D::Revolve cone and annulus")
 	constexpr uint32 Segments = 8;
 	const Array<Vec2> coneProfile{ { 2.0, -1.0 }, { 0.0, 2.0 } };
 	const Mesh3D cone = Mesh3D::Revolve(coneProfile, FullRevolve(Segments));
-	CHECK_EQ(cone.vertexCount(), size_t{ (2 * Segments) + 1 });
-	CHECK_EQ(cone.triangleCount(), size_t{ Segments });
+	CHECK((cone.vertexCount()) == (size_t{ (2 * Segments) + 1 }));
+	CHECK((cone.triangleCount()) == (size_t{ Segments }));
 	CheckMeshGeometry(cone);
 
 	const Array<Vec2> annulusProfile{ { 0.5, 0.0 }, { 2.0, 0.0 } };
 	const Mesh3D annulus = Mesh3D::Revolve(annulusProfile, FullRevolve(Segments));
-	CHECK_EQ(annulus.vertexCount(), size_t{ 2 * (Segments + 1) });
-	CHECK_EQ(annulus.triangleCount(), size_t{ 2 * Segments });
+	CHECK((annulus.vertexCount()) == (size_t{ 2 * (Segments + 1) }));
+	CHECK((annulus.triangleCount()) == (size_t{ 2 * Segments }));
 	CheckMeshGeometry(annulus);
-	CHECK_EQ(annulus.vertices[0].normal, -Float3::UnitY());
+	CHECK((annulus.vertices[0].normal) == (-Float3::UnitY()));
 }
 
 TEST_CASE("Mesh3D::Revolve closed hollow profile")
@@ -170,19 +170,19 @@ TEST_CASE("Mesh3D::Revolve closed hollow profile")
 	const size_t segmentVertexCount = (2 * (Segments + 1));
 	const size_t lastEndRingBase = ((3 * segmentVertexCount) + (Segments + 1));
 
-	CHECK_EQ(hard.vertexCount(), (4 * segmentVertexCount));
-	CHECK_EQ(hard.triangleCount(), size_t{ 8 * Segments });
+	CHECK((hard.vertexCount()) == ((4 * segmentVertexCount)));
+	CHECK((hard.triangleCount()) == (size_t{ 8 * Segments }));
 	CheckMeshGeometry(hard);
-	CHECK_EQ(hard.vertices[0].pos, hard.vertices[lastEndRingBase].pos);
-	CHECK_EQ(hard.vertices[0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(hard.vertices[lastEndRingBase].tex, Float2{ 0.0f, 1.0f });
-	CHECK_NE(hard.vertices[0].normal, hard.vertices[lastEndRingBase].normal);
+	CHECK((hard.vertices[0].pos) == (hard.vertices[lastEndRingBase].pos));
+	CHECK((hard.vertices[0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((hard.vertices[lastEndRingBase].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((hard.vertices[0].normal) != (hard.vertices[lastEndRingBase].normal));
 
 	const Mesh3D smooth = Mesh3D::Revolve(profile, FullRevolve(Segments, Math::HalfPi));
 	CheckMeshGeometry(smooth);
-	CHECK_EQ(smooth.vertices[0].normal, smooth.vertices[lastEndRingBase].normal);
-	CHECK(smooth.vertices[0].normal.x == doctest::Approx(Math::InvSqrt2));
-	CHECK(smooth.vertices[0].normal.y == doctest::Approx(-Math::InvSqrt2));
+	CHECK((smooth.vertices[0].normal) == (smooth.vertices[lastEndRingBase].normal));
+	CHECK(smooth.vertices[0].normal.x == Test::Approx(Math::InvSqrt2));
+	CHECK(smooth.vertices[0].normal.y == Test::Approx(-Math::InvSqrt2));
 }
 
 TEST_CASE("Mesh3D::Revolve profile normal smoothing")
@@ -199,22 +199,22 @@ TEST_CASE("Mesh3D::Revolve profile normal smoothing")
 	const Mesh3D smooth = Mesh3D::Revolve(profile, FullRevolve(Segments, Math::HalfPi));
 
 	CheckMeshGeometry(hard);
-	REQUIRE_EQ(zeroAngle.vertexCount(), hard.vertexCount());
-	REQUIRE_EQ(zeroAngle.triangleCount(), hard.triangleCount());
+	REQUIRE((zeroAngle.vertexCount()) == (hard.vertexCount()));
+	REQUIRE((zeroAngle.triangleCount()) == (hard.triangleCount()));
 	for (size_t i = 0; i < hard.vertexCount(); ++i)
 	{
-		CHECK_EQ(zeroAngle.vertices[i].normal, hard.vertices[i].normal);
-		CHECK_EQ(zeroAngle.vertices[i].tangent, hard.vertices[i].tangent);
+		CHECK((zeroAngle.vertices[i].normal) == (hard.vertices[i].normal));
+		CHECK((zeroAngle.vertices[i].tangent) == (hard.vertices[i].tangent));
 	}
 	CheckMeshGeometry(belowCornerAngle);
 	CheckMeshGeometry(smooth);
-	CHECK_NE(hard.vertices[firstEndRingBase].normal, hard.vertices[secondStartRingBase].normal);
-	CHECK_EQ(belowCornerAngle.vertices[firstEndRingBase].normal, hard.vertices[firstEndRingBase].normal);
-	CHECK_EQ(belowCornerAngle.vertices[secondStartRingBase].normal, hard.vertices[secondStartRingBase].normal);
-	CHECK_EQ(smooth.vertices[firstEndRingBase].normal, smooth.vertices[secondStartRingBase].normal);
-	CHECK(smooth.vertices[firstEndRingBase].normal.x == doctest::Approx(1.0f));
-	CHECK(smooth.vertices[firstEndRingBase].normal.y == doctest::Approx(0.0f).scale(1.0));
-	CHECK(smooth.vertices[firstEndRingBase].normal.z == doctest::Approx(0.0f).scale(1.0));
+	CHECK((hard.vertices[firstEndRingBase].normal) != (hard.vertices[secondStartRingBase].normal));
+	CHECK((belowCornerAngle.vertices[firstEndRingBase].normal) == (hard.vertices[firstEndRingBase].normal));
+	CHECK((belowCornerAngle.vertices[secondStartRingBase].normal) == (hard.vertices[secondStartRingBase].normal));
+	CHECK((smooth.vertices[firstEndRingBase].normal) == (smooth.vertices[secondStartRingBase].normal));
+	CHECK(smooth.vertices[firstEndRingBase].normal.x == Test::Approx(1.0f));
+	CHECK(smooth.vertices[firstEndRingBase].normal.y == Test::Approx(0.0f).scale(1.0));
+	CHECK(smooth.vertices[firstEndRingBase].normal.z == Test::Approx(0.0f).scale(1.0));
 }
 
 TEST_CASE("Mesh3D::Revolve interior axis point")
@@ -223,8 +223,8 @@ TEST_CASE("Mesh3D::Revolve interior axis point")
 	const Array<Vec2> profile{ { 1.0, -1.0 }, { 0.0, 0.0 }, { 1.0, 1.0 } };
 	const Mesh3D mesh = Mesh3D::Revolve(profile, FullRevolve(Segments, Math::HalfPi));
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 2 * ((2 * Segments) + 1) });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ 2 * ((2 * Segments) + 1) }));
+	CHECK((mesh.triangleCount()) == (size_t{ 2 * Segments }));
 	CheckMeshGeometry(mesh);
 }
 
@@ -236,19 +236,19 @@ TEST_CASE("Mesh3D::Revolve partial angle")
 		profile, PartialRevolve(0.0, Math::HalfPi, Segments));
 	const size_t ringStride = (Segments + 1);
 
-	CHECK_EQ(mesh.vertexCount(), (ringStride * 2));
-	CHECK_EQ(mesh.triangleCount(), (Segments * 2));
+	CHECK((mesh.vertexCount()) == ((ringStride * 2)));
+	CHECK((mesh.triangleCount()) == ((Segments * 2)));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -2.0f, 0.0f });
-	CHECK(mesh.vertices[Segments].pos.x == doctest::Approx(0.0f).scale(1.0));
-	CHECK_EQ(mesh.vertices[Segments].pos.y, -2.0f);
-	CHECK(mesh.vertices[Segments].pos.z == doctest::Approx(-1.0f));
-	CHECK_EQ(mesh.vertices[Segments].tex, Float2{ 1.0f, 0.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ 1.0f, -2.0f, 0.0f }));
+	CHECK(mesh.vertices[Segments].pos.x == Test::Approx(0.0f).scale(1.0));
+	CHECK((mesh.vertices[Segments].pos.y) == (-2.0f));
+	CHECK(mesh.vertices[Segments].pos.z == Test::Approx(-1.0f));
+	CHECK((mesh.vertices[Segments].tex) == (Float2{ 1.0f, 0.0f }));
 
 	const Mesh3D oneSegment = Mesh3D::Revolve(
 		profile, PartialRevolve(Math::QuarterPi, Math::HalfPi, 1));
-	CHECK_EQ(oneSegment.vertexCount(), size_t{ 4 });
-	CHECK_EQ(oneSegment.triangleCount(), size_t{ 2 });
+	CHECK((oneSegment.vertexCount()) == (size_t{ 4 }));
+	CHECK((oneSegment.triangleCount()) == (size_t{ 2 }));
 	CheckMeshGeometry(oneSegment);
 
 	CheckMeshDataEqual(
@@ -267,15 +267,15 @@ TEST_CASE("Mesh3D::Revolve follows the Y-axis rotation convention")
 		profile, PartialRevolve(StartAngle, SweepAngle, 1));
 	const Float3 basePosition{ 1.0f, -2.0f, 0.0f };
 
-	REQUIRE_EQ(mesh.vertexCount(), size_t{ 4 });
+	REQUIRE((mesh.vertexCount()) == (size_t{ 4 }));
 	CHECK(mesh.vertices[0].pos.epsilonEquals(
 		Quaternion::RotateY(static_cast<float>(StartAngle)).rotate(basePosition), 1e-5f));
 	CHECK(mesh.vertices[1].pos.epsilonEquals(
 		Quaternion::RotateY(static_cast<float>(StartAngle + SweepAngle)).rotate(basePosition), 1e-5f));
 	CHECK(mesh.vertices[0].tangent.xyz().epsilonEquals(
 		Quaternion::RotateY(static_cast<float>(StartAngle)).rotate(-Float3::UnitZ()), 1e-5f));
-	CHECK_EQ(mesh.vertices[0].tex.x, 0.0f);
-	CHECK_EQ(mesh.vertices[1].tex.x, 1.0f);
+	CHECK((mesh.vertices[0].tex.x) == (0.0f));
+	CHECK((mesh.vertices[1].tex.x) == (1.0f));
 	CheckMeshGeometry(mesh);
 }
 
@@ -316,18 +316,18 @@ TEST_CASE("Mesh3D::Revolve partial end caps")
 	const size_t sideVertexCount = ((6 * Segments) + 4);
 	const size_t capVertexCount = 4;
 
-	CHECK_EQ(mesh.vertexCount(), (sideVertexCount + (capVertexCount * 2)));
-	CHECK_EQ(mesh.triangleCount(), size_t{ (4 * Segments) + 4 });
+	CHECK((mesh.vertexCount()) == ((sideVertexCount + (capVertexCount * 2))));
+	CHECK((mesh.triangleCount()) == (size_t{ (4 * Segments) + 4 }));
 	CheckMeshGeometry(mesh);
 
 	for (size_t i = 0; i < capVertexCount; ++i)
 	{
 		const Vertex3D& start = mesh.vertices[sideVertexCount + i];
 		const Vertex3D& end = mesh.vertices[sideVertexCount + capVertexCount + i];
-		CHECK_EQ(start.normal, Float3::UnitZ());
-		CHECK(end.normal.x == doctest::Approx(-1.0f));
-		CHECK(end.normal.y == doctest::Approx(0.0f).scale(1.0));
-		CHECK(end.normal.z == doctest::Approx(0.0f).scale(1.0));
+		CHECK((start.normal) == (Float3::UnitZ()));
+		CHECK(end.normal.x == Test::Approx(-1.0f));
+		CHECK(end.normal.y == Test::Approx(0.0f).scale(1.0));
+		CHECK(end.normal.z == Test::Approx(0.0f).scale(1.0));
 		CHECK((0.0f <= start.tex.x && start.tex.x <= 1.0f));
 		CHECK((0.0f <= start.tex.y && start.tex.y <= 1.0f));
 	}
@@ -428,7 +428,7 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 		{ 0.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { 0.0, 1.0 }
 	};
 
-	SUBCASE("Direct append reuses reserved storage")
+	SECTION("Direct append reuses reserved storage")
 	{
 		const RevolveOptions options = FullRevolve(Segments);
 		const Mesh3D source = Mesh3D::Revolve(profile, options);
@@ -440,15 +440,15 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
 		REQUIRE(builder.addRevolve(profile, transform, options));
-		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+		CHECK((builder.getMesh().vertices.data()) == (vertexData));
+		CHECK((builder.getMesh().indices.data()) == (indexData));
 
 		Mesh3D expected = source;
 		REQUIRE(expected.append(source, transform));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Smoothing and transform overloads")
+	SECTION("Smoothing and transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -481,7 +481,7 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Partial-angle transform overloads")
+	SECTION("Partial-angle transform overloads")
 	{
 		constexpr double StartAngle = -Math::QuarterPi;
 		constexpr double SweepAngle = Math::Pi;
@@ -520,7 +520,7 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Failure leaves existing content unchanged")
+	SECTION("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox());

@@ -286,8 +286,15 @@ namespace s3d
 
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
-			const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
-			return FullPath(path).starts_with(resourceDirectory);
+			try
+			{
+				const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
+				return FullPath(path).starts_with(resourceDirectory);
+			}
+			catch (const std::filesystem::filesystem_error&)
+			{
+				return false;
+			}
 		}
 		
 		////////////////////////////////////////////////////////////////
@@ -363,6 +370,10 @@ namespace s3d
 			}
 			
 			const FilePath fullpath = FullPath(path);
+			if (fullpath.isEmpty())
+			{
+				return{};
+			}
 			
 			return detail::MacOS_FullPath(Unicode::ToUTF8(fullpath).c_str());
 		}
@@ -378,39 +389,6 @@ namespace s3d
 			return U"/";
 		}
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	DirectoryContents
-		//
-		////////////////////////////////////////////////////////////////
-
-		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
-		{
-			Array<FilePath> paths;
-			
-			if (path.isEmpty() || !IsDirectory(path))
-			{
-				return paths;
-			}
-			
-			if (recursive)
-			{
-				for (const auto& v : std::filesystem::recursive_directory_iterator{ Unicode::ToUTF8(path) })
-				{
-					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
-				}
-			}
-			else
-			{
-				for (const auto& v : std::filesystem::directory_iterator{ Unicode::ToUTF8(path) })
-				{
-					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
-				}
-			}
-			
-			return paths;
-		}
-	
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetLaunchDirectory

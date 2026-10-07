@@ -4,6 +4,7 @@
 - Run `git diff --check` before finishing any code change.
 - Preserve the user's uncommitted changes and do not revert unrelated diffs.
 - Treat `Siv3D/src/ThirdParty/` as vendored code and do not change it unless the task requires it. Suppress third-party warnings with target- or file-scoped build settings instead of source edits.
+- Before adding local complexity, examine callers, callees, and responsibility boundaries for a simpler overall design. Proactively propose changes at the source of the complexity, including broader refactoring when justified, and break larger changes into small, reviewable stages.
 
 # Runtime performance
 
@@ -20,6 +21,15 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 - Do not force new tests into an unrelated existing test file. Add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
 - Store visual or interactive test programs under `Test/Manual/` as self-contained Markdown documentation with an English description, execution steps, expected results, and complete sample code. Do not leave temporary visual tests in a platform `Main.cpp`.
 
+# Public API documentation
+
+- Do not expose temporary migration states or incomplete backend ports in user-facing API documentation. Describe the adopted contract there; track implementation gaps and temporary differences in development documentation, test instructions, and TODO.md.
+- Document facts that affect how callers use the API: preconditions, return values, failure behavior, side effects, ownership, and non-obvious boundary cases. Omit assurances of expected behavior, such as Unicode support or an empty file having size zero.
+- Describe observable behavior, not implementation steps, bug-fix history, or verification status. A fix that restores an already documented contract does not by itself require new prose. Add platform notes only for meaningful differences in the public contract; combine identical behavior across platforms.
+- Keep each fact in the appropriate Doxygen field. Do not repeat `@param` or `@return` information in `@remark`. Retain examples that help readers understand an operation, including ordinary cases. Prefer input/output pairs, and improve incomplete examples rather than deleting them merely because the behavior can be inferred from prose.
+- State concrete conditions for empty or absent results instead of calling every such result a failure. Preserve useful guarantees, such as whether partial results are returned or completed side effects are rolled back.
+- When simplifying documentation, check the implementation and tests so that the wording does not silently strengthen guarantees or erase actual platform differences.
+
 # Project files
 
 - When adding, removing, or renaming shared source files, public headers, or tests, update the macOS Xcode project and the Windows Visual Studio project and its `.filters` file. Add new public headers to `Siv3D/include/Siv3D.hpp` when appropriate.
@@ -28,6 +38,7 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 # Build and test
 
 - Determine the host OS first, and never run build or test commands intended for a different host OS.
+- If Windows tests report `EXCEPTION_ILLEGAL_INSTRUCTION` or exit with an incomplete test report after an incremental build, preserve the report and follow the [clean-build diagnosis](docs/development/README.md#windows-incremental-build-failures) before repeating the failing run or attributing it to source changes. Reverting source and relinking incrementally does not rule out stale build artifacts.
 - After changing shared code, run the full automated test suite available for the current host. If no automated test workflow is documented for that host, do not substitute another platform's workflow; report the unverified items explicitly.
 - On macOS that suite is `./macOS/run-tests.sh`, run from the repository root; pass `'--test-case=<pattern>'` for focused iteration. It relies on the `--test-only` early-exit block in `macOS/Main.cpp`, so keep that block intact and keep test-only logging and configuration in `Test/`.
 - Run Xcode and Metal builds outside the sandbox. A Metal Toolchain lookup failure inside the sandbox does not mean that it is not installed.
@@ -42,4 +53,5 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 
 - Store durable usage guides and development knowledge under `docs/<subject>/`, with a subject `README.md` linked from `docs/README.md`. Follow `docs/AGENTS.md` for documentation changes.
 - Keep pending work in root `TODO.md`; place unadopted designs in the relevant subject's `proposals/` directory with an explicit status. Root README and AGENTS remain entry points.
-- Update affected links when moving documents and run `python3 tools/check_docs.py` after documentation changes.
+- At feature completion, remove superseded galleries, completed handoffs, obsolete proposals, and temporary artifacts within the work scope. Fold durable knowledge into existing subject guides, keep a single canonical gallery per feature, and retain separate manual programs only for distinct validation needs. Use Git history instead of archival copies; avoid adding files that duplicate existing responsibilities.
+- Update affected links when moving or removing documents and run `python3 tools/check_docs.py` after documentation changes.

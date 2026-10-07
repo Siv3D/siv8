@@ -16,7 +16,9 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Hash.hpp>
-# include <Siv3D/Polygon/PolygonBuffer.hpp>
+# include <Siv3D/Polygon.hpp>
+# include <Siv3D/Polygon/TriangleFan.hpp>
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -150,7 +152,13 @@ namespace s3d
 
 	Polygon Line::computeMiterBufferPolygon(const double distance) const
 	{
-		return ComputeMiterBufferPolygon(*this, distance);
+		if ((distance <= 0.0) || (start == end))
+		{
+			return{};
+		}
+
+		const Vec2 offset = (perpendicularUnitVector() * distance);
+		return Quad{ (start + offset), (end + offset), (end - offset), (start - offset) }.asPolygon();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -161,7 +169,38 @@ namespace s3d
 
 	Polygon Line::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return ComputeRoundBufferPolygon(*this, distance, qualityFactor);
+		if (distance <= 0.0)
+		{
+			return{};
+		}
+
+		const PointsPerCircle pointsPerCircle = qualityFactor.toPointsPerCircle(distance);
+
+		if (start == end)
+		{
+			return Circle{ start, distance }.asPolygon(pointsPerCircle);
+		}
+
+		const uint32 halfCount = (pointsPerCircle.value() / 2);
+		const Vec2 tangent = (normalizedVector() * distance);
+		const Vec2 normal{ tangent.y, -tangent.x };
+		Array<Vec2> outer((halfCount + 1) * 2);
+		outer[0] = (end + normal);
+		outer[halfCount] = (end - normal);
+		outer[halfCount + 1] = (start - normal);
+		outer.back() = (start + normal);
+
+		const double step = (Math::Pi / halfCount);
+
+		for (uint32 i = 1; i < halfCount; ++i)
+		{
+			const double angle = (i * step);
+			const Vec2 offset = ((normal * std::cos(angle)) + (tangent * std::sin(angle)));
+			outer[i] = (end + offset);
+			outer[halfCount + 1 + i] = (start - offset);
+		}
+
+		return Polygon{ outer, detail::MakeTriangleFan(outer.size()), Geometry2D::BoundingRect(outer), SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -14,17 +14,15 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/Overlaps.hpp>
+# include <boost/container/small_vector.hpp>
+# include "PolygonGeometry.hpp"
+# include "EllipseGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
 	namespace
 	{
-		// Approximation-acceptable pairs use a fixed local tessellation.
-		// Analytic and polygonal pairs do not depend on this value.
-		inline constexpr int32 CurvedApproximationSegments = 64;
-		inline constexpr double TwoPi = 6.2831853071795864769252867665590058;
-		inline constexpr double EllipseDistanceRootTolerance = (16.0 * 2.2204460492503131e-16);
-
 		[[nodiscard]]
 		constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
 		{
@@ -62,15 +60,10 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		constexpr bool HasPositiveArea(const Quad& quad) noexcept
+		bool HasPositiveArea(const Quad& quad) noexcept
 		{
-			const double twiceArea =
-				quad.p0.cross(quad.p1)
-				+ quad.p1.cross(quad.p2)
-				+ quad.p2.cross(quad.p3)
-				+ quad.p3.cross(quad.p0);
-
-			return (twiceArea != 0.0);
+			// Use coordinate differences to avoid cancellation after translation.
+			return (detail::PolygonCross((quad.p2 - quad.p0), (quad.p3 - quad.p1)) != 0.0);
 		}
 
 		[[nodiscard]]
@@ -106,6 +99,15 @@ namespace s3d
 				&& (b.pos.x < (a.pos.x + a.size.x))
 				&& (a.pos.y < (b.pos.y + b.size.y))
 				&& (b.pos.y < (a.pos.y + a.size.y)));
+		}
+
+		[[nodiscard]]
+		constexpr bool BoundsIntersectLine(const RectF& bounds, const Line& edge) noexcept
+		{
+			return ((Min(edge.start.x, edge.end.x) <= (bounds.x + bounds.w))
+				&& (bounds.x <= Max(edge.start.x, edge.end.x))
+				&& (Min(edge.start.y, edge.end.y) <= (bounds.y + bounds.h))
+				&& (bounds.y <= Max(edge.start.y, edge.end.y)));
 		}
 
 		[[nodiscard]]
@@ -271,87 +273,27 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool ClippedTriangleIntersectionHasPositiveArea(const Triangle& subject, const Triangle& clip) noexcept
+		bool TriangleHasSeparatingEdge(const Triangle& a, const Triangle& b, const double orientation) noexcept
 		{
-			const double subjectOrientation = Cross(subject.p0, subject.p1, subject.p2);
-			const double clipOrientation = Cross(clip.p0, clip.p1, clip.p2);
-
-			if ((subjectOrientation == 0.0) || (clipOrientation == 0.0))
+			const std::array<Vec2, 3> points{ a.p0, a.p1, a.p2 };
+			for (size_t i = 0; i < points.size(); ++i)
 			{
-				return false;
-			}
-
-			std::array<Vec2, 12> input{};
-			std::array<Vec2, 12> output{};
-			size_t inputCount = 3;
-			input[0] = subject.p0;
-			input[1] = subject.p1;
-			input[2] = subject.p2;
-			const double orientationSign = (0.0 < clipOrientation) ? 1.0 : -1.0;
-			const std::array<Vec2, 3> clipPoints{ clip.p0, clip.p1, clip.p2 };
-
-			for (size_t edgeIndex = 0; edgeIndex < clipPoints.size(); ++edgeIndex)
-			{
-				if (inputCount == 0)
+				const Vec2 start = points[i];
+				const Vec2 edge = (points[(i + 1) % points.size()] - start);
+				auto IsInside = [&](const Vec2& point)
 				{
-					return false;
-				}
+					const double cross = detail::PolygonCross(edge, (point - start));
+					return ((0.0 < orientation) ? (0.0 < cross) : (cross < 0.0));
+				};
 
-				const Vec2 edgeStart = clipPoints[edgeIndex];
-				const Vec2 edgeEnd = clipPoints[(edgeIndex + 1) % clipPoints.size()];
-				size_t outputCount = 0;
-				Vec2 previous = input[inputCount - 1];
-				double previousDistance = (orientationSign * Cross(edgeStart, edgeEnd, previous));
-				bool previousInside = (0.0 <= previousDistance);
-
-				for (size_t i = 0; i < inputCount; ++i)
+				// Boundary-only contact leaves no vertex strictly inside this half-plane.
+				if (not (IsInside(b.p0) || IsInside(b.p1) || IsInside(b.p2)))
 				{
-					const Vec2 current = input[i];
-					const double currentDistance = (orientationSign * Cross(edgeStart, edgeEnd, current));
-					const bool currentInside = (0.0 <= currentDistance);
-
-					if (currentInside != previousInside)
-					{
-						const double denominator = (previousDistance - currentDistance);
-
-						if (denominator != 0.0)
-						{
-							const double t = (previousDistance / denominator);
-							output[outputCount++] = (previous + (current - previous) * t);
-						}
-					}
-
-					if (currentInside)
-					{
-						output[outputCount++] = current;
-					}
-
-					previous = current;
-					previousDistance = currentDistance;
-					previousInside = currentInside;
-				}
-
-				inputCount = outputCount;
-
-				for (size_t i = 0; i < outputCount; ++i)
-				{
-					input[i] = output[i];
+					return true;
 				}
 			}
 
-			if (inputCount < 3)
-			{
-				return false;
-			}
-
-			double twiceArea = 0.0;
-
-			for (size_t i = 0; i < inputCount; ++i)
-			{
-				twiceArea += input[i].cross(input[(i + 1) % inputCount]);
-			}
-
-			return (twiceArea != 0.0);
+			return false;
 		}
 
 		[[nodiscard]]
@@ -362,8 +304,12 @@ namespace s3d
 				return false;
 			}
 
-			return ClippedTriangleIntersectionHasPositiveArea(a, b)
-				|| ClippedTriangleIntersectionHasPositiveArea(b, a);
+			const double aOrientation = detail::PolygonCross((a.p1 - a.p0), (a.p2 - a.p0));
+			const double bOrientation = detail::PolygonCross((b.p1 - b.p0), (b.p2 - b.p0));
+			return (aOrientation != 0.0)
+				&& (bOrientation != 0.0)
+				&& (not TriangleHasSeparatingEdge(a, b, aOrientation))
+				&& (not TriangleHasSeparatingEdge(b, a, bOrientation));
 		}
 
 		template <class Fty>
@@ -388,173 +334,6 @@ namespace s3d
 
 			return (HasPositiveArea(first) && callback(first))
 				|| (HasPositiveArea(second) && callback(second));
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitPolygonTriangles(const Polygon& polygon, Fty&& callback) noexcept
-		{
-			if (polygon.isEmpty())
-			{
-				return false;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Triangle triangle{
-					Vec2{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y },
-					Vec2{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y },
-					Vec2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y }
-				};
-
-				if (HasPositiveArea(triangle) && callback(triangle))
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitEllipseFanTriangles(const Ellipse& ellipse, Fty&& callback) noexcept
-		{
-			const double step = (TwoPi / CurvedApproximationSegments);
-			Vec2 previous{ (ellipse.center.x + ellipse.axes.x), ellipse.center.y };
-
-			for (int32 i = 1; i <= CurvedApproximationSegments; ++i)
-			{
-				const Vec2 current = (i == CurvedApproximationSegments)
-					? Vec2{ (ellipse.center.x + ellipse.axes.x), ellipse.center.y }
-					: Vec2{
-						(ellipse.center.x + std::cos(step * i) * ellipse.axes.x),
-						(ellipse.center.y + std::sin(step * i) * ellipse.axes.y)
-					};
-
-				if (callback(Triangle{ ellipse.center, previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitSuperEllipseFanTriangles(const SuperEllipse& superEllipse, Fty&& callback) noexcept
-		{
-			const double step = (TwoPi / CurvedApproximationSegments);
-			const double exponent = (2.0 / superEllipse.n);
-
-			auto PointAt = [&](const double angle) noexcept
-			{
-				const double c = std::cos(angle);
-				const double s = std::sin(angle);
-				const double x = std::copysign(std::pow(Abs(c), exponent) * superEllipse.axes.x, c);
-				const double y = std::copysign(std::pow(Abs(s), exponent) * superEllipse.axes.y, s);
-				return (superEllipse.center + Vec2{ x, y });
-			};
-
-			const Vec2 first{ (superEllipse.center.x + superEllipse.axes.x), superEllipse.center.y };
-			Vec2 previous = first;
-
-			for (int32 i = 1; i <= CurvedApproximationSegments; ++i)
-			{
-				const Vec2 current = (i == CurvedApproximationSegments) ? first : PointAt(step * i);
-
-				if (callback(Triangle{ superEllipse.center, previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		[[nodiscard]]
-		double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
-		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const double x = Abs(p.x - ellipse.center.x);
-			const double y = Abs(p.y - ellipse.center.y);
-			const double nx = (x / ax);
-			const double ny = (y / by);
-
-			if (((nx * nx) + (ny * ny)) <= 1.0)
-			{
-				return 0.0;
-			}
-
-			if (y == 0.0)
-			{
-				return (x - ax);
-			}
-
-			if (x == 0.0)
-			{
-				return (y - by);
-			}
-
-			const double scale = Max({ ax, by, x, y });
-			const double a = (ax / scale);
-			const double b = (by / scale);
-			const double px = (x / scale);
-			const double py = (y / scale);
-			const double aa = (a * a);
-			const double bb = (b * b);
-			double lower = 0.0;
-			double upper = 1.0;
-			const double ux0 = (px / a);
-			const double uy0 = (py / b);
-			const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
-			const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
-			const double initialNewton = (-f0 / df0);
-			double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
-
-			for (int32 i = 0; i < 64; ++i)
-			{
-				const double da = (lambda + aa);
-				const double db = (lambda + bb);
-				const double ux = ((a * px) / da);
-				const double uy = ((b * py) / db);
-				const double f = ((ux * ux) + (uy * uy) - 1.0);
-
-				if (Abs(f) <= EllipseDistanceRootTolerance)
-				{
-					lower = lambda;
-					upper = lambda;
-					break;
-				}
-
-				if (0.0 < f)
-				{
-					lower = lambda;
-				}
-				else
-				{
-					upper = lambda;
-				}
-
-				const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
-				const double newton = (lambda - (f / df));
-				lambda = ((lower < newton) && (newton < upper))
-					? newton
-					: ((lower + upper) * 0.5);
-			}
-
-			lambda = ((lower + upper) * 0.5);
-			const double closestX = ((aa * px) / (lambda + aa));
-			const double closestY = ((bb * py) / (lambda + bb));
-			return (scale * std::hypot((px - closestX), (py - closestY)));
 		}
 
 		[[nodiscard]]
@@ -649,6 +428,36 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool OverlapsPolygonRingsArea(
+			const detail::PolygonRingsView aRings, const RectF& aBounds,
+			const detail::PolygonRingsView bRings, const RectF& bBounds, const int32 direction) noexcept
+		{
+			if (direction == 0)
+			{
+				return false;
+			}
+
+			if ((aRings.outer.front() != bRings.outer.front())
+				&& (detail::PolygonContainsPoint<false>(bRings, aRings.outer.front())
+					|| detail::PolygonContainsPoint<false>(aRings, bRings.outer.front())))
+			{
+				return true;
+			}
+
+			boost::container::small_vector<detail::PolygonSegmentEvent, 4> events;
+			return detail::AnyPolygonEdge(aRings, [&](const Line& edge)
+				{
+					return BoundsIntersectLine(bBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(bRings, edge, events, direction);
+				})
+				|| detail::AnyPolygonEdge(bRings, [&](const Line& edge)
+				{
+					return BoundsIntersectLine(aBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(aRings, edge, events, direction);
+				});
+		}
+
+		[[nodiscard]]
 		bool OverlapsRectPolygonAreaNonEmpty(
 			const RectF& rect, const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
@@ -657,10 +466,17 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
+			const auto rings = detail::GetPolygonRings(polygon);
+			const int32 direction = detail::PolygonRingOrientation(rings.outer, &polygonBounds);
+			if ((rect.x <= polygonBounds.x) && (rect.y <= polygonBounds.y)
+				&& ((polygonBounds.x + polygonBounds.w) <= (rect.x + rect.w))
+				&& ((polygonBounds.y + polygonBounds.h) <= (rect.y + rect.h)))
 			{
-				return OverlapsRectTriangleArea(rect, part);
-			});
+				return (direction != 0);
+			}
+
+			const std::array<Vec2, 4> rectRing{ rect.tl(), rect.tr(), rect.br(), rect.bl() };
+			return OverlapsPolygonRingsArea(rings, polygonBounds, { rectRing, {} }, rect, direction);
 		}
 
 		[[nodiscard]]
@@ -718,10 +534,15 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
+			if (not BoundsOverlapPositive(triangle.boundingRect(), superEllipse.boundingRect()))
 			{
-				return OverlapsTriangles(triangle, part);
-			});
+				return false;
+			}
+
+			return Geometry2D::Intersects(superEllipse.center, triangle)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p0, triangle.p1 }, superEllipse)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p1, triangle.p2 }, superEllipse)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p2, triangle.p0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -760,7 +581,7 @@ namespace s3d
 		[[nodiscard]]
 		bool OverlapsCircleEllipseArea(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
-			return (DistancePointEllipse(circle.center, ellipse) < circle.r);
+			return (detail::DistancePointEllipse(circle.center, ellipse) < circle.r);
 		}
 
 		[[nodiscard]]
@@ -780,10 +601,7 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				return OverlapsTriangleCircleArea(part, circle);
-			});
+			return detail::TestSuperEllipseAreas<false>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -818,14 +636,7 @@ namespace s3d
 		[[nodiscard]]
 		bool OverlapsEllipseEllipseArea(const Ellipse& a, const Ellipse& b) noexcept
 		{
-			return VisitEllipseFanTriangles(a, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, b);
-			})
-				|| VisitEllipseFanTriangles(b, [&](const Triangle& part)
-				{
-					return OverlapsTriangleEllipseArea(part, a);
-				});
+			return detail::TestEllipseEllipseArea<false>(a, b);
 		}
 
 		[[nodiscard]]
@@ -845,10 +656,7 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, ellipse);
-			});
+			return detail::TestSuperEllipseAreas<false>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -863,10 +671,12 @@ namespace s3d
 		bool OverlapsEllipseRoundRectArea(const Ellipse& ellipse, const RoundRect& roundRect,
 			const double effectiveRadius, const RectF& core) noexcept
 		{
-			return VisitEllipseFanTriangles(ellipse, [&](const Triangle& part)
+			if (effectiveRadius == 0.0)
 			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+				return OverlapsRectEllipseArea(roundRect.rect, ellipse);
+			}
+
+			return detail::TestEllipseRoundRectArea<false>(ellipse, core, effectiveRadius);
 		}
 
 		[[nodiscard]]
@@ -897,13 +707,7 @@ namespace s3d
 					Ellipse{ b.center, b.axes.x, b.axes.y }, a);
 			}
 
-			return VisitSuperEllipseFanTriangles(a, [&](const Triangle& aPart)
-			{
-				return VisitSuperEllipseFanTriangles(b, [&](const Triangle& bPart)
-				{
-					return OverlapsTriangles(aPart, bPart);
-				});
-			});
+			return detail::TestSuperEllipseAreas<false>(a, b);
 		}
 
 		[[nodiscard]]
@@ -925,10 +729,11 @@ namespace s3d
 					roundRect, effectiveRadius, core);
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
+			if (effectiveRadius == 0.0)
 			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+				return OverlapsRectSuperEllipseArea(roundRect.rect, superEllipse);
+			}
+			return detail::TestSuperEllipseRoundRectArea<false>(superEllipse, core, effectiveRadius);
 		}
 
 		[[nodiscard]]
@@ -978,10 +783,11 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangles(triangle, part);
-			});
+			const auto rings = detail::GetPolygonRings(polygon);
+			const std::array<Vec2, 3> triangleRing{ triangle.p0, triangle.p1, triangle.p2 };
+			const int32 direction = (detail::PolygonRingOrientation(triangleRing, &triangleBounds)
+				* detail::PolygonRingOrientation(rings.outer, &polygonBounds));
+			return OverlapsPolygonRingsArea(rings, polygonBounds, { triangleRing, {} }, triangleBounds, direction);
 		}
 
 		[[nodiscard]]
@@ -1005,20 +811,36 @@ namespace s3d
 				&& OverlapsTrianglePolygonArea(triangle, polygon);
 		}
 
+		// Requires a connected interior and a point strictly inside the shape.
+		template <class Predicate>
+		[[nodiscard]]
+		bool OverlapsShapePolygonAreaNonEmpty(
+			const RectF& shapeBounds, const Vec2& interiorPoint,
+			const Polygon& polygon, const RectF& polygonBounds, Predicate&& intersectsInterior) noexcept
+		{
+			if (not BoundsOverlapPositive(shapeBounds, polygonBounds))
+			{
+				return false;
+			}
+
+			const auto rings = detail::GetPolygonRings(polygon);
+			if (not detail::PolygonRingHasArea(rings.outer, polygonBounds))
+			{
+				return false;
+			}
+
+			return intersectsInterior(Line{ rings.outer[0], rings.outer[1] })
+				|| detail::PolygonContainsPoint(rings, interiorPoint)
+				|| detail::AnyPolygonEdge(rings, std::forward<Predicate>(intersectsInterior));
+		}
+
 		[[nodiscard]]
 		bool OverlapsCirclePolygonAreaNonEmpty(
 			const Circle& circle, const RectF& circleBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (not BoundsOverlapPositive(circleBounds, polygonBounds))
-			{
-				return false;
-			}
-
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangleCircleArea(part, circle);
-			});
+			return OverlapsShapePolygonAreaNonEmpty(circleBounds, circle.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::IntersectsLineCircleArea<false>(edge, circle); });
 		}
 
 		[[nodiscard]]
@@ -1047,15 +869,8 @@ namespace s3d
 			const Ellipse& ellipse, const RectF& ellipseBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (not BoundsOverlapPositive(ellipseBounds, polygonBounds))
-			{
-				return false;
-			}
-
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, ellipse);
-			});
+			return OverlapsShapePolygonAreaNonEmpty(ellipseBounds, ellipse.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::IntersectsLineEllipseArea<false>(edge, ellipse); });
 		}
 
 		[[nodiscard]]
@@ -1084,11 +899,6 @@ namespace s3d
 			const SuperEllipse& superEllipse, const RectF& superEllipseBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (not BoundsOverlapPositive(superEllipseBounds, polygonBounds))
-			{
-				return false;
-			}
-
 			if (superEllipse.n == 2.0)
 			{
 				return OverlapsEllipsePolygonAreaNonEmpty(
@@ -1096,11 +906,8 @@ namespace s3d
 					superEllipseBounds, polygon, polygonBounds);
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				const RectF partBounds = part.boundingRect();
-				return OverlapsTrianglePolygonAreaNonEmpty(part, partBounds, polygon, polygonBounds);
-			});
+			return OverlapsShapePolygonAreaNonEmpty(superEllipseBounds, superEllipse.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::TestLineSuperEllipseArea<false>(edge, superEllipse); });
 		}
 
 		[[nodiscard]]
@@ -1126,19 +933,47 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsLineRoundRectInterior(const Line& edge, const double radius, const RectF& core) noexcept
+		{
+			const double radiusSq = (radius * radius);
+			if ((DistancePointRectSq(edge.start, core) < radiusSq)
+				|| (DistancePointRectSq(edge.end, core) < radiusSq))
+			{
+				return true;
+			}
+
+			const Vec2 d = (edge.end - edge.start);
+			double t0 = 0.0;
+			double t1 = 1.0;
+			if (detail::UpdateLineClipInterval(edge.start.x, d.x, core.x, (core.x + core.w), t0, t1)
+				&& detail::UpdateLineClipInterval(edge.start.y, d.y, core.y, (core.y + core.h), t0, t1))
+			{
+				return true;
+			}
+
+			// Away from the core, the closest pair includes a segment endpoint or a core corner.
+			return detail::IntersectsLineCircleArea<false>(edge, Circle{ core.tl(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.tr(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.br(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.bl(), radius });
+		}
+
+		[[nodiscard]]
 		bool OverlapsRoundRectPolygonAreaNonEmpty(
 			const RoundRect& roundRect, const Polygon& polygon, const RectF& polygonBounds,
 			const double effectiveRadius, const RectF& core) noexcept
 		{
-			if (not BoundsOverlapPositive(roundRect.rect, polygonBounds))
+			if (effectiveRadius == 0.0)
 			{
-				return false;
+				return OverlapsRectPolygonAreaNonEmpty(roundRect.rect, polygon, polygonBounds);
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+			return OverlapsShapePolygonAreaNonEmpty(roundRect.rect, roundRect.rect.center(), polygon, polygonBounds,
+				[&](const Line& edge)
+				{
+					return BoundsIntersectLine(roundRect.rect, edge)
+						&& IntersectsLineRoundRectInterior(edge, effectiveRadius, core);
+				});
 		}
 
 		[[nodiscard]]
@@ -1208,13 +1043,11 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(a, [&](const Triangle& aPart)
-			{
-				return VisitPolygonTriangles(b, [&](const Triangle& bPart)
-				{
-					return OverlapsTriangles(aPart, bPart);
-				});
-			});
+			const auto aRings = detail::GetPolygonRings(a);
+			const auto bRings = detail::GetPolygonRings(b);
+			const int32 direction = (detail::PolygonRingOrientation(aRings.outer, &aBounds)
+				* detail::PolygonRingOrientation(bRings.outer, &bBounds));
+			return OverlapsPolygonRingsArea(aRings, aBounds, bRings, bBounds, direction);
 		}
 
 		[[nodiscard]]

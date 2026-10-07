@@ -17,7 +17,7 @@
 
 TEST_CASE("ChildProcess")
 {
-	SUBCASE("invalid path")
+	SECTION("invalid path")
 	{
 		ChildProcess child{ U"/path/that/does/not/exist" };
 		CHECK_FALSE(child.isValid());
@@ -25,7 +25,7 @@ TEST_CASE("ChildProcess")
 		CHECK_FALSE(child.getExitCode().has_value());
 	}
 
-	SUBCASE("arguments and standard output")
+	SECTION("arguments and standard output")
 	{
 		ChildProcess child{
 			U"/usr/bin/printf",
@@ -39,12 +39,12 @@ TEST_CASE("ChildProcess")
 		std::getline(child.istream(), output);
 		child.wait();
 
-		CHECK_EQ(output, std::string{ "hello world:こんにちは" });
+		CHECK((output) == (std::string{ "hello world:こんにちは" }));
 		REQUIRE(child.getExitCode().has_value());
-		CHECK_EQ(*child.getExitCode(), 0);
+		CHECK((*child.getExitCode()) == (0));
 	}
 
-	SUBCASE("standard input and output")
+	SECTION("standard input and output")
 	{
 		ChildProcess child{ U"/bin/cat", ChildProcessPipe::StdInOut };
 		REQUIRE(child.isValid());
@@ -53,17 +53,17 @@ TEST_CASE("ChildProcess")
 
 		std::string output;
 		std::getline(child.istream(), output);
-		CHECK_EQ(output, std::string{ "Siv3D ChildProcess" });
+		CHECK((output) == (std::string{ "Siv3D ChildProcess" }));
 
 		child.terminate();
 		child.wait();
 
 		CHECK_FALSE(child.isRunning());
 		REQUIRE(child.getExitCode().has_value());
-		CHECK_EQ(*child.getExitCode(), SIGTERM);
+		CHECK((*child.getExitCode()) == (SIGTERM));
 	}
 
-	SUBCASE("exit status")
+	SECTION("exit status")
 	{
 		ChildProcess child{ U"/bin/sh", Array<String>{ U"-c", U"exit 37" } };
 		REQUIRE(child.isValid());
@@ -72,10 +72,10 @@ TEST_CASE("ChildProcess")
 
 		CHECK_FALSE(child.isRunning());
 		REQUIRE(child.getExitCode().has_value());
-		CHECK_EQ(*child.getExitCode(), 37);
+		CHECK((*child.getExitCode()) == (37));
 	}
 
-	SUBCASE("closed standard input pipe")
+	SECTION("closed standard input pipe")
 	{
 		ChildProcess child{ U"/usr/bin/true", ChildProcessPipe::StdOut };
 		REQUIRE(child.isValid());

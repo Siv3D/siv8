@@ -9,6 +9,9 @@
 //
 //-----------------------------------------------
 
+# include <algorithm>
+# include <array>
+# include <tuple>
 # include <variant>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Bezier.hpp>
@@ -19,6 +22,10 @@
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
+# include "BezierGeometry.hpp"
+# include "EllipseGeometry.hpp"
+# include "BoundaryGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -33,20 +40,8 @@ namespace s3d
 		inline constexpr int32 ParameterRefinementIterations = 80;
 		inline constexpr double ParameterTolerance = 2.0e-15;
 
-		enum class ArcRegion : uint8
-		{
-			Full,
-			TopLeft,
-			TopRight,
-			BottomRight,
-			BottomLeft,
-		};
-
-		struct CircleArc
-		{
-			Circle circle;
-			ArcRegion region = ArcRegion::Full;
-		};
+		using detail::ArcRegion;
+		using detail::CircleArc;
 
 		using BoundaryPiece = std::variant<Line, CircleArc, Ellipse, SuperEllipse, Bezier2, Bezier3>;
 
@@ -61,10 +56,8 @@ namespace s3d
 
 		struct ShapeDistanceData
 		{
-			bool empty = true;
 			Optional<Vec2> pointGeometry;
-			Array<BoundaryPiece> boundaryPieces;
-			Array<Vec2> representativePoints;
+			detail::BoundarySource<BoundaryPiece> boundaryPieces;
 		};
 
 		[[nodiscard]]
@@ -458,6 +451,1345 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& ellipse, const Vec2& point) noexcept
+		{
+			ClosestPairCandidate result;
+			UpdateCandidate(result, detail::ClosestPointOnEllipseBoundary(point, ellipse), point);
+			return result;
+		}
+
+		// Disjoint positive-area ellipses. Reflect into one quadrant and solve
+		// for the normal joining their closest points.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& a, const Ellipse& b) noexcept
+		{
+			const Vec2 centerB = b.center, initialAxesB = b.axes;
+			Vec2 delta = (centerB - a.center);
+			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
+			delta = { Abs(delta.x), Abs(delta.y) };
+			ClosestPairCandidate result;
+			if ((delta.x == 0.0) || (delta.y == 0.0))
+			{
+				const Vec2 normal = ((delta.x == 0.0) ? Vec2{ 0, sign.y } : Vec2{ sign.x, 0 });
+				UpdateCandidate(result, (a.center + a.axes * normal), (centerB - initialAxesB * normal));
+				return result;
+			}
+
+			const auto Support = [](const Vec2& axes, const double t) noexcept
+			{
+				const double h = std::hypot(axes.x, (axes.y * t));
+				const double k = (axes.x * (axes.y / h));
+				return std::pair{ Vec2{ (axes.x / h * axes.x), (axes.y * t / h * axes.y) }, (k * k / h) };
+			};
+			Vec2 axesA = a.axes, axesB = initialAxesB;
+			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + Support(axesB, 1.0).first));
+			const bool transpose = (diagonalGap.x < diagonalGap.y);
+			if (transpose)
+			{
+				std::swap(delta.x, delta.y);
+				std::swap(axesA.x, axesA.y);
+				std::swap(axesB.x, axesB.y);
+			}
+
+			// The normal (1, t), 0 <= t <= 1, avoids loss of precision near either
+			// axis. For support sum s(t), solve (delta - s(t)).dot(-t, 1) = 0.
+			// Outside the convex sum this has one root, with a negative derivative.
+			double lower = 0.0, upper = 1.0;
+			double t = Min((delta.y / delta.x), 1.0);
+			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
+				* Max({ delta.x, delta.y, axesA.x, axesA.y, axesB.x, axesB.y }));
+			Vec2 pointA, pointB;
+			for (int32 iteration = 0; iteration < 64; ++iteration)
+			{
+				const auto [supportA, derivativeA] = Support(axesA, t);
+				const auto [supportB, derivativeB] = Support(axesB, t);
+				pointA = supportA;
+				pointB = supportB;
+				const Vec2 gap = (delta - (pointA + pointB));
+				const double f = (gap.y - t * gap.x);
+				if (Abs(f) <= tolerance)
+				{
+					break;
+				}
+				if (0.0 < f)
+				{
+					lower = t;
+				}
+				else
+				{
+					upper = t;
+				}
+				const double derivative = (-gap.x - (derivativeA + derivativeB) * (1.0 + t * t));
+				const double next = (t - f / derivative);
+				t = (((lower < next) && (next < upper)) ? next : ((lower + upper) * 0.5));
+			}
+			if (transpose)
+			{
+				std::swap(pointA.x, pointA.y);
+				std::swap(pointB.x, pointB.y);
+			}
+			UpdateCandidate(result, (a.center + sign * pointA), (centerB - sign * pointB));
+			return result;
+		}
+
+		template <class Support, class ClosestPoint>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineConvexShape(const Line& line, const Vec2& center,
+			const Support& supportPoint, const ClosestPoint& closestPoint) noexcept
+		{
+			const Vec2 direction = (line.end - line.start);
+			const double lengthSq = direction.lengthSq();
+			if (lengthSq != 0.0)
+			{
+				Vec2 normal{ -direction.y, direction.x };
+				if ((line.start - center).dot(normal) < 0.0)
+				{
+					normal = -normal;
+				}
+				const Vec2 support = supportPoint(normal);
+				const double t = ((support - line.start).dot(direction) / lengthSq);
+				// An interior minimum has a separating tangent parallel to the line.
+				if ((0.0 <= t) && (t <= 1.0) && (0.0 <= (line.start - support).dot(normal)))
+				{
+					ClosestPairCandidate result;
+					UpdateCandidate(result, (line.start + direction * t), support, t);
+					return result;
+				}
+			}
+
+			auto result = closestPoint(line.start);
+			if (lengthSq != 0.0)
+			{
+				const auto end = closestPoint(line.end);
+				if (end.distanceSq < result.distanceSq)
+				{
+					result = end;
+					result.parameterB = 1.0;
+				}
+			}
+			std::swap(result.pointA, result.pointB);
+			std::swap(result.parameterA, result.parameterB);
+			return result;
+		}
+
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineEllipse(const Line& line, const Ellipse& ellipse) noexcept
+		{
+			return ClosestDisjointLineConvexShape(line, ellipse.center,
+				[&](const Vec2& normal) noexcept { return (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized()); },
+				[&](const Vec2& point) noexcept { return ClosestDisjointEllipsePair(ellipse, point); });
+		}
+
+		template <bool IsPoint = false>
+		struct ConvexSuperEllipseSupport
+		{
+			Vec2 axes;
+			double n, power, inverseN, powerRatio, logAxisRatio;
+
+			ConvexSuperEllipseSupport(const Vec2& axes_, const double n_, const double power_) noexcept
+				: axes{ axes_ }, n{ n_ }, power{ power_ }, inverseN{ (1.0 / n) }
+				, powerRatio{ (power / (n - 1.0)) }, logAxisRatio{ (IsPoint ? 0.0 : std::log(axes.y / axes.x)) } {}
+
+			// Support point for normal (1, t^power), and its y derivative in t.
+			[[nodiscard]]
+			std::pair<Vec2, double> sample(const double t, const double normalY) const noexcept
+			{
+				if constexpr (IsPoint)
+				{
+					return { Vec2{ 0, 0 }, 0.0 };
+				}
+
+				if (n == 2.0)
+				{
+					const double h = std::hypot(axes.x, (axes.y * normalY));
+					const double k = (axes.x * (axes.y / h));
+					return { Vec2{ (axes.x / h * axes.x), (axes.y * normalY / h * axes.y) },
+						(k * k / h * (power * normalY / t)) };
+				}
+				const double logRatio = ((logAxisRatio + power * std::log(t)) / (n - 1.0));
+				const double ratio = std::exp(-Abs(logRatio));
+				const double term = std::pow(ratio, n);
+				const double factor = std::pow((1.0 + term), -inverseN);
+				const Vec2 point = ((logRatio <= 0.0)
+					? Vec2{ (axes.x * factor), (axes.y * ratio * factor) }
+					: Vec2{ (axes.x * ratio * factor), (axes.y * factor) });
+				return { point, (point.y * powerRatio / (t * (1.0 + term)) * ((logRatio <= 0.0) ? 1.0 : term)) };
+			}
+		};
+
+		// A positive-area shape with n > 1 and a disjoint convex shape or point.
+		template <class ShapeB>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointConvexSuperEllipsePair(const SuperEllipse& a, const ShapeB& b) noexcept
+		{
+			constexpr bool IsPoint = std::is_same_v<ShapeB, Vec2>;
+			const auto [centerB, axesB, nB] = [&]() noexcept
+			{
+				if constexpr (IsPoint)
+				{
+					return std::tuple{ b, Vec2{ 0, 0 }, 2.0 };
+				}
+				else
+				{
+					return std::tuple{ b.center, b.axes, b.n };
+				}
+			}();
+			if ((a.n == 2.0) && (nB == 2.0))
+			{
+				if constexpr (IsPoint)
+				{
+					return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, b);
+				}
+				else
+				{
+					return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, Ellipse{ centerB, axesB });
+				}
+			}
+			Vec2 delta = (centerB - a.center);
+			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
+			delta = { Abs(delta.x), Abs(delta.y) };
+			ClosestPairCandidate result;
+			if ((delta.x == 0.0) || (delta.y == 0.0))
+			{
+				const Vec2 normal = ((delta.x == 0.0) ? Vec2{ 0, sign.y } : Vec2{ sign.x, 0 });
+				UpdateCandidate(result, (a.center + a.axes * normal), (centerB - axesB * normal));
+				return result;
+			}
+
+			// Raising t to this power keeps support positions well resolved near
+			// the axes, where an ordinary normal angle becomes too small for n > 2.
+			const double power = Max({ 1.0, (a.n - 1.0), (nB - 1.0) });
+			ConvexSuperEllipseSupport<> p{ a.axes, a.n, power };
+			ConvexSuperEllipseSupport<IsPoint> q{ axesB, nB, power };
+			Vec2 upperA = p.sample(1.0, 1.0).first, upperB = q.sample(1.0, 1.0).first;
+			const Vec2 diagonalGap = (delta - upperA - upperB);
+			const bool transpose = (diagonalGap.x < diagonalGap.y);
+			if (transpose)
+			{
+				std::swap(delta.x, delta.y);
+				std::swap(p.axes.x, p.axes.y);
+				std::swap(q.axes.x, q.axes.y);
+				p.logAxisRatio = -p.logAxisRatio;
+				q.logAxisRatio = -q.logAxisRatio;
+				std::swap(upperA.x, upperA.y);
+				std::swap(upperB.x, upperB.y);
+			}
+			Vec2 lowerA{ p.axes.x, 0.0 }, lowerB{ q.axes.x, 0.0 };
+			Vec2 bestA, bestB;
+			double lower = 0.0, upper = 1.0, previousStep = 1.0;
+			double t = std::pow(Min((delta.y / delta.x), 1.0), (1.0 / power));
+			const double tolerance = ((IsPoint ? 4.0 : 16.0) * std::numeric_limits<double>::epsilon()
+				* Max({ delta.x, delta.y, a.a, a.b, axesB.x, axesB.y }));
+			bool converged = false;
+			for (int32 iteration = 0; iteration < 32; ++iteration)
+			{
+				const double normalY = std::pow(t, power);
+				const auto [pointA, derivativeA] = p.sample(t, normalY);
+				const auto [pointB, derivativeB] = q.sample(t, normalY);
+				const Vec2 gap = (delta - pointA - pointB);
+				const double f = (gap.y - normalY * gap.x);
+				if (Abs(f) <= tolerance)
+				{
+					bestA = pointA;
+					bestB = pointB;
+					converged = true;
+					break;
+				}
+				if (0.0 < f)
+				{
+					lower = t;
+					lowerA = pointA;
+					lowerB = pointB;
+				}
+				else
+				{
+					upper = t;
+					upperA = pointA;
+					upperB = pointB;
+				}
+				const double derivative = (-power * normalY / t * gap.x - (1.0 + normalY * normalY) * (derivativeA + derivativeB));
+				const double newton = (t - f / derivative);
+				// Bisect if Newton steps are not shrinking, as can happen on thin shapes.
+				const double next = (((lower < newton) && (newton < upper) && (Abs(newton - t) < (previousStep * 0.5)))
+					? newton : ((lower + upper) * 0.5));
+				previousStep = Abs(next - t);
+				t = next;
+				if (not ((lower < t) && (t < upper)))
+				{
+					break;
+				}
+			}
+			// Interpolate the bracket's support pairs together. These witnesses
+			// stay in the convex shapes even when a nearly flat face limits convergence.
+			if (not converged)
+			{
+				const auto segment = ClosestPointOnSegment(Vec2{ 0, 0 }, (delta - lowerA - lowerB), (delta - upperA - upperB));
+				bestA = (lowerA + (upperA - lowerA) * segment.parameterB);
+				bestB = (lowerB + (upperB - lowerB) * segment.parameterB);
+			}
+			if (transpose)
+			{
+				std::swap(bestA.x, bestA.y);
+				std::swap(bestB.x, bestB.y);
+			}
+			UpdateCandidate(result, (a.center + sign * bestA), (centerB - sign * bestB));
+			return result;
+		}
+
+		// Positive axes and 0 < n < 1. Parameterize each half arc by its larger
+		// normalized coordinate, keeping the normalized profile's slope bounded.
+		struct ConcaveSuperEllipseProfile
+		{
+			Vec2 axes;
+			double n, inverseN, split;
+
+			explicit ConcaveSuperEllipseProfile(const SuperEllipse& shape) noexcept
+				: axes{ shape.axes }, n{ shape.n }, inverseN{ (1.0 / n) }, split{ std::pow(0.5, inverseN) } {}
+
+			[[nodiscard]]
+			double yAt(const double x) const noexcept
+			{
+				return std::pow(Max(0.0, (1.0 - std::pow(x, n))), inverseN);
+			}
+
+			[[nodiscard]]
+			Vec2 pointAt(const double x, const bool transpose) const noexcept
+			{
+				const double y = yAt(x);
+				return (axes * (transpose ? Vec2{ y, x } : Vec2{ x, y }));
+			}
+
+			[[nodiscard]]
+			std::pair<double, double> derivatives(const double x, const double y) const noexcept
+			{
+				const double slope = -std::pow((y / x), (1.0 - n));
+				return { slope, (-(1.0 - n) * slope / (x * std::pow(y, n))) };
+			}
+
+			// Clip the arc to the rectangle between the origin and a first-quadrant point.
+			[[nodiscard]]
+			std::pair<double, double> rangeTo(const Vec2& point, const bool transpose) const noexcept
+			{
+				const Vec2 a = (transpose ? Vec2{ axes.y, axes.x } : axes);
+				const Vec2 p = (transpose ? Vec2{ point.y, point.x } : point);
+				return { Max(split, yAt(Min((p.y / a.y), 1.0))), Min((p.x / a.x), 1.0) };
+			}
+		};
+
+		// Positive axes and 0 < n < 1; the point is outside the filled shape.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointPointConcaveSuperEllipse(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			const Vec2 delta = (point - shape.center), query{ Abs(delta.x), Abs(delta.y) };
+			const ConcaveSuperEllipseProfile profile{ shape };
+			Vec2 best{ shape.a, 0.0 };
+			double bestDistanceSq = query.distanceFromSq(best);
+			bool bestTranspose = false;
+			auto Update = [&](const Vec2& p, const bool transpose) noexcept
+			{
+				const double distanceSq = query.distanceFromSq(p);
+				if (distanceSq <= bestDistanceSq)
+				{
+					best = p;
+					bestDistanceSq = distanceSq;
+					bestTranspose = transpose;
+				}
+			};
+			Update(Vec2{ 0.0, shape.b }, true);
+			struct Interval
+			{
+				Vec2 lower, upper;
+				double bound;
+				bool transpose;
+			};
+			constexpr int32 MaxSubdivisions = 32;
+			std::array<Interval, MaxSubdivisions + 2> queue;
+			size_t count = 0;
+			const auto Compare = [](const Interval& a, const Interval& b) noexcept { return (a.bound > b.bound); };
+			auto Push = [&](const Vec2& lower, const Vec2& upper, const bool transpose) noexcept
+			{
+				// The clipped arc is southwest of its chord, and the query is
+				// northeast of the entire arc. Distance to the chord is a lower bound.
+				const double bound = ClosestPointOnSegment(query, lower, upper).distanceSq;
+				if (bound < bestDistanceSq)
+				{
+					queue[count++] = { lower, upper, bound, transpose };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			for (const bool transpose : { false, true })
+			{
+				// A nearest point cannot have either coordinate greater than the query.
+				const auto [lower, upper] = profile.rangeTo(query, transpose);
+				if (upper < lower)
+				{
+					continue;
+				}
+				const Vec2 p0 = profile.pointAt(lower, transpose), p1 = profile.pointAt(upper, transpose);
+				Update(p0, transpose);
+				Update(p1, transpose);
+				Push(p0, p1, transpose);
+			}
+			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
+				* Max({ shape.a, shape.b, query.x, query.y }));
+			for (int32 iteration = 0; (iteration < MaxSubdivisions) && count; ++iteration)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Interval interval = queue[--count];
+				if ((bestDistanceSq - interval.bound) <= (tolerance * (2.0 * std::sqrt(bestDistanceSq) + tolerance)))
+				{
+					break;
+				}
+				const double middle = (interval.transpose
+					? ((interval.lower.y + interval.upper.y) / (2.0 * shape.b))
+					: ((interval.lower.x + interval.upper.x) / (2.0 * shape.a)));
+				const Vec2 p = profile.pointAt(middle, interval.transpose);
+				Update(p, interval.transpose);
+				Push(interval.lower, p, interval.transpose);
+				Push(p, interval.upper, interval.transpose);
+			}
+			// Refine the selected minimum without extending the global search budget.
+			// Near an evolute the squared distance can be almost flat; retain the
+			// evaluated boundary point even if Newton cannot improve it.
+			const bool transpose = bestTranspose;
+			const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
+			const Vec2 q = (transpose ? Vec2{ query.y, query.x } : query);
+			double x = (transpose ? (best.y / shape.b) : (best.x / shape.a));
+			for (int32 iteration = 0; iteration < 8; ++iteration)
+			{
+				const double y = profile.yAt(x);
+				if ((x == 0.0) || (y == 0.0))
+				{
+					break;
+				}
+				const auto [slope, curvature] = profile.derivatives(x, y);
+				const Vec2 gap = (axes * Vec2{ x, y } - q);
+				const double f = (gap.x * axes.x + gap.y * axes.y * slope);
+				const double derivative = (axes.x * axes.x + axes.y * axes.y * slope * slope + gap.y * axes.y * curvature);
+				if (derivative <= 0.0)
+				{
+					break;
+				}
+				const double next = (x - f / derivative);
+				if (not ((profile.split < next) && (next < 1.0)) || (next == x))
+				{
+					break;
+				}
+				x = next;
+				Update(profile.pointAt(x, transpose), transpose);
+			}
+			ClosestPairCandidate result;
+			UpdateCandidate(result, point, (shape.center + Vec2{ std::copysign(best.x, delta.x), std::copysign(best.y, delta.y) }));
+			return result;
+		}
+
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointPointSuperEllipse(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			if (shape.n < 1.0)
+			{
+				return ClosestDisjointPointConcaveSuperEllipse(point, shape);
+			}
+			if (shape.n == 1.0)
+			{
+				ClosestPairCandidate result;
+				UpdateCandidate(result, point, detail::ClosestPointOnDiamondBoundary(point, shape));
+				return result;
+			}
+			auto result = ClosestDisjointConvexSuperEllipsePair(shape, point);
+			std::swap(result.pointA, result.pointB);
+			return result;
+		}
+
+		// Bounded search for positive axes and 0 < a.n < 1 < b.n.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestMixedSuperEllipsePair(const SuperEllipse& a, const SuperEllipse& originalB) noexcept
+		{
+			const Vec2 delta = (originalB.center - a.center);
+			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
+			const SuperEllipse b{ Vec2{ Abs(delta.x), Abs(delta.y) }, originalB.axes, originalB.n };
+			const ConcaveSuperEllipseProfile profile{ a };
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon()
+				* Max({ a.a, a.b, b.a, b.b, b.x, b.y }));
+			const ConvexSuperEllipseSupport<> direct{ b.axes, b.n, 1.0 }, swapped{ Vec2{ b.b, b.a }, b.n, 1.0 };
+			const auto SupportB = [&](const Vec2& normal) noexcept
+			{
+				if (normal.x == 0.0) return Vec2{ 0.0, b.b };
+				if (normal.y == 0.0) return Vec2{ b.a, 0.0 };
+				const bool transpose = (normal.x < normal.y);
+				const double t = (transpose ? (normal.x / normal.y) : (normal.y / normal.x));
+				const Vec2 point = (transpose ? swapped : direct).sample(t, t).first;
+				return (transpose ? Vec2{ point.y, point.x } : point);
+			};
+			struct Sample
+			{
+				ClosestPairCandidate pair;
+				Vec2 normal;
+				double support;
+			};
+			ClosestPairCandidate best;
+			double bestX = 1.0;
+			bool bestTranspose = false;
+			const auto Evaluate = [&](const double x, const bool transpose) noexcept
+			{
+				const Vec2 point = profile.pointAt(x, transpose);
+				const Vec2 normalized{ Abs((point.x - b.x) / b.a), Abs((point.y - b.y) / b.b) };
+				ClosestPairCandidate candidate;
+				// A prior intersection search can be unresolved. Only an evaluated
+				// point in both shapes establishes a zero-distance witness here.
+				if ((std::pow(normalized.x, b.n) + std::pow(normalized.y, b.n)) <= 1.0)
+				{
+					UpdateCandidate(candidate, point, point);
+				}
+				else
+				{
+					candidate = ClosestDisjointPointSuperEllipse(point, b);
+				}
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+					bestX = x;
+					bestTranspose = transpose;
+				}
+				Vec2 normal{ Max(0.0, (candidate.pointB.x - point.x)), Max(0.0, (candidate.pointB.y - point.y)) };
+				const double length = normal.length();
+				double support = 0.0;
+				if (length != 0.0)
+				{
+					normal /= length;
+					// The point solver may return an interior witness at its limit;
+					// obtain the supporting line from the support function instead.
+					support = (b.center - SupportB(normal)).dot(normal);
+				}
+				return Sample{ candidate, normal, support };
+			};
+			struct Interval
+			{
+				double lower, upper, bound;
+				Sample left, right;
+				bool transpose;
+			};
+			constexpr int32 MaxSubdivisions = 32;
+			std::array<Interval, MaxSubdivisions + 2> queue;
+			size_t count = 0;
+			const auto Compare = [](const Interval& a, const Interval& b) noexcept { return (a.bound > b.bound); };
+			const auto Push = [&](const double lower, const double upper,
+				const Sample& left, const Sample& right, const bool transpose) noexcept
+			{
+				const Vec2 p0 = left.pair.pointA, p1 = right.pair.pointA;
+				Vec2 normal{ Abs(p1.y - p0.y), Abs(p1.x - p0.x) };
+				const double length = normal.length();
+				if (length == 0.0)
+				{
+					return;
+				}
+				normal /= length;
+				// The concave arc is southwest of its chord. The gap to a parallel
+				// supporting line of B bounds the whole interval. Reuse the endpoint
+				// supporting lines too, avoiding weak chord bounds near axial tips.
+				const double bound = Max({ 0.0, ((b.center - SupportB(normal) - p0).dot(normal) - tolerance),
+					(left.support - Max(p0.dot(left.normal), p1.dot(left.normal)) - tolerance),
+					(right.support - Max(p0.dot(right.normal), p1.dot(right.normal)) - tolerance) });
+				if ((bound * bound) < best.distanceSq)
+				{
+					queue[count++] = { lower, upper, (bound * bound), left, right, transpose };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			Evaluate(1.0, false);
+			Evaluate(1.0, true);
+			for (const bool transpose : { false, true })
+			{
+				// Axis symmetry allows a nearest pair between the two centers.
+				const auto [lower, upper] = profile.rangeTo(b.center, transpose);
+				if (upper < lower)
+				{
+					continue;
+				}
+				const auto left = Evaluate(lower, transpose), right = Evaluate(upper, transpose);
+				Push(lower, upper, left, right, transpose);
+			}
+			for (int32 iteration = 0; (iteration < MaxSubdivisions) && count; ++iteration)
+			{
+				if ((best.distanceSq - queue[0].bound) <= (4.0 * tolerance * (2.0 * std::sqrt(best.distanceSq) + 4.0 * tolerance)))
+				{
+					break;
+				}
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Interval interval = queue[--count];
+				const double middle = (interval.lower + (interval.upper - interval.lower) * 0.5);
+				if (not ((interval.lower < middle) && (middle < interval.upper)))
+				{
+					continue;
+				}
+				const auto sample = Evaluate(middle, interval.transpose);
+				Push(interval.lower, middle, interval.left, sample, interval.transpose);
+				Push(middle, interval.upper, sample, interval.right, interval.transpose);
+			}
+			// Refine the selected minimum using the Hessian of point-to-convex
+			// squared distance. Retain evaluated witnesses if Newton cannot improve.
+			double x = bestX;
+			const bool transpose = bestTranspose;
+			auto current = best;
+			for (int32 iteration = 0; iteration < 8; ++iteration)
+			{
+				const double y = profile.yAt(x);
+				if ((x == 0.0) || (y == 0.0))
+				{
+					break;
+				}
+				const Vec2 gap = (current.pointA - current.pointB);
+				const double distance = gap.length();
+				if (distance == 0.0)
+				{
+					break;
+				}
+				const auto [slope, secondDerivative] = profile.derivatives(x, y);
+				const Vec2 dp = (a.axes * (transpose ? Vec2{ slope, 1.0 } : Vec2{ 1.0, slope }));
+				const Vec2 ddp = (a.axes * (transpose ? Vec2{ secondDerivative, 0.0 } : Vec2{ 0.0, secondDerivative }));
+				const Vec2 uv{ Abs((current.pointB.x - b.x) / b.a), Abs((current.pointB.y - b.y) / b.b) };
+				const Vec2 gradient{ (std::pow(uv.x, (b.n - 1.0)) / b.a), (std::pow(uv.y, (b.n - 1.0)) / b.b) };
+				const double g = gradient.length();
+				const double curvature = ((b.n - 1.0) * std::pow((uv.x * uv.y), (b.n - 2.0))
+					/ (b.a * b.a * b.b * b.b * g * g * g));
+				const Vec2 tangent{ (-gap.y / distance), (gap.x / distance) };
+				const double projection = dp.dot(tangent);
+				const double derivative = (dp.lengthSq() - projection * projection / (1.0 + distance * curvature) + gap.dot(ddp));
+				if (derivative <= 0.0)
+				{
+					break;
+				}
+				const double next = (x - gap.dot(dp) / derivative);
+				if (not ((profile.split < next) && (next < 1.0)) || (next == x))
+				{
+					break;
+				}
+				x = next;
+				current = Evaluate(x, transpose).pair;
+			}
+			best.pointA = (a.center + sign * best.pointA);
+			best.pointB = (a.center + sign * best.pointB);
+			return best;
+		}
+
+		[[nodiscard]]
+		constexpr std::array<Vec2, 4> SuperEllipseAxisVertices(const SuperEllipse& shape) noexcept
+		{
+			return { Vec2{ (shape.x + shape.a), shape.y }, Vec2{ shape.x, (shape.y + shape.b) },
+				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
+		}
+
+		[[nodiscard]]
+		double DistanceSqToSuperEllipseBox(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			const Vec2 gap{ Max(0.0, (Abs(point.x - shape.x) - shape.a)), Max(0.0, (Abs(point.y - shape.y) - shape.b)) };
+			return gap.lengthSq();
+		}
+
+		// Disjoint positive-area shapes with n <= 1. Facing concave arcs cannot
+		// have a strict distance minimum in both interiors. A minimizing pair
+		// can be chosen with an axial tip, including for diamond edges.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointConcaveSuperEllipsePair(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		{
+			const auto verticesA = SuperEllipseAxisVertices(a), verticesB = SuperEllipseAxisVertices(b);
+			ClosestPairCandidate result;
+			for (const Vec2& pointA : verticesA)
+			{
+				for (const Vec2& pointB : verticesB)
+				{
+					UpdateCandidate(result, pointA, pointB);
+				}
+			}
+			const auto TestTips = [&](const auto& vertices, const SuperEllipse& other, const bool reverse) noexcept
+			{
+				for (const Vec2& point : vertices)
+				{
+					if (result.distanceSq <= DistanceSqToSuperEllipseBox(point, other))
+					{
+						continue;
+					}
+					const auto closest = ClosestDisjointPointSuperEllipse(point, other);
+					if (reverse) UpdateCandidate(result, closest.pointB, point);
+					else UpdateCandidate(result, point, closest.pointB);
+				}
+			};
+			TestTips(verticesA, b, false);
+			TestTips(verticesB, a, true);
+			return result;
+		}
+
+		// Positive axes and n <= 1; the line is disjoint from the filled shape.
+		// A concave arc cannot have a strict interior minimum of distance to a
+		// disjoint supporting line. Line endpoints and axial tips suffice.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineConcaveSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
+		{
+			const auto vertices = SuperEllipseAxisVertices(shape);
+			ClosestPairCandidate result;
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const auto candidate = ClosestPointOnSegment(vertices[i], line.start, line.end);
+				UpdateCandidate(result, candidate.pointB, vertices[i], candidate.parameterB, (i * 0.25));
+			}
+			const std::array endpoints{ line.start, line.end };
+			for (size_t i = 0; i < endpoints.size(); ++i)
+			{
+				const Vec2& point = endpoints[i];
+				// Skip endpoint searches that cannot beat the best tip projection.
+				if (result.distanceSq <= DistanceSqToSuperEllipseBox(point, shape))
+				{
+					continue;
+				}
+				const auto candidate = ClosestDisjointPointSuperEllipse(point, shape);
+				UpdateCandidate(result, point, candidate.pointB, static_cast<double>(i));
+			}
+			return result;
+		}
+
+		// Positive axes. The caller has excluded intersections.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
+		{
+			if (shape.n <= 1.0)
+			{
+				return ClosestDisjointLineConcaveSuperEllipse(line, shape);
+			}
+			if (shape.n == 2.0)
+			{
+				return ClosestDisjointLineEllipse(line, Ellipse{ shape.center, shape.axes });
+			}
+			return ClosestDisjointLineConvexShape(line, shape.center,
+				[&](const Vec2& normal) noexcept
+				{
+					if ((normal.x == 0.0) || (normal.y == 0.0))
+					{
+						return (shape.center + ((normal.x == 0.0)
+							? Vec2{ 0, std::copysign(shape.b, normal.y) } : Vec2{ std::copysign(shape.a, normal.x), 0 }));
+					}
+					const bool transpose = (Abs(normal.x) < Abs(normal.y));
+					const double t = Abs(transpose ? (normal.x / normal.y) : (normal.y / normal.x));
+					const ConvexSuperEllipseSupport<> support{ (transpose ? Vec2{ shape.b, shape.a } : shape.axes), shape.n, 1.0 };
+					Vec2 point = support.sample(t, t).first;
+					if (transpose)
+					{
+						std::swap(point.x, point.y);
+					}
+					return (shape.center + Vec2{ std::copysign(point.x, normal.x), std::copysign(point.y, normal.y) });
+				},
+				[&](const Vec2& point) noexcept { return ClosestDisjointConvexSuperEllipsePair(shape, point); });
+		}
+
+		template <class Shape>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointShapeDiamond(const Shape& shape, const SuperEllipse& diamond) noexcept
+		{
+			const auto vertices = SuperEllipseAxisVertices(diamond);
+			ClosestPairCandidate result;
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const Line edge{ vertices[i], vertices[(i + 1) % vertices.size()] };
+				const auto candidate = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<Shape, Ellipse>) return ClosestDisjointLineEllipse(edge, shape);
+					else return ClosestDisjointLineSuperEllipse(edge, shape);
+				}();
+				UpdateCandidate(result, candidate.pointB, candidate.pointA);
+			}
+			return result;
+		}
+
+		template <class Bezier>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestPointBezier(const Vec2& point, const Bezier& curve) noexcept
+		{
+			const auto closest = detail::ClosestPointOnBezier(curve, point);
+			return { point, closest.point, closest.distanceSq, 0.0, closest.parameter };
+		}
+
+		template <class Bezier>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestLineBezier(const Line& line, const Bezier& curve) noexcept
+		{
+			const auto controls = detail::BezierControlPoints(curve);
+			constexpr size_t Degree = (std::tuple_size_v<decltype(controls)> - 1);
+			const Vec2 direction = (line.end - line.start);
+			const double lengthSq = direction.lengthSq();
+			ClosestPairCandidate best;
+			double minHeight = std::numeric_limits<double>::infinity(), maxHeight = -minHeight;
+			double minAbsHeight = minHeight;
+			bool lineMinimumInside = false;
+			const auto Consider = [&](const double t)
+			{
+				const Vec2 p = curve.pointAt(t);
+				const auto projected = ClosestPointOnSegment(p, line.start, line.end);
+				UpdateCandidate(best, projected.pointB, p, projected.parameterB, t);
+				const double height = (p - line.start).cross(direction);
+				minHeight = Min(minHeight, height);
+				maxHeight = Max(maxHeight, height);
+				if (Abs(height) <= minAbsHeight)
+				{
+					const double projection = (p - line.start).dot(direction);
+					const bool inside = ((0.0 <= projection) && (projection <= lengthSq));
+					lineMinimumInside = (inside || ((Abs(height) == minAbsHeight) && lineMinimumInside));
+					minAbsHeight = Abs(height);
+				}
+			};
+			Consider(0.0);
+			Consider(1.0);
+			std::array<double, Degree> normalDerivative;
+			for (size_t i = 0; i < Degree; ++i)
+			{
+				normalDerivative[i] = (controls[i + 1] - controls[i]).cross(direction);
+			}
+			const auto stationary = detail::BernsteinRoots(normalDerivative);
+			for (size_t i = 0; i < stationary.count; ++i)
+			{
+				Consider(stationary.values[i]);
+			}
+			// A minimum on the infinite line is also global on the segment when
+			// its projection lies inside and the curve stays on one side of the line.
+			if ((lengthSq != 0.0) && lineMinimumInside && ((0.0 <= minHeight) || (maxHeight <= 0.0)))
+			{
+				return best;
+			}
+			if ((minHeight < 0.0) && (0.0 < maxHeight))
+			{
+				std::array<double, Degree + 1> heights;
+				for (size_t i = 0; i <= Degree; ++i)
+				{
+					heights[i] = (controls[i] - line.start).cross(direction);
+				}
+				const auto crossings = detail::BernsteinRoots(heights);
+				for (size_t i = 0; i < crossings.count; ++i)
+				{
+					Consider(crossings.values[i]);
+				}
+			}
+			for (const Vec2& endpoint : { line.start, line.end })
+			{
+				const auto roots = detail::BezierPointStationaryParameters(controls, endpoint);
+				for (size_t i = 0; i < roots.count; ++i)
+				{
+					Consider(roots.values[i]);
+				}
+			}
+			return best;
+		}
+
+		// Inflating the second set by a disk reduces its distance by the radius.
+		// The nearest point on the curve is also a common point on overlap.
+		[[nodiscard]]
+		ClosestPoints2D InflateClosestPair(const Vec2& curvePoint, const Vec2& corePoint,
+			const double distanceSq, const double radius) noexcept
+		{
+			if (distanceSq <= (radius * radius))
+			{
+				return { curvePoint, curvePoint, 0.0 };
+			}
+			const double distance = std::sqrt(distanceSq);
+			return { curvePoint, (corePoint + (curvePoint - corePoint) * (radius / distance)), (distance - radius) };
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestBezierRoundedShape(const ShapeA& curve, const ShapeB& shape) noexcept
+		{
+			if constexpr ((std::is_same_v<ShapeA, Bezier2> || std::is_same_v<ShapeA, Bezier3>)
+				&& std::is_same_v<ShapeB, Circle>)
+			{
+				const auto closest = detail::ClosestPointOnBezier(curve, shape.center);
+				return InflateClosestPair(closest.point, shape.center, closest.distanceSq, shape.r);
+			}
+			else if constexpr ((std::is_same_v<ShapeA, Bezier2> || std::is_same_v<ShapeA, Bezier3>)
+				&& std::is_same_v<ShapeB, RoundRect>)
+			{
+				if ((shape.r == 0.0) || (shape.rect.w == 0.0) || (shape.rect.h == 0.0))
+				{
+					return none;
+				}
+				const double radius = detail::GetGeometry2DEffectiveRadius(shape);
+				const RectF core = detail::GetGeometry2DRoundRectCore(shape, radius);
+				const Vec2 lo = core.tl(), hi = core.br();
+				if ((lo.x <= curve.p0.x) && (curve.p0.x <= hi.x)
+					&& (lo.y <= curve.p0.y) && (curve.p0.y <= hi.y))
+				{
+					return ClosestPoints2D{ curve.p0, curve.p0, 0.0 };
+				}
+				if ((core.w == 0.0) && (core.h == 0.0))
+				{
+					const auto closest = detail::ClosestPointOnBezier(curve, lo);
+					return InflateClosestPair(closest.point, lo, closest.distanceSq, radius);
+				}
+				if ((core.w == 0.0) || (core.h == 0.0))
+				{
+					const auto closest = ClosestLineBezier(Line{ lo, hi }, curve);
+					return InflateClosestPair(closest.pointB, closest.pointA, closest.distanceSq, radius);
+				}
+
+				ClosestPairCandidate best;
+				for (const Line& edge : { core.top(), core.right(), core.bottom(), core.left() })
+				{
+					const auto closest = ClosestLineBezier(edge, curve);
+					if (closest.distanceSq < best.distanceSq)
+					{
+						best = closest;
+						if (best.distanceSq <= (radius * radius))
+						{
+							break;
+						}
+					}
+				}
+				return InflateClosestPair(best.pointB, best.pointA, best.distanceSq, radius);
+			}
+			else
+			{
+				return none;
+			}
+		}
+
+		template <class Bezier>
+		[[nodiscard]]
+		Vec2 BezierSecondDerivative(const Bezier& curve, const double t) noexcept
+		{
+			if constexpr (std::is_same_v<Bezier, Bezier2>)
+			{
+				return curve.secondDerivative();
+			}
+			else
+			{
+				return curve.secondDerivativeAt(t);
+			}
+		}
+
+		template <size_t N>
+		[[nodiscard]]
+		auto BezierProjectionStationaryParameters(const std::array<Vec2, N>& controls, const Vec2& normal) noexcept
+		{
+			std::array<double, N - 1> derivative;
+			for (size_t i = 0; i < (N - 1); ++i)
+			{
+				derivative[i] = (controls[i + 1] - controls[i]).dot(normal);
+			}
+			return detail::BernsteinRoots(derivative);
+		}
+
+		// Positive axes, n != 1. Search only the Bezier parameter; each sample
+		// uses the point-to-shape solver, including concave boundary branches.
+		template <class Bezier>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestBezierSuperEllipse(const Bezier& original, const SuperEllipse& input,
+			const Optional<double> seed = none) noexcept
+		{
+			constexpr int32 MaxSubdivisions = 32;
+			const auto curve = original.movedBy(-input.center);
+			const SuperEllipse shape{ 0, 0, input.axes, input.n };
+			const bool convex = (1.0 < shape.n);
+			Optional<ConvexSuperEllipseSupport<>> support, transposedSupport;
+			double holderScale = 0.0;
+			if (convex)
+			{
+				support.emplace(shape.axes, shape.n, 1.0);
+				transposedSupport.emplace(Vec2{ shape.b, shape.a }, shape.n, 1.0);
+			}
+			else
+			{
+				const double power = (2.0 * shape.n / (2.0 - shape.n));
+				holderScale = std::pow((std::pow(shape.a, -power) + std::pow(shape.b, -power)), (-1.0 / power));
+			}
+			const auto controls = detail::BezierControlPoints(curve);
+			double scale = Max(shape.a, shape.b);
+			for (const Vec2& point : controls)
+			{
+				scale = Max({ scale, Abs(point.x), Abs(point.y) });
+			}
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon() * scale);
+			ClosestPairCandidate best;
+			const auto Evaluate = [&](const double t)
+			{
+				const Vec2 point = curve.pointAt(t);
+				ClosestPairCandidate candidate;
+				if ((std::pow(Abs(point.x / shape.a), shape.n) + std::pow(Abs(point.y / shape.b), shape.n)) <= 1.0)
+				{
+					UpdateCandidate(candidate, point, point, t);
+				}
+				else
+				{
+					candidate = ClosestDisjointPointSuperEllipse(point, shape);
+					candidate.parameterA = t;
+				}
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+				}
+				return candidate;
+			};
+			const auto Refine = [&](ClosestPairCandidate current)
+			{
+				for (int32 iteration = 0; iteration < 8; ++iteration)
+				{
+					const double t = current.parameterA, distance = std::sqrt(current.distanceSq);
+					if (distance <= tolerance) break;
+					const Vec2 gap = (current.pointA - current.pointB), normal = (gap / distance);
+					const Vec2 u = curve.derivativeAt(t), v = BezierSecondDerivative(curve, t);
+					const Vec2 p{ Abs(current.pointB.x / shape.a), Abs(current.pointB.y / shape.b) };
+					double factor;
+					if (((p.x == 0.0) || (p.y == 0.0)) && (shape.n != 2.0))
+					{
+						// Concave tips are fixed projections. Convex axial curvature
+						// tends to infinity for n < 2 and to zero for n > 2.
+						factor = ((shape.n < 2.0) ? 1.0 : 0.0);
+					}
+					else
+					{
+						const Vec2 gradient{ (std::pow(p.x, (shape.n - 1.0)) / shape.a),
+							(std::pow(p.y, (shape.n - 1.0)) / shape.b) };
+						const double g = gradient.length();
+						const double curvature = ((shape.n - 1.0) * std::pow((p.x * p.y), (shape.n - 2.0))
+							/ (shape.a * shape.a * shape.b * shape.b * g * g * g));
+						if ((1.0 + distance * curvature) <= 0.0) break;
+						factor = (distance * curvature / (1.0 + distance * curvature));
+					}
+					// Newton on distance avoids the flat quartic of squared distance
+					// at tangency. Fall back to squared-distance curvature if needed.
+					const double un = u.dot(normal), ut = u.cross(normal);
+					double h = (ut * ut * factor + gap.dot(v));
+					if (h <= 0.0) h += (un * un);
+					if (h <= 0.0) break;
+					const double next = ClampUnit(t - gap.dot(u) / h);
+					if (next == t) break;
+					const auto candidate = Evaluate(next);
+					if (current.distanceSq < candidate.distanceSq) break;
+					current = candidate;
+				}
+			};
+			const auto SupportValue = [&](const Vec2& normal)
+			{
+				const Vec2 v{ Abs(normal.x), Abs(normal.y) };
+				if (not convex) return Max((shape.a * v.x), (shape.b * v.y));
+				if (v.x == 0.0) return (shape.b * v.y);
+				if (v.y == 0.0) return (shape.a * v.x);
+				const bool transpose = (v.x < v.y);
+				const double t = (transpose ? (v.x / v.y) : (v.y / v.x));
+				Vec2 point = (transpose ? *transposedSupport : *support).sample(t, t).first;
+				if (transpose) std::swap(point.x, point.y);
+				return point.dot(v);
+			};
+			struct Node
+			{
+				Bezier part;
+				double lower, upper, boundSq;
+				ClosestPairCandidate sample;
+			};
+			// One root, then at most one additional queued node per split.
+			std::array<Node, MaxSubdivisions + 1> queue;
+			int32 count = 0;
+			const auto Compare = [](const Node& a, const Node& b) noexcept
+			{
+				return ((a.boundSq != b.boundSq) ? (b.boundSq < a.boundSq) : (b.sample.distanceSq < a.sample.distanceSq));
+			};
+			const auto CutoffSq = [&]() noexcept
+			{
+				const double cutoff = Max(0.0, (std::sqrt(best.distanceSq) - 4.0 * tolerance));
+				return (cutoff * cutoff);
+			};
+			const auto Add = [&](const Bezier& part, const double lower, const double upper)
+			{
+				const auto [lo, hi] = detail::BezierControlBounds(part);
+				const Vec2 gap{ Max({ 0.0, (lo.x - shape.a), (-shape.a - hi.x) }),
+					Max({ 0.0, (lo.y - shape.b), (-shape.b - hi.y) }) };
+				double boundSq = gap.lengthSq();
+				if (CutoffSq() <= boundSq) return;
+				if (not convex)
+				{
+					// |x|^n - |y|^n <= |x-y|^n and Holder's inequality bound
+					// distance even inside the concave shape's diamond convex hull.
+					const Vec2 p{ Max({ 0.0, lo.x, -hi.x }), Max({ 0.0, lo.y, -hi.y }) };
+					const double excess = Max(0.0, (std::pow((p.x / shape.a), shape.n) + std::pow((p.y / shape.b), shape.n) - 1.0));
+					const double bound = (holderScale * std::pow(excess, (1.0 / shape.n)));
+					boundSq = Max(boundSq, (bound * bound));
+				}
+				const auto sample = Evaluate((lower + upper) * 0.5);
+				if ((lower == 0.0) && (upper == 1.0)) Refine(best);
+				for (const auto& candidate : { sample, best })
+				{
+					if (candidate.distanceSq == 0.0) continue;
+					Vec2 normal = ((candidate.pointA - candidate.pointB) / std::sqrt(candidate.distanceSq));
+					if (convex)
+					{
+						// The boundary gradient avoids amplifying witness roundoff
+						// by the inverse gap near contact.
+						const Vec2 p = candidate.pointB;
+						normal = Vec2{ std::copysign((std::pow(Abs(p.x / shape.a), (shape.n - 1.0)) / shape.a), p.x),
+							std::copysign((std::pow(Abs(p.y / shape.b), (shape.n - 1.0)) / shape.b), p.y) }.normalized();
+					}
+					const auto points = detail::BezierControlPoints(part);
+					std::array<double, std::tuple_size_v<decltype(points)>> values;
+					for (size_t i = 0; i < points.size(); ++i) values[i] = points[i].dot(normal);
+					double minimum = Min(values.front(), values.back());
+					const auto roots = BezierProjectionStationaryParameters(points, normal);
+					for (size_t i = 0; i < roots.count; ++i)
+					{
+						minimum = Min(minimum, detail::EvaluateBernstein(values, roots.values[i]));
+					}
+					const double bound = Max(0.0, (minimum - SupportValue(normal) - tolerance));
+					boundSq = Max(boundSq, (bound * bound));
+				}
+				if (boundSq < CutoffSq())
+				{
+					queue[count++] = { part, lower, upper, boundSq, sample };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			Evaluate(0.0);
+			Evaluate(1.0);
+			if (seed) Evaluate(*seed);
+			if (convex)
+			{
+				for (const Vec2& normal : { Vec2{ 1, 0 }, Vec2{ 0, 1 } })
+				{
+					const auto roots = BezierProjectionStationaryParameters(controls, normal);
+					for (size_t i = 0; i < roots.count; ++i) Evaluate(roots.values[i]);
+				}
+			}
+			else
+			{
+				// Cusps can be local minima on separate boundary branches.
+				for (const Vec2& tip : SuperEllipseAxisVertices(shape))
+				{
+					const auto closest = detail::ClosestPointOnBezier(curve, tip);
+					UpdateCandidate(best, closest.point, tip, closest.parameter);
+				}
+			}
+			Add(curve, 0.0, 1.0);
+			for (int32 split = 0; (split < MaxSubdivisions) && count; ++split)
+			{
+				if (CutoffSq() <= queue[0].boundSq) break;
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				const auto [left, right] = node.part.split(0.5);
+				const double middle = ((node.lower + node.upper) * 0.5);
+				Add(left, node.lower, middle);
+				Add(right, middle, node.upper);
+			}
+			Refine(best);
+			for (int32 i = 0; (i < 2) && count; ++i)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				if (best.distanceSq <= node.boundSq) break;
+				Refine(node.sample);
+			}
+			best.pointA += input.center;
+			best.pointB += input.center;
+			return best;
+		}
+
+		template <class BezierA, class BezierB>
+		void RefineBezierPair(const BezierA& a, const BezierB& b, ClosestPairCandidate& best) noexcept
+		{
+			double t = best.parameterA, s = best.parameterB;
+			for (int32 iteration = 0; iteration < 24; ++iteration)
+			{
+				const Vec2 r = (a.pointAt(t) - b.pointAt(s));
+				const Vec2 u = a.derivativeAt(t), v = b.derivativeAt(s);
+				const double ru = r.dot(u), rv = r.dot(v);
+				const double uu = u.lengthSq(), vv = v.lengthSq();
+				const double ra = r.dot(BezierSecondDerivative(a, t));
+				const double rb = r.dot(BezierSecondDerivative(b, s));
+				const double h1 = (uu + ra), h2 = (vv - rb), cross = u.cross(v);
+				// Cross products avoid cancellation in the Newton system when
+				// the tangents are nearly parallel at a small separation.
+				const double determinant = (cross * cross + ra * vv - rb * uu - ra * rb);
+				const bool fixedA = (((t == 0.0) && (0.0 <= ru)) || ((t == 1.0) && (ru <= 0.0)));
+				const bool fixedB = (((s == 0.0) && (rv <= 0.0)) || ((s == 1.0) && (0.0 <= rv)));
+				double dt = 0.0, ds = 0.0;
+				if ((not fixedA) && (not fixedB) && (0.0 < h1) && (0.0 < h2) && (0.0 < determinant))
+				{
+					dt = ((-r.cross(v) * cross + rb * ru) / determinant);
+					ds = ((-r.cross(u) * cross + ra * rv) / determinant);
+				}
+				else
+				{
+					if ((not fixedA) && (0.0 < Max(uu, h1)))
+					{
+						dt = (-ru / Max(uu, h1));
+					}
+					if ((not fixedB) && (0.0 < Max(vv, h2)))
+					{
+						ds = (rv / Max(vv, h2));
+					}
+				}
+				dt = (ClampUnit(t + dt) - t);
+				ds = (ClampUnit(s + ds) - s);
+				if ((Abs(dt) <= ParameterTolerance) && (Abs(ds) <= ParameterTolerance))
+				{
+					break;
+				}
+
+				bool accepted = false;
+				for (int32 backtrack = 0; backtrack < 12; ++backtrack)
+				{
+					const double nextA = ClampUnit(t + dt), nextB = ClampUnit(s + ds);
+					const Vec2 pointA = a.pointAt(nextA), pointB = b.pointAt(nextB);
+					const double distanceSq = pointA.distanceFromSq(pointB);
+					if (distanceSq <= best.distanceSq)
+					{
+						best = { pointA, pointB, distanceSq, nextA, nextB };
+						t = nextA;
+						s = nextB;
+						accepted = true;
+						break;
+					}
+					dt *= 0.5;
+					ds *= 0.5;
+				}
+				if (not accepted)
+				{
+					break;
+				}
+			}
+		}
+
+		template <class BezierA, class BezierB>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestBezierPair(const BezierA& a, const BezierB& b, ClosestPairCandidate best = {}) noexcept
+		{
+			constexpr int32 MaxEvaluations = 128;
+			struct Node
+			{
+				BezierA a;
+				BezierB b;
+				double lowerA, upperA, lowerB, upperB;
+				double boundSq, distanceSq, parameterA, parameterB;
+				bool splitA;
+			};
+			// Each split consumes two evaluations and adds at most one queued node.
+			std::array<Node, ((MaxEvaluations + 1) / 2)> queue;
+			int32 count = 0, evaluations = 0;
+			const auto Compare = [](const Node& lhs, const Node& rhs) noexcept
+			{
+				return ((lhs.boundSq != rhs.boundSq) ? (lhs.boundSq > rhs.boundSq) : (lhs.distanceSq > rhs.distanceSq));
+			};
+			double bestDistance = std::sqrt(best.distanceSq);
+			double scaleSq = 0.0;
+			for (const Vec2& p : detail::BezierControlPoints(a))
+			{
+				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
+			}
+			for (const Vec2& p : detail::BezierControlPoints(b))
+			{
+				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
+			}
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon() * std::sqrt(scaleSq));
+			const auto Add = [&](const BezierA& partA, const BezierB& partB,
+				const double lowerA, const double upperA, const double lowerB, const double upperB)
+			{
+				++evaluations;
+				const auto pointsA = detail::BezierControlPoints(partA);
+				const auto pointsB = detail::BezierControlPoints(partB);
+				const auto [minA, maxA] = detail::BezierControlBounds(partA);
+				const auto [minB, maxB] = detail::BezierControlBounds(partB);
+				const Vec2 boxGap{ Max({ 0.0, (minA.x - maxB.x), (minB.x - maxA.x) }),
+					Max({ 0.0, (minA.y - maxB.y), (minB.y - maxA.y) }) };
+				double boundSq = boxGap.lengthSq();
+				double cutoff = Max(0.0, (bestDistance - tolerance));
+				if ((cutoff * cutoff) <= boundSq)
+				{
+					return;
+				}
+
+				const auto seed = ClosestSegmentSegment(pointsA.front(), pointsA.back(), pointsB.front(), pointsB.back());
+				const double t = (lowerA + (upperA - lowerA) * seed.parameterA);
+				const double s = (lowerB + (upperB - lowerB) * seed.parameterB);
+				const Vec2 pointA = a.pointAt(t), pointB = b.pointAt(s);
+				UpdateCandidate(best, pointA, pointB, t, s);
+				if (evaluations == 1)
+				{
+					RefineBezierPair(a, b, best);
+				}
+				bestDistance = std::sqrt(best.distanceSq);
+				if (bestDistance <= tolerance)
+				{
+					return;
+				}
+
+				// Project the control hulls onto the candidate separation direction
+				// for a lower bound that also works for oblique, nearby curves.
+				const Vec2 normal = (pointB - pointA);
+				double projectionA = -std::numeric_limits<double>::infinity();
+				double projectionB = std::numeric_limits<double>::infinity();
+				for (const Vec2& p : pointsA)
+				{
+					projectionA = Max(projectionA, (p - partA.p0).dot(normal));
+				}
+				for (const Vec2& p : pointsB)
+				{
+					projectionB = Min(projectionB, (p - partA.p0).dot(normal));
+				}
+				const double gap = Max(0.0, (projectionB - projectionA));
+				boundSq = Max(boundSq, (gap * gap / normal.lengthSq()));
+				cutoff = Max(0.0, (bestDistance - tolerance));
+				if (((cutoff * cutoff) <= boundSq)
+					|| (((upperA - lowerA) <= ParameterTolerance) && ((upperB - lowerB) <= ParameterTolerance)))
+				{
+					return;
+				}
+				const bool splitA = ((ParameterTolerance < (upperA - lowerA))
+					&& (((upperB - lowerB) <= ParameterTolerance) || ((maxB - minB).lengthSq() <= (maxA - minA).lengthSq())));
+				queue[count++] = { partA, partB, lowerA, upperA, lowerB, upperB, boundSq, normal.lengthSq(), t, s, splitA };
+				std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+			};
+
+			Add(a, b, 0.0, 1.0, 0.0, 1.0);
+			while (count && ((evaluations + 2) <= MaxEvaluations))
+			{
+				const double cutoff = Max(0.0, (bestDistance - tolerance));
+				if ((cutoff * cutoff) <= queue.front().boundSq)
+				{
+					break;
+				}
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				if (node.splitA)
+				{
+					const auto [left, right] = node.a.split(0.5);
+					const double middle = ((node.lowerA + node.upperA) * 0.5);
+					Add(left, node.b, node.lowerA, middle, node.lowerB, node.upperB);
+					Add(right, node.b, middle, node.upperA, node.lowerB, node.upperB);
+				}
+				else
+				{
+					const auto [left, right] = node.b.split(0.5);
+					const double middle = ((node.lowerB + node.upperB) * 0.5);
+					Add(node.a, left, node.lowerA, node.upperA, node.lowerB, middle);
+					Add(node.a, right, node.lowerA, node.upperA, middle, node.upperB);
+				}
+			}
+
+			RefineBezierPair(a, b, best);
+			// Finish two promising alternatives as well: the best sampled pair
+			// can belong to a different local minimum when the budget is reached.
+			for (int32 i = 0; (i < 2) && count; ++i)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node& node = queue[--count];
+				if (best.distanceSq <= node.boundSq)
+				{
+					break;
+				}
+				ClosestPairCandidate candidate;
+				UpdateCandidate(candidate, a.pointAt(node.parameterA), b.pointAt(node.parameterB), node.parameterA, node.parameterB);
+				RefineBezierPair(a, b, candidate);
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+				}
+			}
+			return best;
+		}
+
+		[[nodiscard]]
 		ClosestPairCandidate RefinePointPiece(
 			const Vec2& point, const BoundaryPiece& piece,
 			double parameter, double step)
@@ -504,6 +1836,18 @@ namespace s3d
 		[[nodiscard]]
 		ClosestPairCandidate ClosestPointPiece(const Vec2& point, const BoundaryPiece& piece)
 		{
+			if (const auto* ellipse = std::get_if<Ellipse>(&piece))
+			{
+				auto result = ClosestDisjointEllipsePair(*ellipse, point);
+				std::swap(result.pointA, result.pointB);
+				return result;
+			}
+
+			if (const auto* shape = std::get_if<SuperEllipse>(&piece))
+			{
+				return ClosestDisjointPointSuperEllipse(point, *shape);
+			}
+
 			if (const Line* line = std::get_if<Line>(&piece))
 			{
 				return ClosestPointOnSegment(point, line->start, line->end);
@@ -515,6 +1859,15 @@ namespace s3d
 				{
 					return ClosestPointCircleArc(point, *arc);
 				}
+			}
+
+			if (const auto* curve = std::get_if<Bezier2>(&piece))
+			{
+				return ClosestPointBezier(point, *curve);
+			}
+			if (const auto* curve = std::get_if<Bezier3>(&piece))
+			{
+				return ClosestPointBezier(point, *curve);
 			}
 
 			const int32 segments = SegmentCount(piece);
@@ -621,6 +1974,22 @@ namespace s3d
 				{
 					return ClosestLineCircleArc(*lineA, *arcB);
 				}
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB))
+				{
+					return ClosestDisjointLineEllipse(*lineA, *ellipseB);
+				}
+				if (const SuperEllipse* shapeB = std::get_if<SuperEllipse>(&pieceB))
+				{
+					return ClosestDisjointLineSuperEllipse(*lineA, *shapeB);
+				}
+				if (const Bezier2* curveB = std::get_if<Bezier2>(&pieceB))
+				{
+					return ClosestLineBezier(*lineA, *curveB);
+				}
+				if (const Bezier3* curveB = std::get_if<Bezier3>(&pieceB))
+				{
+					return ClosestLineBezier(*lineA, *curveB);
+				}
 			}
 
 			if (const CircleArc* arcA = std::get_if<CircleArc>(&pieceA))
@@ -637,22 +2006,157 @@ namespace s3d
 				{
 					return ClosestCircleArcCircleArc(*arcA, *arcB);
 				}
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB); ellipseB && (arcA->region == ArcRegion::Full))
+				{
+					return ClosestDisjointEllipsePair(Ellipse{ arcA->circle.center, arcA->circle.r, arcA->circle.r }, *ellipseB);
+				}
+			}
+
+			if (const Ellipse* ellipseA = std::get_if<Ellipse>(&pieceA))
+			{
+				if (const Line* lineB = std::get_if<Line>(&pieceB))
+				{
+					auto result = ClosestDisjointLineEllipse(*lineB, *ellipseA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB))
+				{
+					return ClosestDisjointEllipsePair(*ellipseA, *ellipseB);
+				}
+				if (const CircleArc* arcB = std::get_if<CircleArc>(&pieceB); arcB && (arcB->region == ArcRegion::Full))
+				{
+					return ClosestDisjointEllipsePair(*ellipseA, Ellipse{ arcB->circle.center, arcB->circle.r, arcB->circle.r });
+				}
+			}
+
+			const auto TrySuperEllipsePair = [](const BoundaryPiece& first, const BoundaryPiece& second) -> Optional<ClosestPairCandidate>
+			{
+				const auto* superEllipse = std::get_if<SuperEllipse>(&second);
+				if (not superEllipse)
+				{
+					return none;
+				}
+				if (const auto* line = std::get_if<Line>(&first))
+				{
+					return ClosestDisjointLineSuperEllipse(*line, *superEllipse);
+				}
+				if (superEllipse->n <= 1.0)
+				{
+					const auto* other = std::get_if<SuperEllipse>(&first);
+					if (other && (other->n <= 1.0))
+					{
+						return ClosestDisjointConcaveSuperEllipsePair(*other, *superEllipse);
+					}
+					if (superEllipse->n == 1.0)
+					{
+						if (const auto* ellipse = std::get_if<Ellipse>(&first))
+						{
+							return ClosestDisjointShapeDiamond(*ellipse, *superEllipse);
+						}
+						if (other)
+						{
+							return ClosestDisjointShapeDiamond(*other, *superEllipse);
+						}
+					}
+					else
+					{
+						const auto* ellipse = std::get_if<Ellipse>(&first);
+						if (other || ellipse)
+						{
+							auto result = ClosestMixedSuperEllipsePair(*superEllipse, (other ? *other : SuperEllipse{ *ellipse, 2.0 }));
+							std::swap(result.pointA, result.pointB);
+							return result;
+						}
+					}
+					return none;
+				}
+				if (const auto* ellipse = std::get_if<Ellipse>(&first))
+				{
+					return ClosestDisjointConvexSuperEllipsePair(SuperEllipse{ *ellipse, 2.0 }, *superEllipse);
+				}
+				if (const auto* arc = std::get_if<CircleArc>(&first); arc && (arc->region == ArcRegion::Full))
+				{
+					return ClosestDisjointConvexSuperEllipsePair(SuperEllipse{ arc->circle.center, arc->circle.r, arc->circle.r, 2.0 }, *superEllipse);
+				}
+				if (const auto* other = std::get_if<SuperEllipse>(&first); other && (1.0 < other->n))
+				{
+					return ClosestDisjointConvexSuperEllipsePair(*other, *superEllipse);
+				}
+				return none;
+			};
+			if (const auto result = TrySuperEllipsePair(pieceA, pieceB))
+			{
+				return *result;
+			}
+			if (auto result = TrySuperEllipsePair(pieceB, pieceA))
+			{
+				std::swap(result->pointA, result->pointB);
+				return *result;
+			}
+
+			if (const Bezier2* bezierA = std::get_if<Bezier2>(&pieceA))
+			{
+				if (const Line* lineB = std::get_if<Line>(&pieceB))
+				{
+					auto result = ClosestLineBezier(*lineB, *bezierA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
+				if (const Bezier2* bezierB = std::get_if<Bezier2>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
+				}
+				if (const Bezier3* bezierB = std::get_if<Bezier3>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
+				}
+			}
+			if (const Bezier3* bezierA = std::get_if<Bezier3>(&pieceA))
+			{
+				if (const Line* lineB = std::get_if<Line>(&pieceB))
+				{
+					auto result = ClosestLineBezier(*lineB, *bezierA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
+				if (const Bezier2* bezierB = std::get_if<Bezier2>(&pieceB))
+				{
+					auto result = ClosestBezierPair(*bezierB, *bezierA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
+				if (const Bezier3* bezierB = std::get_if<Bezier3>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
+				}
 			}
 
 			const int32 segmentsA = SegmentCount(pieceA);
 			const int32 segmentsB = SegmentCount(pieceB);
+			// Each target sample is shared by every source segment. In particular,
+			// SuperEllipse boundary powers must not be recomputed in the inner loop.
+			constexpr int32 MaxSegments = Max({ EllipseSegments, SuperEllipseSegments,
+				Bezier2Segments, Bezier3Segments, FullCircleSegments, QuarterCircleSegments, 1 });
+			std::array<Vec2, MaxSegments + 1> pointsB;
+			for (int32 j = 0; j <= segmentsB; ++j)
+			{
+				pointsB[j] = PointAt(pieceB, (static_cast<double>(j) / segmentsB));
+			}
 			ClosestPairCandidate seed;
 			Vec2 a0 = PointAt(pieceA, 0.0);
 
 			for (int32 i = 0; i < segmentsA; ++i)
 			{
 				const Vec2 a1 = PointAt(pieceA, (static_cast<double>(i + 1) / segmentsA));
-				Vec2 b0 = PointAt(pieceB, 0.0);
 
 				for (int32 j = 0; j < segmentsB; ++j)
 				{
-					const Vec2 b1 = PointAt(pieceB, (static_cast<double>(j + 1) / segmentsB));
-					const auto local = ClosestSegmentSegment(a0, a1, b0, b1);
+					const auto local = ClosestSegmentSegment(a0, a1, pointsB[j], pointsB[j + 1]);
 
 					if (local.distanceSq < seed.distanceSq)
 					{
@@ -660,8 +2164,6 @@ namespace s3d
 						seed.parameterA = ((static_cast<double>(i) + local.parameterA) / segmentsA);
 						seed.parameterB = ((static_cast<double>(j) + local.parameterB) / segmentsB);
 					}
-
-					b0 = b1;
 				}
 
 				a0 = a1;
@@ -885,578 +2387,266 @@ namespace s3d
 			return false;
 		}
 
-		[[nodiscard]]
-		Line TriangleDegenerateExtent(const Triangle& triangle) noexcept
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Point& shape, Predicate&& predicate)
 		{
-			const double d01 = triangle.p0.distanceFromSq(triangle.p1);
-			const double d12 = triangle.p1.distanceFromSq(triangle.p2);
-			const double d20 = triangle.p2.distanceFromSq(triangle.p0);
-
-			if ((d12 <= d01) && (d20 <= d01))
-			{
-				return Line{ triangle.p0, triangle.p1 };
-			}
-
-			if (d20 <= d12)
-			{
-				return Line{ triangle.p1, triangle.p2 };
-			}
-
-			return Line{ triangle.p2, triangle.p0 };
+			return predicate(Vec2{ shape });
 		}
 
-		void AppendLinePiece(Array<BoundaryPiece>& pieces, const Line& line)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Vec2& shape, Predicate&& predicate)
 		{
-			if (line.start != line.end)
-			{
-				pieces.emplace_back(line);
-			}
+			return predicate(shape);
 		}
 
-		void AppendRingPieces(Array<BoundaryPiece>& pieces, const std::span<const Vec2> ring)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Line& shape, Predicate&& predicate)
 		{
-			if (ring.size() < 2)
-			{
-				return;
-			}
-
-			for (size_t i = 0; i < ring.size(); ++i)
-			{
-				AppendLinePiece(pieces, Line{ ring[i], ring[(i + 1) % ring.size()] });
-			}
+			return predicate(shape.start) || predicate(shape.end)
+				|| predicate(shape.start.lerp(shape.end, 0.5));
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Line& shape)
-		{
-			AppendLinePiece(pieces, shape);
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const LineString& shape)
-		{
-			for (size_t i = 0; (i + 1) < shape.size(); ++i)
-			{
-				AppendLinePiece(pieces, Line{ shape[i], shape[i + 1] });
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Bezier2& shape)
-		{
-			pieces.emplace_back(shape);
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Bezier3& shape)
-		{
-			pieces.emplace_back(shape);
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RectF& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double left = shape.pos.x;
-			const double top = shape.pos.y;
-			const double right = (left + shape.size.x);
-			const double bottom = (top + shape.size.y);
-			const Vec2 tl{ left, top };
-			const Vec2 tr{ right, top };
-			const Vec2 br{ right, bottom };
-			const Vec2 bl{ left, bottom };
-			AppendLinePiece(pieces, Line{ tl, tr });
-			AppendLinePiece(pieces, Line{ tr, br });
-			AppendLinePiece(pieces, Line{ br, bl });
-			AppendLinePiece(pieces, Line{ bl, tl });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Rect& shape)
-		{
-			AppendBoundaryPieces(pieces, RectF{ shape });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Circle& shape)
-		{
-			if (detail::ClassifyGeometry2DSizedShape(shape) == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(CircleArc{ shape, ArcRegion::Full });
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Ellipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const SuperEllipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Triangle& shape)
-		{
-			if ((shape.p1 - shape.p0).cross(shape.p2 - shape.p0) == 0.0)
-			{
-				AppendLinePiece(pieces, TriangleDegenerateExtent(shape));
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Quad& shape)
-		{
-			const double twiceArea = (shape.p0.cross(shape.p1)
-				+ shape.p1.cross(shape.p2)
-				+ shape.p2.cross(shape.p3)
-				+ shape.p3.cross(shape.p0));
-
-			if (twiceArea != 0.0)
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-				AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-				AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-				return;
-			}
-
-			if ((shape.p1 == shape.p2) && (shape.p3 == shape.p0))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				return;
-			}
-
-			if ((shape.p0 == shape.p1) && (shape.p2 == shape.p3))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p2 });
-				return;
-			}
-
-			if (shape.p2 == shape.p3)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			if (shape.p1 == shape.p2)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p3 });
-				return;
-			}
-
-			if (shape.p0 == shape.p1)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p2, shape.p3 });
-				return;
-			}
-
-			if (shape.p3 == shape.p0)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-			AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RoundRect& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double r = detail::GetGeometry2DEffectiveRadius(shape);
-
-			if (r == 0.0)
-			{
-				AppendBoundaryPieces(pieces, shape.rect);
-				return;
-			}
-
-			const double left = shape.rect.pos.x;
-			const double top = shape.rect.pos.y;
-			const double right = (left + shape.rect.size.x);
-			const double bottom = (top + shape.rect.size.y);
-			AppendLinePiece(pieces, Line{ Vec2{ left + r, top }, Vec2{ right - r, top } });
-			AppendLinePiece(pieces, Line{ Vec2{ right, top + r }, Vec2{ right, bottom - r } });
-			AppendLinePiece(pieces, Line{ Vec2{ right - r, bottom }, Vec2{ left + r, bottom } });
-			AppendLinePiece(pieces, Line{ Vec2{ left, bottom - r }, Vec2{ left, top + r } });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, top + r }, r }, ArcRegion::TopLeft });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Polygon& shape)
-		{
-			if (shape.isEmpty())
-			{
-				return;
-			}
-
-			AppendRingPieces(pieces, shape.outer());
-
-			for (const auto& inner : shape.inners())
-			{
-				AppendRingPieces(pieces, inner);
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const MultiPolygon& shape)
-		{
-			for (const auto& polygon : shape)
-			{
-				AppendBoundaryPieces(pieces, polygon);
-			}
-		}
-
-		template <class Shape>
-		void AppendBoundaryPieces(Array<BoundaryPiece>&, const Shape&)
-		{
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Point& shape)
-		{
-			points.push_back(Vec2{ shape });
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Vec2& shape)
-		{
-			points.push_back(shape);
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Line& shape)
-		{
-			points.push_back(shape.start);
-			points.push_back(shape.end);
-			points.push_back(shape.start.lerp(shape.end, 0.5));
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const LineString& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const LineString& shape, Predicate&& predicate)
 		{
 			for (const Vec2& point : shape)
 			{
-				points.push_back(point);
+				if (predicate(point)) return true;
 			}
 
 			for (size_t i = 0; (i + 1) < shape.size(); ++i)
 			{
-				points.push_back(shape[i].lerp(shape[i + 1], 0.5));
+				if (predicate(shape[i].lerp(shape[i + 1], 0.5))) return true;
 			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Bezier2& shape)
+		template <class Bezier, class Predicate> requires detail::IsBezier<Bezier>
+		bool AnyRepresentativePoint(const Bezier& shape, Predicate&& predicate)
 		{
 			for (const double t : { 0.0, 0.25, 0.5, 0.75, 1.0 })
 			{
-				points.push_back(shape.pointAt(t));
+				if (predicate(shape.pointAt(t))) return true;
 			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Bezier3& shape)
-		{
-			for (const double t : { 0.0, 0.25, 0.5, 0.75, 1.0 })
-			{
-				points.push_back(shape.pointAt(t));
-			}
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const RectF& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const RectF& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			const double left = shape.pos.x;
-			const double top = shape.pos.y;
-			const double right = (left + shape.size.x);
-			const double bottom = (top + shape.size.y);
-			points.push_back(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ left, top });
-			points.push_back(Vec2{ right, top });
-			points.push_back(Vec2{ right, bottom });
-			points.push_back(Vec2{ left, bottom });
+			const double left = shape.pos.x, top = shape.pos.y;
+			const double right = (left + shape.size.x), bottom = (top + shape.size.y);
+			return predicate(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ left, top }) || predicate(Vec2{ right, top })
+				|| predicate(Vec2{ right, bottom }) || predicate(Vec2{ left, bottom });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Rect& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Rect& shape, Predicate&& predicate)
 		{
-			AppendRepresentativePoints(points, RectF{ shape });
+			return AnyRepresentativePoint(RectF{ shape }, predicate);
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Circle& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Circle& shape, Predicate&& predicate)
 		{
-			if (IsEmptyGeometry(shape))
-			{
-				return;
-			}
-
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.r, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.r, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.r });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.r });
+			if (IsEmptyGeometry(shape)) return false;
+			return predicate(shape.center)
+				|| predicate(shape.center + Vec2{ shape.r, 0.0 })
+				|| predicate(shape.center + Vec2{ -shape.r, 0.0 })
+				|| predicate(shape.center + Vec2{ 0.0, shape.r })
+				|| predicate(shape.center + Vec2{ 0.0, -shape.r });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Ellipse& shape)
+		template <class Shape, class Predicate>
+			requires (std::is_same_v<Shape, Ellipse> || std::is_same_v<Shape, SuperEllipse>)
+		bool AnyRepresentativePoint(const Shape& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.axes.y });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.axes.y });
+			return predicate(shape.center)
+				|| predicate(shape.center + Vec2{ shape.axes.x, 0.0 })
+				|| predicate(shape.center + Vec2{ -shape.axes.x, 0.0 })
+				|| predicate(shape.center + Vec2{ 0.0, shape.axes.y })
+				|| predicate(shape.center + Vec2{ 0.0, -shape.axes.y });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const SuperEllipse& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Triangle& shape, Predicate&& predicate)
+		{
+			return predicate(shape.p0) || predicate(shape.p1) || predicate(shape.p2)
+				|| predicate((shape.p0 + shape.p1 + shape.p2) / 3.0);
+		}
+
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Quad& shape, Predicate&& predicate)
+		{
+			return predicate(shape.p0) || predicate(shape.p1) || predicate(shape.p2) || predicate(shape.p3)
+				|| predicate((shape.p0 + shape.p1 + shape.p2) / 3.0)
+				|| predicate((shape.p0 + shape.p2 + shape.p3) / 3.0);
+		}
+
+		template <class Predicate>
+		bool AnyRepresentativePoint(const RoundRect& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.axes.y });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.axes.y });
+			const double left = shape.rect.pos.x, top = shape.rect.pos.y;
+			const double right = (left + shape.rect.size.x), bottom = (top + shape.rect.size.y);
+			return predicate(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ (left + right) * 0.5, top })
+				|| predicate(Vec2{ right, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ (left + right) * 0.5, bottom })
+				|| predicate(Vec2{ left, (top + bottom) * 0.5 });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Triangle& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Polygon& shape, Predicate&& predicate)
 		{
-			points.push_back(shape.p0);
-			points.push_back(shape.p1);
-			points.push_back(shape.p2);
-			points.push_back((shape.p0 + shape.p1 + shape.p2) / 3.0);
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Quad& shape)
-		{
-			points.push_back(shape.p0);
-			points.push_back(shape.p1);
-			points.push_back(shape.p2);
-			points.push_back(shape.p3);
-			points.push_back((shape.p0 + shape.p1 + shape.p2) / 3.0);
-			points.push_back((shape.p0 + shape.p2 + shape.p3) / 3.0);
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const RoundRect& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double left = shape.rect.pos.x;
-			const double top = shape.rect.pos.y;
-			const double right = (left + shape.rect.size.x);
-			const double bottom = (top + shape.rect.size.y);
-			points.push_back(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ (left + right) * 0.5, top });
-			points.push_back(Vec2{ right, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ (left + right) * 0.5, bottom });
-			points.push_back(Vec2{ left, (top + bottom) * 0.5 });
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Polygon& shape)
-		{
-			if (shape.isEmpty())
-			{
-				return;
-			}
-
+			if (shape.isEmpty()) return false;
 			for (const Vec2& point : shape.outer())
 			{
-				points.push_back(point);
+				if (predicate(point)) return true;
 			}
-
-			const Float2* vertices = shape.vertices().data();
-
-			for (const auto& index : shape.indices())
-			{
-				const Vec2 p0{ vertices[index.i0].x, vertices[index.i0].y };
-				const Vec2 p1{ vertices[index.i1].x, vertices[index.i1].y };
-				const Vec2 p2{ vertices[index.i2].x, vertices[index.i2].y };
-				points.push_back((p0 + p1 + p2) / 3.0);
-			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const MultiPolygon& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const MultiPolygon& shape, Predicate&& predicate)
 		{
 			for (const auto& polygon : shape)
 			{
-				AppendRepresentativePoints(points, polygon);
+				if (AnyRepresentativePoint(polygon, predicate)) return true;
 			}
+			return false;
 		}
 
+		// 呼び出し側で空形状を除外してから、必要な経路だけで作る。
 		template <class Shape>
 		[[nodiscard]]
 		ShapeDistanceData MakeShapeDistanceData(const Shape& shape)
 		{
 			ShapeDistanceData data;
-
-			if (IsEmptyGeometry(shape))
-			{
-				return data;
-			}
-
-			data.empty = false;
 			Vec2 point;
 
 			if (TryGetPointGeometry(shape, point))
 			{
 				data.pointGeometry = point;
-				data.representativePoints.push_back(point);
-				return data;
+			}
+			else
+			{
+				data.boundaryPieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
+					[&](auto& pieces)
+					{
+						auto Append = [&](const auto& primitive) { pieces.emplace_back(primitive); };
+						detail::VisitBoundaryPieces(Append, shape);
+					});
 			}
 
-			AppendBoundaryPieces(data.boundaryPieces, shape);
-			AppendRepresentativePoints(data.representativePoints, shape);
 			return data;
 		}
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
-		Optional<Vec2> FindCommonPoint(
-			const ShapeA& a, const ShapeB& b,
-			const ShapeDistanceData& dataA, const ShapeDistanceData& dataB)
+		Optional<Vec2> FindCommonPoint(const ShapeA& a, const ShapeB& b)
 		{
-			if (const auto events = Geometry2D::IntersectsAt(a, b))
+			const auto VisitPoints = [](const auto& shape, auto&& predicate)
 			{
-				if (not events->isEmpty())
-				{
-					return events->front();
-				}
-			}
-
-			auto TestPoints = [&](const Array<Vec2>& points) -> Optional<Vec2>
+				Vec2 point;
+				if (TryGetPointGeometry(shape, point)) return predicate(point);
+				return AnyRepresentativePoint(shape, predicate);
+			};
+			const auto IsCommonPoint = [&](const Vec2& point)
 			{
-				for (const Vec2& point : points)
+				return Geometry2D::Intersects(point, a) && Geometry2D::Intersects(point, b);
+			};
+			const auto TestFirstPoint = [&](const auto& shape) -> Optional<Vec2>
+			{
+				Optional<Vec2> common;
+				(void)VisitPoints(shape, [&](const Vec2& point)
 				{
-					if (Geometry2D::Intersects(point, a)
-						&& Geometry2D::Intersects(point, b))
-					{
-						return point;
-					}
-				}
-
-				return none;
+					if (IsCommonPoint(point)) common = point;
+					return true;
+				});
+				return common;
 			};
 
-			if (const auto point = TestPoints(dataA.representativePoints))
+			// Bound the extra work before intersection enumeration, even for large polygons.
+			if (const auto point = TestFirstPoint(a)) return point;
+			if (const auto point = TestFirstPoint(b)) return point;
+
+			if (const auto events = Geometry2D::IntersectsAt(a, b); events && (not events->isEmpty()))
 			{
-				return point;
+				return events->front();
 			}
 
-			if (const auto point = TestPoints(dataB.representativePoints))
+			// Only the first 12 representatives participate in the interpolation fallback.
+			using RepresentativePoints = boost::container::static_vector<Vec2, 12>;
+			const auto TestPoints = [&](const auto& shape, RepresentativePoints& points) -> Optional<Vec2>
 			{
-				return point;
-			}
-
-			for (const BoundaryPiece& piece : dataA.boundaryPieces)
-			{
-				for (int32 i = 0; i <= 32; ++i)
+				Optional<Vec2> common;
+				(void)VisitPoints(shape, [&](const Vec2& point)
 				{
-					const Vec2 point = PointAt(piece, (static_cast<double>(i) / 32.0));
+					if (points.size() < points.capacity()) points.push_back(point);
+					if (not IsCommonPoint(point)) return false;
+					common = point;
+					return true;
+				});
+				return common;
+			};
 
-					if (Geometry2D::Intersects(point, b))
-					{
-						return point;
-					}
-				}
-			}
+			RepresentativePoints pointsA, pointsB;
+			if (const auto point = TestPoints(a, pointsA)) return point;
+			if (const auto point = TestPoints(b, pointsB)) return point;
 
-			for (const BoundaryPiece& piece : dataB.boundaryPieces)
+			auto TestBoundary = [](const auto& source, const auto& other) -> Optional<Vec2>
 			{
-				for (int32 i = 0; i <= 32; ++i)
-				{
-					const Vec2 point = PointAt(piece, (static_cast<double>(i) / 32.0));
-
-					if (Geometry2D::Intersects(point, a))
+				const ShapeDistanceData data = MakeShapeDistanceData(source);
+				Optional<Vec2> result;
+				(void)detail::AnyBoundaryPiece<true>(data.boundaryPieces, [&](const BoundaryPiece& piece)
 					{
-						return point;
-					}
-				}
+						for (int32 i = 0; i <= 32; ++i)
+						{
+							const Vec2 point = PointAt(piece, (static_cast<double>(i) / 32.0));
+							if (Geometry2D::Intersects(point, other))
+							{
+								result = point;
+								return true;
+							}
+						}
+						return false;
+					});
+				return result;
+			};
+
+			if (const auto point = TestBoundary(a, b))
+			{
+				return *point;
+			}
+			if (const auto point = TestBoundary(b, a))
+			{
+				return *point;
 			}
 
-			const size_t countA = std::min(dataA.representativePoints.size(), static_cast<size_t>(12));
-			const size_t countB = std::min(dataB.representativePoints.size(), static_cast<size_t>(12));
+			const size_t countA = pointsA.size();
+			const size_t countB = pointsB.size();
 
 			for (size_t i = 0; i < countA; ++i)
 			{
@@ -1464,8 +2654,8 @@ namespace s3d
 				{
 					for (int32 k = 1; k < 32; ++k)
 					{
-						const Vec2 point = dataA.representativePoints[i].lerp(
-							dataB.representativePoints[j], (static_cast<double>(k) / 32.0));
+						const Vec2 point = pointsA[i].lerp(
+							pointsB[j], (static_cast<double>(k) / 32.0));
 
 						if (Geometry2D::Intersects(point, a)
 							&& Geometry2D::Intersects(point, b))
@@ -1493,48 +2683,47 @@ namespace s3d
 
 			if (dataA.pointGeometry)
 			{
-				for (const BoundaryPiece& pieceB : dataB.boundaryPieces)
-				{
-					const auto candidate = ClosestPointPiece(*dataA.pointGeometry, pieceB);
-
-					if (candidate.distanceSq < best.distanceSq)
+				(void)detail::AnyBoundaryPiece<true>(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
 					{
-						best = candidate;
-					}
-				}
-
+						const auto candidate = ClosestPointPiece(*dataA.pointGeometry, pieceB);
+						if (candidate.distanceSq < best.distanceSq)
+						{
+							best = candidate;
+						}
+						return false;
+					});
 				return best;
 			}
 
 			if (dataB.pointGeometry)
 			{
-				for (const BoundaryPiece& pieceA : dataA.boundaryPieces)
-				{
-					auto candidate = ClosestPointPiece(*dataB.pointGeometry, pieceA);
-					std::swap(candidate.pointA, candidate.pointB);
-					std::swap(candidate.parameterA, candidate.parameterB);
-
-					if (candidate.distanceSq < best.distanceSq)
+				(void)detail::AnyBoundaryPiece<true>(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 					{
-						best = candidate;
-					}
-				}
-
+						auto candidate = ClosestPointPiece(*dataB.pointGeometry, pieceA);
+						std::swap(candidate.pointA, candidate.pointB);
+						std::swap(candidate.parameterA, candidate.parameterB);
+						if (candidate.distanceSq < best.distanceSq)
+						{
+							best = candidate;
+						}
+						return false;
+					});
 				return best;
 			}
 
-			for (const BoundaryPiece& pieceA : dataA.boundaryPieces)
-			{
-				for (const BoundaryPiece& pieceB : dataB.boundaryPieces)
+			(void)detail::AnyBoundaryPiece<true>(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 				{
-					const auto candidate = ClosestPiecePair(pieceA, pieceB);
-
-					if (candidate.distanceSq < best.distanceSq)
-					{
-						best = candidate;
-					}
-				}
-			}
+					(void)detail::AnyBoundaryPiece<true>(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
+						{
+							const auto candidate = ClosestPiecePair(pieceA, pieceB);
+							if (candidate.distanceSq < best.distanceSq)
+							{
+								best = candidate;
+							}
+							return false;
+						});
+					return false;
+				});
 
 			return best;
 		}
@@ -1558,36 +2747,288 @@ namespace s3d
 			: std::is_same_v<T, Polygon> ? 14
 			: 15;
 
+		template <class BezierA, class BezierB>
+		[[nodiscard]]
+		ClosestPoints2D ClosestBezierPairGeometry(const BezierA& a, const BezierB& b)
+		{
+			const auto intersection = detail::ClassifyBezierPair(a, b);
+			const Vec2 pointA = a.pointAt(intersection.parameterA), pointB = b.pointAt(intersection.parameterB);
+			if (intersection.kind == detail::BezierIntersectionKind::Contact)
+			{
+				const Vec2 common = (pointA + (pointB - pointA) * 0.5);
+				return { common, common, 0.0 };
+			}
+			// An unresolved predicate supplies a candidate, never a fabricated
+			// zero distance or a common point from a polyline approximation.
+			ClosestPairCandidate seed;
+			UpdateCandidate(seed, pointA, pointB, intersection.parameterA, intersection.parameterB);
+			const auto closest = ClosestBezierPair(a, b, seed);
+			return { closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestBezierEllipticShape(const ShapeA& curve, const ShapeB& shape)
+		{
+			if constexpr (detail::IsBezier<ShapeA>
+				&& (std::is_same_v<ShapeB, Ellipse> || std::is_same_v<ShapeB, SuperEllipse>))
+			{
+				if ((shape.a == 0.0) || (shape.b == 0.0)) return none;
+				const SuperEllipse area = [&]()
+				{
+					if constexpr (std::is_same_v<ShapeB, Ellipse>) return SuperEllipse{ shape, 2.0 };
+					else return shape;
+				}();
+				if (area.n == 1.0) return none;
+				if ((area.n == 2.0) && (area.a == area.b))
+				{
+					return TryClosestBezierRoundedShape(curve, Circle{ area.center, area.a });
+				}
+				if constexpr (std::is_same_v<ShapeB, Ellipse>)
+				{
+					// SuperEllipse pairs already reduce collinear curves at entry.
+					Line segment;
+					if (detail::TryGetBezierSegment(curve, segment))
+					{
+						return Geometry2D::ClosestPoints(segment, shape);
+					}
+				}
+				Optional<double> seed;
+				if (area.n == 2.0)
+				{
+					const Ellipse ellipse{ area.center, area.axes };
+					if (Geometry2D::Intersects(curve, ellipse))
+					{
+						if (const auto point = FindCommonPoint(curve, ellipse))
+						{
+							return ClosestPoints2D{ *point, *point, 0.0 };
+						}
+					}
+				}
+				else
+				{
+					const auto intersection = detail::ClassifyBezierSuperEllipse(curve, area);
+					if (intersection.kind == detail::BezierIntersectionKind::Contact)
+					{
+						const Vec2 point = curve.pointAt(intersection.parameter);
+						return ClosestPoints2D{ point, point, 0.0 };
+					}
+					// An unresolved predicate supplies a parameter, not a common point.
+					if (intersection.kind == detail::BezierIntersectionKind::Unresolved)
+					{
+						seed = intersection.parameter;
+					}
+				}
+				const auto closest = ClosestBezierSuperEllipse(curve, area, seed);
+				return ClosestPoints2D{ closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
+			}
+			return none;
+		}
+
+		// A conservative predicate result without a point continues through the
+		// boundary-distance path. Ordinary predicates need no witness reconstruction.
+		struct AreaCommonPoint
+		{
+			bool tested = false;
+			Optional<Vec2> point;
+		};
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		AreaCommonPoint FindSuperEllipseCommonPoint(const ShapeA& a, const ShapeB& b)
+		{
+			constexpr bool Supported = (std::is_same_v<ShapeB, SuperEllipse>
+				&& (std::is_same_v<ShapeA, Circle> || std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>))
+				|| (std::is_same_v<ShapeA, SuperEllipse> && std::is_same_v<ShapeB, RoundRect>);
+			if constexpr (Supported)
+			{
+				if ((detail::ClassifyGeometry2DSizedShape(a) != detail::Geometry2DSizedShapeKind::Area)
+					|| (detail::ClassifyGeometry2DSizedShape(b) != detail::Geometry2DSizedShapeKind::Area))
+				{
+					return {};
+				}
+				const auto AsArea = [](const auto& shape, const Vec2& otherCenter) -> SuperEllipse
+				{
+					using Shape = std::decay_t<decltype(shape)>;
+					if constexpr (std::is_same_v<Shape, SuperEllipse>)
+					{
+						return shape;
+					}
+					else if constexpr (std::is_same_v<Shape, Circle>)
+					{
+						return { shape.center, shape.r, shape.r, 2.0 };
+					}
+					else if constexpr (std::is_same_v<Shape, Ellipse>)
+					{
+						return { shape, 2.0 };
+					}
+					else
+					{
+						const double radius = detail::GetGeometry2DEffectiveRadius(shape);
+						const RectF core = detail::GetGeometry2DRoundRectCore(shape, radius);
+						return { Vec2{ Clamp(otherCenter.x, core.x, (core.x + core.w)),
+							Clamp(otherCenter.y, core.y, (core.y + core.h)) }, radius, radius, 2.0 };
+					}
+				};
+				const SuperEllipse first = AsArea(a, Vec2{ 0, 0 }), second = AsArea(b, first.center);
+				if (((first.n == 2.0) && (second.n == 2.0)) || (second.a == 0.0))
+				{
+					return {};
+				}
+				Optional<Vec2> common;
+				(void)detail::TestSuperEllipseAreas<true, true>(first, second, &common);
+				return { true, common };
+			}
+			return {};
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestEllipticSimpleShape(const ShapeA& a, const ShapeB& b)
+		{
+			if constexpr (std::is_same_v<ShapeB, SuperEllipse>
+				&& (std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>))
+			{
+				const bool firstIsCircle = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<ShapeA, SuperEllipse>) return ((a.n == 2.0) && (a.a == a.b));
+					else return (a.a == a.b);
+				}();
+				if (firstIsCircle)
+				{
+					return TryClosestEllipticSimpleShape(Circle{ a.center, a.a }, b);
+				}
+				if constexpr (std::is_same_v<ShapeA, SuperEllipse>)
+				{
+					if ((b.n == 2.0) && (b.a == b.b))
+					{
+						auto result = TryClosestEllipticSimpleShape(Circle{ b.center, b.a }, a);
+						if (result) std::swap(result->pointA, result->pointB);
+						return result;
+					}
+				}
+			}
+			constexpr bool PointFirst = (std::is_same_v<ShapeA, Point> || std::is_same_v<ShapeA, Vec2>);
+			constexpr bool ShapeFirst = ((std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>)
+				&& std::is_same_v<ShapeB, RoundRect>);
+			if constexpr (ShapeFirst || (std::is_same_v<ShapeB, SuperEllipse> && (PointFirst || std::is_same_v<ShapeA, Circle>)))
+			{
+				if constexpr (ShapeFirst)
+				{
+					if (detail::ClassifyGeometry2DSizedShape(b) != detail::Geometry2DSizedShapeKind::Area)
+					{
+						return none;
+					}
+				}
+				const auto& shape = [&]() -> const auto&
+				{
+					if constexpr (ShapeFirst) return a;
+					else return b;
+				}();
+				if ((shape.a <= 0.0) || (shape.b <= 0.0))
+				{
+					return none;
+				}
+				const auto [point, radius] = [&]()
+				{
+					if constexpr (ShapeFirst)
+					{
+						// Both shapes are symmetric in each axis. The nearest core point
+						// is the clamp of the ellipse / SuperEllipse center, including for n < 1.
+						const double r = detail::GetGeometry2DEffectiveRadius(b);
+						const RectF core = detail::GetGeometry2DRoundRectCore(b, r);
+						return std::pair{ Vec2{ Clamp(shape.x, core.x, (core.x + core.w)), Clamp(shape.y, core.y, (core.y + core.h)) }, r };
+					}
+					else if constexpr (PointFirst)
+					{
+						return std::pair{ Vec2{ a }, 0.0 };
+					}
+					else
+					{
+						return std::pair{ a.center, a.r };
+					}
+				}();
+				const auto closest = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, Ellipse>)
+					{
+						auto result = ClosestDisjointEllipsePair(shape, point);
+						std::swap(result.pointA, result.pointB);
+						return result;
+					}
+					else return ClosestDisjointPointSuperEllipse(point, shape);
+				}();
+				const double distance = std::sqrt(closest.distanceSq);
+				const bool contact = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, Ellipse>)
+					{
+						return detail::EllipseDistanceWithinRadius<true>(distance, radius, Max({ shape.a, shape.b, radius }));
+					}
+					else return (distance <= radius);
+				}();
+				if (contact)
+				{
+					return ClosestPoints2D{ closest.pointB, closest.pointB, 0.0 };
+				}
+				const Vec2 onRoundedShape = (point + (closest.pointB - point) * (radius / distance));
+				if constexpr (ShapeFirst)
+				{
+					return ClosestPoints2D{ closest.pointB, onRoundedShape, (distance - radius) };
+				}
+				else
+				{
+					return ClosestPoints2D{ onRoundedShape, closest.pointB, (distance - radius) };
+				}
+			}
+			return none;
+		}
+
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPointsCanonical(const ShapeA& a, const ShapeB& b)
 		{
-			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
-			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
+			if constexpr (detail::IsBezier<ShapeA> && detail::IsBezier<ShapeB>)
+			{
+				return ClosestBezierPairGeometry(a, b);
+			}
 
-			if (dataA.empty || dataB.empty)
+			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return none;
 			}
 
-			if (Geometry2D::Intersects(a, b))
+			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
 			{
-				if (const auto commonPoint = FindCommonPoint(a, b, dataA, dataB))
+				return rounded;
+			}
+
+			if (const auto closest = TryClosestBezierEllipticShape(a, b))
+			{
+				return closest;
+			}
+
+			const auto area = FindSuperEllipseCommonPoint(a, b);
+			if (area.point)
+			{
+				return ClosestPoints2D{ *area.point, *area.point, 0.0 };
+			}
+
+			if ((not area.tested) && Geometry2D::Intersects(a, b))
+			{
+				if (const auto commonPoint = FindCommonPoint(a, b))
 				{
 					return ClosestPoints2D{ *commonPoint, *commonPoint, 0.0 };
 				}
-
-				// A valid intersection always has a common point. The exhaustive witness
-				// paths above cover supported valid geometry. This fallback preserves the
-				// normative zero distance if an implementation-specific numeric case fails
-				// to enumerate a witness.
-				assert(false);
-				const Vec2 fallback = not dataA.representativePoints.isEmpty()
-					? dataA.representativePoints.front()
-					: dataB.representativePoints.front();
-				return ClosestPoints2D{ fallback, fallback, 0.0 };
 			}
 
+			if (const auto closest = TryClosestEllipticSimpleShape(a, b))
+			{
+				return closest;
+			}
+
+			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
+			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			const ClosestPairCandidate candidate = ComputeDisjointClosestPair(dataA, dataB);
 			assert(std::isfinite(candidate.distanceSq));
 			return ClosestPoints2D{
@@ -1601,40 +3042,68 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPoints(const ShapeA& a, const ShapeB& b)
 		{
-			if constexpr (ShapeRank<ShapeB> < ShapeRank<ShapeA>)
+			return detail::WithSimpleBezierPair(a, b, [](const auto& a, const auto& b)
 			{
-				auto result = ComputeClosestPointsCanonical(b, a);
-
-				if (result)
+				if constexpr (ShapeRank<std::decay_t<decltype(b)>> < ShapeRank<std::decay_t<decltype(a)>>)
 				{
-					std::swap(result->pointA, result->pointB);
-				}
+					auto result = ComputeClosestPointsCanonical(b, a);
 
-				return result;
-			}
-			else
-			{
-				return ComputeClosestPointsCanonical(a, b);
-			}
+					if (result)
+					{
+						std::swap(result->pointA, result->pointB);
+					}
+
+					return result;
+				}
+				else
+				{
+					return ComputeClosestPointsCanonical(a, b);
+				}
+			});
 		}
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
 		double ComputeDistanceCanonical(const ShapeA& a, const ShapeB& b)
 		{
-			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
-			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
+			if constexpr (detail::IsBezier<ShapeA> && detail::IsBezier<ShapeB>)
+			{
+				return ClosestBezierPairGeometry(a, b).distance;
+			}
 
-			if (dataA.empty || dataB.empty)
+			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return std::numeric_limits<double>::infinity();
 			}
 
-			if (Geometry2D::Intersects(a, b))
+			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
+			{
+				return rounded->distance;
+			}
+
+			if (const auto closest = TryClosestBezierEllipticShape(a, b))
+			{
+				return closest->distance;
+			}
+
+			const auto area = FindSuperEllipseCommonPoint(a, b);
+			if (area.point)
 			{
 				return 0.0;
 			}
 
+			if ((not area.tested) && Geometry2D::Intersects(a, b))
+			{
+				return 0.0;
+			}
+
+			if (const auto closest = TryClosestEllipticSimpleShape(a, b))
+			{
+				return closest->distance;
+			}
+
+			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
+			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			const ClosestPairCandidate candidate = ComputeDisjointClosestPair(dataA, dataB);
 			assert(std::isfinite(candidate.distanceSq));
 			return std::sqrt(Max(0.0, candidate.distanceSq));
@@ -1644,14 +3113,25 @@ namespace s3d
 		[[nodiscard]]
 		double ComputeDistance(const ShapeA& a, const ShapeB& b)
 		{
-			if constexpr (ShapeRank<ShapeB> < ShapeRank<ShapeA>)
+			return detail::WithSimpleBezierPair(a, b, [](const auto& a, const auto& b)
 			{
-				return ComputeDistanceCanonical(b, a);
-			}
-			else
-			{
-				return ComputeDistanceCanonical(a, b);
-			}
+				if constexpr (ShapeRank<std::decay_t<decltype(b)>> < ShapeRank<std::decay_t<decltype(a)>>)
+				{
+					return ComputeDistanceCanonical(b, a);
+				}
+				else
+				{
+					return ComputeDistanceCanonical(a, b);
+				}
+			});
+		}
+	}
+
+	namespace detail
+	{
+		Vec2 ClosestPointOnSuperEllipseBoundaryFromOutside(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			return ClosestDisjointPointSuperEllipse(point, shape).pointB;
 		}
 	}
 
@@ -4315,4 +5795,3 @@ namespace s3d
 
 	}
 }
-

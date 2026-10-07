@@ -260,9 +260,9 @@ namespace s3d
 
 	void Image::resize(const Size size)
 	{
-		m_size = ValidImageSizeOrEmpty(size);
-
-		m_pixels.resize(m_size.area());
+		const Size newSize = ValidImageSizeOrEmpty(size);
+		m_pixels.resize(newSize.area());
+		m_size = newSize;
 	}
 
 	void Image::resize(const size_t width, const size_t height, const Color fillColor)
@@ -272,9 +272,19 @@ namespace s3d
 
 	void Image::resize(const Size size, const Color fillColor)
 	{
-		m_size = ValidImageSizeOrEmpty(size);
-
-		m_pixels.assign((m_size.area()), fillColor);
+		const Size newSize = ValidImageSizeOrEmpty(size);
+		const size_t count = newSize.area();
+		if (m_pixels.capacity() < count)
+		{
+			// Construct the replacement before releasing the old image. Reserving
+			// first would copy old pixels that are immediately overwritten.
+			m_pixels = base_type(count, fillColor);
+		}
+		else
+		{
+			m_pixels.assign(count, fillColor);
+		}
+		m_size = newSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -298,16 +308,9 @@ namespace s3d
 			return;
 		}
 
-		m_size = ValidImageSizeOrEmpty({ m_size.x, height });
-
-		if (m_size.y < oldHeight) // 高さが減る場合
-		{
-			m_pixels.resize(m_size.area());
-		}
-		else // 高さが増える場合
-		{
-			m_pixels.append((m_size.x * (m_size.y - oldHeight)), fillColor);
-		}
+		const Size newSize = ValidImageSizeOrEmpty({ m_size.x, height });
+		m_pixels.resize(newSize.area(), fillColor);
+		m_size = newSize;
 	}
 
 

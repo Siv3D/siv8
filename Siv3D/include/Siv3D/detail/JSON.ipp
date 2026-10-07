@@ -32,7 +32,7 @@ namespace s3d
 
 	template <std::input_iterator Iterator>
 	JSON::JSON(Iterator first, Iterator last)
-		: m_json(first, last) {}
+		: m_json(std::in_place_type<json_base>, typename json_base::array_t(first, last)) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -88,7 +88,7 @@ namespace s3d
 	template <class Type, class U>
 	Type JSON::getOr(U&& defaultValue) const
 	{
-		return FromJSONOr<Type>(*this, std::forward<U>(defaultValue));
+		return FromJSONOpt<Type>(*this).value_or(std::forward<U>(defaultValue));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -146,7 +146,7 @@ namespace s3d
 		}
 		catch (const JSON::json_base::exception&)
 		{
-			detail::ThrowJSONGetError(typeid(Type).name(), json.formatUTF8Minified());
+			detail::ThrowJSONGetError(typeid(Type).name(), json.base().dump(-1, ' ', false, JSON::json_base::error_handler_t::replace));
 		}
 	}
 
@@ -157,9 +157,16 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
+		requires (not std::is_reference_v<Type>)
 	Type FromJSONOr(const JSON& json, Type&& defaultValue)
 	{
-		return FromJSONOpt<Type>(json).value_or(std::forward<Type>(defaultValue));
+		return json.getOr<Type>(std::forward<Type>(defaultValue));
+	}
+
+	template <class Type>
+	Type FromJSONOr(const JSON& json, const Type& defaultValue)
+	{
+		return json.getOr<Type>(defaultValue);
 	}
 
 	////////////////////////////////////////////////////////////////

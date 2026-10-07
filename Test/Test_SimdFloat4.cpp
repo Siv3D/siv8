@@ -17,7 +17,7 @@ namespace
 {
 	void CheckComponents(const SimdFloat4& actual, const Float4 expected)
 	{
-		CHECK_EQ(actual.toFloat4(), expected);
+		CHECK((actual.toFloat4()) == (expected));
 	}
 }
 
@@ -44,7 +44,7 @@ TEST_CASE("SimdFloat4.constructors")
 	CheckComponents(SimdFloat4{ DirectX::XMVectorSet(1.0f, 2.0f, 3.0f, 4.0f) }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 
 	SimdFloat4 assigned;
-	CHECK_EQ(&(assigned = SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f }), &assigned);
+	CHECK((&(assigned = SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f })) == (&assigned));
 	CheckComponents(assigned, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 }
 
@@ -64,17 +64,17 @@ TEST_CASE("SimdFloat4.arithmetic")
 	CheckComponents((b / a), Float4{ 2.0f, 2.0f, 2.0f, 2.0f });
 
 	SimdFloat4 v = a;
-	CHECK_EQ(&(v += b), &v);
+	CHECK((&(v += b)) == (&v));
 	CheckComponents(v, Float4{ 3.0f, 6.0f, 9.0f, 12.0f });
-	CHECK_EQ(&(v -= a), &v);
+	CHECK((&(v -= a)) == (&v));
 	CheckComponents(v, Float4{ 2.0f, 4.0f, 6.0f, 8.0f });
-	CHECK_EQ(&(v *= 2.0f), &v);
+	CHECK((&(v *= 2.0f)) == (&v));
 	CheckComponents(v, Float4{ 4.0f, 8.0f, 12.0f, 16.0f });
-	CHECK_EQ(&(v *= SimdFloat4{ 0.5f }), &v);
+	CHECK((&(v *= SimdFloat4{ 0.5f })) == (&v));
 	CheckComponents(v, Float4{ 2.0f, 4.0f, 6.0f, 8.0f });
-	CHECK_EQ(&(v /= 2.0f), &v);
+	CHECK((&(v /= 2.0f)) == (&v));
 	CheckComponents(v, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
-	CHECK_EQ(&(v /= a), &v);
+	CHECK((&(v /= a)) == (&v));
 	CheckComponents(v, Float4::One());
 
 	CHECK((a == SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f }));
@@ -87,17 +87,17 @@ TEST_CASE("SimdFloat4.access_and_mutation")
 {
 	SimdFloat4 v{ 1.0f, 2.0f, 3.0f, 4.0f };
 
-	CHECK_EQ(v.toFloat3(), (Float3{ 1.0f, 2.0f, 3.0f }));
-	CHECK_EQ(v.toFloat4(), (Float4{ 1.0f, 2.0f, 3.0f, 4.0f }));
-	CHECK_EQ(v.elem(0), 1.0f);
-	CHECK_EQ(v.elem(1), 2.0f);
-	CHECK_EQ(v.elem(2), 3.0f);
-	CHECK_EQ(v.elem(3), 4.0f);
-	CHECK_EQ(v.elem(4), 0.0f);
-	CHECK_EQ(v.getX(), 1.0f);
-	CHECK_EQ(v.getY(), 2.0f);
-	CHECK_EQ(v.getZ(), 3.0f);
-	CHECK_EQ(v.getW(), 4.0f);
+	CHECK((v.toFloat3()) == ((Float3{ 1.0f, 2.0f, 3.0f })));
+	CHECK((v.toFloat4()) == ((Float4{ 1.0f, 2.0f, 3.0f, 4.0f })));
+	CHECK((v.elem(0)) == (1.0f));
+	CHECK((v.elem(1)) == (2.0f));
+	CHECK((v.elem(2)) == (3.0f));
+	CHECK((v.elem(3)) == (4.0f));
+	CHECK((v.elem(4)) == (0.0f));
+	CHECK((v.getX()) == (1.0f));
+	CHECK((v.getY()) == (2.0f));
+	CHECK((v.getZ()) == (3.0f));
+	CHECK((v.getW()) == (4.0f));
 	const aligned_float4 native = v;
 	CheckComponents(SimdFloat4{ native }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 
@@ -111,9 +111,9 @@ TEST_CASE("SimdFloat4.access_and_mutation")
 	v.setZ(30.0f);
 	v.setW(40.0f);
 	CheckComponents(v, Float4{ 10.0f, 20.0f, 30.0f, 40.0f });
-	CHECK_EQ(&v.set(1.0f, 2.0f, 3.0f, 4.0f), &v);
-	CHECK_EQ(&v.set(Float4{ 5.0f, 6.0f, 7.0f, 8.0f }), &v);
-	CHECK_EQ(&v.set(SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f }), &v);
+	CHECK((&v.set(1.0f, 2.0f, 3.0f, 4.0f)) == (&v));
+	CHECK((&v.set(Float4{ 5.0f, 6.0f, 7.0f, 8.0f })) == (&v));
+	CHECK((&v.set(SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f })) == (&v));
 	CheckComponents(v, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 
 	CheckComponents(v.movedBy(1.0f, 2.0f, 3.0f, 4.0f), Float4{ 2.0f, 4.0f, 6.0f, 8.0f });
@@ -125,9 +125,9 @@ TEST_CASE("SimdFloat4.access_and_mutation")
 	CheckComponents(v.withOffsetZ(10.0f), Float4{ 1.0f, 2.0f, 13.0f, 4.0f });
 	CheckComponents(v.withOffsetW(10.0f), Float4{ 1.0f, 2.0f, 3.0f, 14.0f });
 
-	CHECK_EQ(&v.moveBy(1.0f, 2.0f, 3.0f, 4.0f), &v);
+	CHECK((&v.moveBy(1.0f, 2.0f, 3.0f, 4.0f)) == (&v));
 	CheckComponents(v, Float4{ 2.0f, 4.0f, 6.0f, 8.0f });
-	CHECK_EQ(&v.moveBy(SimdFloat4{ 1.0f }), &v);
+	CHECK((&v.moveBy(SimdFloat4{ 1.0f })) == (&v));
 	CheckComponents(v, Float4{ 3.0f, 5.0f, 7.0f, 9.0f });
 
 	v.setZero();
@@ -138,11 +138,11 @@ TEST_CASE("SimdFloat4.access_and_mutation")
 TEST_CASE("SimdFloat4.math")
 {
 	const SimdFloat4 v{ 1.0f, 2.0f, 2.0f, 4.0f };
-	CHECK_EQ(v.dot(SimdFloat4{ 2.0f, 3.0f, 4.0f, 5.0f }), 36.0f);
-	CHECK_EQ(v.dot(SimdFloat4::Zero()), 0.0f);
-	CHECK_EQ(v.lengthSq(), 25.0f);
-	CHECK_EQ(v.length(), 5.0f);
-	CHECK(v.invLength() == doctest::Approx(0.2f));
+	CHECK((v.dot(SimdFloat4{ 2.0f, 3.0f, 4.0f, 5.0f })) == (36.0f));
+	CHECK((v.dot(SimdFloat4::Zero())) == (0.0f));
+	CHECK((v.lengthSq()) == (25.0f));
+	CHECK((v.length()) == (5.0f));
+	CHECK(v.invLength() == Test::Approx(0.2f));
 	CHECK_FALSE(std::isfinite(SimdFloat4::Zero().invLength()));
 
 	CheckComponents(SimdFloat4{ 1.0f, 2.0f, 4.0f, 8.0f }.reciprocal(), Float4{ 1.0f, 0.5f, 0.25f, 0.125f });
@@ -158,7 +158,7 @@ TEST_CASE("SimdFloat4.math")
 	const SimdFloat4 normalized = v.normalized();
 	CHECK(normalized.epsilonEquals(SimdFloat4{ 0.2f, 0.4f, 0.4f, 0.8f }, 0.000001f));
 	SimdFloat4 mutableValue = v;
-	CHECK_EQ(&mutableValue.normalize(), &mutableValue);
+	CHECK((&mutableValue.normalize()) == (&mutableValue));
 	CHECK(mutableValue.epsilonEquals(normalized, 0.000001f));
 	CheckComponents(SimdFloat4::Zero().normalized(), Float4::Zero());
 
@@ -178,11 +178,11 @@ TEST_CASE("SimdFloat4.classification_swizzles_and_constants")
 	CHECK(SimdFloat4::One().isFinite());
 
 	const SimdFloat4 v{ 1.0f, 2.0f, 3.0f, 4.0f };
-	CHECK_EQ(v.xy(), (Float2{ 1.0f, 2.0f }));
-	CHECK_EQ(v.yz(), (Float2{ 2.0f, 3.0f }));
-	CHECK_EQ(v.zw(), (Float2{ 3.0f, 4.0f }));
-	CHECK_EQ(v.xyz(), (Float3{ 1.0f, 2.0f, 3.0f }));
-	CHECK_EQ(v.yzw(), (Float3{ 2.0f, 3.0f, 4.0f }));
+	CHECK((v.xy()) == ((Float2{ 1.0f, 2.0f })));
+	CHECK((v.yz()) == ((Float2{ 2.0f, 3.0f })));
+	CHECK((v.zw()) == ((Float2{ 3.0f, 4.0f })));
+	CHECK((v.xyz()) == ((Float3{ 1.0f, 2.0f, 3.0f })));
+	CHECK((v.yzw()) == ((Float3{ 2.0f, 3.0f, 4.0f })));
 	CheckComponents(v.xyz0(), Float4{ 1.0f, 2.0f, 3.0f, 0.0f });
 	CheckComponents(v.xyz1(), Float4{ 1.0f, 2.0f, 3.0f, 1.0f });
 	CheckComponents(v.xyzw(), Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
@@ -204,15 +204,15 @@ TEST_CASE("SimdFloat4.classification_swizzles_and_constants")
 TEST_CASE("SimdFloat4.format_and_stream")
 {
 	const SimdFloat4 v{ 1.25f, 2.5f, 3.75f, 4.0f };
-	CHECK_EQ(Format(v), U"(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(fmt::format("{}", v), "(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(fmt::format("{:.1f}", v), "(1.2, 2.5, 3.8, 4.0)");
-	CHECK_EQ(U"{}"_fmt(v), U"(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(U"{:.1f}"_fmt(v), U"(1.2, 2.5, 3.8, 4.0)");
+	CHECK((Format(v)) == (U"(1.25, 2.5, 3.75, 4)"));
+	CHECK((fmt::format("{}", v)) == ("(1.25, 2.5, 3.75, 4)"));
+	CHECK((fmt::format("{:.1f}", v)) == ("(1.2, 2.5, 3.8, 4.0)"));
+	CHECK((U"{}"_fmt(v)) == (U"(1.25, 2.5, 3.75, 4)"));
+	CHECK((U"{:.1f}"_fmt(v)) == (U"(1.2, 2.5, 3.8, 4.0)"));
 
 	std::stringstream output;
 	output << v;
-	CHECK_EQ(output.str(), "(1.25, 2.5, 3.75, 4)");
+	CHECK((output.str()) == ("(1.25, 2.5, 3.75, 4)"));
 
 	std::stringstream input{ "(1, 2, 3, 4)" };
 	SimdFloat4 parsed = SimdFloat4::Zero();

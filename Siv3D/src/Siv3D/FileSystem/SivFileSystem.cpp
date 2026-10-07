@@ -19,9 +19,53 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
+		static FilePathView FileNameView(FilePathView path) noexcept
+		{
+		# if SIV3D_PLATFORM(WINDOWS)
+			if (FileSystem::IsResourcePath(path))
+			{
+				path.remove_prefix(1);
+			}
+		# endif
+
+			if (const size_t separatorPos = path.find_last_of(U"/\\");
+				separatorPos != String::npos)
+			{
+				path.remove_prefix(separatorPos + 1);
+			}
+
+			return path;
+		}
+
+		static void TrimToParentPath(FilePath& path, size_t level)
+		{
+			if (path.ends_with(U'/'))
+			{
+				path.pop_back();
+			}
+
+			while (not path.isEmpty())
+			{
+				do
+				{
+					path.pop_back();
+				} while ((not path.isEmpty()) && (not path.ends_with(U'/')));
+
+				if (level-- == 0)
+				{
+					break;
+				}
+			}
+		}
+
+		[[nodiscard]]
 		inline static std::filesystem::path ToPath(const FilePathView path)
 		{
+		# if SIV3D_PLATFORM(WINDOWS)
 			return std::filesystem::path{ Unicode::ToWstring(path) };
+		# else
+			return std::filesystem::path{ Unicode::ToUTF8(path) };
+		# endif
 		}
 
 		[[nodiscard]]
@@ -61,6 +105,21 @@ namespace s3d
 				return{};
 			}
 
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (IsResourcePath(path))
+			{
+				path.remove_prefix(1);
+			}
+
+		# endif
+
+			if (const size_t lastSeparatorPos = path.find_last_of(U"/\\");
+				lastSeparatorPos != String::npos)
+			{
+				path.remove_prefix(lastSeparatorPos + 1);
+			}
+
 			while (path.starts_with(U'.'))
 			{
 				path.remove_prefix(1);
@@ -73,25 +132,14 @@ namespace s3d
 				return{};
 			}
 
-			const size_t lastSeparatorPos = path.find_last_of(U"/\\");
-
-			// aaa.bbb/ccc のようなケースを弾く
-			if ((lastSeparatorPos != String::npos)
-				&& (lastDotPos < lastSeparatorPos))
-			{
-				return{};
-			}
-
 			String result = path.substr(lastDotPos + 1).toString();
 
-			if (preserveCase == PreserveCase::Yes)
+			if (preserveCase == PreserveCase::No)
 			{
-				return result;
+				result.lowercase();
 			}
-			else
-			{
-				return result.lowercase();
-			}
+
+			return result;
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -100,41 +148,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		String FileName(FilePathView path_)
+		String FileName(const FilePathView path)
 		{
-			if (path_.isEmpty())
-			{
-				return{};
-			}
-
-		# if SIV3D_PLATFORM(WINDOWS)
-
-			if (IsResourcePath(path_))
-			{
-				path_.remove_prefix(1);
-			}
-
-		# endif
-
-			FilePath path = FilePath{ path_ }.replace(U'\\', U'/');
-
-			if (path.ends_with(U'/'))
-			{
-				return{};
-			}
-			else
-			{
-				const size_t sepPos = path.rfind(U'/');
-
-				if (sepPos == String::npos)
-				{
-					return String{ path };
-				}
-				else
-				{
-					return String((path.begin() + sepPos + 1), path.end());
-				}
-			}
+			return FileNameView(path).toString();
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -145,7 +161,7 @@ namespace s3d
 
 		String BaseName(const FilePathView path)
 		{
-			const String fileName = FileName(path);
+			const FilePathView fileName = FileNameView(path);
 
 			if (fileName.isEmpty())
 			{
@@ -156,15 +172,15 @@ namespace s3d
 
 			if (dotPos == String::npos)
 			{
-				return fileName;
+				return fileName.toString();
 			}
 
 			if ((dotPos == 0) || (dotPos == (fileName.size() - 1)))
 			{
-				return fileName;
+				return fileName.toString();
 			}
 
-			return String(fileName.begin(), (fileName.begin() + dotPos));
+			return fileName.substr(0, dotPos).toString();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -175,39 +191,16 @@ namespace s3d
 
 		FilePath ParentPath(const FilePathView path, const size_t level)
 		{
-			FilePath unused;
-			return ParentPath(path, level, unused);
+			FilePath result = FullPath(path);
+			TrimToParentPath(result, level);
+			return result;
 		}
 
-		FilePath ParentPath(const FilePathView path, size_t level, FilePath& baseFullPath)
+		FilePath ParentPath(const FilePathView path, const size_t level, FilePath& baseFullPath)
 		{
-			if (path.isEmpty())
-			{
-				return{};
-			}
-
 			FilePath result = FullPath(path);
-
 			baseFullPath = result;
-
-			if (result.ends_with(U'/'))
-			{
-				result.pop_back();
-			}
-
-			while (not result.isEmpty())
-			{
-				do
-				{
-					result.pop_back();
-				} while ((not result.isEmpty()) && (not result.ends_with(U'/')));
-
-				if (level-- == 0)
-				{
-					break;
-				}
-			}
-
+			TrimToParentPath(result, level);
 			return result;
 		}
 			
@@ -230,12 +223,23 @@ namespace s3d
 
 		bool IsEmptyDirectory(const FilePathView path)
 		{
-			if (not IsDirectory(path))
+			if (path.isEmpty())
 			{
 				return false;
 			}
 
-			return (std::filesystem::directory_iterator{ ToPath(path) } == std::filesystem::directory_iterator{});
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (IsResourcePath(path))
+			{
+				return false;
+			}
+
+		# endif
+
+			std::error_code error;
+			const std::filesystem::directory_iterator it{ ToPath(path), error };
+			return ((not error) && (it == std::filesystem::directory_iterator{}));
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -295,6 +299,10 @@ namespace s3d
 
 			const FilePath path = FullPath(_path);
 			const FilePath start = FullPath(_start);
+			if (path.isEmpty() || start.isEmpty())
+			{
+				return{};
+			}
 
 			if (not IsDirectory(start))
 			{
@@ -306,14 +314,29 @@ namespace s3d
 				return U"./";
 			}
 
+		# if SIV3D_PLATFORM(WINDOWS)
+			const std::filesystem::path p = ToPath(path);
+			const std::filesystem::path base = ToPath(start);
+		# else
 			const std::filesystem::path p(path.toUTF8());
-			const std::filesystem::path	base(start.toUTF8());
+			const std::filesystem::path base(start.toUTF8());
+		# endif
 
-			FilePath result = Unicode::FromUTF8(std::filesystem::proximate(p, base).string());
+			std::error_code error;
+			const std::filesystem::path relativePath = std::filesystem::proximate(p, base, error);
+			if (error)
+			{
+				return{};
+			}
+		# if SIV3D_PLATFORM(WINDOWS)
+			FilePath result = Unicode::FromWstring(relativePath.native());
+		# else
+			FilePath result = Unicode::FromUTF8(relativePath.native());
+		# endif
 
 			result.replace(U'\\', U'/');
 
-			if (IsDirectory(result) && (not result.ends_with(U'/')))
+			if ((not result.ends_with(U'/')) && IsDirectory(path))
 			{
 				result.push_back(U'/');
 			}
@@ -368,14 +391,15 @@ namespace s3d
 				return false;
 			}
 
-			const FilePath parentDirectory = ParentPath(path);
+			FilePath fullPath;
+			const FilePath parentDirectory = ParentPath(path, 0, fullPath);
 
-			if (not Exists(parentDirectory))
+			if (parentDirectory.isEmpty())
 			{
-				return CreateDirectories(parentDirectory);
+				return ((not fullPath.isEmpty()) && IsDirectory(fullPath));
 			}
 
-			return true;
+			return (IsDirectory(parentDirectory) || CreateDirectories(parentDirectory));
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -396,7 +420,10 @@ namespace s3d
 				return false;
 			}
 
-			CreateParentDirectories(to);
+			if (not CreateParentDirectories(to))
+			{
+				return false;
+			}
 
 			const auto options = (ToCopyOptions(copyOption) | std::filesystem::copy_options::recursive);
 			

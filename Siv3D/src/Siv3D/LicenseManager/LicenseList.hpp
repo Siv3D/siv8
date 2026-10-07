@@ -204,12 +204,6 @@ MIT_LICENSE
 },
 
 {
-R"-(doctest)-",
-R"-(Copyright (c) 2016-2023 Viktor Kirilov)-",
-MIT_LICENSE
-},
-
-{
 R"-(double-conversion)-",
 R"-(Copyright 2006-2011, the V8 project authors. All rights reserved.)-",
 BSD_3_LICENSE
@@ -682,12 +676,6 @@ MIT_LICENSE
 {
 R"-(miniaudio)-",
 R"-(Copyright 2025 David Reid)-",
-MIT_LICENSE
-},
-
-{
-R"-(miniutf)-",
-R"-(Copyright (c) 2013 Dropbox, Inc.)-",
 MIT_LICENSE
 },
 

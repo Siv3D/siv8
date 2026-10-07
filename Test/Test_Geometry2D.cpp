@@ -210,6 +210,45 @@ TEST_CASE("Geometry2D.Intersects.Line_RoundShapes")
 	}
 }
 
+TEST_CASE("Geometry2D.Intersects.Line_RoundShapes.Contact")
+{
+	STATIC_REQUIRE(Geometry2D::Intersects(Line{ -1, 7, 7, 1 }, Circle{ 0, 0, 5 }));
+	STATIC_REQUIRE(not Geometry2D::Intersects(Line{ -1, 8, 7, 2 }, Circle{ 0, 0, 5 }));
+	const auto Check = [](const auto& shape, const Vec2& point, const Vec2& normal,
+		const Vec2& tangent, const double scale)
+	{
+		for (const Line line : { Line{ (point - tangent * scale), (point + tangent * scale) },
+			Line{ point, (point + tangent * scale) }, Line{ point, point } })
+		{
+			CHECK(Geometry2D::Intersects(line, shape));
+			CHECK(Geometry2D::Intersects(shape, Line{ line.end, line.start }));
+			CHECK(not Geometry2D::Intersects(line.movedBy(normal * (1.0e-6 * scale)), shape));
+			CHECK(Geometry2D::Intersects(line.movedBy(normal * (-1.0e-6 * scale)), shape));
+		}
+		const Polygon polygon{ Array<Vec2>{ (point + tangent * scale), (point - tangent * scale), (point + normal * scale) } };
+		CHECK(Geometry2D::Intersects(shape, polygon));
+		CHECK(not Geometry2D::Overlaps(shape, polygon));
+		CHECK(Geometry2D::Overlaps(shape, polygon.movedBy(normal * (-1.0e-6 * scale))));
+	};
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		for (const double angle : { 0.01, 0.37, 0.9, 2.2, 4.3 })
+		{
+			CAPTURE(scale, angle);
+			const Vec2 center = (Vec2{ 7, -11 } * scale);
+			const Vec2 unit{ std::cos(angle), std::sin(angle) };
+			const Circle circle{ center, (5.0 * scale) };
+			Check(circle, (center + unit * circle.r), unit, Vec2{ -unit.y, unit.x }, scale);
+			const Ellipse ellipse{ center, (5.0 * scale), (3.0 * scale) };
+			const Vec2 point = (center + unit * ellipse.axes);
+			const Vec2 normal = (unit / ellipse.axes).normalized();
+			const Vec2 tangent = (Vec2{ -unit.y, unit.x } * ellipse.axes).normalized();
+			Check(ellipse, point, normal, tangent, scale);
+			Check(SuperEllipse{ ellipse, 2.0 }, point, normal, tangent, scale);
+		}
+	}
+}
+
 // Line と Triangle / Quad は、内部通過、境界接触、仕様で許可された単純な退化を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Line_PolygonalShapes")
 {

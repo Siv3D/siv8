@@ -32,15 +32,15 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		MemoryMappedFileView file{ U"../../Test/data/text/utf8_chars.txt" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), 6200u);
+		CHECK((file.size()) == (6200u));
 
 		{
 			const auto mapped = file.mapAll();
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 6200u);
+			CHECK((mapped.size) == (6200u));
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
-			CHECK_EQ(s, testData);
+			CHECK((s) == (testData));
 		
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -51,7 +51,7 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(0, 0);
 			CHECK(mapped.data == nullptr);
-			CHECK_EQ(mapped.size, 0u);
+			CHECK((mapped.size) == (0u));
 
 			CHECK(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -62,10 +62,10 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(0, 200);
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 200u);
+			CHECK((mapped.size) == (200u));
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
-			CHECK_EQ(s, testData.substr(0, 200));
+			CHECK((s) == (testData.substr(0, 200)));
 
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -76,10 +76,10 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(100, 200);
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 200u);
+			CHECK((mapped.size) == (200u));
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
-			CHECK_EQ(s, testData.substr(100, 200));
+			CHECK((s) == (testData.substr(100, 200)));
 
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -98,14 +98,14 @@ TEST_CASE("MemoryMappedFileView.ImageFileTest")
 		MemoryMappedFileView file{ U"example/windmill.png" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), static_cast<int64>(testData.size()));
+		CHECK((file.size()) == (static_cast<int64>(testData.size())));
 
 		{
 			const auto mapped = file.mapAll();
 			CHECK(mapped.data != nullptr);
 			
 			Blob blob{ mapped.data, mapped.size };
-			CHECK_EQ(blob, testData);
+			CHECK((blob) == (testData));
 
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -118,14 +118,14 @@ TEST_CASE("MemoryMappedFileView.ImageFileTest")
 		MemoryMappedFileView file{ U"example/windmill.png" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), static_cast<int64>(testData.size()));
+		CHECK((file.size()) == (static_cast<int64>(testData.size())));
 
 		{
 			const auto mapped = file.map(100'000, 100'000);
 			CHECK(mapped.data != nullptr);
 
 			Blob blob{ mapped.data, mapped.size };
-			CHECK_EQ(blob, Blob{ (testData.data() + 100'000), 100'000 });
+			CHECK((blob) == (Blob{ (testData.data() + 100'000), 100'000 }));
 
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));

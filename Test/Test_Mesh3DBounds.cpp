@@ -49,24 +49,24 @@ TEST_CASE("Box and Sphere value types")
 
 TEST_CASE("Mesh3D::computeBoundingBox")
 {
-	SUBCASE("No vertices")
+	SECTION("No vertices")
 	{
 		const Box box = Mesh3D{}.computeBoundingBox();
-		CHECK_EQ(box, Box{ 0.0 });
+		CHECK((box) == (Box{ 0.0 }));
 	}
 
-	SUBCASE("One unreferenced vertex")
+	SECTION("One unreferenced vertex")
 	{
 		const Mesh3D mesh{
 			{ MakeVertex(Float3{ 1.0f, -2.0f, 3.0f }) },
 			{}
 		};
 		const Box box = mesh.computeBoundingBox();
-		CHECK_EQ(box.center, Vec3{ 1.0, -2.0, 3.0 });
-		CHECK_EQ(box.size, Vec3::Zero());
+		CHECK((box.center) == (Vec3{ 1.0, -2.0, 3.0 }));
+		CHECK((box.size) == (Vec3::Zero()));
 	}
 
-	SUBCASE("All stored vertices")
+	SECTION("All stored vertices")
 	{
 		const Mesh3D mesh{
 			{
@@ -84,24 +84,24 @@ TEST_CASE("Mesh3D::computeBoundingBox")
 
 TEST_CASE("Mesh3D::computeBoundingSphere")
 {
-	SUBCASE("No vertices")
+	SECTION("No vertices")
 	{
 		const Sphere sphere = Mesh3D{}.computeBoundingSphere();
-		CHECK_EQ(sphere, Sphere{ 0.0 });
+		CHECK((sphere) == (Sphere{ 0.0 }));
 	}
 
-	SUBCASE("One unreferenced vertex")
+	SECTION("One unreferenced vertex")
 	{
 		const Mesh3D mesh{
 			{ MakeVertex(Float3{ 1.0f, -2.0f, 3.0f }) },
 			{}
 		};
 		const Sphere sphere = mesh.computeBoundingSphere();
-		CHECK_EQ(sphere.center, Vec3{ 1.0, -2.0, 3.0 });
-		CHECK_EQ(sphere.r, 0.0);
+		CHECK((sphere.center) == (Vec3{ 1.0, -2.0, 3.0 }));
+		CHECK((sphere.r) == (0.0));
 	}
 
-	SUBCASE("Two vertices")
+	SECTION("Two vertices")
 	{
 		const Mesh3D mesh{
 			{
@@ -112,10 +112,10 @@ TEST_CASE("Mesh3D::computeBoundingSphere")
 		};
 		const Sphere sphere = mesh.computeBoundingSphere();
 		CHECK(sphere.center.epsilonEquals(Vec3{ 2.0, 1.0, 3.0 }, BoundsEpsilon));
-		CHECK(sphere.r == doctest::Approx(4.0).epsilon(BoundsEpsilon));
+		CHECK(sphere.r == Test::Approx(4.0).epsilon(BoundsEpsilon));
 	}
 
-	SUBCASE("Contains all stored vertices")
+	SECTION("Contains all stored vertices")
 	{
 		const Array<Vertex3D> vertices{
 			MakeVertex(Float3{ -3.0f, 0.0f, 1.0f }),

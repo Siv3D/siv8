@@ -10,17 +10,16 @@
 //-----------------------------------------------
 
 # pragma once
-# include "../Common.hpp"
-# include "../2DShapes.hpp"
-# include "Geometry2DCommon.hpp"
+# include "../Concepts.hpp"
+# include "../2DShapesFwd.hpp"
 
 namespace s3d
 {
-	class Polygon;
-	class MultiPolygon;
-
 	namespace Geometry2D
 	{
+		/// @addtogroup geometry2d_queries
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Overlaps(Rect, _)
@@ -144,6 +143,7 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const Ellipse& a, const Circle& b) noexcept;
 
+		/// @remark 丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const Ellipse& a, const Ellipse& b) noexcept;
 
@@ -156,6 +156,7 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const Ellipse& a, const Quad& b) noexcept;
 
+		/// @remark 有効な角丸半径が正の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const Ellipse& a, const RoundRect& b) noexcept;
 
@@ -177,27 +178,39 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RectF& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Circle& b) noexcept;
 
+		/// @remark 丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Ellipse& b) noexcept;
 
+		/// @remark 丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状と凸形状の近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Triangle& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Quad& b) noexcept;
 
+		/// @remark 有効な角丸半径が正の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RoundRect& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Polygon& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const MultiPolygon& b) noexcept;
 
@@ -380,5 +393,7 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Overlaps(const MultiPolygon& a, const MultiPolygon& b) noexcept;
+
+		/// @}
 	}
 }

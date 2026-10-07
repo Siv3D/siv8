@@ -490,6 +490,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsOverlaps<SuperEllipse, Shape2DType>
 	constexpr bool SuperEllipse::overlaps(const Shape2DType& other) const
 	{
 		return Geometry2D::Overlaps(*this, other);
@@ -502,6 +503,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsContains<SuperEllipse, Shape2DType>
 	constexpr bool SuperEllipse::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);

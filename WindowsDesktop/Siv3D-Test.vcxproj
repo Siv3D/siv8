@@ -15,6 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
+    <ClCompile Include="..\Test\Test_TestFramework.cpp" />
+    <ClCompile Include="..\Test\ThirdParty\Catch2\catch_amalgamated.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <PreprocessorDefinitions>CATCH_AMALGAMATED_CUSTOM_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_TestEnvironment.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_ArrayException.cpp" />
@@ -24,6 +30,8 @@
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
     <ClCompile Include="..\Test\Test_BinaryFileReader.cpp" />
     <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp" />
+    <ClCompile Include="..\Test\Test_BigInt.cpp" />
+    <ClCompile Include="..\Test\Test_BigFloat.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_ChildProcess.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
@@ -36,6 +44,7 @@
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance_Availability.cpp" />
@@ -50,6 +59,7 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Availability.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Raycast.cpp" />
@@ -59,12 +69,24 @@
     <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp" />
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
+    <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp" />
+    <ClCompile Include="..\Test\Test_MetalShader.cpp" />
+    <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
+    <ClCompile Include="..\Test\Test_MetalPresentation.cpp" />
+    <ClCompile Include="..\Test\Test_GLFW.cpp" />
+    <ClCompile Include="..\Test\Test_Keyboard.cpp" />
+    <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp" />
+    <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
+    <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
     <ClCompile Include="..\Test\Test_ArrayLike.cpp" />
+    <ClCompile Include="..\Test\Test_Polygon.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_Polygon.cpp" />
+    <ClCompile Include="..\Test\Test_LineBufferPolygon.cpp" />
     <ClCompile Include="..\Test\Test_MultiPolygon.cpp" />
     <ClCompile Include="..\Test\Test_Blob.cpp" />
     <ClCompile Include="..\Test\Test_Wave.cpp" />
@@ -73,7 +95,7 @@
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
     <ClCompile Include="..\Test\Test_Material.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
-	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp" />
@@ -98,13 +120,43 @@
     <ClCompile Include="..\Test\Test_Cylindrical.cpp" />
     <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
+    <ClCompile Include="..\Test\Test_Bezier.cpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
-	<ClCompile Include="..\Test\Test_Quaternion.cpp" />
-	<ClCompile Include="..\Test\Test_Mat4x4.cpp" />
-	<ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
+    <ClCompile Include="..\Test\Test_Quaternion.cpp" />
+    <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
+    <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
+    <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
+    <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
+    <ClCompile Include="..\Test\Test_CursorTransform.cpp" />
+    <ClCompile Include="..\Test\Test_Transformer2D.cpp" />
+    <ClCompile Include="..\Test\Test_Pattern.cpp" />
+    <ClCompile Include="..\Test\Test_MSDFFont.cpp" />
+    <ClCompile Include="..\Test\Test_FontGlyph.cpp" />
+    <ClCompile Include="..\Test\Test_D3D11Device.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_D3D11SwapChain.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_D3D11DisplayFrequency.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MonitorInfo.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp" />
+    <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp" />
+    <ClCompile Include="..\Test\Test_Mat4x4.cpp" />
+    <ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
@@ -120,6 +172,8 @@
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />
     <ClCompile Include="..\Test\Test_Types.cpp" />
     <ClCompile Include="..\Test\Test_Unicode.cpp" />
+    <ClCompile Include="..\Test\Test_UnicodeConverter.cpp" />
+    <ClCompile Include="..\Test\Test_TextFileWriter.cpp" />
     <ClCompile Include="..\Test\Test_Utility.cpp" />
     <ClCompile Include="..\Test\Test_Version.cpp" />
     <ClCompile Include="..\Test\Test_YesNo.cpp" />
@@ -133,6 +187,8 @@
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
+    <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />
+    <ClInclude Include="..\Test\ThirdParty\Catch2\catch_amalgamated.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

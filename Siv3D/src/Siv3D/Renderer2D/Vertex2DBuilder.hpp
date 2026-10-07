@@ -20,7 +20,7 @@
 
 namespace s3d
 {
-	using BufferCreatorFunc = FunctionRef<Vertex2DBufferPointer(Vertex2D::IndexType, Vertex2D::IndexType)>;
+	using BufferCreatorFunc = FunctionRef<Vertex2DBufferPointer(uint16, uint32)>;
 	struct LineStyle;
 	struct FloatQuad;
 	enum class LineCap : uint8;
@@ -109,25 +109,25 @@ namespace s3d
 		Vertex2D::IndexType BuildRoundRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, float offset, float dashRatio, uint32 dashCount, const Float4& color, float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color);
+		uint32 BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color);
+		uint32 BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color);
+		uint32 BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const Float4& color, const float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd, float scale);
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd, float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors, float scale);
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const Float4& color, float scale);
@@ -151,6 +151,6 @@ namespace s3d
 		Vertex2D::IndexType BuildRoundRectShadow(const BufferCreatorFunc& bufferCreator, const RoundRect& roundRect, float blur, const Float4& color, float scale, bool fill);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset);
+		uint32 BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset);
 	}
 }

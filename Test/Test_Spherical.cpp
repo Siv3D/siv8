@@ -56,19 +56,19 @@ TEST_CASE("Spherical::constructors")
 	CHECK(fromPosition.toVec3().epsilonEquals(Vec3{ 1.25, -2.5, 3.75 }, SphericalEpsilon));
 
 	const Spherical origin{ Vec3::Zero() };
-	CHECK_EQ(origin.r, 0.0);
-	CHECK_EQ(origin.theta, 0.0);
-	CHECK_EQ(origin.phi, 0.0);
+	CHECK((origin.r) == (0.0));
+	CHECK((origin.theta) == (0.0));
+	CHECK((origin.phi) == (0.0));
 
 	const Spherical positiveY{ Vec3{ 0.0, 3.0, 0.0 } };
-	CHECK_EQ(positiveY.r, 3.0);
-	CHECK_EQ(positiveY.theta, 0.0);
-	CHECK_EQ(positiveY.phi, 0.0);
+	CHECK((positiveY.r) == (3.0));
+	CHECK((positiveY.theta) == (0.0));
+	CHECK((positiveY.phi) == (0.0));
 
 	const Spherical negativeY{ Vec3{ 0.0, -3.0, 0.0 } };
-	CHECK_EQ(negativeY.r, 3.0);
-	CHECK(negativeY.theta == doctest::Approx(Math::Pi));
-	CHECK_EQ(negativeY.phi, 0.0);
+	CHECK((negativeY.r) == (3.0));
+	CHECK(negativeY.theta == Test::Approx(Math::Pi));
+	CHECK((negativeY.phi) == (0.0));
 }
 
 TEST_CASE("Spherical::coordinate_convention")
@@ -102,8 +102,8 @@ TEST_CASE("Spherical::operations")
 	static_assert(value.rotated(1.0).phi == 2.0);
 
 	Spherical mutableValue = value;
-	CHECK_EQ(&mutableValue.rotate(1.0), &mutableValue);
-	CHECK_EQ(mutableValue.phi, 2.0);
+	CHECK((&mutableValue.rotate(1.0)) == (&mutableValue));
+	CHECK((mutableValue.phi) == (2.0));
 
 	CHECK((-value).toVec3().epsilonEquals(-value.toVec3(), SphericalEpsilon));
 	CHECK((value + Vec3{ 1.0, 2.0, 3.0 }).epsilonEquals(value.toVec3() + Vec3{ 1.0, 2.0, 3.0 }, SphericalEpsilon));
@@ -111,37 +111,37 @@ TEST_CASE("Spherical::operations")
 
 	const Spherical interpolated = Spherical{ 2.0, 0.25, (Math::Pi - 0.1) }
 		.lerp(Spherical{ 4.0, 0.75, (-Math::Pi + 0.1) }, 0.5);
-	CHECK_EQ(interpolated.r, 3.0);
-	CHECK_EQ(interpolated.theta, 0.5);
+	CHECK((interpolated.r) == (3.0));
+	CHECK((interpolated.theta) == (0.5));
 	CHECK(std::abs(std::abs(interpolated.phi) - Math::Pi) < SphericalEpsilon);
 
 	const SphericalF interpolatedF = SphericalF{ 2.0f, 0.25f, 0.5f }.lerp(SphericalF{ 4.0f, 0.75f, 1.0f }, 0.5);
-	CHECK_EQ(interpolatedF.r, 3.0f);
-	CHECK_EQ(interpolatedF.theta, 0.5f);
-	CHECK_EQ(interpolatedF.phi, 0.75f);
+	CHECK((interpolatedF.r) == (3.0f));
+	CHECK((interpolatedF.theta) == (0.5f));
+	CHECK((interpolatedF.phi) == (0.75f));
 }
 
 TEST_CASE("Spherical::format_hash_and_json")
 {
 	const Spherical value{ 1.5, -2.25, 3.75 };
-	CHECK_EQ(Format(value), U"(1.5, -2.25, 3.75)");
-	CHECK_EQ(U"{:.1f}"_fmt(value), U"(1.5, -2.2, 3.8)");
-	CHECK_EQ(std::hash<Spherical>{}(value), value.hash());
+	CHECK((Format(value)) == (U"(1.5, -2.25, 3.75)"));
+	CHECK((U"{:.1f}"_fmt(value)) == (U"(1.5, -2.2, 3.8)"));
+	CHECK((std::hash<Spherical>{}(value)) == (value.hash()));
 
 	std::stringstream stream;
 	stream << value;
 	Spherical parsed;
 	stream >> parsed;
-	CHECK_EQ(parsed.r, value.r);
-	CHECK_EQ(parsed.theta, value.theta);
-	CHECK_EQ(parsed.phi, value.phi);
+	CHECK((parsed.r) == (value.r));
+	CHECK((parsed.theta) == (value.theta));
+	CHECK((parsed.phi) == (value.phi));
 
 	const JSON json = value;
-	CHECK_EQ(json[U"r"].get<double>(), value.r);
-	CHECK_EQ(json[U"theta"].get<double>(), value.theta);
-	CHECK_EQ(json[U"phi"].get<double>(), value.phi);
+	CHECK((json[U"r"].get<double>()) == (value.r));
+	CHECK((json[U"theta"].get<double>()) == (value.theta));
+	CHECK((json[U"phi"].get<double>()) == (value.phi));
 	const Spherical restored = json.get<Spherical>();
-	CHECK_EQ(restored.r, value.r);
-	CHECK_EQ(restored.theta, value.theta);
-	CHECK_EQ(restored.phi, value.phi);
+	CHECK((restored.r) == (value.r));
+	CHECK((restored.theta) == (value.theta));
+	CHECK((restored.phi) == (value.phi));
 }

@@ -34,23 +34,23 @@ TEST_CASE("Mesh3D::HeightField flat grid")
 		heights, sizeXZ, HeightFieldOptions{ .uvScale = uvScale, .uvOffset = uvOffset });
 	const Mesh3D grid = Mesh3D::Grid(sizeXZ, 2, 1, uvScale, uvOffset);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 6 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 });
+	CHECK((mesh.vertexCount()) == (size_t{ 6 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 }));
 	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
-	REQUIRE_EQ(mesh.vertexCount(), grid.vertexCount());
-	REQUIRE_EQ(mesh.triangleCount(), grid.triangleCount());
+	REQUIRE((mesh.vertexCount()) == (grid.vertexCount()));
+	REQUIRE((mesh.triangleCount()) == (grid.triangleCount()));
 	for (size_t i = 0; i < mesh.vertexCount(); ++i)
 	{
-		CHECK_EQ(mesh.vertices[i].pos, grid.vertices[i].pos);
-		CHECK_EQ(mesh.vertices[i].normal, grid.vertices[i].normal);
-		CHECK_EQ(mesh.vertices[i].tex, grid.vertices[i].tex);
-		CHECK_EQ(mesh.vertices[i].tangent, grid.vertices[i].tangent);
+		CHECK((mesh.vertices[i].pos) == (grid.vertices[i].pos));
+		CHECK((mesh.vertices[i].normal) == (grid.vertices[i].normal));
+		CHECK((mesh.vertices[i].tex) == (grid.vertices[i].tex));
+		CHECK((mesh.vertices[i].tangent) == (grid.vertices[i].tangent));
 	}
 	for (size_t i = 0; i < mesh.triangleCount(); ++i)
 	{
-		CHECK_EQ(mesh.indices[i].i0, grid.indices[i].i0);
-		CHECK_EQ(mesh.indices[i].i1, grid.indices[i].i1);
-		CHECK_EQ(mesh.indices[i].i2, grid.indices[i].i2);
+		CHECK((mesh.indices[i].i0) == (grid.indices[i].i0));
+		CHECK((mesh.indices[i].i1) == (grid.indices[i].i1));
+		CHECK((mesh.indices[i].i2) == (grid.indices[i].i2));
 	}
 }
 
@@ -63,22 +63,22 @@ TEST_CASE("Mesh3D::HeightField sloped plane")
 	};
 	const Mesh3D mesh = Mesh3D::HeightField(heights, SizeF{ 2.0, 2.0 });
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 9 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
+	CHECK((mesh.vertexCount()) == (size_t{ 9 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 8 }));
 	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
 	for (const Vertex3D& vertex : mesh.vertices)
 	{
-		CHECK(vertex.normal.x == doctest::Approx(-Math::InvSqrt2).epsilon(FrameEpsilon));
-		CHECK(vertex.normal.y == doctest::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
-		CHECK(vertex.normal.z == doctest::Approx(0.0f).scale(1.0));
-		CHECK(vertex.tangent.x == doctest::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
-		CHECK(vertex.tangent.y == doctest::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
-		CHECK(vertex.bitangent().x == doctest::Approx(0.0f).scale(1.0));
-		CHECK(vertex.bitangent().y == doctest::Approx(0.0f).scale(1.0));
-		CHECK(vertex.bitangent().z == doctest::Approx(-1.0f).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.x == Test::Approx(-Math::InvSqrt2).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.y == Test::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.z == Test::Approx(0.0f).scale(1.0));
+		CHECK(vertex.tangent.x == Test::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
+		CHECK(vertex.tangent.y == Test::Approx(Math::InvSqrt2).epsilon(FrameEpsilon));
+		CHECK(vertex.bitangent().x == Test::Approx(0.0f).scale(1.0));
+		CHECK(vertex.bitangent().y == Test::Approx(0.0f).scale(1.0));
+		CHECK(vertex.bitangent().z == Test::Approx(-1.0f).epsilon(FrameEpsilon));
 	}
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -1.0f, 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[8].pos, Float3{ 1.0f, 2.0f, -1.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -1.0f, 0.0f, 1.0f }));
+	CHECK((mesh.vertices[8].pos) == (Float3{ 1.0f, 2.0f, -1.0f }));
 }
 
 TEST_CASE("Mesh3D::HeightField irregular heights")
@@ -93,12 +93,12 @@ TEST_CASE("Mesh3D::HeightField irregular heights")
 		HeightFieldOptions{ .uvScale = Vec2{ 3.0, 2.0 },
 			.uvOffset = Vec2{ -0.5, 0.25 } });
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 12 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 12 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ -0.5f, 0.25f });
-	CHECK_EQ(mesh.vertices[11].tex, Float2{ 2.5f, 2.25f });
-	CHECK_EQ(mesh.vertices[5].pos, Float3{ -1.0f, 0.8f, 0.0f });
+	CHECK((mesh.vertices[0].tex) == (Float2{ -0.5f, 0.25f }));
+	CHECK((mesh.vertices[11].tex) == (Float2{ 2.5f, 2.25f }));
+	CHECK((mesh.vertices[5].pos) == (Float3{ -1.0f, 0.8f, 0.0f }));
 }
 
 TEST_CASE("Mesh3D::HeightField boundary values")
@@ -108,8 +108,8 @@ TEST_CASE("Mesh3D::HeightField boundary values")
 		{ 0.0f, 0.0f }
 	};
 	const Mesh3D minimumMesh = Mesh3D::HeightField(minimum, SizeF{ 1.0, 1.0 });
-	CHECK_EQ(minimumMesh.vertexCount(), size_t{ 4 });
-	CHECK_EQ(minimumMesh.triangleCount(), size_t{ 2 });
+	CHECK((minimumMesh.vertexCount()) == (size_t{ 4 }));
+	CHECK((minimumMesh.triangleCount()) == (size_t{ 2 }));
 	Mesh3DTest::CheckMeshGeometry(minimumMesh, TangentHandedness::Positive);
 
 	const Grid<float> maximum(2, 2, std::numeric_limits<float>::max());
@@ -118,7 +118,7 @@ TEST_CASE("Mesh3D::HeightField boundary values")
 	for (const Vertex3D& vertex : maximumMesh.vertices)
 	{
 		Mesh3DTest::CheckVertexFrame(vertex, TangentHandedness::Positive);
-		CHECK_EQ(vertex.pos.y, std::numeric_limits<float>::max());
+		CHECK((vertex.pos.y) == (std::numeric_limits<float>::max()));
 	}
 }
 
@@ -180,9 +180,9 @@ TEST_CASE("Mesh3D::HeightField callable")
 	const Mesh3D expected = Mesh3D::HeightField(heights, sizeXZ, options);
 
 	Mesh3DTest::CheckMeshDataEqual(generated, expected);
-	CHECK_EQ(calls, Array<Point>{
+	CHECK((calls) == (Array<Point>{
 		{ 0, 0 }, { 1, 0 }, { 2, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }
-	});
+	}));
 }
 
 TEST_CASE("Mesh3D::HeightField callable invalid arguments")
@@ -195,9 +195,9 @@ TEST_CASE("Mesh3D::HeightField callable invalid arguments")
 	};
 
 	CHECK(Mesh3D::HeightField(Size{ 1, 2 }, SizeF{ 1.0, 1.0 }, finiteHeight).isEmpty());
-	CHECK_EQ(callCount, size_t{ 0 });
+	CHECK((callCount) == (size_t{ 0 }));
 	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 0.0, 1.0 }, finiteHeight).isEmpty());
-	CHECK_EQ(callCount, size_t{ 0 });
+	CHECK((callCount) == (size_t{ 0 }));
 	Array<Point> invalidCalls;
 	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 1.0, 1.0 },
 		[&](const Point point)
@@ -207,7 +207,7 @@ TEST_CASE("Mesh3D::HeightField callable invalid arguments")
 				? std::numeric_limits<double>::infinity()
 				: 0.0);
 		}).isEmpty());
-	CHECK_EQ(invalidCalls, Array<Point>{ { 0, 0 }, { 1, 0 } });
+	CHECK((invalidCalls) == (Array<Point>{ { 0, 0 }, { 1, 0 } }));
 	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 1.0, 1.0 },
 		[](const Point)
 		{

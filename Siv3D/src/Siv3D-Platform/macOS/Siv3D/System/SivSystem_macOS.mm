@@ -30,6 +30,10 @@ namespace s3d
 		static NSURL* ToFileURL(const FilePathView path, const bool isDirectory = false)
 		{
 			const FilePath fullPath = FileSystem::FullPath(path);
+			if (fullPath.isEmpty())
+			{
+				return nil;
+			}
 			NSString* nsPath = ToNSString(fullPath);
 			return [NSURL fileURLWithPath:nsPath isDirectory:isDirectory];
 		}
@@ -66,7 +70,7 @@ namespace s3d
 
 					NSURL* fileURL = ToFileURL(url, false);
 
-					return ([[NSWorkspace sharedWorkspace] openURL:fileURL] == YES);
+					return (fileURL && ([[NSWorkspace sharedWorkspace] openURL:fileURL] == YES));
 				}
 			}
 		}
@@ -86,6 +90,10 @@ namespace s3d
 				if (FileSystem::IsFile(fullPath))
 				{
 					NSURL* fileURL = ToFileURL(fullPath, false);
+					if (fileURL == nil)
+					{
+						return false;
+					}
 
 					// activateFileViewerSelectingURLs: は void なので、
 					// 存在確認済みなら true とする
@@ -97,7 +105,7 @@ namespace s3d
 				{
 					NSURL* dirURL = ToFileURL(fullPath, true);
 
-					return ([[NSWorkspace sharedWorkspace] openURL:dirURL] == YES);
+					return (dirURL && ([[NSWorkspace sharedWorkspace] openURL:dirURL] == YES));
 				}
 
 				return false;
@@ -124,7 +132,7 @@ namespace s3d
 				const bool isDirectory = FileSystem::IsDirectory(fullPath);
 				NSURL* fileURL = ToFileURL(fullPath, isDirectory);
 
-				return ([[NSWorkspace sharedWorkspace] openURL:fileURL] == YES);
+				return (fileURL && ([[NSWorkspace sharedWorkspace] openURL:fileURL] == YES));
 			}
 		}
 
@@ -146,6 +154,10 @@ namespace s3d
 				}
 
 				NSURL* fileURL = ToFileURL(fullPath, false);
+				if (fileURL == nil)
+				{
+					return false;
+				}
 
 				NSURL* textEditURL =
 					[[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"com.apple.TextEdit"];

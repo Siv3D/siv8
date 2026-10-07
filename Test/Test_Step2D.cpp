@@ -30,34 +30,34 @@ namespace
 
 TEST_CASE("Step2D.step")
 {
-	CHECK_EQ(Collect(step(Size{ 3, 2 })), Array<Point>{
+	CHECK((Collect(step(Size{ 3, 2 }))) == (Array<Point>{
 		Point{ 0, 0 }, Point{ 1, 0 }, Point{ 2, 0 },
 		Point{ 0, 1 }, Point{ 1, 1 }, Point{ 2, 1 },
-	});
+	}));
 }
 
 TEST_CASE("Step2D.step_start")
 {
-	CHECK_EQ(Collect(step(Point{ 10, 20 }, Size{ 3, 2 })), Array<Point>{
+	CHECK((Collect(step(Point{ 10, 20 }, Size{ 3, 2 }))) == (Array<Point>{
 		Point{ 10, 20 }, Point{ 11, 20 }, Point{ 12, 20 },
 		Point{ 10, 21 }, Point{ 11, 21 }, Point{ 12, 21 },
-	});
+	}));
 }
 
 TEST_CASE("Step2D.step_stride")
 {
-	CHECK_EQ(Collect(step(Point{ 10, 20 }, Size{ 3, 2 }, Size{ 2, 5 })), Array<Point>{
+	CHECK((Collect(step(Point{ 10, 20 }, Size{ 3, 2 }, Size{ 2, 5 }))) == (Array<Point>{
 		Point{ 10, 20 }, Point{ 12, 20 }, Point{ 14, 20 },
 		Point{ 10, 25 }, Point{ 12, 25 }, Point{ 14, 25 },
-	});
+	}));
 }
 
 TEST_CASE("Step2D.step_negative_stride")
 {
-	CHECK_EQ(Collect(step(Point{ 10, 20 }, Size{ 3, 2 }, Size{ -2, -5 })), Array<Point>{
+	CHECK((Collect(step(Point{ 10, 20 }, Size{ 3, 2 }, Size{ -2, -5 }))) == (Array<Point>{
 		Point{ 10, 20 }, Point{ 8, 20 }, Point{ 6, 20 },
 		Point{ 10, 15 }, Point{ 8, 15 }, Point{ 6, 15 },
-	});
+	}));
 }
 
 TEST_CASE("Step2D.step_empty")
@@ -82,10 +82,10 @@ TEST_CASE("Step2D.step_empty")
 
 TEST_CASE("Step2D.step_backward")
 {
-	CHECK_EQ(Collect(step_backward(Size{ 3, 2 })), Array<Point>{
+	CHECK((Collect(step_backward(Size{ 3, 2 }))) == (Array<Point>{
 		Point{ 2, 1 }, Point{ 1, 1 }, Point{ 0, 1 },
 		Point{ 2, 0 }, Point{ 1, 0 }, Point{ 0, 0 },
-	});
+	}));
 }
 
 TEST_CASE("Step2D.step_backward_empty")
@@ -114,21 +114,21 @@ TEST_CASE("Step2D.reusable_range")
 		Point{ 10, 24 }, Point{ 13, 24 },
 	};
 
-	CHECK_EQ(Collect(range), expected);
-	CHECK_EQ(Collect(range), expected);
+	CHECK((Collect(range)) == (expected));
+	CHECK((Collect(range)) == (expected));
 	CHECK(range.begin() != range.end());
-	CHECK_EQ(*range.begin(), Point{ 10, 20 });
+	CHECK((*range.begin()) == (Point{ 10, 20 }));
 }
 
 TEST_CASE("Step2D.iterator")
 {
 	auto it = step(Point{ 3, 4 }, Size{ 2, 2 }, Size{ 10, 20 }).begin();
-	CHECK_EQ(*it, Point{ 3, 4 });
+	CHECK((*it) == (Point{ 3, 4 }));
 
 	const auto old = it++;
-	CHECK_EQ(*old, Point{ 3, 4 });
-	CHECK_EQ(*it, Point{ 13, 4 });
+	CHECK((*old) == (Point{ 3, 4 }));
+	CHECK((*it) == (Point{ 13, 4 }));
 
 	++it;
-	CHECK_EQ(*it, Point{ 3, 24 });
+	CHECK((*it) == (Point{ 3, 24 }));
 }

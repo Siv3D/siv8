@@ -47,23 +47,23 @@ namespace
 			CAPTURE(scale.y);
 			const Mesh3D mesh = make(scale);
 			Mesh3DTest::CheckMeshGeometry(mesh);
-			REQUIRE_EQ(mesh.vertexCount(), original.vertexCount());
-			REQUIRE_EQ(mesh.triangleCount(), original.triangleCount());
+			REQUIRE((mesh.vertexCount()) == (original.vertexCount()));
+			REQUIRE((mesh.triangleCount()) == (original.triangleCount()));
 			for (size_t i = 0; i < mesh.vertexCount(); ++i)
 			{
 				const auto& a = mesh.vertices[i];
 				const auto& b = original.vertices[i];
-				CHECK_EQ(a.pos, b.pos);
-				CHECK_EQ(a.normal, b.normal);
+				CHECK((a.pos) == (b.pos));
+				CHECK((a.normal) == (b.normal));
 				CHECK(a.tex.epsilonEquals(b.tex * Float2{ scale }, 1e-6f));
 				CHECK(a.tangent.xyz().epsilonEquals(b.tangent.xyz() * ((scale.x < 0) ? -1.0f : 1.0f), 1e-6f));
-				CHECK_EQ(a.tangent.w, b.tangent.w * (((scale.x < 0) != (scale.y < 0)) ? -1.0f : 1.0f));
+				CHECK((a.tangent.w) == (b.tangent.w * (((scale.x < 0) != (scale.y < 0)) ? -1.0f : 1.0f)));
 			}
 			for (size_t i = 0; i < mesh.triangleCount(); ++i)
 			{
-				CHECK_EQ(mesh.indices[i].i0, original.indices[i].i0);
-				CHECK_EQ(mesh.indices[i].i1, original.indices[i].i1);
-				CHECK_EQ(mesh.indices[i].i2, original.indices[i].i2);
+				CHECK((mesh.indices[i].i0) == (original.indices[i].i0));
+				CHECK((mesh.indices[i].i1) == (original.indices[i].i1));
+				CHECK((mesh.indices[i].i2) == (original.indices[i].i2));
 			}
 			if (scale.x != 0 && scale.y != 0)
 			{
@@ -75,15 +75,15 @@ namespace
 
 TEST_CASE("Mesh3D generators preserve tangent space under UV reflection and collapse")
 {
-	SUBCASE("Plane")
+	SECTION("Plane")
 	{
 		CheckUVScales([](Vec2 scale) { return Mesh3D::Plane(SizeF{ 2, 3 }, scale); });
 	}
-	SUBCASE("Grid")
+	SECTION("Grid")
 	{
 		CheckUVScales([](Vec2 scale) { return Mesh3D::Grid(SizeF{ 2, 3 }, 2, 3, scale); });
 	}
-	SUBCASE("HeightField")
+	SECTION("HeightField")
 	{
 		CheckUVScales([](Vec2 scale)
 		{
@@ -91,14 +91,14 @@ TEST_CASE("Mesh3D generators preserve tangent space under UV reflection and coll
 				[](Point p) { return p.x * 0.25 + p.y * 0.5; }, { .uvScale = scale });
 		});
 	}
-	SUBCASE("Tube constant and varying radii")
+	SECTION("Tube constant and varying radii")
 	{
 		const Array<Vec3> path{ { 0, 0, 0 }, { 0, 1, 0 }, { 0, 2, 0 } };
 		CheckUVScales([&](Vec2 scale) { return Mesh3D::Tube(path, 1, { .sides = 8, .uvScale = scale }); });
 		const Array<double> radii{ 1, 0.75, 0.5 };
 		CheckUVScales([&](Vec2 scale) { return Mesh3D::Tube(path, radii, { .sides = 8, .uvScale = scale }); });
 	}
-	SUBCASE("Sweep constant and varying sections")
+	SECTION("Sweep constant and varying sections")
 	{
 		const Polygon contour{ { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } } };
 		const Array<Vec3> path{ { 0, 0, 0 }, { 0, 1, 0 }, { 0, 2, 0 } };
@@ -106,7 +106,7 @@ TEST_CASE("Mesh3D generators preserve tangent space under UV reflection and coll
 		const Array<SweepSectionTransform> transforms{ {}, { .scale = Vec2{ 0.8, 0.9 } }, { .scale = Vec2{ 0.6, 0.8 } } };
 		CheckUVScales([&](Vec2 scale) { return Mesh3D::Sweep(contour, path, transforms, { .uvScale = scale }); });
 	}
-	SUBCASE("Revolve including sweep caps")
+	SECTION("Revolve including sweep caps")
 	{
 		const Array<Vec2> profile{ { 0, -1 }, { 1, -1 }, { 1, 1 }, { 0, 1 } };
 		CheckUVScales([&](Vec2 scale)
@@ -114,7 +114,7 @@ TEST_CASE("Mesh3D generators preserve tangent space under UV reflection and coll
 			return Mesh3D::Revolve(profile, { .sweepAngle = Math::Pi, .segments = 8, .uvScale = scale, .closeSweepEnds = CloseEnds::Yes });
 		});
 	}
-	SUBCASE("Loft")
+	SECTION("Loft")
 	{
 		const Array<Vec2> contour{ { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } };
 		const std::array<LoftSection, 2> sections{ LoftSection{ contour, Vec3::Zero() }, LoftSection{ contour, Vec3{ 0, 2, 0 } } };
@@ -129,7 +129,7 @@ TEST_CASE("Mesh3D UV edits explicitly rebuild tangents")
 	mesh.transformUV(Mat3x2::Scale(Vec2{ -1, 1 }));
 	for (size_t i = 0; i < mesh.vertexCount(); ++i)
 	{
-		CHECK_EQ(mesh.vertices[i].tangent, original[i].tangent);
+		CHECK((mesh.vertices[i].tangent) == (original[i].tangent));
 	}
 	mesh.computeTangents();
 	Mesh3DTest::CheckMeshGeometry(mesh);

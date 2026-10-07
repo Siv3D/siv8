@@ -109,7 +109,7 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 	const Mesh3D oriented = Mesh3D::Sweep(crossSection, path, orientedOptions);
 	const Mesh3D orientedUV = Mesh3D::Sweep(crossSection, path, orientedUVOptions);
 
-	SUBCASE("Direct append reuses reserved storage")
+	SECTION("Direct append reuses reserved storage")
 	{
 		Mesh3DBuilder builder;
 		builder.reserve((automaticUV.vertexCount() * 2), (automaticUV.triangleCount() * 2));
@@ -119,15 +119,15 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
 		REQUIRE(builder.addSweep(crossSection, path, transform, uvOptions));
-		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+		CHECK((builder.getMesh().vertices.data()) == (vertexData));
+		CHECK((builder.getMesh().indices.data()) == (indexData));
 
 		Mesh3D expected = automaticUV;
 		REQUIRE(expected.append(automaticUV, transform));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Automatic-frame transform overloads")
+	SECTION("Automatic-frame transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -154,7 +154,7 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Named initial-axis transform overloads")
+	SECTION("Named initial-axis transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -182,7 +182,7 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Failure leaves existing content unchanged")
+	SECTION("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox());
@@ -211,27 +211,27 @@ TEST_CASE("Mesh3D::Sweep rectangle and UV repeat")
 			.uvScale = uvScale, .uvOffset = uvOffset });
 	const size_t capVertexCount = (crossSection.vertices().size() * 2);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.1f, 0.2f });
-	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[0].bitangent(), Float3::UnitZ());
+	CHECK((mesh.vertices[0].pos) == (Float3{ -2.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[0].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.1f, 0.2f }));
+	CHECK((mesh.vertices[0].tangent) == (Float4{ 1.0f, 0.0f, 0.0f, 1.0f }));
+	CHECK((mesh.vertices[0].bitangent()) == (Float3::UnitZ()));
 
-	CHECK_EQ(mesh.vertices[capVertexCount + 0].pos, Float3{ -2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[capVertexCount + 0].normal, -Float3::UnitZ());
-	CHECK_EQ(mesh.vertices[capVertexCount + 0].tex, Float2{ 0.1f, 0.2f });
+	CHECK((mesh.vertices[capVertexCount + 0].pos) == (Float3{ -2.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[capVertexCount + 0].normal) == (-Float3::UnitZ()));
+	CHECK((mesh.vertices[capVertexCount + 0].tex) == (Float2{ 0.1f, 0.2f }));
 	CHECK(mesh.vertices[capVertexCount + 1].tex.x
-		== doctest::Approx(0.1 + (2.0 / 3.0)).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[capVertexCount + 2].tex, Float2{ 0.1f, 0.95f });
-	CHECK_EQ(mesh.vertices[capVertexCount + 0].bitangent(), Float3::UnitY());
+		== Test::Approx(0.1 + (2.0 / 3.0)).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[capVertexCount + 2].tex) == (Float2{ 0.1f, 0.95f }));
+	CHECK((mesh.vertices[capVertexCount + 0].bitangent()) == (Float3::UnitY()));
 
 	const Mesh3D automatic = Mesh3D::Sweep(
 		crossSection, path, SweepOptions{ .uvScale = uvScale, .uvOffset = uvOffset });
 	CheckMeshGeometry(automatic);
-	CHECK_EQ(automatic.vertices[0].pos, mesh.vertices[0].pos);
+	CHECK((automatic.vertices[0].pos) == (mesh.vertices[0].pos));
 }
 
 TEST_CASE("Mesh3D::Sweep end-cap options")
@@ -265,17 +265,17 @@ TEST_CASE("Mesh3D::Sweep end-cap options")
 	const Mesh3D endCap = Mesh3D::Sweep(crossSection, path, transforms,
 		SweepOptions{ .initialXAxis = Vec3::UnitX(), .endCaps = Mesh3DEndCaps::End });
 
-	CHECK_EQ(noCaps.vertexCount(), sideVertexCount);
-	CHECK_EQ(noCaps.triangleCount(), sideTriangleCount);
-	CHECK_EQ(startCap.vertexCount(), (sideVertexCount + capVertexCount));
-	CHECK_EQ(startCap.triangleCount(), (sideTriangleCount + capTriangleCount));
-	CHECK_EQ(endCap.vertexCount(), (sideVertexCount + capVertexCount));
-	CHECK_EQ(endCap.triangleCount(), (sideTriangleCount + capTriangleCount));
+	CHECK((noCaps.vertexCount()) == (sideVertexCount));
+	CHECK((noCaps.triangleCount()) == (sideTriangleCount));
+	CHECK((startCap.vertexCount()) == ((sideVertexCount + capVertexCount)));
+	CHECK((startCap.triangleCount()) == ((sideTriangleCount + capTriangleCount)));
+	CHECK((endCap.vertexCount()) == ((sideVertexCount + capVertexCount)));
+	CHECK((endCap.triangleCount()) == ((sideTriangleCount + capTriangleCount)));
 	CheckMeshGeometry(noCaps);
 	CheckMeshGeometry(startCap);
 	CheckMeshGeometry(endCap);
-	CHECK_EQ(startCap.vertices[0].normal, -Float3::UnitY());
-	CHECK_EQ(endCap.vertices[0].normal, Float3::UnitY());
+	CHECK((startCap.vertices[0].normal) == (-Float3::UnitY()));
+	CHECK((endCap.vertices[0].normal) == (Float3::UnitY()));
 
 	CheckMeshDataEqual(
 		Mesh3D::Sweep(crossSection,
@@ -332,8 +332,8 @@ TEST_CASE("Mesh3DBuilder::addSweep options placement overloads")
 	REQUIRE(builder.addSweep(crossSection, path, offset, options));
 	REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }, options));
 	REQUIRE(builder.addSweep(crossSection, path, transform, options));
-	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+	CHECK((builder.getMesh().vertices.data()) == (vertexData));
+	CHECK((builder.getMesh().indices.data()) == (indexData));
 
 	Mesh3D expected = source;
 	REQUIRE(expected.append(source));
@@ -383,16 +383,16 @@ TEST_CASE("Mesh3D::Sweep per-point positive twist direction")
 	const size_t sideVertexBase = (crossSection.vertices().size() * 2);
 
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -1.0f, 0.0f, 2.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -1.0f, 0.0f, 2.0f }));
 	CHECK(mesh.vertices[0].tangent.xyz().dot(-Float3::UnitZ())
-		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[0].tangent.w, 1.0f);
-	CHECK_EQ(mesh.vertices[sideVertexBase].pos, Float3{ -1.0f, 0.0f, 2.0f });
+		== Test::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[0].tangent.w) == (1.0f));
+	CHECK((mesh.vertices[sideVertexBase].pos) == (Float3{ -1.0f, 0.0f, 2.0f }));
 	CHECK(mesh.vertices[sideVertexBase].normal.dot(-Float3::UnitX())
-		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		== Test::Approx(1.0f).epsilon(FrameEpsilon));
 	CHECK(mesh.vertices[sideVertexBase].tangent.xyz().dot(-Float3::UnitZ())
-		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[sideVertexBase].tangent.w, -1.0f);
+		== Test::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[sideVertexBase].tangent.w) == (-1.0f));
 }
 
 TEST_CASE("Mesh3D::Sweep per-point varying scale and twist")
@@ -417,17 +417,15 @@ TEST_CASE("Mesh3D::Sweep per-point varying scale and twist")
 	const size_t capVertexCount = (crossSection.vertices().size() * 2);
 	const size_t verticesPerEdge = (path.size() * 2);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 32 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 20 });
+	CHECK((mesh.vertexCount()) == (size_t{ 32 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 20 }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[capVertexCount].pos, Float3{ -1.0f, 0.0f, -1.0f });
-	CHECK_NE(mesh.vertices[capVertexCount + 2].normal,
-		mesh.vertices[capVertexCount].normal);
-	CHECK_NE(mesh.vertices[capVertexCount + verticesPerEdge].tangent,
-		mesh.vertices[capVertexCount].tangent);
-	CHECK_EQ(mesh.vertices[capVertexCount].tex, Float2{ 0.1f, 0.2f });
+	CHECK((mesh.vertices[capVertexCount].pos) == (Float3{ -1.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[capVertexCount + 2].normal) != (mesh.vertices[capVertexCount].normal));
+	CHECK((mesh.vertices[capVertexCount + verticesPerEdge].tangent) != (mesh.vertices[capVertexCount].tangent));
+	CHECK((mesh.vertices[capVertexCount].tex) == (Float2{ 0.1f, 0.2f }));
 	CHECK(mesh.vertices[capVertexCount + 4].tex.y
-		== doctest::Approx(2.2f).epsilon(FrameEpsilon));
+		== Test::Approx(2.2f).epsilon(FrameEpsilon));
 }
 
 TEST_CASE("Mesh3D::Sweep per-point closed seam")
@@ -453,8 +451,8 @@ TEST_CASE("Mesh3D::Sweep per-point closed seam")
 	const size_t stationCount = (path.size() + 1);
 	const size_t verticesPerEdge = (stationCount * 2);
 
-	CHECK_EQ(mesh.vertexCount(), (crossSection.outer().size() * verticesPerEdge));
-	CHECK_EQ(mesh.triangleCount(), (2 * crossSection.outer().size() * path.size()));
+	CHECK((mesh.vertexCount()) == ((crossSection.outer().size() * verticesPerEdge)));
+	CHECK((mesh.triangleCount()) == ((2 * crossSection.outer().size() * path.size())));
 	CheckMeshGeometry(mesh);
 	for (size_t edgeIndex = 0; edgeIndex < crossSection.outer().size(); ++edgeIndex)
 	{
@@ -464,10 +462,10 @@ TEST_CASE("Mesh3D::Sweep per-point closed seam")
 		{
 			const Vertex3D& first = mesh.vertices[edgeBase + endpoint];
 			const Vertex3D& seam = mesh.vertices[seamBase + endpoint];
-			CHECK_EQ(seam.pos, first.pos);
-			CHECK_EQ(seam.normal, first.normal);
-			CHECK_EQ(seam.tangent, first.tangent);
-			CHECK_EQ(seam.tex.x, first.tex.x);
+			CHECK((seam.pos) == (first.pos));
+			CHECK((seam.normal) == (first.normal));
+			CHECK((seam.tangent) == (first.tangent));
+			CHECK((seam.tex.x) == (first.tex.x));
 		}
 	}
 }
@@ -506,8 +504,8 @@ TEST_CASE("Mesh3DBuilder::addSweep per-point transforms")
 	REQUIRE(builder.addSweep(crossSection, path, transforms, offset, options));
 	REQUIRE(builder.addSweep(crossSection, path, transforms, { offset, rotation }, options));
 	REQUIRE(builder.addSweep(crossSection, path, transforms, transform, options));
-	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+	CHECK((builder.getMesh().vertices.data()) == (vertexData));
+	CHECK((builder.getMesh().indices.data()) == (indexData));
 
 	Mesh3D expected = source;
 	REQUIRE(expected.append(source));
@@ -532,15 +530,14 @@ TEST_CASE("Mesh3D::Sweep bent non-planar path")
 	const Mesh3D mesh = Mesh3D::Sweep(
 		crossSection, path, SweepOptions{ .initialXAxis = Vec3::UnitX() });
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 40 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 28 });
+	CHECK((mesh.vertexCount()) == (size_t{ 40 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 28 }));
 	CheckMeshGeometry(mesh);
 	const size_t sideVertexBase = (crossSection.vertices().size() * 2);
 	const size_t verticesPerEdge = (path.size() * 2);
 	CHECK(mesh.vertices[sideVertexBase].normal.dot(
 		mesh.vertices[sideVertexBase + 2].normal) > 0.0f);
-	CHECK_NE(mesh.vertices[sideVertexBase].normal,
-		mesh.vertices[sideVertexBase + verticesPerEdge].normal);
+	CHECK((mesh.vertices[sideVertexBase].normal) != (mesh.vertices[sideVertexBase + verticesPerEdge].normal));
 }
 
 TEST_CASE("Mesh3D::Sweep closed non-planar path")
@@ -568,8 +565,8 @@ TEST_CASE("Mesh3D::Sweep closed non-planar path")
 	const size_t stationCount = (path.size() + 1);
 	const size_t verticesPerEdge = (stationCount * 2);
 
-	CHECK_EQ(mesh.vertexCount(), (edgeCount * verticesPerEdge));
-	CHECK_EQ(mesh.triangleCount(), (2 * edgeCount * path.size()));
+	CHECK((mesh.vertexCount()) == ((edgeCount * verticesPerEdge)));
+	CHECK((mesh.triangleCount()) == ((2 * edgeCount * path.size())));
 	CheckMeshGeometry(mesh);
 
 	for (size_t edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
@@ -580,16 +577,16 @@ TEST_CASE("Mesh3D::Sweep closed non-planar path")
 		{
 			const Vertex3D& first = mesh.vertices[edgeBase + endpoint];
 			const Vertex3D& seam = mesh.vertices[seamBase + endpoint];
-			CHECK_EQ(seam.pos, first.pos);
-			CHECK_EQ(seam.normal, first.normal);
-			CHECK_EQ(seam.tangent, first.tangent);
-			CHECK_EQ(seam.tex.x, first.tex.x);
+			CHECK((seam.pos) == (first.pos));
+			CHECK((seam.normal) == (first.normal));
+			CHECK((seam.tangent) == (first.tangent));
+			CHECK((seam.tex.x) == (first.tex.x));
 		}
 	}
 
 	const double totalLength = (2.0 + std::sqrt(5.0) + std::sqrt(5.0) + std::sqrt(8.0));
 	CHECK(mesh.vertices[path.size() * 2].tex.y
-		== doctest::Approx(uvOffset.y + uvScale.y * totalLength).epsilon(FrameEpsilon));
+		== Test::Approx(uvOffset.y + uvScale.y * totalLength).epsilon(FrameEpsilon));
 	CHECK(mesh.vertices[(path.size() - 1) * 2].normal.dot(
 		mesh.vertices[path.size() * 2].normal) > 0.0f);
 
@@ -651,13 +648,13 @@ TEST_CASE("Mesh3D::Sweep polygon with a hole")
 		crossSection, path, SweepOptions{ .initialXAxis = Vec3::UnitY() });
 	const size_t edgeCount = (crossSection.outer().size() + crossSection.inners()[0].size());
 
-	CHECK_EQ(mesh.vertexCount(), ((crossSection.vertices().size() * 2) + (edgeCount * 4)));
-	CHECK_EQ(mesh.triangleCount(), ((crossSection.indices().size() * 2) + (edgeCount * 2)));
+	CHECK((mesh.vertexCount()) == (((crossSection.vertices().size() * 2) + (edgeCount * 4))));
+	CHECK((mesh.triangleCount()) == (((crossSection.indices().size() * 2) + (edgeCount * 2))));
 	CheckMeshGeometry(mesh);
 
 	const size_t innerSideBase = ((crossSection.vertices().size() * 2)
 		+ (crossSection.outer().size() * 4));
-	CHECK_EQ(mesh.vertices[innerSideBase].normal, Float3::UnitY());
+	CHECK((mesh.vertices[innerSideBase].normal) == (Float3::UnitY()));
 
 	const Array<SweepSectionTransform> transforms{
 		{ .scale = Vec2{ 1.0, 1.0 }, .twist = 0.1 },
@@ -666,8 +663,8 @@ TEST_CASE("Mesh3D::Sweep polygon with a hole")
 	const Mesh3D transformed = Mesh3D::Sweep(
 		crossSection, path, transforms,
 		SweepOptions{ .initialXAxis = Vec3::UnitY() });
-	CHECK_EQ(transformed.vertexCount(), mesh.vertexCount());
-	CHECK_EQ(transformed.triangleCount(), mesh.triangleCount());
+	CHECK((transformed.vertexCount()) == (mesh.vertexCount()));
+	CHECK((transformed.triangleCount()) == (mesh.triangleCount()));
 	CheckMeshGeometry(transformed);
 }
 
@@ -684,8 +681,8 @@ TEST_CASE("Mesh3D::Sweep initial orientation")
 
 	CheckMeshGeometry(xOriented);
 	CheckMeshGeometry(yOriented);
-	CHECK_EQ(xOriented.vertices[0].pos, Float3{ -2.0f, 1.0f, 0.0f });
-	CHECK_EQ(yOriented.vertices[0].pos, Float3{ -1.0f, -2.0f, 0.0f });
+	CHECK((xOriented.vertices[0].pos) == (Float3{ -2.0f, 1.0f, 0.0f }));
+	CHECK((yOriented.vertices[0].pos) == (Float3{ -1.0f, -2.0f, 0.0f }));
 }
 
 TEST_CASE("Mesh3D::Sweep invalid arguments")

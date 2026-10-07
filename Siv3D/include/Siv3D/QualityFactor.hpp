@@ -89,6 +89,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 現在の描画変換の RMS 拡大率を使って品質係数を作成します。
+		/// @param s RMS 拡大率に乗じる係数
+		/// @return Graphics2D::GetRMSScaling() に `s` を乗じた品質係数。積が負の場合は 0
 		[[nodiscard]]
 		static QualityFactor FromSceneScaling(double s = 1.0) noexcept;
 

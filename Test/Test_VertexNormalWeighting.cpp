@@ -18,7 +18,7 @@ TEST_CASE("VertexNormalWeighting")
 	static_assert(FromEnum(VertexNormalWeighting::Uniform) == 2);
 	static_assert(std::is_same_v<std::underlying_type_t<VertexNormalWeighting>, uint8>);
 
-	CHECK_EQ(Format(VertexNormalWeighting::Angle), U"Angle");
-	CHECK_EQ(Format(VertexNormalWeighting::Area), U"Area");
-	CHECK_EQ(Format(VertexNormalWeighting::Uniform), U"Uniform");
+	CHECK((Format(VertexNormalWeighting::Angle)) == (U"Angle"));
+	CHECK((Format(VertexNormalWeighting::Area)) == (U"Area"));
+	CHECK((Format(VertexNormalWeighting::Uniform)) == (U"Uniform"));
 }
