@@ -74,4 +74,38 @@ Windows では、マップ用ハンドルの作成とアドレスへのマップ
 [ファイルの状態・ムーブ・書き込み](../../Test/Test_MemoryMappedFile.cpp)、
 [読み取り専用範囲・リソース](../../Test/Test_MemoryMappedFileView.cpp) に置く。
 OS の I/O 障害や電源断時の永続性は、通常の書き込み・再読込テストでは検証できない。
-プラットフォーム固有の未検証事項は [TODO.md](../../TODO.md) で管理する。
+
+### Windows の検証
+
+リポジトリルートから PowerShell 7 で実行する。通常テストの引数とレポートの扱いは
+[開発ガイド](../development/README.md#build-and-test) を参照する。
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=*MappedMemory*,*MemoryMappedFile*'
+./WindowsDesktop/run-tests.ps1 -SkipBuild
+pwsh -NoProfile -File tools/memory-mapping-checks/run.ps1
+```
+
+最初のコマンドで現在のソースを Release ビルドする。続く全テストの `-SkipBuild` は、
+ビルド後にソースや設定を変更していない場合にだけ使う。通常テストでは、リソースと
+通常ファイルの切り替え、単一マップ制約、ムーブ後の再利用を確認する。
+
+[故障注入チェック](../../tools/memory-mapping-checks/run.ps1) は、現在の公開 API と
+Windows バックエンドを独立した実行ファイルへコンパイルする。
+[注入ヘッダ](../../tools/memory-mapping-checks/Inject.hpp) をバックエンドの翻訳単位だけに
+強制インクルードし、`MapViewOfFile()` と `CloseHandle()` の呼び出し先を検証用に置き換える。
+通常のエンジンやテストアプリには注入処理を組み込まない。リンクマップでも、検証対象の
+`map()` がこのコンパイルで生成されたオブジェクトを使用していることを確認する。
+
+[チェック本体](../../tools/memory-mapping-checks/check.cpp) は、実際の `CreateFileMappingW()`
+で取得した有効なハンドルを受け取ってから、ビューの作成を `ERROR_NOT_ENOUGH_MEMORY` と
+空のアドレスで失敗させる。読み取り専用、書き込み可能、ファイル拡張を伴う書き込みの
+各ケースで連続して失敗させ、直後の実際のハンドル解放、ファイルの開いた状態、
+キャッシュと OS のファイルサイズを検査する。`unmap()` や再オープンを挟まずに実際の
+`MapViewOfFile()` で再試行し、単一マップ制約、再マップ、書き込んだ内容の再読込も確認する。
+これは失敗後の回復処理の検証であり、OS のメモリ不足やストレージ障害自体を発生させるものではない。
+
+出力先は `WindowsDesktop/Intermediate/MemoryMappingChecks/`。
+実行ファイル、オブジェクト、リンクマップ、`results.txt` を保持し、`fixtures/` の入力ファイルは
+成功時に削除する。失敗時に残った入力は診断に使える。このディレクトリはチェック専用で、
+不要になったら削除できる。
