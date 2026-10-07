@@ -3322,6 +3322,7 @@
 		20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */; };
+		A5CA1E9EBCFD4A949D025DA1 /* Test_MappedMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927C51C0C4914367BB10A3E9 /* Test_MappedMemory.cpp */; };
 		69BE70F1E9AA49D2A2E15E03 /* Test_MemoryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */; };
 		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
 		D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */; };
@@ -6793,6 +6794,7 @@
 		7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineBufferPolygon.cpp; sourceTree = "<group>"; };
 		B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MultiPolygon.cpp; sourceTree = "<group>"; };
 		F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Blob.cpp; sourceTree = "<group>"; };
+		927C51C0C4914367BB10A3E9 /* Test_MappedMemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MappedMemory.cpp; sourceTree = "<group>"; };
 		A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MemoryReader.cpp; sourceTree = "<group>"; };
 		F317E375B37CAD38878B805B /* Test_Wave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Wave.cpp; sourceTree = "<group>"; };
 		10054A3EC0A44694AD05344E /* Siv3DTestFramework.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTestFramework.hpp; sourceTree = "<group>"; };
@@ -7106,6 +7108,7 @@
 				7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */,
 				B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */,
 				F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */,
+				927C51C0C4914367BB10A3E9 /* Test_MappedMemory.cpp */,
 				A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */,
 				F317E375B37CAD38878B805B /* Test_Wave.cpp */,
 				F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */,
@@ -16796,6 +16799,7 @@
 				20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */,
 				66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */,
 				3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */,
+				A5CA1E9EBCFD4A949D025DA1 /* Test_MappedMemory.cpp in Sources */,
 				69BE70F1E9AA49D2A2E15E03 /* Test_MemoryReader.cpp in Sources */,
 				BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */,
 				F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */,

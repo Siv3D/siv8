@@ -5,6 +5,7 @@
 このディレクトリでは、実装の評価と設計判断の根拠を管理します。
 
 - [基盤見直し案](proposals/foundation-review.md): 通常のファイル操作に影響する課題と対応順。
+- [メモリマップトファイル](memory-mapping.md): API の役割、所有関係、実装と検証の境界。
 - [挙動・タイミング確認プログラム](../../Test/Manual/FileSystemReview.md):
   OS 間の挙動比較と性能調査に使う診断。
 - [macOS の Trash 確認](../../Test/Manual/FileSystemRemoveContentsTrash.md)。

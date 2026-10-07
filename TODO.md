@@ -7,6 +7,11 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/MemoryMappedFile.hpp` / `MemoryMappedFileView.hpp`
+
+- Windows で対象テストと全自動テストを実行し、リソースと通常ファイルの切り替え、単一マップ制約、ムーブ後の再利用を検証する。macOS 上のプロジェクト検証は Windows のビルド・実行を代替しない。
+- Windows の `MapViewOfFile()` 失敗を故障注入で再現し、マップ用ハンドルの解放、再試行、既に拡張されたファイルサイズの反映を確認する。通常の境界値テストは OS 内部の失敗を強制しない。設計上の判断は [メモリマップトファイル](docs/filesystem/memory-mapping.md) を参照。
+
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証

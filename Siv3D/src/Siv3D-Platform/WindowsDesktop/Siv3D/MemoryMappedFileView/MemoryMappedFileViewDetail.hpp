@@ -23,7 +23,7 @@ namespace s3d
 
 		~MemoryMappedFileViewDetail();
 
-		bool open(FilePathView path);
+		bool open(FilePath path);
 
 		void close();
 
@@ -56,6 +56,8 @@ namespace s3d
 		struct Resource
 		{
 			const Byte* pointer = nullptr;
+
+			bool isMapped = false;
 
 		} m_resource;
 

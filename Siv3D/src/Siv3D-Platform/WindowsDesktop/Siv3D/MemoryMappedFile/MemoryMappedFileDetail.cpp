@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <limits>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -43,11 +44,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
+	bool MemoryMappedFile::MemoryMappedFileDetail::open(FilePath path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
 	{
 		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
+
+		if (path.isEmpty())
+		{
+			return false;
+		}
 
 		if (FileSystem::IsResourcePath(path))
 		{
@@ -94,7 +100,12 @@ namespace s3d
 		}
 
 		LARGE_INTEGER size{};
-		::GetFileSizeEx(fileHandle, &size);
+		if ((::GetFileType(fileHandle) != FILE_TYPE_DISK)
+			|| (not ::GetFileSizeEx(fileHandle, &size)) || (size.QuadPart < 0))
+		{
+			::CloseHandle(fileHandle);
+			return false;
+		}
 		const int64 fileSize = size.QuadPart;
 
 		m_file =
@@ -107,7 +118,7 @@ namespace s3d
 
 		m_info =
 		{
-			.fullPath	= FileSystem::FullPath(path),
+			.fullPath	= std::move(path),
 			.fileSize	= fileSize,
 			.isOpen		= true,
 		};
@@ -171,46 +182,49 @@ namespace s3d
 		}
 
 		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
-		if (m_info.fileSize < static_cast<int64>(offset))
+		if (static_cast<uint64>(m_info.fileSize) < offset)
 		{
 			return{};
 		}
 
-		const size_t mapSize = (requestSize ? requestSize : Min(requestSize, static_cast<size_t>(m_info.fileSize - offset)));
+		const size_t mapSize = requestSize;
 
-		if (mapSize == 0)
+		if ((mapSize == 0)
+			|| (mapSize > (static_cast<uint64>(std::numeric_limits<int64>::max()) - offset)))
 		{
 			return{};
 		}
 
 		const size_t internalOffset = (offset / g_granularity * g_granularity);
 
-		m_file.fileMapping = ::CreateFileMappingW(
+		const HANDLE fileMapping = ::CreateFileMappingW(
 			m_file.fileHandle, 0, PAGE_READWRITE,
-			(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
+			static_cast<DWORD>(static_cast<uint64>(offset + mapSize) >> 32), static_cast<DWORD>(offset + mapSize), nullptr);
 
-		if (m_file.fileMapping == nullptr)
+		if (fileMapping == nullptr)
 		{
 			LOG_FAIL(fmt::format("❌ MemoryMappedFile: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
 			return{};
 		}
 
+		if (static_cast<size_t>(m_info.fileSize) < (offset + mapSize))
+		{
+			m_info.fileSize = static_cast<int64>(offset + mapSize);
+		}
+
 		m_file.baseAddress = static_cast<Byte*>(::MapViewOfFile(
-			m_file.fileMapping, FILE_MAP_WRITE, (static_cast<uint64>(internalOffset) >> 32),
-			(internalOffset & 0xffFFffFF), (offset - internalOffset + mapSize)));
+			fileMapping, FILE_MAP_WRITE, static_cast<DWORD>(static_cast<uint64>(internalOffset) >> 32),
+			static_cast<DWORD>(internalOffset), (offset - internalOffset + mapSize)));
 
 		if (m_file.baseAddress == nullptr)
 		{
+			::CloseHandle(fileMapping);
 			LOG_FAIL(fmt::format("❌ MemoryMappedFile: MapViewOfFile() failed. offset: {0}, size: {1}", offset, mapSize));
 			return{};
 		}
 
+		m_file.fileMapping = fileMapping;
 		m_file.mapLength = (offset - internalOffset + mapSize);
-
-		if (static_cast<size_t>(m_info.fileSize) < (offset + mapSize))
-		{
-			m_info.fileSize = (offset + mapSize);
-		}
 
 		return{ .data = (m_file.baseAddress + (offset - internalOffset)), .size = mapSize };
 	}

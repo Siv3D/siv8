@@ -30,14 +30,19 @@ namespace s3d
 		close();
 	}
 
-	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(const FilePathView path)
+	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(FilePath path)
 	{
 		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 
+		if (path.isEmpty())
 		{
-			const int32 fileHandle = ::open(Unicode::ToUTF8(path).c_str(), O_RDONLY);
+			return false;
+		}
+
+		{
+			const int32 fileHandle = ::open(Unicode::ToUTF8(path).c_str(), (O_RDONLY | O_NONBLOCK));
 
 			if (fileHandle == -1)
 			{
@@ -45,8 +50,12 @@ namespace s3d
 				return false;
 			}
 
-			struct stat s;
-			::fstat(fileHandle, &s);
+			struct stat s{};
+			if ((::fstat(fileHandle, &s) != 0) || (not S_ISREG(s.st_mode)))
+			{
+				::close(fileHandle);
+				return false;
+			}
 			const int64 fileSize = s.st_size;
 
 			m_file =
@@ -58,7 +67,7 @@ namespace s3d
 
 			m_info =
 			{
-				.fullPath	= FileSystem::FullPath(path),
+				.fullPath	= std::move(path),
 				.fileSize	= fileSize,
 				.isOpen		= true,
 			};
@@ -107,13 +116,19 @@ namespace s3d
 		}
 
 		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
-		if (m_info.fileSize <= static_cast<int64>(offset))
+		if (static_cast<uint64>(m_info.fileSize) <= offset)
 		{
 			return{};
 		}
 
 		{
-			const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
+			const size_t mapSize = Min(requestSize, (static_cast<size_t>(m_info.fileSize) - offset));
+
+			if (mapSize == 0)
+			{
+				return{};
+			}
+
 			const size_t internalOffset = (offset / detail::g_granularity * detail::g_granularity);
 
 			void* baseAddress = ::mmap(0, (offset - internalOffset + mapSize), PROT_READ, MAP_SHARED, m_file.fileHandle, internalOffset);

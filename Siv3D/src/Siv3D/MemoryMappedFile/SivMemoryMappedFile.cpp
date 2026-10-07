@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/MemoryMappedFile.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/MemoryMappedFile/MemoryMappedFileDetail.hpp>
 
 namespace s3d
@@ -55,7 +56,19 @@ namespace s3d
 
 	bool MemoryMappedFile::open(const FilePathView path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
 	{
-		return pImpl->open(path, ifExists, ifNotFound);
+		if (path.contains(U'\0'))
+		{
+			close();
+			return false;
+		}
+
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<MemoryMappedFileDetail>();
+		}
+
+		// Resolve before closing: path may refer to this object's path().
+		return pImpl->open(FileSystem::FullPath(path), ifExists, ifNotFound);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -66,7 +79,10 @@ namespace s3d
 
 	void MemoryMappedFile::close()
 	{
-		pImpl->close();
+		if (pImpl)
+		{
+			pImpl->close();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -77,7 +93,7 @@ namespace s3d
 
 	bool MemoryMappedFile::isOpen() const
 	{
-		return pImpl->isOpen();
+		return (pImpl && pImpl->isOpen());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -99,7 +115,7 @@ namespace s3d
 
 	MappedMemory MemoryMappedFile::map(const size_t offset, const size_t requestSize)
 	{
-		return pImpl->map(offset, requestSize);
+		return (pImpl ? pImpl->map(offset, requestSize) : MappedMemory{});
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -110,7 +126,7 @@ namespace s3d
 
 	MappedMemory MemoryMappedFile::mapAll()
 	{
-		return pImpl->map(0, pImpl->size());
+		return map(0, static_cast<size_t>(size()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -121,7 +137,10 @@ namespace s3d
 
 	void MemoryMappedFile::unmap()
 	{
-		pImpl->unmap();
+		if (pImpl)
+		{
+			pImpl->unmap();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -132,7 +151,7 @@ namespace s3d
 
 	bool MemoryMappedFile::flush()
 	{
-		return pImpl->flush();
+		return (pImpl && pImpl->flush());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -143,7 +162,7 @@ namespace s3d
 
 	int64 MemoryMappedFile::size() const
 	{
-		return pImpl->size();
+		return (pImpl ? pImpl->size() : 0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -154,6 +173,12 @@ namespace s3d
 
 	const FilePath& MemoryMappedFile::path() const
 	{
-		return pImpl->path();
+		if (pImpl)
+		{
+			return pImpl->path();
+		}
+
+		static const FilePath emptyPath;
+		return emptyPath;
 	}
 }

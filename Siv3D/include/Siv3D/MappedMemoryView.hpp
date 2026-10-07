@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <cstddef>
 
 namespace s3d
 {
@@ -20,6 +21,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief マップされた読み込み専用メモリの情報 | Information of the mapped memory
+	/// @remark 所有権を持たない範囲です。コピーしてもマップの寿命は延びず、所有元のアンマップ・クローズ・破棄後は使用できません。
 	struct MappedMemoryView
 	{
 		/// @brief メモリの先頭アドレス | The pointer to the memory
@@ -34,8 +36,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief メモリが有効かを返します。
-		/// @return メモリが有効な場合 true, それ以外の場合は false
+		/// @brief 先頭アドレスが nullptr でないかを返します。
+		/// @return data が nullptr でない場合 true, それ以外の場合は false
+		/// @remark 所有元のマップが存続しているかは検査しません。
 		[[nodiscard]]
 		constexpr explicit operator bool() const noexcept;
 	};
