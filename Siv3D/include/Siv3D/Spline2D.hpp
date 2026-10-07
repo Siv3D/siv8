@@ -10,7 +10,7 @@
 # include "LineString.hpp"
 # include "Optional.hpp"
 # include "CatmullRomParameterization.hpp"
-# include "SplineClosestPoint.hpp"
+# include "SplineClosestPoint2D.hpp"
 
 namespace s3d
 {
@@ -88,7 +88,7 @@ namespace s3d
 		/// @return 区間・パラメータ・座標・距離の二乗。空の経路なら none。
 		/// @remark 計算結果の距離が等しい候補がある場合は、区間番号が小さいものを選びます。
 		[[nodiscard]]
-		Optional<SplineClosestPoint> computeClosestPoint(Vec2 point) const;
+		Optional<SplineClosestPoint2D> computeClosestPoint(Vec2 point) const;
 
 		/// @brief 経路全体を囲む軸平行の長方形を求めます。
 		/// @return 曲線を囲む長方形。空の経路なら none。

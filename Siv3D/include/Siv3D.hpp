@@ -944,7 +944,7 @@
 # include <Siv3D/CatmullRomParameterization.hpp>
 # include <Siv3D/DistanceMode.hpp>
 # include <Siv3D/SplineLocation.hpp>
-# include <Siv3D/SplineClosestPoint.hpp>
+# include <Siv3D/SplineClosestPoint2D.hpp>
 # include <Siv3D/Spline2D.hpp>
 # include <Siv3D/Spline2DMeasure.hpp>
 

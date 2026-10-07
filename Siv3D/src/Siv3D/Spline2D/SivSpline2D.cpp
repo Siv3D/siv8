@@ -115,9 +115,9 @@ namespace s3d
 		return segment(location.segment).pointAt(location.t);
 	}
 
-	Optional<SplineClosestPoint> Spline2D::computeClosestPoint(const Vec2 point) const
+	Optional<SplineClosestPoint2D> Spline2D::computeClosestPoint(const Vec2 point) const
 	{
-		Optional<SplineClosestPoint> best;
+		Optional<SplineClosestPoint2D> best;
 		for (size_t i = 0; i < m_segments.size(); ++i)
 		{
 			const Bezier3& curve = m_segments[i];
@@ -133,7 +133,7 @@ namespace s3d
 			const auto candidate = detail::ClosestPointOnBezier(curve, point);
 			if (not best || (candidate.distanceSq < best->distanceSq))
 			{
-				best = SplineClosestPoint{ { i, candidate.parameter }, candidate.point, candidate.distanceSq };
+				best = SplineClosestPoint2D{ { i, candidate.parameter }, candidate.point, candidate.distanceSq };
 			}
 		}
 		return best;

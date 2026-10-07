@@ -3333,7 +3333,7 @@
 		C807E27B19605BA1AC1CAE56 /* CatmullRomParameterization.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */; };
 		804D71DB399A5A8C81C8DC92 /* DistanceMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */; };
 		8FB55925766A5CC09E16949C /* SplineLocation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 606ABDE3B0065A1196232621 /* SplineLocation.hpp */; };
-		970D24B65F7550F6BD64CB0E /* SplineClosestPoint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */; };
+		970D24B65F7550F6BD64CB0E /* SplineClosestPoint2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2547DFC77F6555D390A3A7EA /* SplineClosestPoint2D.hpp */; };
 		3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 54ADA66A6B90504E884E75A4 /* Spline2D.hpp */; };
 		5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */; };
 		D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */; };
@@ -6823,7 +6823,7 @@
 		78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CatmullRomParameterization.hpp; sourceTree = "<group>"; };
 		B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DistanceMode.hpp; sourceTree = "<group>"; };
 		606ABDE3B0065A1196232621 /* SplineLocation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SplineLocation.hpp; sourceTree = "<group>"; };
-		2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SplineClosestPoint.hpp; sourceTree = "<group>"; };
+		2547DFC77F6555D390A3A7EA /* SplineClosestPoint2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SplineClosestPoint2D.hpp; sourceTree = "<group>"; };
 		54ADA66A6B90504E884E75A4 /* Spline2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2D.hpp; sourceTree = "<group>"; };
 		D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2DMeasure.hpp; sourceTree = "<group>"; };
 		A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLength.hpp; sourceTree = "<group>"; };
@@ -8210,7 +8210,7 @@
 				F998815F2F40B5FD00C8991D /* Spline.hpp */,
 				D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */,
 				54ADA66A6B90504E884E75A4 /* Spline2D.hpp */,
-				2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */,
+				2547DFC77F6555D390A3A7EA /* SplineClosestPoint2D.hpp */,
 				606ABDE3B0065A1196232621 /* SplineLocation.hpp */,
 				B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */,
 				78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */,
@@ -14838,7 +14838,7 @@
 				F99881602F40B5FD00C8991D /* Spline.hpp in Headers */,
 				5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */,
 				3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */,
-				970D24B65F7550F6BD64CB0E /* SplineClosestPoint.hpp in Headers */,
+				970D24B65F7550F6BD64CB0E /* SplineClosestPoint2D.hpp in Headers */,
 				8FB55925766A5CC09E16949C /* SplineLocation.hpp in Headers */,
 				804D71DB399A5A8C81C8DC92 /* DistanceMode.hpp in Headers */,
 				C807E27B19605BA1AC1CAE56 /* CatmullRomParameterization.hpp in Headers */,

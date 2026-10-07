@@ -33,7 +33,7 @@ produce continuous acceleration for a camera or vehicle.
 
 A [SplineLocation](../../Siv3D/include/Siv3D/SplineLocation.hpp) identifies a
 segment and its local parameter, not a distance. `computeClosestPoint()` returns
-a [SplineClosestPoint](../../Siv3D/include/Siv3D/SplineClosestPoint.hpp) containing
+a [SplineClosestPoint2D](../../Siv3D/include/Siv3D/SplineClosestPoint2D.hpp) containing
 this location, its position, and the squared query distance. Pass its location
 to `Spline2DMeasure::distanceAt()` to find the corresponding progress along the
 path. Self-crossing paths can have multiple closest positions.

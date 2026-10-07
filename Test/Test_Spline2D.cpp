@@ -59,7 +59,8 @@ TEST_CASE("Spline2D.EmptyAndInvalidInput")
 	CHECK(empty.isEmpty());
 	CHECK(not empty.isClosed());
 	CHECK(empty.segmentCount() == 0);
-	CHECK(not empty.computeClosestPoint({ 1, 2 }));
+	const Optional<SplineClosestPoint2D> closest = empty.computeClosestPoint({ 1, 2 });
+	CHECK(not closest);
 	CHECK(not empty.computeBoundingRect());
 	CHECK(empty.toLineString().isEmpty());
 	CHECK(empty.toLineStringAdaptive().isEmpty());
@@ -141,13 +142,13 @@ TEST_CASE("Spline2D.ClosestBoundsAndReverse")
 {
 	const Array<Bezier3> curves{ Straight({ 0, 0 }, { 10, 0 }), Straight({ 10, 0 }, { 10, 20 }) };
 	const auto spline = Spline2D::FromBezierSegments(curves);
-	const auto nearest = spline.computeClosestPoint({ 13, 7 });
+	const Optional<SplineClosestPoint2D> nearest = spline.computeClosestPoint({ 13, 7 });
 	REQUIRE(nearest);
 	CHECK(nearest->location.segment == 1);
 	CheckPoint(nearest->point, { 10, 7 });
 	CHECK(Abs(nearest->distanceSq - 9) < 1e-10);
 	CHECK(spline.pointAt(nearest->location) == nearest->point);
-	const auto join = spline.computeClosestPoint({ 10, 0 });
+	const Optional<SplineClosestPoint2D> join = spline.computeClosestPoint({ 10, 0 });
 	REQUIRE(join);
 	CHECK(join->location.segment == 0);
 	CHECK(join->location.t == 1);

@@ -12,7 +12,7 @@
 namespace s3d
 {
 	/// @brief 指定した点に最も近い Spline2D 上の位置です。
-	struct SplineClosestPoint
+	struct SplineClosestPoint2D
 	{
 		/// @brief 曲線上の区間番号とパラメータ
 		SplineLocation location;
