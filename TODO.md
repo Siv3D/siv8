@@ -45,7 +45,6 @@
 ### 保存先のプラットフォーム検証
 
 - Windows で `Test_ScreenCapture.cpp` と全自動テストを実行し、ドライブ絶対・ドライブ相対・ルート相対パスを確認する。[手動確認](Test/Manual/ScreenCapture.md) でピクチャ内の `Screenshot/` と UNC 共有への保存も確認する。
-- macOS の既定保存先への保存について、権限未付与のアプリでダイアログの有無を[手動確認](Test/Manual/ScreenCapture.md)する。自動テストは `Test/output/` 内で実行し、プライバシー権限の初回挙動は検証しない。
 
 ## Renderer2D / 組み込みシェーダ最適化
 
