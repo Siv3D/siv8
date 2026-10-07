@@ -14,7 +14,6 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/SpecialFolder.hpp>
 # include <Siv3D/Image.hpp>
-# include <Siv3D/UserInfo.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -37,7 +36,7 @@ namespace s3d
 			return false;
 		}
 
-		static void SaveScreenCapture(const Image& image, const FilePath& m_screenshotSaveDirectory, const Array<FilePath>& paths)
+		static void SaveScreenCapture(const Image& image, const Array<FilePath>& paths)
 		{
 			for (const auto& path : paths)
 			{
@@ -47,11 +46,14 @@ namespace s3d
 					continue;
 				}
 			
-				const FilePath filePath = (m_screenshotSaveDirectory + path);
-				
-				image.save(filePath);
-
-				LOG_INFO(fmt::format("📷 Screen capture saved (path: \"{0}\")", filePath));
+				if (image.save(path))
+				{
+					LOG_INFO(fmt::format("📷 Screen capture saved (path: \"{}\")", path));
+				}
+				else
+				{
+					LOG_FAIL(fmt::format("Screen capture save failed (path: \"{}\")", path));
+				}
 			}
 		}
 	}
@@ -77,22 +79,15 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CScreenCapture::init()");
 
-	# if SIV3D_PLATFORM(MACOS)
-
-		m_screenshotSaveDirectory = (FileSystem::GetFolderPath(SpecialFolder::Pictures) + U"Screenshot/");
-
-	# else
-
-		if (System::IsRunningInVisualStudio())
+		const auto& pictures = FileSystem::GetFolderPath(SpecialFolder::Pictures);
+		if (pictures)
 		{
-			m_screenshotSaveDirectory = (FileSystem::GetLaunchDirectory() + U"Screenshot/");
+			m_screenshotSaveDirectory = FileSystem::PathAppend(pictures, U"Screenshot/");
 		}
 		else
 		{
-			m_screenshotSaveDirectory = (FileSystem::GetExecutableDirectory() + U"Screenshot/");
+			LOG_FAIL("ScreenCapture: Pictures directory is unavailable");
 		}
-
-	# endif
 
 		LOG_INFO(fmt::format("Default Screenshot directory: \"{}\"", m_screenshotSaveDirectory));
 	}
@@ -125,10 +120,12 @@ namespace s3d
 		if (not image)
 		{
 			LOG_FAIL("✖ failed to capture a screen shot");
+			m_requestedPaths.clear();
+			return;
 		}
 
 		// スクリーンショットの保存
-		SaveScreenCapture(image, m_screenshotSaveDirectory, m_requestedPaths);
+		SaveScreenCapture(image, m_requestedPaths);
 
 		m_requestedPaths.clear();
 
@@ -154,7 +151,25 @@ namespace s3d
 
 	void CScreenCapture::setScreenshotSaveDirectory(const FilePathView path)
 	{
-		m_screenshotSaveDirectory = path;
+		if (path.isEmpty() || path.contains(U'\0') || FileSystem::IsResourcePath(path))
+		{
+			LOG_FAIL("ScreenCapture::SetScreenshotDirectory(): invalid directory path");
+			return;
+		}
+
+		FilePath directory = FileSystem::FullPath(path);
+		if (directory.isEmpty())
+		{
+			LOG_FAIL("ScreenCapture::SetScreenshotDirectory(): failed to resolve directory path");
+			return;
+		}
+
+		if (not directory.ends_with(U'/'))
+		{
+			directory.push_back(U'/');
+		}
+
+		m_screenshotSaveDirectory = std::move(directory);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -170,7 +185,20 @@ namespace s3d
 
 	void CScreenCapture::requestScreenCapture(const FilePathView path)
 	{
-		m_requestedPaths.emplace_back(path);
+		if (path.isEmpty() || path.contains(U'\0'))
+		{
+			LOG_FAIL("ScreenCapture::SaveCurrentFrameTo(): invalid file path");
+			return;
+		}
+
+		FilePath fullPath = FileSystem::FullPath(path);
+		if (fullPath.isEmpty())
+		{
+			LOG_FAIL("ScreenCapture::SaveCurrentFrameTo(): failed to resolve file path");
+			return;
+		}
+
+		m_requestedPaths.push_back(std::move(fullPath));
 	}
 
 	////////////////////////////////////////////////////////////////

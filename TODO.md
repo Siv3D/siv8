@@ -42,10 +42,10 @@
 
 ## `Siv3D/include/Siv3D/ScreenCapture.hpp`
 
-### 保存先パスの契約
+### 保存先のプラットフォーム検証
 
-- `SaveCurrentFrame(U"/private/tmp/shot0.png")` が、macOS で `~/Pictures/Screenshot//private/tmp/shot0.png` に保存される。現在の `CScreenCapture.cpp` の保存処理は設定済みディレクトリと引数を単純連結し、公開ヘッダは引数を「ファイル名」としている。絶対パスをそのまま使うか、保存先からの相対指定に限定して絶対パスを拒否するか、既存利用との互換性を含めて決める。
-- ファイル名・相対サブディレクトリ・絶対パス・末尾区切りのない保存先・空の引数の扱いを整理し、Doxygen と専用の保存先テストを揃える。空の引数は現在、ファイル保存を伴わないキャプチャ要求として使われるため、その用途を維持する。Windows のドライブ文字・UNC パスは Windows 上で確認する。
+- Windows で `Test_ScreenCapture.cpp` と全自動テストを実行し、ドライブ絶対・ドライブ相対・ルート相対パスを確認する。[手動確認](Test/Manual/ScreenCapture.md) でピクチャ内の `Screenshot/` と UNC 共有への保存も確認する。
+- macOS の既定保存先への保存について、権限未付与のアプリでダイアログの有無を[手動確認](Test/Manual/ScreenCapture.md)する。自動テストは `Test/output/` 内で実行し、プライバシー権限の初回挙動は検証しない。
 
 ## Renderer2D / 組み込みシェーダ最適化
 

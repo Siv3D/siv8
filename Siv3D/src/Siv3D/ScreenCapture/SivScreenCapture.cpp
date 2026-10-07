@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/ScreenCapture.hpp>
+# include <Siv3D/DateTime.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/DynamicTexture.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
@@ -47,7 +49,37 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void SaveCurrentFrame(const FilePathView path)
+		void SaveCurrentFrame()
+		{
+			SaveCurrentFrame(DateTime::Now().format(U"yyyyMMdd-HHmmss-SSS") + U".png");
+		}
+
+		void SaveCurrentFrame(const FilePathView fileName)
+		{
+			if (fileName.isEmpty() || (fileName == U".") || (fileName == U"..")
+				|| (fileName.find_first_of(U"/\\:") != FilePathView::npos) || fileName.contains(U'\0'))
+			{
+				LOG_FAIL("ScreenCapture::SaveCurrentFrame(): expected a single file name. Use SaveCurrentFrameTo() to specify a path.");
+				return;
+			}
+
+			const auto& directory = SIV3D_ENGINE(ScreenCapture)->getScreenshotSaveDirectory();
+			if (directory.isEmpty())
+			{
+				LOG_FAIL("ScreenCapture::SaveCurrentFrame(): screenshot directory is unavailable");
+				return;
+			}
+
+			SaveCurrentFrameTo(directory + fileName);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SaveCurrentFrameTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SaveCurrentFrameTo(const FilePathView path)
 		{
 			SIV3D_ENGINE(ScreenCapture)->requestScreenCapture(path);
 		}
@@ -60,7 +92,7 @@ namespace s3d
 
 		void RequestCurrentFrame()
 		{
-			SIV3D_ENGINE(ScreenCapture)->requestScreenCapture({});
+			SIV3D_ENGINE(ScreenCapture)->requestScreenCapture();
 		}
 
 		////////////////////////////////////////////////////////////////

@@ -70,9 +70,9 @@ For new retained captures, call
 `ScreenCapture::SetScreenshotDirectory(U"quad-warp-captures/")` before the loop
 and use the default F12 screenshot shortcut. Output remains under
 `quad-warp-captures/` in the application's working directory until removed.
-When calling `SaveCurrentFrame()` directly, pass a file name, not an absolute
-path: the current implementation prepends the configured screenshot directory.
-The unresolved path contract is tracked in [TODO.md](../../TODO.md).
+Use `ScreenCapture::SaveCurrentFrame(U"front.png")` to name a capture in that
+directory. Use `ScreenCapture::SaveCurrentFrameTo(path)` to specify a different
+relative or absolute output path.
 
 Automated scope, draw-state, and rendering checks live in
 [Test_QuadWarp.cpp](../Test_QuadWarp.cpp); matrix checks live in
