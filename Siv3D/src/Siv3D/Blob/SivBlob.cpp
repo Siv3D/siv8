@@ -32,7 +32,7 @@ namespace s3d
 	{
 		if (reader)
 		{
-			readFromReader(*reader);
+			createFromReader(*reader);
 		}
 	}
 		
@@ -45,13 +45,51 @@ namespace s3d
 	bool Blob::createFromFile(const FilePathView path)
 	{
 		BinaryFileReader reader{ path };
+		return createFromReader(reader);
+	}
 
-		if (not reader)
+	////////////////////////////////////////////////////////////////
+	//
+	//	createFromReader
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Blob::createFromReader(IReader& reader)
+	{
+		if (not reader.isOpen())
 		{
+			m_data.clear();
 			return false;
 		}
 
-		return readFromReader(reader);
+		const int64 size = reader.size();
+		const int64 pos = reader.getPos();
+
+		if ((pos < 0) || (size < pos))
+		{
+			m_data.clear();
+			return false;
+		}
+
+		int64 remaining = (size - pos);
+		m_data.resize(static_cast<size_type>(remaining));
+		size_type offset = 0;
+
+		while (remaining > 0)
+		{
+			const int64 readSize = reader.read((m_data.data() + offset), remaining);
+
+			if ((readSize <= 0) || (remaining < readSize))
+			{
+				m_data.clear();
+				return false;
+			}
+
+			offset += static_cast<size_type>(readSize);
+			remaining -= readSize;
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -72,9 +110,9 @@ namespace s3d
 		// 書き込むサイズ
 		const int64 writeSize = static_cast<int64>(m_data.size_bytes());
 
-		const bool result = (writeSize == writer.write(m_data.data(), writeSize));
-
-		return result;
+		const bool written = (writeSize == writer.write(m_data.data(), writeSize));
+		const bool closed = writer.close();
+		return (written && closed);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -102,26 +140,5 @@ namespace s3d
 	void Blob::base64(Base64Value& dst) const
 	{
 		dst.encodeFromBlob(*this);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool Blob::readFromReader(IReader& reader)
-	{
-		m_data.resize(reader.size());
-
-		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
-
-		if (m_data.size() != static_cast<size_type>(readSize))
-		{
-			m_data.clear();
-			return false;
-		}
-
-		return true;
 	}
 }

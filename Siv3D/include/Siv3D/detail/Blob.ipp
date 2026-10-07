@@ -29,7 +29,7 @@ namespace s3d
 	Blob::Blob(Reader&& reader)
 	{
 		Reader ownedReader{ std::forward<Reader>(reader) };
-		readFromReader(ownedReader);
+		createFromReader(ownedReader);
 	}
 
 	inline Blob::Blob(const void* src, const size_type sizeBytes)

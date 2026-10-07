@@ -27,11 +27,11 @@ namespace s3d
 
 		bool open(FilePathView path, FileWriteMode writeMode);
 
-		void close();
+		bool close();
 
 		bool isOpen() const noexcept;
 
-		void flush();
+		bool flush();
 
 		void clear();
 
@@ -70,6 +70,8 @@ namespace s3d
 			size_t currentWritePos = 0;
 
 		} m_buffer;
+
+		bool m_hasError = false;
 
 		int64 fillBuffer(NonNull<const void*> src, size_t size);
 	};

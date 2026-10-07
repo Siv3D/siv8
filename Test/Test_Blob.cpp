@@ -36,6 +36,8 @@ namespace
 
 		using MemoryViewReader::read;
 
+		int64 advertisedSize = 6;
+
 		ProbedBlobReader(ReaderProbe& probe, const int64 readLimit, const bool throws = false)
 			: MemoryViewReader{ BlobBytes.data(), BlobBytes.size() }
 			, m_probe{ &probe }
@@ -46,6 +48,7 @@ namespace
 
 		ProbedBlobReader(ProbedBlobReader&& other) noexcept
 			: MemoryViewReader{ std::move(other) }
+			, advertisedSize{ other.advertisedSize }
 			, m_probe{ std::exchange(other.m_probe, nullptr) }
 			, m_readLimit{ other.m_readLimit }
 			, m_throws{ other.m_throws }
@@ -60,6 +63,11 @@ namespace
 				m_probe->finalPosition = getPos();
 				m_probe->destroyed = true;
 			}
+		}
+
+		int64 size() const override
+		{
+			return advertisedSize;
 		}
 
 		int64 read(void* dst, const int64 size) override
@@ -509,12 +517,12 @@ TEST_CASE("Blob.concrete_reader_move_and_lifetime")
 			const Blob blob{ std::move(reader) };
 			CHECK(probe.moves == 1);
 			CHECK(probe.destroyed); // The moved-to Reader is already gone while the source is alive.
-			CHECK(probe.readCalls == 1);
-			CHECK(probe.requestedSize == 6);
-			CHECK(probe.finalPosition == Min(position + limit, int64{ 6 }));
-			if ((position == 0) && (limit == 6))
+			const bool success = ((position == 6) || (limit > 0));
+			CHECK(probe.finalPosition == (success ? 6 : position));
+			if (position == 6) { CHECK(probe.readCalls == 0); }
+			if (success)
 			{
-				CHECK(std::ranges::equal(blob, BlobBytes));
+				CHECK((blob == Blob{ BlobBytes.data() + position, BlobBytes.size() - position }));
 			}
 			else
 			{
@@ -534,16 +542,24 @@ TEST_CASE("Blob.concrete_reader_move_and_lifetime")
 
 TEST_CASE("Blob.reader_short_read_and_exception")
 {
-	// Characterize the existing one-read behavior; the contract is under review in TODO.md.
 	for (const int64 limit : { int64{ 0 }, int64{ 2 } })
 	{
 		CAPTURE(limit);
 		ReaderProbe probe;
 		const Blob blob{ std::make_unique<ProbedBlobReader>(probe, limit) };
-		CHECK(blob.empty());
-		CHECK(probe.readCalls == 1);
-		CHECK(probe.requestedSize == 6);
-		CHECK(probe.finalPosition == limit);
+		if (limit == 0)
+		{
+			CHECK(blob.empty());
+			CHECK(probe.readCalls == 1);
+			CHECK(probe.finalPosition == 0);
+		}
+		else
+		{
+			CHECK(std::ranges::equal(blob, BlobBytes));
+			CHECK(probe.readCalls == 3);
+			CHECK(probe.requestedSize == 2);
+			CHECK(probe.finalPosition == 6);
+		}
 		CHECK(probe.destroyed);
 	}
 	ReaderProbe probe;
@@ -554,8 +570,6 @@ TEST_CASE("Blob.reader_short_read_and_exception")
 
 TEST_CASE("Blob.reader_at_nonzero_position")
 {
-	// The current constructor requests the total size, not the remaining size.
-	// Do not silently replace this with readToEnd semantics; see TODO.md.
 	for (const int64 position : { int64{ 1 }, int64{ 6 } })
 	{
 		CAPTURE(position);
@@ -563,11 +577,99 @@ TEST_CASE("Blob.reader_at_nonzero_position")
 		auto reader = std::make_unique<ProbedBlobReader>(probe, 6);
 		REQUIRE(reader->setPos(position) == position);
 		const Blob blob{ std::move(reader) };
-		CHECK(blob.empty());
-		CHECK(probe.requestedSize == 6);
+		CHECK((blob == Blob{ BlobBytes.data() + position, BlobBytes.size() - position }));
+		CHECK(probe.requestedSize == (6 - position));
 		CHECK(probe.finalPosition == 6);
 		CHECK(probe.destroyed);
 	}
+}
+
+TEST_CASE("Blob.createFromReader_reuses_capacity_and_borrows_reader")
+{
+	Blob blob{ Arg::reserve = size_t{ 64 } };
+	const auto storage = blob.data();
+	const auto capacity = blob.capacity();
+	ReaderProbe probe;
+	ProbedBlobReader reader{ probe, 2 };
+	REQUIRE(reader.setPos(1) == 1);
+	REQUIRE(blob.createFromReader(reader));
+	CHECK((blob == Blob{ BlobBytes.data() + 1, 5 }));
+	CHECK(reader.getPos() == 6);
+	CHECK(probe.readCalls == 3);
+	CHECK(probe.moves == 0);
+	CHECK_FALSE(probe.destroyed);
+	CHECK(blob.data() == storage);
+	CHECK(blob.capacity() == capacity);
+	REQUIRE(blob.createFromReader(reader)); // EOF is a successful empty result.
+	CHECK(blob.empty());
+	CHECK(probe.readCalls == 3);
+	MemoryViewReader empty{ BlobBytes.data(), 0 };
+	REQUIRE(empty.isOpen());
+	REQUIRE(blob.createFromReader(empty));
+	CHECK(blob.empty());
+}
+
+TEST_CASE("Blob.createFromReader_failures_clear_and_recover")
+{
+	Blob blob{ Arg::reserve = size_t{ 64 } };
+	const auto storage = blob.data();
+	const auto capacity = blob.capacity();
+	for (const int64 advertisedSize : { int64{ -1 }, int64{ 9 } })
+	{
+		CAPTURE(advertisedSize);
+		ReaderProbe probe;
+		ProbedBlobReader reader{ probe, 2 };
+		reader.advertisedSize = advertisedSize;
+		blob.assign(BlobBytes.data(), BlobBytes.size());
+		CHECK_FALSE(blob.createFromReader(reader));
+		CHECK(blob.empty());
+		CHECK(blob.data() == storage);
+		CHECK(blob.capacity() == capacity);
+		CHECK(reader.getPos() == ((advertisedSize < 0) ? 0 : 6));
+		CHECK(probe.readCalls == ((advertisedSize < 0) ? 0 : 4));
+		CHECK_FALSE(probe.destroyed);
+	}
+	ReaderProbe probe;
+	ProbedBlobReader reader{ probe, 6 };
+	reader.advertisedSize = 2;
+	REQUIRE(reader.setPos(3) == 3);
+	CHECK_FALSE(blob.createFromReader(reader));
+	CHECK(probe.readCalls == 0);
+	CHECK(reader.getPos() == 3);
+	MemoryViewReader closed;
+	blob.assign(BlobBytes.data(), BlobBytes.size());
+	CHECK_FALSE(blob.createFromReader(closed));
+	CHECK(blob.empty());
+	CHECK(blob.capacity() == capacity);
+	reader.advertisedSize = 6;
+	REQUIRE(reader.setPos(0) == 0);
+	REQUIRE(blob.createFromReader(reader));
+	CHECK(std::ranges::equal(blob, BlobBytes));
+	CHECK(blob.data() == storage);
+}
+
+TEST_CASE("Blob.createFromReader_uses_initial_end_and_propagates_exceptions")
+{
+	class GrowingReader : public ProbedBlobReader
+	{
+	public:
+		using ProbedBlobReader::ProbedBlobReader;
+		int64 size() const override { return ((getPos() == 0) ? 4 : 6); }
+	};
+	ReaderProbe growth;
+	GrowingReader reader{ growth, 2 };
+	Blob blob;
+	REQUIRE(blob.createFromReader(reader));
+	CHECK((blob == Blob{ BlobBytes.data(), 4 }));
+	CHECK(reader.getPos() == 4);
+	CHECK(growth.readCalls == 2);
+	ReaderProbe failure;
+	ProbedBlobReader throwing{ failure, 6, true };
+	CHECK_THROWS_AS(blob.createFromReader(throwing), std::runtime_error);
+	CHECK_FALSE(failure.destroyed);
+	MemoryViewReader recovery{ BlobBytes.data(), BlobBytes.size() };
+	REQUIRE(blob.createFromReader(recovery));
+	CHECK(std::ranges::equal(blob, BlobBytes));
 }
 
 TEST_CASE("Blob.file_round_trip_and_capacity_reuse")
@@ -610,7 +712,7 @@ TEST_CASE("Blob.file_round_trip_and_capacity_reuse")
 	CHECK(loaded.capacity() == capacity);
 }
 
-TEST_CASE("Blob.file_open_failures_preserve_existing_data")
+TEST_CASE("Blob.file_open_failures_clear_and_preserve_capacity")
 {
 	const auto missing = Test::OutputPath(U"blob/does-not-exist.bin");
 	const auto directory = Test::OutputPath(U"blob/directory/");
@@ -624,12 +726,14 @@ TEST_CASE("Blob.file_open_failures_preserve_existing_data")
 	for (const FilePath& path : { missing, directory, FilePath{} })
 	{
 		CAPTURE(path);
+		blob = expected;
 		REQUIRE_FALSE(blob.createFromFile(path));
-		CHECK(blob == expected);
+		CHECK(blob.empty());
 		CHECK(blob.data() == storage);
 		CHECK(blob.capacity() == capacity);
 		CHECK(Blob{ path }.empty());
 	}
+	blob = expected;
 	CHECK_FALSE(blob.save(directory));
 	CHECK_FALSE(blob.save(U""));
 	CHECK(blob == expected);

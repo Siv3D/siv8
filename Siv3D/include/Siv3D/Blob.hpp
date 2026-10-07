@@ -70,19 +70,22 @@ namespace s3d
 
 		/// @brief ファイルの中身をコピーしたバイナリデータを作成します。
 		/// @param path ファイルパス
+		/// @remark 読み込みを完了できなかった場合は空になります。
 		[[nodiscard]]
 		explicit Blob(FilePathView path);
 
-		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @brief Reader の現在位置から終端までのバイナリデータを作成します。
 		/// @param reader 所有権を移す Reader オブジェクト。nullptr の場合は空になります。
 		/// @remark Reader は構築処理の終了時に破棄されます。
+		/// @remark 読み込みを完了できなかった場合は空になります。読み込みの契約は createFromReader() と同じです。
 		[[nodiscard]]
 		explicit Blob(std::unique_ptr<IReader> reader);
 
-		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @brief Reader の現在位置から終端までのバイナリデータを作成します。
 		/// @tparam Reader Reader オブジェクトの型
 		/// @param reader ムーブ元の Reader オブジェクト
 		/// @remark ムーブ先の Reader は構築処理の終了時に破棄されます。
+		/// @remark 読み込みを完了できなかった場合は空になります。読み込みの契約は createFromReader() と同じです。
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		explicit Blob(Reader&& reader);
@@ -179,7 +182,24 @@ namespace s3d
 		/// @brief ファイルの中身をコピーします。
 		/// @param path ファイルパス
 		/// @return ファイルの読み込みに成功した場合 true, それ以外の場合は false
+		/// @remark false を返した場合は空になります。既存の容量を再利用し、失敗時も解放しません。
+		/// @remark メモリ確保や読み込みの例外は呼び出し側に伝播します。
 		bool createFromFile(FilePathView path);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	createFromReader
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Reader の現在位置から終端までのデータで内容を置き換えます。
+		/// @param reader 読み込み元。所有権は移動しません。
+		/// @pre reader の読み込み元は、この Blob の記憶領域を参照していないこと。
+		/// @return 開始時の size() - getPos() バイトをすべて読めた場合 true（残量 0 を含む）。Reader が閉じている、開始位置が [0, size()] の範囲外、または全量を読めなかった場合は false。
+		/// @remark 正の短い読み込みでは続きを読みます。Reader の位置は読めた分だけ進み、失敗時も巻き戻しません。
+		/// @remark false を返した場合は空になります。既存の容量を再利用し、失敗時も解放しません。
+		/// @remark メモリ確保や Reader の例外は呼び出し側に伝播します。例外時の内容は保証しません。
+		bool createFromReader(IReader& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -663,7 +683,8 @@ namespace s3d
 
 		/// @brief バイナリデータをファイルに保存します。
 		/// @param path ファイルパス
-		/// @return 保存に成功した場合 true, それ以外の場合は false
+		/// @return 全バイトを書き込み、バッファの出力とファイルのクローズでエラーを検出しなかった場合 true, それ以外の場合は false
+		/// @remark 既存のファイルは上書きされます。失敗時に元の内容は復元されず、部分的に書き込まれたファイルが残る場合があります。
 		bool save(FilePathView path) const;
 
 		////////////////////////////////////////////////////////////////
@@ -723,8 +744,6 @@ namespace s3d
 	private:
 
 		base_type m_data;
-
-		bool readFromReader(IReader& reader);
 	};
 }
 
