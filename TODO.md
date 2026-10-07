@@ -40,12 +40,6 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
-## `Siv3D/include/Siv3D/ScreenCapture.hpp`
-
-### 保存先のプラットフォーム検証
-
-- Windows で `Test_ScreenCapture.cpp` と全自動テストを実行し、ドライブ絶対・ドライブ相対・ルート相対パスを確認する。[手動確認](Test/Manual/ScreenCapture.md) でピクチャ内の `Screenshot/` と UNC 共有への保存も確認する。
-
 ## Renderer2D / 組み込みシェーダ最適化
 
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
