@@ -38,21 +38,21 @@ namespace s3d
 
 		/// @brief 曲線と計測結果を置き換えます。
 		/// @return *this
-		Spline2DMeasure& operator =(Spline2DMeasure other) noexcept { swap(other); return *this; }
+		Spline2DMeasure& operator =(Spline2DMeasure other) noexcept;
 
 		/// @brief 計測した経路が空の場合に true を返します。
 		[[nodiscard]]
-		bool isEmpty() const noexcept { return m_spline.isEmpty(); }
+		bool isEmpty() const noexcept;
 
 		/// @brief 経路全体の長さを返します。
 		/// @return 座標と同じ単位の長さ。空の経路なら 0。
 		[[nodiscard]]
-		double length() const noexcept { return (m_prefixLengths.isEmpty() ? 0.0 : m_prefixLengths.back()); }
+		double length() const noexcept;
 
 		/// @brief 計測に使った曲線を参照します。
 		/// @return 所有する曲線。このオブジェクトの破棄・代入・swap() まで有効です。
 		[[nodiscard]]
-		const Spline2D& spline() const& noexcept { return m_spline; }
+		const Spline2D& spline() const& noexcept;
 		const Spline2D& spline() const&& = delete;
 
 		/// @brief 始点から指定した距離にある区間とパラメータを求めます。
@@ -91,3 +91,5 @@ namespace s3d
 		Array<double> m_prefixLengths;
 	};
 }
+
+# include "detail/Spline2DMeasure.ipp"

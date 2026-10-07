@@ -49,20 +49,9 @@ namespace s3d
 			/// @pre 各数値は有限で、各メンバに記載された条件を満たす必要があります。
 			/// @return 同心円の配置と線幅を格納した描画パラメータ。
 			[[nodiscard]]
-			operator PatternParameters() const noexcept
-			{
-				const double invPitch = (1.0 / pitch);
-				return{
-					.primaryColor = primary.toFloat4(),
-					.backgroundColor = background.toFloat4(),
-					.uvTransform = {
-						static_cast<float>(invPitch), 0.0f, 0.0f, static_cast<float>(invPitch),
-						static_cast<float>(-center.x * invPitch), static_cast<float>(-center.y * invPitch) },
-					.param0 = static_cast<float>(thickness * invPitch),
-					.param1 = static_cast<float>(radiusOffset * invPitch),
-					.type = PatternType::Ripple,
-				};
-			}
+			operator PatternParameters() const noexcept;
 		};
 	}
 }
+
+# include "Ripple.ipp"

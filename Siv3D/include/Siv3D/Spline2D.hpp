@@ -50,16 +50,16 @@ namespace s3d
 
 		/// @brief 区間数を返します。通過点の数ではありません。
 		[[nodiscard]]
-		size_t segmentCount() const noexcept { return m_segments.size(); }
+		size_t segmentCount() const noexcept;
 
 		/// @brief 区間がない場合に true を返します。
 		[[nodiscard]]
-		bool isEmpty() const noexcept { return m_segments.isEmpty(); }
+		bool isEmpty() const noexcept;
 
 		/// @brief 閉じた経路として作成され、区間がある場合に true を返します。
 		/// @remark 始点と終点の座標が同じだけでは、閉じた経路とはみなしません。
 		[[nodiscard]]
-		bool isClosed() const noexcept { return (m_closed && not isEmpty()); }
+		bool isClosed() const noexcept;
 
 		/// @brief 指定した区間を参照します。
 		/// @param index 0 から始まる区間番号
@@ -73,7 +73,7 @@ namespace s3d
 		/// @brief 全区間を読み取り専用の span で参照します。
 		/// @return 区間の列。経路の破棄・代入・clear()・反転まで有効です。
 		[[nodiscard]]
-		std::span<const Bezier3> segments() const& noexcept { return { m_segments.data(), m_segments.size() }; }
+		std::span<const Bezier3> segments() const& noexcept;
 		std::span<const Bezier3> segments() const&& = delete;
 
 		/// @brief 区間番号とパラメータから曲線上の座標を求めます。
@@ -145,10 +145,10 @@ namespace s3d
 		Spline2D reversed() const;
 
 		/// @brief 区間を取り除き、空の経路にします。
-		void clear() noexcept { m_segments.clear(); m_closed = false; }
+		void clear() noexcept;
 
 		/// @brief 別の経路と内容を交換します。
-		void swap(Spline2D& other) noexcept { m_segments.swap(other.m_segments); std::swap(m_closed, other.m_closed); }
+		void swap(Spline2D& other) noexcept;
 
 	private:
 
@@ -156,3 +156,5 @@ namespace s3d
 		bool m_closed = false;
 	};
 }
+
+# include "detail/Spline2D.ipp"

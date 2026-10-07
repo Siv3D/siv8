@@ -3,6 +3,7 @@
 - Use LF line endings in source files, preserve LF in existing ones, and verify the line endings of every modified source file before finishing. Byte-exact test fixtures are exempt: mark them as binary in the nearest `.gitattributes`, do not normalize them, and verify their actual bytes.
 - Run `git diff --check` before finishing any code change.
 - Preserve the user's uncommitted changes and do not revert unrelated diffs.
+- For public classes, place ordinary inline function bodies in the corresponding `.ipp` files and keep declarations and Doxygen in `.hpp` files. Keep non-public class implementations, internal helpers, and hidden friend definitions in `.hpp` files. Keep `= default` and `= delete` on their original declarations.
 - Treat `Siv3D/src/ThirdParty/` as vendored code and do not change it unless the task requires it. Suppress third-party warnings with target- or file-scoped build settings instead of source edits.
 - Before adding local complexity, examine callers, callees, and responsibility boundaries for a simpler overall design. Proactively propose changes at the source of the complexity, including broader refactoring when justified, and break larger changes into small, reviewable stages.
 

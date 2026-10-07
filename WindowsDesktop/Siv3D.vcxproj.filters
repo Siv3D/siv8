@@ -4026,6 +4026,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp">
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Weave.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Wave.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Truchet.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Ripple.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Halftone.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp">
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
@@ -5119,6 +5134,12 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3Walker.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline2DMeasure.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline2D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp">

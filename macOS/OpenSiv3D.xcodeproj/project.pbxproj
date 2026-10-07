@@ -2842,6 +2842,8 @@
 		F99881582F40B5A500C8991D /* Bezier3Walker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881572F40B5A500C8991D /* Bezier3Walker.hpp */; };
 		F998815A2F40B5B900C8991D /* Bezier2Walker.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881592F40B5B900C8991D /* Bezier2Walker.ipp */; };
 		F998815C2F40B5C200C8991D /* Bezier3Walker.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */; };
+		9C68ACAA8B6BFA4FC3D07BAA /* Spline2DMeasure.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 475B30C2BD11135D4FA7E080 /* Spline2DMeasure.ipp */; };
+		84D5715483BD9B0F930277D9 /* Spline2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7C32F3C97C2C2883A624AC5F /* Spline2D.ipp */; };
 		F998815E2F40B5F200C8991D /* Spline.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998815D2F40B5F200C8991D /* Spline.ipp */; };
 		F99881602F40B5FD00C8991D /* Spline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998815F2F40B5FD00C8991D /* Spline.hpp */; };
 		F99881622F40B61700C8991D /* Transition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881612F40B61700C8991D /* Transition.hpp */; };
@@ -3077,6 +3079,11 @@
 		F9D41B842C56057700290998 /* HexGrid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7A2C56057700290998 /* HexGrid.hpp */; };
 		F9D41B852C56057700290998 /* PatternParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7B2C56057700290998 /* PatternParameters.hpp */; };
 		F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7C2C56057700290998 /* PatternParameters.ipp */; };
+		7CBB67B7DDE64F26D9F44875 /* Weave.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 1E8E54E0B60876A02BBAF9E1 /* Weave.ipp */; };
+		42C1DED441EAE4A59D13D561 /* Wave.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 13F152AE642ACC8845195C36 /* Wave.ipp */; };
+		5D559BD54F20F3B2A38ADF38 /* Truchet.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 6EE95F9CEE2E99C8C5070B0C /* Truchet.ipp */; };
+		77758E4DC44622392F139D87 /* Ripple.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 46A87A0CC6DE97928624F57E /* Ripple.ipp */; };
+		ACE8B9A060E0D410644D780D /* Halftone.ipp in Headers */ = {isa = PBXBuildFile; fileRef = EF0FAC36B68EE342354A5ED4 /* Halftone.ipp */; };
 		F9D41B872C56057700290998 /* PatternType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7D2C56057700290998 /* PatternType.hpp */; };
 		F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7E2C56057700290998 /* PolkaDot.hpp */; };
 		F9D41B892C56057700290998 /* Stripe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7F2C56057700290998 /* Stripe.hpp */; };
@@ -6321,6 +6328,8 @@
 		F99881572F40B5A500C8991D /* Bezier3Walker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Walker.hpp; sourceTree = "<group>"; };
 		F99881592F40B5B900C8991D /* Bezier2Walker.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier2Walker.ipp; sourceTree = "<group>"; };
 		F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Walker.ipp; sourceTree = "<group>"; };
+		475B30C2BD11135D4FA7E080 /* Spline2DMeasure.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2DMeasure.ipp; sourceTree = "<group>"; };
+		7C32F3C97C2C2883A624AC5F /* Spline2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2D.ipp; sourceTree = "<group>"; };
 		F998815D2F40B5F200C8991D /* Spline.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline.ipp; sourceTree = "<group>"; };
 		F998815F2F40B5FD00C8991D /* Spline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline.hpp; sourceTree = "<group>"; };
 		F99881612F40B61700C8991D /* Transition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Transition.hpp; sourceTree = "<group>"; };
@@ -6558,6 +6567,11 @@
 		F9D41B7A2C56057700290998 /* HexGrid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HexGrid.hpp; sourceTree = "<group>"; };
 		F9D41B7B2C56057700290998 /* PatternParameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.hpp; sourceTree = "<group>"; };
 		F9D41B7C2C56057700290998 /* PatternParameters.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.ipp; sourceTree = "<group>"; };
+		1E8E54E0B60876A02BBAF9E1 /* Weave.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Weave.ipp; sourceTree = "<group>"; };
+		13F152AE642ACC8845195C36 /* Wave.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wave.ipp; sourceTree = "<group>"; };
+		6EE95F9CEE2E99C8C5070B0C /* Truchet.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Truchet.ipp; sourceTree = "<group>"; };
+		46A87A0CC6DE97928624F57E /* Ripple.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ripple.ipp; sourceTree = "<group>"; };
+		EF0FAC36B68EE342354A5ED4 /* Halftone.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Halftone.ipp; sourceTree = "<group>"; };
 		F9D41B7D2C56057700290998 /* PatternType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternType.hpp; sourceTree = "<group>"; };
 		F9D41B7E2C56057700290998 /* PolkaDot.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolkaDot.hpp; sourceTree = "<group>"; };
 		F9D41B7F2C56057700290998 /* Stripe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Stripe.hpp; sourceTree = "<group>"; };
@@ -7582,6 +7596,8 @@
 				F998813D2F40B4F600C8991D /* Bezier3.ipp */,
 				96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */,
 				F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */,
+				475B30C2BD11135D4FA7E080 /* Spline2DMeasure.ipp */,
+				7C32F3C97C2C2883A624AC5F /* Spline2D.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F902E0E32E9E70B3002C6B92 /* BinaryFileReader.ipp */,
@@ -14020,6 +14036,11 @@
 				F9D41B7A2C56057700290998 /* HexGrid.hpp */,
 				F9D41B7B2C56057700290998 /* PatternParameters.hpp */,
 				F9D41B7C2C56057700290998 /* PatternParameters.ipp */,
+				1E8E54E0B60876A02BBAF9E1 /* Weave.ipp */,
+				13F152AE642ACC8845195C36 /* Wave.ipp */,
+				6EE95F9CEE2E99C8C5070B0C /* Truchet.ipp */,
+				46A87A0CC6DE97928624F57E /* Ripple.ipp */,
+				EF0FAC36B68EE342354A5ED4 /* Halftone.ipp */,
 				F9D41B7D2C56057700290998 /* PatternType.hpp */,
 				F9D41B7E2C56057700290998 /* PolkaDot.hpp */,
 				C94BD36A8015474EA6324EE2 /* Halftone.hpp */,
@@ -14830,6 +14851,11 @@
 				F986045F2BCFBB54006A4C0F /* SkSLProgramWriter.h in Headers */,
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
 				F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */,
+				7CBB67B7DDE64F26D9F44875 /* Weave.ipp in Headers */,
+				42C1DED441EAE4A59D13D561 /* Wave.ipp in Headers */,
+				5D559BD54F20F3B2A38ADF38 /* Truchet.ipp in Headers */,
+				77758E4DC44622392F139D87 /* Ripple.ipp in Headers */,
+				ACE8B9A060E0D410644D780D /* Halftone.ipp in Headers */,
 				F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */,
 				FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */,
 				9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */,
@@ -15287,6 +15313,8 @@
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F902E0F72E9E715C002C6B92 /* TextFileWriterDetail.hpp in Headers */,
 				F998815C2F40B5C200C8991D /* Bezier3Walker.ipp in Headers */,
+				9C68ACAA8B6BFA4FC3D07BAA /* Spline2DMeasure.ipp in Headers */,
+				84D5715483BD9B0F930277D9 /* Spline2D.ipp in Headers */,
 				F902E0F82E9E715C002C6B92 /* TextFileReaderDetail.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
 				F99881462F40B53300C8991D /* Bezier.hpp in Headers */,
