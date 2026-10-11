@@ -242,7 +242,7 @@ namespace s3d
 
 		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
 		/// @remark ディスプレイの表示モードを変更せず、指定したモニター全体に表示します。
-		/// @remark シーンのリサイズモード、高精細描画の設定、拡大縮小フィルタは維持します。シーンのサイズは選択中のリサイズモードに従います。
+		/// @remark シーンのリサイズモード、高精細描画の設定、拡大縮小フィルタは維持します。
 		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
 		/// @param monitorIndex 表示するモニタのインデックス
 		void SetFullscreen(bool fullscreen, size_t monitorIndex = System::GetCurrentMonitorIndex());
@@ -257,7 +257,6 @@ namespace s3d
 		/// @param enabled 切り替えを有効にする場合は true, 無効にする場合は false
 		/// @remark Windows 版では Alt + Enter、macOS 版では Control + Command + F と全画面メニューが対象です。デフォルトで有効です。
 		/// @remark 切り替えは次の System::Update() で行います。無効化すると保留中の切り替えを取り消します。
-		/// @remark 切り替え時のシーンの扱いは SetFullscreen() と同じです。無効化しても SetFullscreen() は使用できます。
 		void SetToggleFullscreenEnabled(bool enabled);
 
 		////////////////////////////////////////////////////////////////
@@ -266,7 +265,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief SetToggleFullscreenEnabled() の対象となる操作が有効であるかを返します。
+		/// @brief ショートカットキーやメニューによるフルスクリーン切り替えが有効かを返します。
 		/// @return 有効である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsToggleFullscreenEnabled();

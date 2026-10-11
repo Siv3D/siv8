@@ -46,7 +46,7 @@ namespace s3d
 		Rect workArea = Rect::Empty();
 
 		/// @brief 現在の表示設定でフルスクリーンにした場合のフレームバッファサイズ（ピクセル）
-		/// @remark macOS では backing store のピクセル数で、パネルの物理画素数とは一致しない場合があります。取得できない場合は { 0, 0 } です。
+		/// @remark macOS ではパネルの物理画素数と一致しない場合があります。取得できない場合は { 0, 0 } です。
 		Size fullscreenResolution{ 0, 0 };
 
 		/// @brief 物理的なサイズ (mm)

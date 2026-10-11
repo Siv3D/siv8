@@ -113,7 +113,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在のフレームにおける、マウスカーソルのスクリーン座標を返します。
-		/// @remark Window::SetPos() と同じ座標系です。クライアント内のピクセル座標は PosRaw() で取得します。
+		/// @remark Window::SetPos() と同じ座標系です。
 		/// @return 現在のフレームにおける、マウスカーソルのスクリーン座標。Windows ではピクセル、macOS では point。
 		[[nodiscard]]
 		Point ScreenPos() noexcept;
