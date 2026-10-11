@@ -30,7 +30,11 @@ Use a resizable window and, where available, monitors with different scale facto
    must not execute a previously ignored shortcut.
    Repeat on monitors to the right, left, above, and below the primary monitor,
    including different DPI settings. Fullscreen must cover exactly the selected
-   monitor, and returning must restore the window's position and dimensions.
+   monitor without changing the OS display mode or rearranging other monitors,
+   and returning must restore the window's position and dimensions. On macOS,
+   confirm the selected Retina desktop scale is retained. While fullscreen,
+   use **4/5/6** to resize: a changed size must return to a window; the scene
+   policy must stay selected.
 5. Press **C** to enable camera controls, then use the wheel and right-drag to
    zoom and move. Toggle **H** during a drag and check that the same point stays
    under the cursor. Press **C** again to return to scene coordinates.

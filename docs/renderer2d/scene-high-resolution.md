@@ -103,7 +103,8 @@ Configure sizes before drawing to avoid mixing layout based on different sizes.
 OS-driven window resizing is applied during preparation of the next frame, after
 the preceding frame has been presented.
 
-Fullscreen switches preserve the scene resize mode, high resolution setting,
+Fullscreen covers the selected monitor without changing its OS display mode.
+Switches preserve the scene resize mode, high resolution setting,
 and texture filter. Windows Alt+Enter uses the same transition as
 `Window::SetFullscreen()`. Keep retains its logical canvas, while Virtual and
 Actual follow the fullscreen window's virtual and framebuffer dimensions.
@@ -133,8 +134,11 @@ fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
 On macOS it checks API round trips for all six settings, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
-position and dimensions for each source/destination monitor pair, and native
-minimized state. The macOS monitor test places the window with
+position and dimensions for each source/destination monitor pair, native
+minimized state, unchanged native desktop modes and monitor positions, and
+fullscreen resize requests. Capture dimensions and transformed cursor hit tests
+are also checked for all six settings on each monitor. The macOS monitor test
+places the window with
 `Window::CenterToScreen(index)` before exercising the public fullscreen API.
 See [desktop coordinates](../window/README.md) for point-based macOS placement
 and client-pixel input. Mixed-DPI, nonzero and

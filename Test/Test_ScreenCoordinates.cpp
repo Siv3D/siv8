@@ -115,6 +115,9 @@ namespace s3d
 				CHECK(monitor.workArea.w == Test::Approx(work.size.width));
 				CHECK(monitor.workArea.h == Test::Approx(work.size.height));
 				CHECK(monitor.scaling == [screen backingScaleFactor]);
+				const NSSize backing = [screen convertRectToBacking:screen.frame].size;
+				CHECK(monitor.fullscreenResolution == Size{ static_cast<int32>(std::round(backing.width)),
+					static_cast<int32>(std::round(backing.height)) });
 			}
 			CHECK(found);
 		}

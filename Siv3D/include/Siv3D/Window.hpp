@@ -192,7 +192,7 @@ namespace s3d
 		/// @param size 新しいサイズ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(size, centerWindow)` と同じです。
+		/// @remark `Resize(size, centerWindow)` と同じです。サイズを変更する場合はフルスクリーンを解除します。
 		bool ResizeVirtual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
@@ -200,7 +200,7 @@ namespace s3d
 		/// @param height 新しい高さ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(width, height, centerWindow)` と同じです。
+		/// @remark `Resize(width, height, centerWindow)` と同じです。サイズを変更する場合はフルスクリーンを解除します。
 		bool ResizeVirtual(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
@@ -210,12 +210,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
+		/// @remark サイズを変更する場合はフルスクリーンを解除します。macOS では復帰先のモニターの倍率で point 単位に丸めます。
 		/// @param size 新しいサイズ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
 		bool ResizeActual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
+		/// @remark サイズを変更する場合はフルスクリーンを解除します。macOS では復帰先のモニターの倍率で point 単位に丸めます。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
@@ -239,6 +241,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
+		/// @remark ディスプレイの表示モードを変更せず、指定したモニター全体に表示します。
 		/// @remark シーンのリサイズモード、高精細描画の設定、拡大縮小フィルタは維持します。シーンのサイズは選択中のリサイズモードに従います。
 		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
 		/// @param monitorIndex 表示するモニタのインデックス

@@ -43,4 +43,21 @@ namespace s3d::WindowMisc
 			[window setFrameTopLeftPoint:NSMakePoint(pos.x, (desktopTop - pos.y))];
 		}
 	}
+
+	Size GetFullscreenResolution(GLFWmonitor* monitor)
+	{
+		@autoreleasepool
+		{
+			const CGDirectDisplayID displayID = ::glfwGetCocoaMonitor(monitor);
+			for (NSScreen* screen in [NSScreen screens])
+			{
+				if ([screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue] == displayID)
+				{
+					const NSSize size = [screen convertRectToBacking:screen.frame].size;
+					return Math::Round(Vec2{ size.width, size.height }).asPoint();
+				}
+			}
+			return{ 0, 0 };
+		}
+	}
 }

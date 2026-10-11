@@ -45,7 +45,8 @@ namespace s3d
 		/// @remark Window::SetPos() と同じスクリーン座標系です。位置・サイズともに Windows ではピクセル、macOS では point です。
 		Rect workArea = Rect::Empty();
 
-		/// @brief フルスクリーン時の解像度
+		/// @brief 現在の表示設定でフルスクリーンにした場合のフレームバッファサイズ（ピクセル）
+		/// @remark macOS では backing store のピクセル数で、パネルの物理画素数とは一致しない場合があります。取得できない場合は { 0, 0 } です。
 		Size fullscreenResolution{ 0, 0 };
 
 		/// @brief 物理的なサイズ (mm)

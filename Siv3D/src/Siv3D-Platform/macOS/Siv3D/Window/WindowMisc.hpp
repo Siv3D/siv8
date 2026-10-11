@@ -13,6 +13,7 @@
 # include <Siv3D/WindowState.hpp>
 
 struct GLFWwindow;
+struct GLFWmonitor;
 
 namespace s3d::WindowMisc
 {
@@ -20,4 +21,7 @@ namespace s3d::WindowMisc
 	void UpdateGeometry(GLFWwindow* glfwWindow, WindowState& state);
 
 	void SetPos(GLFWwindow* glfwWindow, Point pos);
+
+	// Backing pixels of a window covering this monitor's current desktop frame.
+	Size GetFullscreenResolution(GLFWmonitor* monitor);
 }

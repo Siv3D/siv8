@@ -46,8 +46,38 @@ Moving a window between macOS monitors keeps its point dimensions while its
 framebuffer dimensions can change. `ResizeMode::Keep` retains the logical scene
 size, `Virtual` follows the client point dimensions, and `Actual` follows the
 framebuffer pixels. The selected high-resolution and interpolation settings
-continue to apply. Monitor `fullscreenResolution` describes the fullscreen mode;
-it must not be substituted for the current desktop rectangle.
+continue to apply. Monitor `fullscreenResolution` is the framebuffer size in
+pixels for fullscreen at the current desktop setting. On macOS it describes
+backing pixels, which may differ from the panel's physical pixel count. Use
+`displayRect` for desktop placement, and the window's `frameBufferSize` for its
+actual framebuffer dimensions.
+
+## Fullscreen
+
+`Window::SetFullscreen()` covers the selected display without changing its OS
+display mode. Resolution, refresh rate, and desktop scaling remain under the
+user's control. The full display rectangle is used, including the area normally
+occupied by the menu bar and Dock. On macOS, a fullscreen window minimizes
+when it loses focus.
+
+A Retina fullscreen window keeps its point dimensions separate from its backing
+pixels. `Virtual` follows the point dimensions; high resolution rendering uses
+the available framebuffer pixels. `Actual` follows those pixels directly.
+Applications with a fixed game canvas should select `Keep`. macOS's final display
+scaling can resample the framebuffer, so nearest scene sampling alone does not
+guarantee integer scaling on the physical panel.
+
+Calling `Window::Resize()`, `ResizeVirtual()`, or `ResizeActual()` with a changed
+size exits fullscreen and resizes the restored window. The macOS actual-size
+conversion uses the restored window's monitor scale; a request in backing pixels
+is rounded to a client size in points. Reapplying the current size leaves the
+window fullscreen. Scene resize mode, high resolution, and filtering remain
+selected throughout these operations.
+
+Previous macOS fullscreen behavior selected a large enumerated display mode.
+Fullscreen point dimensions, backing dimensions, and `fullscreenResolution` can
+therefore change when adopting desktop-mode preservation. The scene size rules
+remain the same; the desktop setting now supplies their input dimensions.
 
 ## Migrating stored macOS positions
 
@@ -80,7 +110,11 @@ local and camera transforms, hit testing, and raw cursor pixels when the pointer
 is on another monitor. Actual mixed-DPI and negative-origin coverage depends on
 the connected display layout.
 [Fullscreen tests](../../Test/Test_WindowFullscreen.cpp) separately check every
-source/destination monitor pair using public placement APIs; their explicit run
+source/destination monitor pair using public placement APIs. Native display
+mode IDs, point/pixel dimensions, refresh rates, and all monitor origins must
+match the snapshot taken before entering fullscreen, including after
+minimization/restoration and fullscreen resize calls. Work areas are not required
+to remain identical because the Dock may move. Their explicit run
 command is in the [scene guide](../renderer2d/scene-high-resolution.md#validation).
 Use the [interactive program](../../Test/Manual/SceneHighResolution.md) to check
 continuous dragging, drawing, and physical pointer interaction. Automated native

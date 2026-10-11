@@ -141,7 +141,9 @@ static void updateCursorMode(_GLFWwindow* window)
 //
 static void acquireMonitor(_GLFWwindow* window)
 {
-    _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
+    // [Siv3D] Also applies when restoring a minimized fullscreen window.
+    if (!window->ns.preserveVideoMode)
+        _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
                                     _glfwTransformYCocoa(bounds.origin.y + bounds.size.height - 1),
@@ -161,7 +163,9 @@ static void releaseMonitor(_GLFWwindow* window)
         return;
 
     _glfwInputMonitorWindow(window->monitor, NULL);
-    _glfwRestoreVideoModeCocoa(window->monitor);
+    // [Siv3D] Do not restore a mode when this window never changed it.
+    if (!window->ns.preserveVideoMode)
+        _glfwRestoreVideoModeCocoa(window->monitor);
 }
 
 // Translates macOS key modifiers into GLFW ones
@@ -2548,6 +2552,16 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
+
+// [Siv3D] Enable once on a newly created, windowed engine window.
+GLFWAPI void glfwPreserveVideoMode_Siv3D(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT();
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(window->monitor == NULL);
+    window->ns.preserveVideoMode = GLFW_TRUE;
+}
 
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {

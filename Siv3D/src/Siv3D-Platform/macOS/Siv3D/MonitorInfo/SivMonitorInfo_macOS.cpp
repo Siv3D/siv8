@@ -13,6 +13,7 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
+# include "../Window/WindowMisc.hpp"
 
 extern"C"
 {
@@ -85,18 +86,7 @@ namespace s3d
 					}
 				}
 				
-				Size fullscreenResolution{ 0, 0 };
-				{
-					int32 numModes = 0;
-					
-					if (const GLFWvidmode* vidModes = ::glfwGetVideoModes(monitor, &numModes))
-					{
-						if (numModes)
-						{
-							fullscreenResolution.set(vidModes[numModes - 1].width, vidModes[numModes - 1].height);
-						}
-					}
-				}
+				const Size fullscreenResolution = WindowMisc::GetFullscreenResolution(monitor);
 
 				const MonitorInfo info =
 				{

@@ -24,6 +24,7 @@ establish behavioral compatibility.
 | `cocoa_init.m` | Secure restorable-state support; context backend termination calls are disabled to match the Metal-only integration. |
 | `cocoa_monitor.m` | Siv3D monitor rectangle, display ID, unit number, work area and current-monitor queries. |
 | `cocoa_window.m` | Window position and size getters use outer-frame backing pixels; size callbacks use client points, and cursor positions use client backing pixels. Move callbacks carry `(1, 0)` at move start and `(0, 0)` at completion, as consumed by `CWindow::OnMove`. |
+| `cocoa_platform.h`, `cocoa_window.m` | A per-window `preserveVideoMode` policy bypasses video-mode selection and restoration while retaining fullscreen placement and monitor ownership. `CWindow` enables it once through `glfwPreserveVideoMode_Siv3D`. |
 | `cocoa_window.m` | File/text drag acceptance, drag-over state, inbound drops and outbound dragging use `GLFW_Siv3D_DragDropBridge.h` and the macOS `CDragDropBridge.mm`. |
 | `cocoa_window.m` | Pointer/tablet events forward proximity, pressure and tilt to `CPentablet`. |
 | `cocoa_window.m` | NSGL/EGL/OSMesa context creation is disabled; Siv3D creates `GLFW_NO_API` windows and attaches its Metal layer. |
@@ -52,6 +53,14 @@ position plus the title-bar offset, without applying a monitor scale. Do not use
 the customized GLFW size getter as a virtual client size; `WindowMisc` reads the
 native content view instead. The vendor compatibility tests intentionally keep
 checking GLFW's own coordinate contract, separately from the public API tests.
+
+The engine enables desktop-mode preservation before the first fullscreen
+transition. Both monitor acquisition and release honor it, including the
+minimize/restore callbacks. Passing the current mode to ordinary GLFW fullscreen
+selection alone is insufficient: macOS can omit a current scaled Retina mode
+from the enumerated list, and GLFW chooses a listed mode before comparing it
+with the current mode. The policy bypasses that selection entirely. Do not
+replace it with restoring the desktop layout after changing modes.
 
 ## Keyboard integration
 

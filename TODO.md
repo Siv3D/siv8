@@ -42,7 +42,8 @@
 
 ## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
 
-- [point 座標](docs/window/README.md)での中央配置・位置の往復・全画面復帰を、主モニターの左・真上・真下に外部画面を配置して検証する。`ScreenCoordinates.*` / `WindowFullscreen.*` の実行と、[手動テスト](Test/Manual/SceneHighResolution.md)での連続ドラッグ・ポインター操作の目視確認を区別する。
+- macOS の表示モードを維持する全画面方式を、外部画面が主画面の左・真上にある配置でも再検証する。全画面中の OS 表示倍率・解像度・リフレッシュレート変更、およびモニターの切断・再接続に対する追従は未検証。
+- [point 座標](docs/window/README.md)の [手動テスト](Test/Manual/SceneHighResolution.md)で、上下・左右配置における連続ドラッグ・ポインター操作を目視確認する。専用自動テストによる中央配置・カーソル座標の確認とは区別する。
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 

@@ -73,6 +73,7 @@ namespace s3d
 			}
 		}
 		
+		::glfwPreserveVideoMode_Siv3D(m_glfwWindow);
 		::glfwSetWindowUserPointer(m_glfwWindow, this);
 		::glfwSetWindowSizeLimits(m_glfwWindow, m_state.minFrameBufferSize.x, m_state.minFrameBufferSize.y,
 								  GLFW_DONT_CARE, GLFW_DONT_CARE);
@@ -290,6 +291,16 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
 
+		if (m_state.virtualSize == virtualSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
 		::glfwSetWindowSize(m_glfwWindow, virtualSize.x, virtualSize.y);
 
 		updateState();
@@ -307,6 +318,17 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
 		
+		if (m_state.frameBufferSize == frameBufferSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			// Convert using the restored window's screen, which can have another DPI.
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
 		const double scaling = m_state.scaling;
 		const Size newVirtualSize = Math::Round(frameBufferSize / scaling).asPoint();	
 		return resizeByVirtualSize(newVirtualSize);
@@ -346,11 +368,25 @@ namespace s3d
 		
 		if (m_state.fullscreen == false) // 現在ウィンドウモード
 		{
-			const auto monitors = System::EnumerateMonitors();
-			
-			if (monitors.size() <= monitorIndex)
+			int32 numMonitors = 0;
+			GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors);
+			if ((not monitors) || (numMonitors <= 0))
+			{
+				return;
+			}
+
+			if (static_cast<size_t>(numMonitors) <= monitorIndex)
 			{
 				monitorIndex = System::GetCurrentMonitorIndex();
+			}
+			if (static_cast<size_t>(numMonitors) <= monitorIndex)
+			{
+				return;
+			}
+			const GLFWvidmode* mode = ::glfwGetVideoMode(monitors[monitorIndex]);
+			if (not mode)
+			{
+				return;
 			}
 
 			updateState();
@@ -358,13 +394,10 @@ namespace s3d
 			m_storedWindowRect.pos = (m_state.bounds.pos + Point{ 0, m_state.titleBarHeight });
 			m_storedWindowRect.size = m_state.virtualSize;
 			
-			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
-			
-			int32 numMonitors;
-			if (GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors))
-			{
-				::glfwSetWindowMonitor(m_glfwWindow, monitors[monitorIndex], 0, 0, fullscreenResolution.x, fullscreenResolution.y, GLFW_DONT_CARE);
-			}
+			// The Cocoa window policy bypasses video-mode selection, including modes
+			// absent from GLFW's enumeration. These dimensions are desktop points.
+			::glfwSetWindowMonitor(m_glfwWindow, monitors[monitorIndex], 0, 0,
+				mode->width, mode->height, mode->refreshRate);
 		}
 		else
 		{
