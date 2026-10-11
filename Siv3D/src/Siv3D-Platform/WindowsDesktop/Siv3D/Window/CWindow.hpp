@@ -113,9 +113,16 @@ namespace s3d
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
 
-		bool m_toggleFullscreenEnabled = true;
+		std::atomic<bool> m_fullscreenTransition = false;
 
-		std::atomic<bool> m_toggleFullscreenRequested = false;
+		enum class ToggleFullscreenState : uint8
+		{
+			Disabled,
+			Enabled,
+			Requested,
+		};
+
+		std::atomic<ToggleFullscreenState> m_toggleFullscreenState = ToggleFullscreenState::Enabled;
 
 		std::atomic<bool> m_moving = false;
 

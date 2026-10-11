@@ -127,10 +127,13 @@ and a custom vertex shader against explicit scaling at the same resolution.
 Frame metrics compare subdivision and draw counts.
 
 [Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) runs on
-Windows and exercises the window-message route for Alt+Enter, mixed API/shortcut
+Windows and exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
 round trips, all resize modes with high resolution on/off, policy changes while
-fullscreen, disabled shortcuts, and fullscreen bounds on each attached monitor.
+fullscreen, disabled shortcuts (including cancellation before the next frame),
+and fullscreen bounds and restored window dimensions on each attached monitor.
 Nonzero and negative monitor origins require the corresponding display layout.
+These tests are hidden from the default suite with `[.fullscreen]` because they
+visibly switch the real window between fullscreen and windowed modes.
 
 Run the focused tests and then the full suite on the respective host:
 
@@ -141,8 +144,13 @@ Run the focused tests and then the full suite on the respective host:
 
 ```powershell
 ./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneHighResolution*'
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
 ./WindowsDesktop/run-tests.ps1
+```
+
+Opt in to the visible Windows fullscreen transitions separately:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
 ```
 
 [The interactive check](../../Test/Manual/SceneHighResolution.md) covers OS

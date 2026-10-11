@@ -42,8 +42,9 @@
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
-- Windows で `WindowFullscreen.*` の自動テストを実行する。Alt+Enter と `Window::SetFullscreen()` の往復・混在、全画面中に変更した表示方針の維持、ショートカット無効時の動作を確認する。主モニターの左右・上下（負の原点を含む）と異種 DPI の配置で、全画面の範囲と復帰時の位置・サイズを [手動テスト](Test/Manual/SceneHighResolution.md)でも確認する。
-- [シーン高精細描画](docs/renderer2d/scene-high-resolution.md): Windows / D3D11 で専用テストと全自動テストを実行する。両プラットフォームで [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン / Alt+Enter、最小化・復元を確認する。GPU バッファ確保失敗時の維持動作はコード確認に加え、確保失敗を再現できる環境で検証する。
+- [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元は Keep / 高精細 ON 以外の設定も確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。
+- macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元を確認する。
+- GPU バッファ確保失敗時の維持動作はコード確認に加え、確保失敗を再現できる環境で検証する。
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
 ## Renderer2D / 組み込みシェーダ最適化

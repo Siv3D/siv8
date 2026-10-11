@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CWindow.hpp"
+# include <Siv3D/ScopeExit.hpp>
 # include "WindowMisc.hpp"
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Math.hpp>
@@ -127,14 +128,13 @@ namespace s3d
 
 	void CWindow::update()
 	{
-		if (m_toggleFullscreenRequested.load())
+		if (m_toggleFullscreenState.load() == ToggleFullscreenState::Requested)
 		{
-			if (m_toggleFullscreenEnabled)
+			auto expected = ToggleFullscreenState::Requested;
+			if (m_toggleFullscreenState.compare_exchange_strong(expected, ToggleFullscreenState::Enabled))
 			{
 				setFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
 			}
-
-			m_toggleFullscreenRequested.store(false);
 		}
 
 		m_state.sizeMove = m_moving.load();
@@ -431,6 +431,9 @@ namespace s3d
 			show();
 		}
 
+		m_fullscreenTransition.store(true);
+		const ScopeExit finishTransition{ [this] { m_fullscreenTransition.store(false); } };
+
 		if (m_state.fullscreen == false) // 現在ウィンドウモードの場合
 		{
 			// フルスクリーンモードにする
@@ -443,6 +446,8 @@ namespace s3d
 				(m_storedWindowRect.bottom - m_storedWindowRect.top) };
 
 			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_state.style));
+			// Leave the maximized fullscreen state before applying the saved rectangle.
+			::ShowWindow(m_hWnd, SW_NORMAL);
 			::SetWindowPos(
 				m_hWnd,
 				HWND_NOTOPMOST,
@@ -452,7 +457,6 @@ namespace s3d
 				size.y,
 				(SWP_FRAMECHANGED | SWP_NOACTIVATE));
 
-			::ShowWindow(m_hWnd, SW_NORMAL);
 			::ValidateRect(m_hWnd, nullptr);
 		}
 
@@ -470,7 +474,16 @@ namespace s3d
 
 	void CWindow::setToggleFullscreenEnabled(const bool enabled)
 	{
-		m_toggleFullscreenEnabled = enabled;
+		if (enabled)
+		{
+			auto expected = ToggleFullscreenState::Disabled;
+			m_toggleFullscreenState.compare_exchange_strong(expected, ToggleFullscreenState::Enabled);
+		}
+		else
+		{
+			// Cancel pending requests atomically with disabling message acceptance.
+			m_toggleFullscreenState.store(ToggleFullscreenState::Disabled);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -481,7 +494,7 @@ namespace s3d
 
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
-		return m_toggleFullscreenEnabled;
+		return (m_toggleFullscreenState.load() != ToggleFullscreenState::Disabled);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -668,6 +681,14 @@ namespace s3d
 
 		onBoundsUpdate();
 
+		if (m_fullscreenTransition.load())
+		{
+			// The transition already supplies a monitor-sized or saved physical rectangle.
+			// Do not replace it with a size derived from the previous monitor's geometry.
+			m_state.virtualSize = Math::Round(m_state.frameBufferSize / scaling).asPoint();
+			return;
+		}
+
 		const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
 		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
@@ -727,7 +748,8 @@ namespace s3d
 
 	void CWindow::requestToggleFullscreen()
 	{
-		m_toggleFullscreenRequested.store(true);
+		auto expected = ToggleFullscreenState::Enabled;
+		m_toggleFullscreenState.compare_exchange_strong(expected, ToggleFullscreenState::Requested);
 	}
 
 	////////////////////////////////////////////////////////////////

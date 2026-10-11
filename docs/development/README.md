@@ -88,6 +88,18 @@ the opt-in TextFileReader benchmark from the default suite. An explicit matching
 name, wildcard, or tag runs it; there is no `--no-skip` option. Use
 `~[.benchmark]` alongside a broad positive filter to exclude it.
 
+The Windows `WindowFullscreen.*` tests use `[.fullscreen]` and are also excluded
+from the default suite. They switch the real window between fullscreen and
+windowed modes on attached monitors, so run them explicitly when those visible
+transitions are acceptable:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
+```
+
+As with other hidden tests, a matching name, wildcard, or tag selects them;
+use `~[.fullscreen]` alongside a broad positive filter to exclude them.
+
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
 and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the
 unmodified amalgamated distribution from the pinned
