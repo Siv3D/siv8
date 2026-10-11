@@ -83,10 +83,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief カメラに映っている領域を返します。
-		/// @param renderTargetSize 現在のレンダーターゲットのサイズ（ピクセル）
+		/// @param renderTargetSize カメラの表示領域の論理サイズ
 		/// @return カメラに映っている領域
 		[[nodiscard]]
-		constexpr RectF getRegion(Size renderTargetSize = Graphics2D::GetRenderTargetSize()) const noexcept;
+		constexpr RectF getRegion(Size renderTargetSize = Graphics2D::GetDrawingSize()) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -95,10 +95,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在のカメラの設定から座標変換行列を作成します。
-		/// @param renderTargetSize 現在のレンダーターゲットのサイズ（ピクセル）
+		/// @param renderTargetSize カメラの表示領域の論理サイズ
 		/// @return 現在のカメラの設定から作成された座標変換行列
 		[[nodiscard]]
-		constexpr Mat3x2 getMat3x2(Size renderTargetSize = Graphics2D::GetRenderTargetSize()) const noexcept;
+		constexpr Mat3x2 getMat3x2(Size renderTargetSize = Graphics2D::GetDrawingSize()) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

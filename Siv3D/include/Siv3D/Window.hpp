@@ -237,6 +237,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
+		/// @remark シーンのリサイズモード、高精細描画の設定、拡大縮小フィルタは維持します。シーンのサイズは選択中のリサイズモードに従います。
 		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
 		/// @param monitorIndex 表示するモニタのインデックス
 		void SetFullscreen(bool fullscreen, size_t monitorIndex = System::GetCurrentMonitorIndex());
@@ -250,6 +251,7 @@ namespace s3d
 		/// @brief Windows 版において、Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えを有効にするかを設定します。
 		/// @param enabled Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えを有効にする場合は true, 無効にする場合は false
 		/// @remark Windows 版ではデフォルトで有効、それ以外のプラットフォームでは常に無効です。
+		/// @remark 切り替え時のシーンの扱いは SetFullscreen() と同じです。
 		void SetToggleFullscreenEnabled(bool enabled);
 
 		////////////////////////////////////////////////////////////////

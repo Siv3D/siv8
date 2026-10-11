@@ -131,24 +131,7 @@ namespace s3d
 		{
 			if (m_toggleFullscreenEnabled)
 			{
-				if (not m_oldResizeMode)
-				{
-					m_oldResizeMode = Scene::GetResizeMode();
-				}
-
-				const bool toFullScreen = (not m_state.fullscreen);
-
-				setFullscreen(toFullScreen, System::GetCurrentMonitorIndex(), true);
-
-				if (toFullScreen)
-				{
-					Scene::SetResizeMode(ResizeMode::Keep);
-				}
-				else if (m_oldResizeMode)
-				{
-					Scene::SetResizeMode(*m_oldResizeMode);
-					m_oldResizeMode.reset();
-				}
+				setFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
 			}
 
 			m_toggleFullscreenRequested.store(false);
@@ -436,7 +419,47 @@ namespace s3d
 
 	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex)
 	{
-		setFullscreen(fullscreen, monitorIndex, false);
+		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
+
+		if (fullscreen == m_state.fullscreen)
+		{
+			return;
+		}
+
+		if (not m_windowShown)
+		{
+			show();
+		}
+
+		if (m_state.fullscreen == false) // 現在ウィンドウモードの場合
+		{
+			// フルスクリーンモードにする
+			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_state.style));
+		}
+		else
+		{
+			const Size size{
+				(m_storedWindowRect.right - m_storedWindowRect.left),
+				(m_storedWindowRect.bottom - m_storedWindowRect.top) };
+
+			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_state.style));
+			::SetWindowPos(
+				m_hWnd,
+				HWND_NOTOPMOST,
+				m_storedWindowRect.left,
+				m_storedWindowRect.top,
+				size.x,
+				size.y,
+				(SWP_FRAMECHANGED | SWP_NOACTIVATE));
+
+			::ShowWindow(m_hWnd, SW_NORMAL);
+			::ValidateRect(m_hWnd, nullptr);
+		}
+
+		m_state.fullscreen = fullscreen;
+
+		// Keep the selected scene policy; Keep also needs the new presentation size.
+		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -730,62 +753,6 @@ namespace s3d
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
-
-	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex, const bool skipSceneResize)
-	{
-		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
-
-		if (fullscreen == m_state.fullscreen)
-		{
-			return;
-		}
-
-		if (not m_windowShown)
-		{
-			show();
-		}
-
-		if (m_state.fullscreen == false) // 現在ウィンドウモードの場合
-		{
-			// フルスクリーンモードにする
-			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_state.style));
-		}
-		else
-		{
-			const Size size{
-				(m_storedWindowRect.right - m_storedWindowRect.left),
-				(m_storedWindowRect.bottom - m_storedWindowRect.top) };
-
-			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_state.style));
-			::SetWindowPos(
-				m_hWnd,
-				HWND_NOTOPMOST,
-				m_storedWindowRect.left,
-				m_storedWindowRect.top,
-				size.x,
-				size.y,
-				(SWP_FRAMECHANGED | SWP_NOACTIVATE));
-
-			::ShowWindow(m_hWnd, SW_NORMAL);
-			::ValidateRect(m_hWnd, nullptr);
-		}
-
-		m_state.fullscreen = fullscreen;
-
-		if (not skipSceneResize)
-		{
-			if (m_oldResizeMode)
-			{
-				Scene::SetResizeMode(*m_oldResizeMode);
-				m_oldResizeMode.reset();
-			}
-
-			if (Scene::GetResizeMode() != ResizeMode::Keep)
-			{
-				SIV3D_ENGINE(Renderer)->updateSceneSize();
-			}
-		}
-	}
 
 	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)
 	{

@@ -55,7 +55,13 @@ namespace s3d
 		[[nodiscard]]
 		ResizeMode getSceneResizeMode() const noexcept override;
 
-		void resizeSceneBuffer(Size size) override;
+		void resizeScene(Size size) override;
+
+		const Size& getSceneSize() const noexcept override;
+
+		void setHighResolutionEnabled(bool enabled) override;
+
+		bool isHighResolutionEnabled() const noexcept override;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;

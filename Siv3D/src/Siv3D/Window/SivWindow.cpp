@@ -15,6 +15,7 @@
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 
 namespace s3d
 {
@@ -243,15 +244,7 @@ namespace s3d
 				return false;
 			}
 
-			if (const auto resizeMode = Scene::GetResizeMode();
-				resizeMode == ResizeMode::Actual)
-			{
-				Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
-			}
-			else if (resizeMode == ResizeMode::Virtual)
-			{
-				Scene::Resize(size);
-			}
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 
 			if (centerWindow)
 			{
@@ -285,15 +278,7 @@ namespace s3d
 				return false;
 			}
 
-			if (const auto resizeMode = Scene::GetResizeMode();
-				resizeMode == ResizeMode::Actual)
-			{
-				Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
-			}
-			else if (resizeMode == ResizeMode::Virtual)
-			{
-				Scene::Resize(size);
-			}
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 
 			if (centerWindow)
 			{

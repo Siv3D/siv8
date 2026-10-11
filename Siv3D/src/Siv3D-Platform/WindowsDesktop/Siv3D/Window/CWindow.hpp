@@ -13,7 +13,6 @@
 # include <atomic>
 # include <mutex>
 # include <Siv3D/WindowState.hpp>
-# include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
@@ -114,8 +113,6 @@ namespace s3d
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
 
-		Optional<ResizeMode> m_oldResizeMode;
-
 		bool m_toggleFullscreenEnabled = true;
 
 		std::atomic<bool> m_toggleFullscreenRequested = false;
@@ -133,7 +130,5 @@ namespace s3d
 		int32 getSystemMetrics(int32 index) const;
 
 		void setWindowPos(const Rect& rect, uint32 flags);
-
-		void setFullscreen(bool fullscreen, size_t monitorIndex, bool skipSceneResize);
 	};
 }

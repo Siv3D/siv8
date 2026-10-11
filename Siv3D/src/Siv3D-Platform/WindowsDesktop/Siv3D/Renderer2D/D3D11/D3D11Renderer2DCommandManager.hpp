@@ -45,6 +45,10 @@ namespace s3d
 
 		void flush();
 
+		void setSceneScale(Float2 scale);
+		Float2 getSceneScale() const noexcept { return m_current.sceneScale; }
+		float getCurrentRasterScaling() const noexcept { return m_current.rasterScaling; }
+
 		const Array<D3D11Renderer2DCommand>& getCommands() const noexcept;
 
 		void deferUpdateBuffers(uint32 batchIndex);
@@ -127,6 +131,7 @@ namespace s3d
 
 		void updateAffineTransform();
 		void updateTransform();
+		void updateRasterScaling();
 
 		ConstantBuffer2DCommands m_constantBuffers;
 
@@ -212,6 +217,10 @@ namespace s3d
 			Mat3x3 combinedTransform			= Mat3x3::Identity();
 
 			float rmsScaling					= 1.0f;
+
+			Float2 sceneScale{ 1.0f, 1.0f };
+
+			float rasterScaling = 1.0f;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

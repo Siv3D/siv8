@@ -205,6 +205,12 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneHighResolution.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CursorTransform.cpp">
       <Filter>Test</Filter>
     </ClCompile>

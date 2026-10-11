@@ -1030,10 +1030,28 @@ namespace s3d
 		return m_current.quadWarpTransform;
 	}
 
+	void MetalRenderer2DCommandManager::setSceneScale(const Float2 scale)
+	{
+		if (scale == m_current.sceneScale)
+		{
+			return;
+		}
+		m_current.sceneScale = scale;
+		updateRasterScaling();
+	}
+
+	void MetalRenderer2DCommandManager::updateRasterScaling()
+	{
+		m_current.rasterScaling = ((m_current.sceneScale == Float2{ 1.0f, 1.0f })
+			? m_current.rmsScaling
+			: (m_current.affineTransform * Mat3x2::Scale(m_current.sceneScale)).rmsScaling());
+	}
+
 	void MetalRenderer2DCommandManager::updateAffineTransform()
 	{
 		m_current.affineTransform = (m_current.localTransform * m_current.cameraTransform);
 		m_current.rmsScaling = m_current.affineTransform.rmsScaling();
+		updateRasterScaling();
 		updateTransform();
 	}
 

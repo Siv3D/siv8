@@ -169,6 +169,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	void CCursor::updateBaseWindowTransform()
+	{
+		if (m_transform.setBaseWindow(SIV3D_ENGINE(Renderer)->getLetterboxComposition()))
+		{
+			m_state.refreshTransformed(m_transform);
+		}
+	}
+
 	const CursorState& CCursor::getState() const
 	{
 		return m_state;

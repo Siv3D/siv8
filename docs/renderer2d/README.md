@@ -3,6 +3,11 @@
 - [Scoped projective drawing](quad-warp.md): transform scopes, homography generation,
   custom VS layout, and migration from dedicated texture warping.
 
+## Scene rendering
+
+- [Scene high resolution rendering](scene-high-resolution.md): opt-in rendering,
+  logical sizes, engine-owned scaling, migration, and validation.
+
 ## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):

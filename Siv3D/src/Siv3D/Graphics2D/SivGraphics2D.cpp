@@ -231,9 +231,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	GetRenderTargetSize
+		//	GetDrawingSize, GetRenderTargetSize
 		//
 		////////////////////////////////////////////////////////////////
+
+		Size GetDrawingSize() noexcept
+		{
+			return Scene::Size();
+		}
 
 		Size GetRenderTargetSize() noexcept
 		{
@@ -244,7 +249,7 @@ namespace s3d
 			//}
 			//else
 			{
-				return Scene::Size();
+				return Scene::RenderSize();
 			}
 		}
 

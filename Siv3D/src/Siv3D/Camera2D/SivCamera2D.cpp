@@ -16,7 +16,7 @@
 namespace s3d
 {
 	Camera2D::Camera2D(const Camera2DControl& cameraControl)
-		: Camera2D{ (Graphics2D::GetRenderTargetSize() * 0.5), 1.0, cameraControl } {}
+		: Camera2D{ (Graphics2D::GetDrawingSize() * 0.5), 1.0, cameraControl } {}
 
 	Camera2D::Camera2D(const Vec2& center, const Camera2DControl& cameraControl)
 		: Camera2D{ center, 1.0, cameraControl } {}

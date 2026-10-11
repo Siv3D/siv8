@@ -106,10 +106,12 @@ namespace s3d
 		m_backBuffer.clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
-			windowFrameBufferSize != m_backBuffer.getBackBufferSize())
+			(0 < windowFrameBufferSize.x) && (0 < windowFrameBufferSize.y)
+			&& (windowFrameBufferSize != m_backBuffer.getBackBufferSize()))
 		{
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
+		m_backBuffer.updateSceneBufferSize(false);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -177,9 +179,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_D3D11::resizeSceneBuffer(const Size size)
+	void CRenderer_D3D11::resizeScene(const Size size)
 	{
-		m_backBuffer.resizeSceneBuffer(size);
+		m_backBuffer.resizeScene(size);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -187,6 +189,21 @@ namespace s3d
 	//	getSceneBufferSize
 	//
 	////////////////////////////////////////////////////////////////
+
+	const Size& CRenderer_D3D11::getSceneSize() const noexcept
+	{
+		return m_backBuffer.getSceneSize();
+	}
+
+	void CRenderer_D3D11::setHighResolutionEnabled(const bool enabled)
+	{
+		m_backBuffer.setHighResolutionEnabled(enabled);
+	}
+
+	bool CRenderer_D3D11::isHighResolutionEnabled() const noexcept
+	{
+		return m_backBuffer.isHighResolutionEnabled();
+	}
 
 	const Size& CRenderer_D3D11::getSceneBufferSize() const noexcept
 	{
@@ -326,4 +343,3 @@ namespace s3d
 		return m_depthStencilState;
 	}
 }
- 

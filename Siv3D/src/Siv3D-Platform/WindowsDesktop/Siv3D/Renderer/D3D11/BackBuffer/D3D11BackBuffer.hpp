@@ -15,6 +15,7 @@
 # include <Siv3D/EngineOption.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
+# include <Siv3D/Scene/SceneUtility.hpp>
 # include "../Device/D3D11Device.hpp"
 # include "D3D11ClearTarget.hpp"
 # include "D3D11InternalTexture2D.hpp"
@@ -39,7 +40,7 @@ namespace s3d
 		[[nodiscard]]
 		ResizeMode getSceneResizeMode() const noexcept;
 
-		void updateSceneBufferSize();
+		void updateSceneBufferSize(bool force = true);
 
 		void renderSceneToBackBuffer();
 
@@ -48,7 +49,13 @@ namespace s3d
 		[[nodiscard]]
 		const Size& getBackBufferSize() const noexcept;
 
-		void resizeSceneBuffer(Size size);
+		void resizeScene(Size size);
+
+		const Size& getSceneSize() const noexcept;
+
+		void setHighResolutionEnabled(bool enabled);
+
+		bool isHighResolutionEnabled() const noexcept;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept;
@@ -71,7 +78,7 @@ namespace s3d
 
 		SceneStyle m_sceneStyle;
 
-		ResizeMode m_sceneResizeMode	= Scene::DefaultResizeMode;
+		SceneMisc::RenderState m_sceneState;
 
 		D3D11InternalTexture2D m_backBuffer;
 
@@ -107,5 +114,7 @@ namespace s3d
 		void unbindAllPSTextures();
 
 		void drawFullScreenTriangle();
+
+		void applySceneState(const SceneMisc::RenderState& state);
 	};
 }

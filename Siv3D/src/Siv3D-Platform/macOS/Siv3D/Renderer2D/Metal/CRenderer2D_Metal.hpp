@@ -376,6 +376,10 @@ namespace s3d
 
 		void flush() override;
 
+		void setSceneScale(Float2 scale) override { m_commandManager.setSceneScale(scale); }
+
+		void resetScenePass() noexcept { m_scenePassStarted = false; }
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	getColorMul, setColorMul

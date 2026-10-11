@@ -48,7 +48,13 @@ namespace s3d
 
 		virtual ResizeMode getSceneResizeMode() const noexcept = 0;
 
-		virtual void resizeSceneBuffer(Size size) = 0;
+		virtual void resizeScene(Size size) = 0;
+
+		virtual const Size& getSceneSize() const noexcept = 0;
+
+		virtual void setHighResolutionEnabled(bool enabled) = 0;
+
+		virtual bool isHighResolutionEnabled() const noexcept = 0;
 
 		virtual const Size& getSceneBufferSize() const noexcept = 0;
 

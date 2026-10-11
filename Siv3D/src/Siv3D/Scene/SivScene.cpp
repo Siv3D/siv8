@@ -29,7 +29,7 @@ namespace s3d
 
 		void Resize(const s3d::Size size)
 		{
-			SIV3D_ENGINE(Renderer)->resizeSceneBuffer(size);
+			SIV3D_ENGINE(Renderer)->resizeScene(size);
 		}
 
 		void Resize(const int32 width, const int32 height)
@@ -44,6 +44,27 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		s3d::Size Size() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneSize();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	High resolution rendering
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetHighResolutionEnabled(const bool enabled)
+		{
+			SIV3D_ENGINE(Renderer)->setHighResolutionEnabled(enabled);
+		}
+
+		bool IsHighResolutionEnabled() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->isHighResolutionEnabled();
+		}
+
+		s3d::Size RenderSize() noexcept
 		{
 			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		}

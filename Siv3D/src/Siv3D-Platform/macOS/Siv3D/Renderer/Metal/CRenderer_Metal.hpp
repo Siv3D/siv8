@@ -14,6 +14,7 @@
 # include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
+# include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
 # include "MetalFrameContext.hpp"
@@ -57,7 +58,13 @@ namespace s3d
 		[[nodiscard]]
 		ResizeMode getSceneResizeMode() const noexcept override;
 
-		void resizeSceneBuffer(Size size) override;
+		void resizeScene(Size size) override;
+
+		const Size& getSceneSize() const noexcept override;
+
+		void setHighResolutionEnabled(bool enabled) override;
+
+		bool isHighResolutionEnabled() const noexcept override;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;
@@ -77,7 +84,7 @@ namespace s3d
 		[[nodiscard]]
 		const Image& getScreenCapture() const override;
 		
-		void updateSceneBufferSize();
+		void updateSceneBufferSize(bool force = true);
 
 		[[nodiscard]]
 		MTL::Device* getDevice() const noexcept;
@@ -119,7 +126,7 @@ namespace s3d
 
 		SceneStyle m_sceneStyle;
 		
-		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
+		SceneMisc::RenderState m_sceneState;
 
 		bool m_vSyncEnabled = true;
 		
@@ -155,6 +162,8 @@ namespace s3d
 
 		const MTL::RenderPipelineState* m_fullscreenTriangleRenderPipelineState = nullptr;
 		
+		void applySceneState(const SceneMisc::RenderState& state);
+
 		void resizeBackBuffer(Size backBufferSize);
 
 		Size getBackBufferSize() const;

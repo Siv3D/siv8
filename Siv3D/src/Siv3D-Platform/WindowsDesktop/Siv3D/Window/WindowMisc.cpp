@@ -362,8 +362,8 @@ namespace s3d::WindowMisc
 			HWND_TOPMOST,
 			fullscreenRect.x,
 			fullscreenRect.y,
-			(fullscreenRect.x + fullscreenRect.w),
-			(fullscreenRect.y + fullscreenRect.h),
+			fullscreenRect.w,
+			fullscreenRect.h,
 			SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		::ShowWindow(hWnd, SW_MAXIMIZE);

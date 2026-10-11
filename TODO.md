@@ -40,6 +40,12 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
+## `Siv3D/include/Siv3D/Scene.hpp`
+
+- Windows で `WindowFullscreen.*` の自動テストを実行する。Alt+Enter と `Window::SetFullscreen()` の往復・混在、全画面中に変更した表示方針の維持、ショートカット無効時の動作を確認する。主モニターの左右・上下（負の原点を含む）と異種 DPI の配置で、全画面の範囲と復帰時の位置・サイズを [手動テスト](Test/Manual/SceneHighResolution.md)でも確認する。
+- [シーン高精細描画](docs/renderer2d/scene-high-resolution.md): Windows / D3D11 で専用テストと全自動テストを実行する。両プラットフォームで [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン / Alt+Enter、最小化・復元を確認する。GPU バッファ確保失敗時の維持動作はコード確認に加え、確保失敗を再現できる環境で検証する。
+- RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
+
 ## Renderer2D / 組み込みシェーダ最適化
 
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。

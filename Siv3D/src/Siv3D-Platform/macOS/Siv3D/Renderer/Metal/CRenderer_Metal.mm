@@ -21,6 +21,8 @@
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Metal/CRenderer2D_Metal.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <cstdio>
@@ -117,7 +119,8 @@ namespace s3d
 		m_commandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
 		{
-			const Size sceneSize = Window::GetState().virtualSize;
+			m_sceneState.updateWindow(Window::GetState(), true);
+			const Size sceneSize = m_sceneState.size;
 			
 			if (m_sceneBuffers.sampleCount == 1)
 			{
@@ -173,11 +176,13 @@ namespace s3d
 	void CRenderer_Metal::beginFrame()
 	{
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
-			windowFrameBufferSize != getBackBufferSize())
+			(0 < windowFrameBufferSize.x) && (0 < windowFrameBufferSize.y)
+			&& (windowFrameBufferSize != getBackBufferSize()))
 		{
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
+		updateSceneBufferSize(false);
 		m_frameContext.beginFrame(m_commandQueue.get());
 	}
 
@@ -260,9 +265,10 @@ namespace s3d
 
 	void CRenderer_Metal::setSceneResizeMode(const ResizeMode resizeMode)
 	{
-		m_sceneResizeMode = resizeMode;
-
-		updateSceneBufferSize();
+		auto state = m_sceneState;
+		state.resizeMode = resizeMode;
+		state.updateWindow(Window::GetState(), true);
+		applySceneState(state);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -273,37 +279,39 @@ namespace s3d
 
 	ResizeMode CRenderer_Metal::getSceneResizeMode() const noexcept
 	{
-		return m_sceneResizeMode;
+		return m_sceneState.resizeMode;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	resizeSceneBuffer
+	//	resizeScene
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::resizeSceneBuffer(const Size size)
+	void CRenderer_Metal::resizeScene(const Size size)
 	{
-		assert((0 < size.x) && (0 < size.y));
+		SceneMisc::ValidateSceneSize(size);
+		auto state = m_sceneState;
+		state.updateWindow(Window::GetState());
+		state.size = size;
+		applySceneState(state);
+	}
 
-		if (getSceneBufferSize() == size)
-		{
-			return;
-		}
+	const Size& CRenderer_Metal::getSceneSize() const noexcept
+	{
+		return m_sceneState.size;
+	}
 
-		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeSceneBuffer({})", size));
+	void CRenderer_Metal::setHighResolutionEnabled(const bool enabled)
+	{
+		auto state = m_sceneState;
+		state.highResolutionEnabled = enabled;
+		applySceneState(state);
+	}
 
-		m_sceneBuffers = {};
-		
-		if (m_sceneBuffers.sampleCount == 1)
-		{
-			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-		}
-		else
-		{
-			m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
-			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-		}
+	bool CRenderer_Metal::isHighResolutionEnabled() const noexcept
+	{
+		return m_sceneState.highResolutionEnabled;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -325,7 +333,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), getSceneBufferSize());
+		return m_sceneState.composition();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -336,14 +344,7 @@ namespace s3d
 
 	void CRenderer_Metal::updateSceneSize()
 	{
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
+		updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -414,16 +415,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::updateSceneBufferSize()
+	void CRenderer_Metal::updateSceneBufferSize(const bool force)
 	{
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
+		auto state = m_sceneState;
+		state.updateWindow(Window::GetState(), force);
+		applySceneState(state);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -528,7 +524,6 @@ namespace s3d
 
 		m_metalLayer.drawableSize = CGSizeMake(backBufferSize.x, backBufferSize.y);
 
-		updateSceneBufferSize();
 	}
 
 	Size CRenderer_Metal::getBackBufferSize() const
@@ -538,5 +533,43 @@ namespace s3d
 			static_cast<int32>(backBufferSizeCGSize.width),
 			static_cast<int32>(backBufferSizeCGSize.height) };
 	}
+	void CRenderer_Metal::applySceneState(const SceneMisc::RenderState& state)
+	{
+		if (state == m_sceneState)
+		{
+			return;
+		}
+		SceneMisc::ValidateSceneSize(state.size);
+		const Size size = state.renderSize();
+		SceneMisc::ValidateSceneSize(size);
+		const bool replaceBuffer = (size != getSceneBufferSize());
+		const bool restartScene = (replaceBuffer || (state.size != m_sceneState.size));
+		SceneBuffer buffers;
+		if (replaceBuffer)
+		{
+			buffers.sampleCount = m_sceneBuffers.sampleCount;
+			if (buffers.sampleCount == 1)
+			{
+				buffers.nonMSAA = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			}
+			else
+			{
+				buffers.msaa = MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, buffers.sampleCount);
+				buffers.nonMSAA = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			}
+		}
+		if (restartScene)
+		{
+			if (replaceBuffer)
+			{
+				m_sceneBuffers = std::move(buffers);
+			}
+			m_pRenderer2D->resetScenePass();
+			m_pRenderer2D->setSceneScale(Float2{ (float(size.x) / state.size.x), (float(size.y) / state.size.y) });
+		}
+		m_sceneState = state;
+		SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+	}
+
 }
  

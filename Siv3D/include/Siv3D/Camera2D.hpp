@@ -116,8 +116,8 @@ namespace s3d
 
 		/// @brief 2D カメラの状態を更新します。
 		/// @param deltaTime 前回のフレームからの経過時間（秒）
-		/// @param sceneSize レンダーターゲットのサイズ（ピクセル）
-		void update(double deltaTime = Scene::DeltaTime(), SizeF sceneSize = Graphics2D::GetRenderTargetSize());
+		/// @param sceneSize カメラの表示領域の論理サイズ
+		void update(double deltaTime = Scene::DeltaTime(), SizeF sceneSize = Graphics2D::GetDrawingSize());
 		
 		////////////////////////////////////////////////////////////////
 		//
