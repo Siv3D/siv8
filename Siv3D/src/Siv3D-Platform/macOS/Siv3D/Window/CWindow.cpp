@@ -13,6 +13,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -349,9 +350,13 @@ namespace s3d
 				monitorIndex = System::GetCurrentMonitorIndex();
 			}
 
+			updateState();
 			::glfwGetWindowPos(m_glfwWindow, &m_storedWindowRect.x, &m_storedWindowRect.y);
 			m_storedWindowRect.y += m_state.titleBarHeight;
-			m_storedWindowRect.pos = (m_storedWindowRect.pos / monitors[monitorIndex].scaling.value_or(1.0)).asPoint();
+			// Siv3D's GLFW positions are outer-frame backing pixels, whereas
+			// glfwSetWindowMonitor restores a content origin in screen points.
+			// Convert using the source window's scale, not the fullscreen monitor's.
+			m_storedWindowRect.pos = (m_storedWindowRect.pos / m_state.scaling).asPoint();
 			m_storedWindowRect.size = m_state.virtualSize;
 			
 			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
@@ -372,10 +377,8 @@ namespace s3d
 		
 		updateState();
 
-		//if (Scene::GetResizeMode() != ResizeMode::Keep)
-		//{
-		//	SIV3D_ENGINE(Renderer)->updateSceneSize();
-		//}
+		// Keep also needs the new framebuffer geometry for rendering and input.
+		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -435,7 +438,7 @@ namespace s3d
 		m_state.bounds.size.set(windowSizeX, windowSizeY);
 				
 		// minimized
-		m_state.maximized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
+		m_state.minimized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
 		
 		// maximized
 		m_state.maximized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_MAXIMIZED) == GLFW_TRUE)

@@ -9,12 +9,18 @@
 
 # include "Siv3DTest.hpp"
 
-# if SIV3D_PLATFORM(WINDOWS)
+# if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
-# include <Siv3D/Engine/Siv3DEngine.hpp>
-# include <Siv3D/Window/IWindow.hpp>
-# include <Siv3D/Windows/Windows.hpp>
+# include "../Siv3D/src/Siv3D/Engine/Siv3DEngine.hpp"
+# include "../Siv3D/src/Siv3D/Window/IWindow.hpp"
 # include "../Siv3D/src/Siv3D/Scene/SceneUtility.hpp"
+
+# if SIV3D_PLATFORM(WINDOWS)
+# include <Siv3D/Windows/Windows.hpp>
+# else
+# define GLFW_INCLUDE_NONE
+# include "../Siv3D/src/ThirdParty/GLFW/glfw3.h"
+# endif
 
 namespace
 {
@@ -58,6 +64,7 @@ namespace
 		}
 	};
 
+# if SIV3D_PLATFORM(WINDOWS)
 	HWND MainWindow()
 	{
 		return static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
@@ -69,6 +76,8 @@ namespace
 		::SendMessageW(MainWindow(), WM_SYSKEYDOWN, VK_RETURN, (LPARAM{ 1 } << 29));
 		UpdateWithPause();
 	}
+
+# endif
 
 	void CheckPresentation(const ResizeMode mode, const bool highResolution, const TextureFilter filter,
 		const Size fixedSize = Size{ 400, 300 })
@@ -89,6 +98,8 @@ namespace
 		CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
 	}
 }
+
+# if SIV3D_PLATFORM(WINDOWS)
 
 TEST_CASE("WindowFullscreen.api_and_shortcut_preserve_presentation", "[.fullscreen]")
 {
@@ -246,4 +257,123 @@ TEST_CASE("WindowFullscreen.bounds_match_selected_monitor", "[.fullscreen]")
 	}
 }
 
+# else
+
+TEST_CASE("WindowFullscreen.macOS.api_preserves_presentation", "[.fullscreen]")
+{
+	REQUIRE_FALSE(Window::GetState().fullscreen);
+	const RestoreWindowAndScene restore;
+	UpdateWithPause();
+	for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+	{
+		for (const bool enabled : { false, true })
+		{
+			CAPTURE(mode, enabled);
+			Scene::SetResizeMode(mode);
+			if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
+			Scene::SetHighResolutionEnabled(enabled);
+			Scene::SetTextureFilter(TextureFilter::Nearest);
+			SetFullscreenWithPause(true);
+			REQUIRE(Window::GetState().fullscreen);
+			CheckPresentation(mode, enabled, TextureFilter::Nearest);
+			UpdateWithPause();
+			CheckPresentation(mode, enabled, TextureFilter::Nearest);
+			// Reapplying fullscreen must not change the selected policy.
+			SetFullscreenWithPause(true);
+			CheckPresentation(mode, enabled, TextureFilter::Nearest);
+			SetFullscreenWithPause(false);
+			REQUIRE_FALSE(Window::GetState().fullscreen);
+			CheckPresentation(mode, enabled, TextureFilter::Nearest);
+			UpdateWithPause();
+			CheckPresentation(mode, enabled, TextureFilter::Nearest);
+		}
+	}
+}
+
+TEST_CASE("WindowFullscreen.macOS.monitor_round_trip_and_changed_policy", "[.fullscreen]")
+{
+	REQUIRE_FALSE(Window::GetState().fullscreen);
+	const RestoreWindowAndScene restore;
+	UpdateWithPause();
+	const auto monitors = System::EnumerateMonitors();
+	REQUIRE_FALSE(monitors.isEmpty());
+	auto* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
+	for (size_t source = 0; source < monitors.size(); ++source)
+	{
+		CAPTURE(source);
+		// Place in GLFW screen points: backing-pixel monitor rectangles can overlap
+		// in mixed-DPI layouts, making Window::SetPos ambiguous for this setup.
+		const double sourceScale = monitors[source].scaling.value_or(1.0);
+		const Size clientSize = Window::GetState().virtualSize;
+		const Point clientPos = (monitors[source].workArea.pos / sourceScale
+			+ (monitors[source].workArea.size / sourceScale - clientSize) * 0.5).asPoint();
+		::glfwSetWindowMonitor(window, nullptr, clientPos.x, clientPos.y, clientSize.x, clientSize.y, GLFW_DONT_CARE);
+		UpdateWithPause();
+		REQUIRE(System::GetCurrentMonitorIndex() == source);
+		for (size_t i = 0; i < monitors.size(); ++i)
+		{
+			CAPTURE(i, monitors[i].name, monitors[i].displayRect, monitors[i].scaling.value_or(1.0));
+			const auto windowed = Window::GetState();
+			CAPTURE(windowed.bounds.pos, windowed.virtualSize, windowed.frameBufferSize, windowed.scaling);
+			Scene::SetResizeMode(ResizeMode::Virtual);
+			Scene::SetHighResolutionEnabled(false);
+			Scene::SetTextureFilter(TextureFilter::Linear);
+			SetFullscreenWithPause(true, i);
+			REQUIRE(Window::GetState().fullscreen);
+			CheckPresentation(ResizeMode::Virtual, false, TextureFilter::Linear);
+			UpdateWithPause();
+			// GLFW can change the display mode while fullscreen; query the active geometry.
+			const auto fullscreenMonitor = System::EnumerateMonitors()[i];
+			CAPTURE(fullscreenMonitor.displayRect, fullscreenMonitor.scaling.value_or(1.0));
+			CHECK(System::GetCurrentMonitorIndex() == i);
+			CHECK(Window::GetState().bounds.pos == fullscreenMonitor.displayRect.pos);
+			CHECK(Window::GetState().frameBufferSize == fullscreenMonitor.displayRect.size);
+			CheckPresentation(ResizeMode::Virtual, false, TextureFilter::Linear);
+			Scene::SetResizeMode(ResizeMode::Keep);
+			Scene::Resize(320, 240);
+			Scene::SetHighResolutionEnabled(true);
+			Scene::SetTextureFilter(TextureFilter::Nearest);
+			SetFullscreenWithPause(false);
+			REQUIRE_FALSE(Window::GetState().fullscreen);
+			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+			UpdateWithPause();
+			CHECK(Window::GetState().bounds == windowed.bounds);
+			CHECK(Window::GetState().virtualSize == windowed.virtualSize);
+			CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
+			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+		}
+	}
+}
+
+TEST_CASE("WindowFullscreen.macOS.minimized_state_matches_native_window", "[.fullscreen]")
+{
+	REQUIRE_FALSE(Window::GetState().fullscreen);
+	const RestoreWindowAndScene restore;
+	const ScopeExit restoreVisibility{ [] { Window::Restore(); System::Sleep(FullscreenPauseMillis); } };
+	auto* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
+	const auto waitForIconified = [window](const bool iconified)
+	{
+		// Cocoa may finish its animation over several event-loop iterations.
+		for (int32 attempt = 0; attempt < 6; ++attempt)
+		{
+			UpdateWithPause();
+			if ((::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_TRUE) == iconified) { return; }
+		}
+		FAIL("The native window did not complete the minimize/restore transition");
+	};
+	Window::Minimize();
+	System::Sleep(FullscreenPauseMillis);
+	waitForIconified(true);
+	REQUIRE(::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_TRUE);
+	CHECK(Window::GetState().minimized);
+	Window::Restore();
+	System::Sleep(FullscreenPauseMillis);
+	waitForIconified(false);
+	REQUIRE(::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_FALSE);
+	CHECK_FALSE(Window::GetState().minimized);
+	CHECK(Scene::Size().x > 0);
+	CHECK(Scene::Size().y > 0);
+}
+
+# endif
 # endif

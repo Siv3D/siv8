@@ -88,10 +88,14 @@ the opt-in TextFileReader benchmark from the default suite. An explicit matching
 name, wildcard, or tag runs it; there is no `--no-skip` option. Use
 `~[.benchmark]` alongside a broad positive filter to exclude it.
 
-The Windows `WindowFullscreen.*` tests use `[.fullscreen]` and are also excluded
-from the default suite. They switch the real window between fullscreen and
-windowed modes on attached monitors, so run them explicitly when those visible
-transitions are acceptable:
+The `WindowFullscreen.*` tests on Windows and macOS use `[.fullscreen]` and are
+also excluded from the default suite. They visibly change the real window,
+including fullscreen transitions on attached monitors, with a 500 ms pause after
+each transition. Run them explicitly when those visible transitions are acceptable:
+
+```sh
+./macOS/run-tests.sh '--test-case=WindowFullscreen.*'
+```
 
 ```powershell
 ./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'

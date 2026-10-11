@@ -126,14 +126,19 @@ Image comparisons check shapes, patterns, bitmap/MSDF text, projective transform
 and a custom vertex shader against explicit scaling at the same resolution.
 Frame metrics compare subdivision and draw counts.
 
-[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) runs on
-Windows and exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
+[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) on Windows
+exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
 round trips, all resize modes with high resolution on/off, policy changes while
 fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
-Nonzero and negative monitor origins require the corresponding display layout.
+On macOS it checks API round trips for all six settings, immediate scene/cursor
+updates, policy changes while fullscreen, monitor bounds, restored window
+position and dimensions for each source/destination monitor pair, and native
+minimized state. The macOS monitor test places the window using GLFW screen
+points before exercising the public fullscreen API. Mixed-DPI, nonzero and
+negative monitor origins require the corresponding display layout.
 These tests are hidden from the default suite with `[.fullscreen]` because they
-visibly switch the real window between fullscreen and windowed modes.
+visibly change the real window. Each transition is followed by a 500 ms pause.
 
 Run the focused tests and then the full suite on the respective host:
 
@@ -147,7 +152,11 @@ Run the focused tests and then the full suite on the respective host:
 ./WindowsDesktop/run-tests.ps1
 ```
 
-Opt in to the visible Windows fullscreen transitions separately:
+Opt in to the visible window transitions separately on the respective host:
+
+```sh
+./macOS/run-tests.sh '--test-case=WindowFullscreen.*'
+```
 
 ```powershell
 ./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'

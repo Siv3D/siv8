@@ -23,7 +23,7 @@ establish behavioral compatibility.
 | `input.c` | `glfwGetKeysSiv3D` exposes the existing key-state buffer used by `CKeyboard`. |
 | `cocoa_init.m` | Secure restorable-state support; context backend termination calls are disabled to match the Metal-only integration. |
 | `cocoa_monitor.m` | Siv3D monitor rectangle, display ID, unit number, work area and current-monitor queries. |
-| `cocoa_window.m` | Window positions use outer-frame backing pixels; cursor positions use client backing pixels. Move callbacks carry `(1, 0)` at move start and `(0, 0)` at completion, as consumed by `CWindow::OnMove`. |
+| `cocoa_window.m` | Window position and size getters use outer-frame backing pixels; size callbacks use client points, and cursor positions use client backing pixels. Move callbacks carry `(1, 0)` at move start and `(0, 0)` at completion, as consumed by `CWindow::OnMove`. |
 | `cocoa_window.m` | File/text drag acceptance, drag-over state, inbound drops and outbound dragging use `GLFW_Siv3D_DragDropBridge.h` and the macOS `CDragDropBridge.mm`. |
 | `cocoa_window.m` | Pointer/tablet events forward proximity, pressure and tilt to `CPentablet`. |
 | `cocoa_window.m` | NSGL/EGL/OSMesa context creation is disabled; Siv3D creates `GLFW_NO_API` windows and attaches its Metal layer. |
@@ -38,6 +38,12 @@ upstream position callbacks would pass coordinates where Siv3D expects movement
 flags, and restoring upstream point coordinates would change Retina behavior.
 The context restrictions are intentional integration changes, not full GLFW
 OpenGL support.
+
+`glfwSetWindowMonitor` retains GLFW's content-origin and content-size coordinates
+in screen points when restoring a window. `CWindow` converts its saved outer-frame
+position using the source window's title-bar height and backing scale, independently
+of the destination monitor. Do not use the customized size getter as a virtual
+client size; the window-size callback supplies that value.
 
 ## Keyboard integration
 

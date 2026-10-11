@@ -465,6 +465,7 @@ TEST_CASE("SceneHighResolution.window_resize_immediate_and_next_frame")
 				const auto check = [&]
 				{
 					const auto& window = Window::GetState();
+					if (not actual) { CHECK(window.virtualSize == Size{ 640, 480 }); }
 					const Size expected = (mode == ResizeMode::Keep) ? Size{ 400, 300 }
 						: ((mode == ResizeMode::Virtual) ? window.virtualSize : window.frameBufferSize);
 					CHECK(Scene::Size() == expected);
