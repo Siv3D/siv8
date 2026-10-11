@@ -34,55 +34,20 @@ namespace s3d
 					return{ 0, 0 };
 				}
 				
-				const float zeroScreenHeight = [screens[0] frame].size.height;
-				const float zeroScreenScaleFactor = [screens[0] backingScaleFactor];
+				const double desktopTop = [screens[0] frame].size.height;
 				const NSPoint mouseLocation = [NSEvent mouseLocation];
-				//NSLog(@"%f %f", mouseLocation.x, mouseLocation.y);
-
-				for (NSScreen* screen in screens)
-				{
-					const NSRect screenRect = [screen frame];
-					const NSRect retinaScreenRect = [screen convertRectToBacking: screenRect];
-					
-					const NSRect placeholderRect = NSMakeRect(mouseLocation.x, mouseLocation.y, 0, 0);
-					const NSRect retinaPlaceholderRect = [screen convertRectToBacking: placeholderRect];
-					const NSPoint retinaMouseLocation = retinaPlaceholderRect.origin;
-					//NSLog(@"%f %f", retinaMouseLocation.x, retinaMouseLocation.y);
-					
-					// マウスカーソルが retinaScreenRect 上にあるか
-					if ((retinaScreenRect.origin.x <= retinaMouseLocation.x)
-						&& (retinaMouseLocation.x <= (retinaScreenRect.origin.x + retinaScreenRect.size.width))
-						&& (retinaScreenRect.origin.y <= retinaMouseLocation.y)
-						&& (retinaMouseLocation.y <= (retinaScreenRect.origin.y + retinaScreenRect.size.height)))
-					{
-						const float scaleFactor = [screen backingScaleFactor];
-						
-						// スクリーンの左上の座標（macOS 座標系）
-						const float retinaAx = retinaScreenRect.origin.x;
-						const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
-						
-						// スクリーンの左上の座標（Siv3D 座標系）
-						const float retinaSx = retinaAx;
-						const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
-						
-						// スクリーン左上からのマウスカーソル位置オフセット
-						const float retinaOx = (retinaMouseLocation.x - retinaAx);
-						const float retinaOy = (retinaScreenRect.size.height - (retinaMouseLocation.y - retinaScreenRect.origin.y));
-
-						return Math::Round(Vec2{ (retinaSx + retinaOx), (retinaSy + retinaOy) }).asPoint();
-					}
-				}
-				
-				// fallback
-				return Math::Round(Vec2{ (mouseLocation.x * zeroScreenScaleFactor), ((zeroScreenHeight * zeroScreenScaleFactor) - (mouseLocation.y * zeroScreenScaleFactor)) }).asPoint();
+				return Math::Round(Vec2{ mouseLocation.x, (desktopTop - mouseLocation.y) }).asPoint();
 			}
 		}
 
 		[[nodiscard]]
-		static Point GetCursorRawClientPos(const Point screenPos)
+		static Point GetCursorRawClientPos(GLFWwindow* window)
 		{
-			const WindowState windowState = SIV3D_ENGINE(Window)->getState();
-			return (screenPos - windowState.bounds.pos - Point{ 0, windowState.titleBarHeight });
+			// Siv3D's GLFW cursor query returns client backing pixels, including outside
+			// the window. Desktop points must not be subtracted from these coordinates.
+			double x, y;
+			::glfwGetCursorPos(window, &x, &y);
+			return Math::Round(Vec2{ x, y }).asPoint();
 		}
 	}
 
@@ -111,7 +76,7 @@ namespace s3d
 
 		{
 			const Point screenPos = GetCursorScreenPos();
-			const Point rawClientPos = GetCursorRawClientPos(screenPos);
+			const Point rawClientPos = GetCursorRawClientPos(m_window);
 			updateHighTemporalResolutionCursorPos(rawClientPos);
 			
 			const double windowScaling = SIV3D_ENGINE(Window)->getState().scaling;
@@ -153,7 +118,7 @@ namespace s3d
 	
 		{
 			const Point screenPos = GetCursorScreenPos();
-			const Point rawClientPos = GetCursorRawClientPos(screenPos);
+			const Point rawClientPos = GetCursorRawClientPos(m_window);
 			updateHighTemporalResolutionCursorPos(rawClientPos);
 			
 			m_state.advanceRaw(screenPos, rawClientPos);

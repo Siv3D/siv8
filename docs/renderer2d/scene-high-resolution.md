@@ -134,8 +134,10 @@ and fullscreen bounds and restored window dimensions on each attached monitor.
 On macOS it checks API round trips for all six settings, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
 position and dimensions for each source/destination monitor pair, and native
-minimized state. The macOS monitor test places the window using GLFW screen
-points before exercising the public fullscreen API. Mixed-DPI, nonzero and
+minimized state. The macOS monitor test places the window with
+`Window::CenterToScreen(index)` before exercising the public fullscreen API.
+See [desktop coordinates](../window/README.md) for point-based macOS placement
+and client-pixel input. Mixed-DPI, nonzero and
 negative monitor origins require the corresponding display layout.
 These tests are hidden from the default suite with `[.fullscreen]` because they
 visibly change the real window. Each transition is followed by a 500 ms pause.

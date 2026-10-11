@@ -10,12 +10,14 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
+# include <Siv3D/WindowState.hpp>
 
 struct GLFWwindow;
 
 namespace s3d::WindowMisc
 {
-	[[nodiscard]]
-	int32 GetTitleBarHeight(GLFWwindow* glfwWindow);
+	// Desktop geometry is in points; the framebuffer remains in backing pixels.
+	void UpdateGeometry(GLFWwindow* glfwWindow, WindowState& state);
+
+	void SetPos(GLFWwindow* glfwWindow, Point pos);
 }

@@ -39,11 +39,19 @@ flags, and restoring upstream point coordinates would change Retina behavior.
 The context restrictions are intentional integration changes, not full GLFW
 OpenGL support.
 
+The engine's public [desktop coordinates](../window/README.md) use points on
+macOS. `WindowMisc` reads native outer-frame/client geometry and sets the native
+frame's top-left in points, bypassing GLFW's customized backing-pixel position
+and size APIs. `MonitorInfo` uses the custom query's point-based display rectangle
+and the standard `glfwGetMonitorWorkarea` point-based work area. `CCursor` reads
+desktop points separately from GLFW's client backing-pixel cursor query.
+
 `glfwSetWindowMonitor` retains GLFW's content-origin and content-size coordinates
-in screen points when restoring a window. `CWindow` converts its saved outer-frame
-position using the source window's title-bar height and backing scale, independently
-of the destination monitor. Do not use the customized size getter as a virtual
-client size; the window-size callback supplies that value.
+in screen points when restoring a window. `CWindow` saves its point-based outer
+position plus the title-bar offset, without applying a monitor scale. Do not use
+the customized GLFW size getter as a virtual client size; `WindowMisc` reads the
+native content view instead. The vendor compatibility tests intentionally keep
+checking GLFW's own coordinate contract, separately from the public API tests.
 
 ## Keyboard integration
 

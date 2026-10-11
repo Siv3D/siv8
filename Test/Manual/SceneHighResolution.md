@@ -37,6 +37,14 @@ Use a resizable window and, where available, monitors with different scale facto
 6. Press **S** to capture a scene frame in memory. On the next frame, the capture
    dimensions should match the render size at the time of the request. Letterbox
    margins are not part of the capture. No output file is created.
+7. In windowed mode, press **B** to center the window on the next monitor. On
+   macOS, check that the outer frame is centered in the work area even when the
+   monitor scales differ, and that the virtual client size stays the same.
+   Repeat with displays left/right/above/below the primary display. Move the
+   pointer across monitor boundaries, including outside the application window:
+   desktop coordinates should stay continuous in points; raw client coordinates
+   should remain pixels at the window's backing scale. See the
+   [coordinate guide](../../docs/window/README.md) for units.
 
 ## Expected results
 
@@ -103,6 +111,14 @@ void Main()
         if (KeyR.down()) { Window::Restore(); }
         if (KeyN.down()) { Window::Minimize(); }
         if (KeyF.down()) { Window::SetFullscreen(!Window::GetState().fullscreen); }
+        if (KeyB.down() && !Window::GetState().fullscreen)
+        {
+            const auto monitors = System::EnumerateMonitors();
+            if (!monitors.isEmpty())
+            {
+                Window::CenterToScreen((System::GetCurrentMonitorIndex() + 1) % monitors.size());
+            }
+        }
         if (KeyT.down()) { Window::SetToggleFullscreenEnabled(!Window::IsToggleFullscreenEnabled()); }
         if (KeyP.down())
         {
@@ -151,6 +167,9 @@ void Main()
         Print << U"L: " << Scene::Size() << U"  R: " << Scene::RenderSize();
         Print << U"Window: " << Window::GetState().virtualSize
               << U"  framebuffer: " << Window::GetState().frameBufferSize;
+        Print << U"B: monitor = " << System::GetCurrentMonitorIndex()
+              << U"  bounds: " << Window::GetState().bounds;
+        Print << U"Cursor desktop: " << Cursor::ScreenPos() << U"  client pixels: " << Cursor::PosRaw();
         Print << U"C: camera = " << useCamera << U"  clicks: " << clicks;
         Print << U"S: last capture = " << captureSize;
         Print << U"4/5/6: resize  M/R/N: window  F: fullscreen";

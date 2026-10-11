@@ -49,7 +49,9 @@ namespace s3d
 				int32 wx, wy, ww, wh;
 				::glfwGetMonitorInfo_Siv3D(monitor, &displayID, &unitNumber,
 										 &xPos, &yPos, &width, &height,
-										 &wx, &wy, &ww, &wh);
+										 nullptr, nullptr, nullptr, nullptr);
+				// The standard GLFW work-area query uses desktop points.
+				::glfwGetMonitorWorkarea(monitor, &wx, &wy, &ww, &wh);
 				
 				Optional<Size> sizeMillimeter;
 				{
@@ -69,10 +71,6 @@ namespace s3d
 					if (const double scale = Max(xscale, yscale); 0.0 < scale)
 					{
 						scaling = scale;
-						xPos = static_cast<int32>(xPos * scale);
-						yPos = static_cast<int32>(yPos * scale);
-						width = static_cast<int32>(width * scale);
-						height = static_cast<int32>(height * scale);
 					}
 				}
 				

@@ -104,6 +104,12 @@ each transition. Run them explicitly when those visible transitions are acceptab
 As with other hidden tests, a matching name, wildcard, or tag selects them;
 use `~[.fullscreen]` alongside a broad positive filter to exclude them.
 
+The macOS `ScreenCoordinates.*` placement and pointer cases use
+`[.screen-coordinates]` for the same reason. They move the real window and cursor
+with 500 ms pauses. See [desktop coordinate validation](../window/README.md#validation)
+for the explicit command and coverage; read-only geometry checks remain in the
+default suite.
+
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
 and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the
 unmodified amalgamated distribution from the pinned

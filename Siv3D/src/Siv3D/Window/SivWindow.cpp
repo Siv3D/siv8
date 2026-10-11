@@ -29,6 +29,7 @@ namespace s3d
 			SIV3D_ENGINE(Window)->setPos(pos);
 		}
 
+# if !SIV3D_PLATFORM(MACOS)
 		static void CenterToOtherMonitor(const MonitorInfo& currentMonitor, const MonitorInfo& nextMonitor)
 		{
 			if (currentMonitor.scaling == nextMonitor.scaling)
@@ -44,6 +45,7 @@ namespace s3d
 				SIV3D_ENGINE(Window)->setPos(pos);
 			}
 		}
+# endif
 	}
 
 	namespace Window
@@ -163,6 +165,10 @@ namespace s3d
 				return false;
 			}
 
+# if SIV3D_PLATFORM(MACOS)
+			// Outer-frame dimensions stay in points across backing-scale changes.
+			CenterToMonitor(monitors[monitorIndex]);
+# else
 			const size_t currentMonitorIndex = System::GetCurrentMonitorIndex();
 
 			if (currentMonitorIndex == monitorIndex)
@@ -173,6 +179,7 @@ namespace s3d
 			{
 				CenterToOtherMonitor(monitors[currentMonitorIndex], monitors[monitorIndex]);
 			}
+# endif
 
 			return true;
 		}

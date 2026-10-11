@@ -40,11 +40,14 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
+## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
+
+- [point 座標](docs/window/README.md)での中央配置・位置の往復・全画面復帰を、主モニターの左・真上・真下に外部画面を配置して検証する。`ScreenCoordinates.*` / `WindowFullscreen.*` の実行と、[手動テスト](Test/Manual/SceneHighResolution.md)での連続ドラッグ・ポインター操作の目視確認を区別する。
+
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
 - [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元は Keep / 高精細 ON 以外の設定も確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。
 - macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。API の全画面往復・復帰寸法・最小化状態を確認する自動テストとは区別する。
-- macOS の混在 DPI で `Window::CenterToScreen(monitorIndex)` が指定外の画面へ移動するケースを修正する。各画面の倍率を掛けたグローバル座標ではモニター矩形が重なり、GLFW の `setPos` が先の画面を選ぶ。`Window::SetPos()` / `GetPos()`、`MonitorInfo`、GLFW の座標契約と互換性を整理してから直す。全画面復帰のテストでは出発画面の配置に GLFW の screen points を使用している。
 - GPU バッファ確保失敗時の維持動作はコード確認に加え、確保失敗を再現できる環境で検証する。
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 

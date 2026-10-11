@@ -97,11 +97,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ウィンドウを指定したスクリーン座標に移動させます。
+		/// @brief ウィンドウ外枠の左上を指定したスクリーン座標に移動させます。
+		/// @remark 主モニターの左上が原点で、右が X の正方向、下が Y の正方向です。単位は Windows ではピクセル、macOS では point です。
 		/// @param screenPos 移動先のスクリーン座標
 		void SetPos(Point screenPos);
 
-		/// @brief ウィンドウを指定したスクリーン座標に移動させます。
+		/// @brief ウィンドウ外枠の左上を指定したスクリーン座標に移動させます。
+		/// @remark 主モニターの左上が原点で、右が X の正方向、下が Y の正方向です。単位は Windows ではピクセル、macOS では point です。
 		/// @param screenX 移動先のスクリーン X 座標
 		/// @param screenY 移動先のスクリーン Y 座標
 		void SetPos(int32 screenX, int32 screenY);
@@ -112,8 +114,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のウィンドウの位置をスクリーン座標で返します。
-		/// @return 現在のウィンドウの位置
+		/// @brief 現在のウィンドウ外枠の左上をスクリーン座標で返します。
+		/// @return Window::SetPos() と同じ座標系での位置。Windows ではピクセル、macOS では point。
 		[[nodiscard]]
 		Point GetPos() noexcept;
 

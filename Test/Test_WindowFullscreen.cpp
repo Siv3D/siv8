@@ -297,17 +297,10 @@ TEST_CASE("WindowFullscreen.macOS.monitor_round_trip_and_changed_policy", "[.ful
 	UpdateWithPause();
 	const auto monitors = System::EnumerateMonitors();
 	REQUIRE_FALSE(monitors.isEmpty());
-	auto* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 	for (size_t source = 0; source < monitors.size(); ++source)
 	{
 		CAPTURE(source);
-		// Place in GLFW screen points: backing-pixel monitor rectangles can overlap
-		// in mixed-DPI layouts, making Window::SetPos ambiguous for this setup.
-		const double sourceScale = monitors[source].scaling.value_or(1.0);
-		const Size clientSize = Window::GetState().virtualSize;
-		const Point clientPos = (monitors[source].workArea.pos / sourceScale
-			+ (monitors[source].workArea.size / sourceScale - clientSize) * 0.5).asPoint();
-		::glfwSetWindowMonitor(window, nullptr, clientPos.x, clientPos.y, clientSize.x, clientSize.y, GLFW_DONT_CARE);
+		REQUIRE(Window::CenterToScreen(source));
 		UpdateWithPause();
 		REQUIRE(System::GetCurrentMonitorIndex() == source);
 		for (size_t i = 0; i < monitors.size(); ++i)
@@ -327,7 +320,9 @@ TEST_CASE("WindowFullscreen.macOS.monitor_round_trip_and_changed_policy", "[.ful
 			CAPTURE(fullscreenMonitor.displayRect, fullscreenMonitor.scaling.value_or(1.0));
 			CHECK(System::GetCurrentMonitorIndex() == i);
 			CHECK(Window::GetState().bounds.pos == fullscreenMonitor.displayRect.pos);
-			CHECK(Window::GetState().frameBufferSize == fullscreenMonitor.displayRect.size);
+			CHECK(Window::GetState().virtualSize == fullscreenMonitor.displayRect.size);
+			CHECK(Window::GetState().frameBufferSize == Math::Round(
+				Window::GetState().virtualSize * Window::GetState().scaling).asPoint());
 			CheckPresentation(ResizeMode::Virtual, false, TextureFilter::Linear);
 			Scene::SetResizeMode(ResizeMode::Keep);
 			Scene::Resize(320, 240);

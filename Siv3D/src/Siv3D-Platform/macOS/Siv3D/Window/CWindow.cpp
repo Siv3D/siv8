@@ -213,9 +213,12 @@ namespace s3d
 			return;
 		}
 		
-		::glfwSetWindowPos(m_glfwWindow, pos.x, pos.y);
+		WindowMisc::SetPos(m_glfwWindow, pos);
 		
 		updateState();
+
+		// Moving between screens can change the backing scale without a resize.
+		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -351,12 +354,8 @@ namespace s3d
 			}
 
 			updateState();
-			::glfwGetWindowPos(m_glfwWindow, &m_storedWindowRect.x, &m_storedWindowRect.y);
-			m_storedWindowRect.y += m_state.titleBarHeight;
-			// Siv3D's GLFW positions are outer-frame backing pixels, whereas
-			// glfwSetWindowMonitor restores a content origin in screen points.
-			// Convert using the source window's scale, not the fullscreen monitor's.
-			m_storedWindowRect.pos = (m_storedWindowRect.pos / m_state.scaling).asPoint();
+			// glfwSetWindowMonitor restores a content origin and client size in points.
+			m_storedWindowRect.pos = (m_state.bounds.pos + Point{ 0, m_state.titleBarHeight });
 			m_storedWindowRect.size = m_state.virtualSize;
 			
 			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
@@ -419,23 +418,7 @@ namespace s3d
 
 	void CWindow::updateState()
 	{
-		// frameBufferSize
-		::glfwGetFramebufferSize(m_glfwWindow, &m_state.frameBufferSize.x, &m_state.frameBufferSize.y);
-		
-		// scaling
-		float xScale, yScale;
-		::glfwGetWindowContentScale(m_glfwWindow, &xScale, &yScale);
-		m_state.scaling = Max(xScale, yScale);
-		
-		// titleBarHeight
-		m_state.titleBarHeight = WindowMisc::GetTitleBarHeight(m_glfwWindow);
-		
-		// bounds
-		int32 windowPosX, windowPosY, windowSizeX, windowSizeY;
-		::glfwGetWindowPos(m_glfwWindow, &windowPosX, &windowPosY);
-		::glfwGetWindowSize(m_glfwWindow, &windowSizeX, &windowSizeY);
-		m_state.bounds.pos.set(windowPosX, windowPosY);
-		m_state.bounds.size.set(windowSizeX, windowSizeY);
+		WindowMisc::UpdateGeometry(m_glfwWindow, m_state);
 				
 		// minimized
 		m_state.minimized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
@@ -489,7 +472,6 @@ namespace s3d
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			pWindow->m_state.bounds.size = size;
 			pWindow->m_state.virtualSize = size;
 		}
 	}
