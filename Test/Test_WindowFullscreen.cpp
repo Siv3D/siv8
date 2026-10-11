@@ -263,6 +263,62 @@ namespace s3d
 
 	namespace
 	{
+		GLFWwindow* MainWindow()
+		{
+			return static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
+		}
+
+		NSMenuItem* FullscreenMenuItem(NSMenu* menu)
+		{
+			for (NSMenuItem* item in menu.itemArray)
+			{
+				if (item.action == NSSelectorFromString(@"toggleFullscreen_Siv3D:")) { return item; }
+				if (NSMenuItem* found = FullscreenMenuItem(item.submenu)) { return found; }
+			}
+			return nil;
+		}
+
+		NSEvent* FullscreenKeyEvent(const bool repeat)
+		{
+			NSWindow* native = glfwGetCocoaWindow(MainWindow());
+			return [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint
+				modifierFlags:(NSEventModifierFlagControl | NSEventModifierFlagCommand) timestamp:0
+				windowNumber:native.windowNumber context:nil characters:@"f"
+				charactersIgnoringModifiers:@"f" isARepeat:repeat keyCode:0x03];
+		}
+
+		void FullscreenShortcut(const bool repeat = false)
+		{
+			NSWindow* native = glfwGetCocoaWindow(MainWindow());
+			NSEvent* event = FullscreenKeyEvent(repeat);
+			REQUIRE([native performKeyEquivalent:event]);
+		}
+
+		enum class FullscreenRoute { Shortcut, Menu, API };
+
+		void RequestFullscreen(const FullscreenRoute route)
+		{
+			NSWindow* native = glfwGetCocoaWindow(MainWindow());
+			if (route == FullscreenRoute::API)
+			{
+				SetFullscreenWithPause(not Window::GetState().fullscreen);
+				return;
+			}
+			const bool previous = Window::GetState().fullscreen;
+			if (route == FullscreenRoute::Shortcut) { FullscreenShortcut(); }
+			else if (route == FullscreenRoute::Menu)
+			{
+				NSMenuItem* item = FullscreenMenuItem(NSApp.mainMenu);
+				REQUIRE(item != nil);
+				[item.menu update];
+				REQUIRE(item.enabled);
+				REQUIRE([NSApp targetForAction:item.action to:item.target from:item] == native);
+				[item.menu performActionForItemAtIndex:[item.menu indexOfItem:item]];
+			}
+			CHECK(Window::GetState().fullscreen == previous);
+			UpdateWithPause();
+		}
+
 		struct NativeDisplay
 		{
 			CGDirectDisplayID id;
@@ -328,6 +384,170 @@ namespace s3d
 				}
 			}
 		};
+	}
+
+	TEST_CASE("WindowFullscreen.macOS.ui_and_api_preserve_presentation", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		const ScopeExit restoreStyle{ [&] { SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
+		Window::SetToggleFullscreenEnabled(true);
+		UpdateWithPause();
+		const DesktopSnapshot desktop;
+		NSWindow* native = glfwGetCocoaWindow(MainWindow());
+		NSMenuItem* menu = FullscreenMenuItem(NSApp.mainMenu);
+		REQUIRE(menu != nil);
+		CHECK(std::string{ menu.keyEquivalent.UTF8String } == "f");
+		CHECK(menu.keyEquivalentModifierMask == (NSEventModifierFlagControl | NSEventModifierFlagCommand));
+		for (size_t monitor = 0; monitor < desktop.monitors.size(); ++monitor)
+		{
+			REQUIRE(Window::CenterToScreen(monitor));
+			UpdateWithPause();
+			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			{
+				for (const bool highResolution : { false, true })
+				{
+					CAPTURE(monitor, mode, highResolution);
+					Window::SetStyle(highResolution ? WindowStyle::Sizable : WindowStyle::Fixed);
+					Scene::SetResizeMode(mode);
+					if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
+					Scene::SetHighResolutionEnabled(highResolution);
+					Scene::SetTextureFilter(TextureFilter::Nearest);
+					const auto windowed = Window::GetState();
+					for (const auto route : { FullscreenRoute::Shortcut, FullscreenRoute::Menu,
+						FullscreenRoute::API })
+					{
+						CAPTURE(route);
+						RequestFullscreen(route);
+						REQUIRE(Window::GetState().fullscreen);
+						CHECK(Window::GetState().bounds == desktop.monitors[monitor].displayRect);
+						CHECK((native.styleMask & NSWindowStyleMaskFullScreen) == 0);
+						CHECK([native validateMenuItem:menu]);
+						CHECK([menu.title isEqualToString:@"Exit Full Screen"]);
+						CheckPresentation(mode, highResolution, TextureFilter::Nearest);
+						desktop.check();
+						const auto exit = (route == FullscreenRoute::Shortcut) ? FullscreenRoute::API
+							: ((route == FullscreenRoute::Menu) ? FullscreenRoute::Menu : FullscreenRoute::Shortcut);
+						RequestFullscreen(exit);
+						REQUIRE_FALSE(Window::GetState().fullscreen);
+						CHECK(Window::GetState().bounds == windowed.bounds);
+						CHECK(Window::GetState().virtualSize == windowed.virtualSize);
+						CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
+						CHECK([native validateMenuItem:menu]);
+						CHECK([menu.title isEqualToString:@"Enter Full Screen"]);
+						CheckPresentation(mode, highResolution, TextureFilter::Nearest);
+						desktop.check();
+					}
+				}
+			}
+		}
+	}
+
+	TEST_CASE("WindowFullscreen.macOS.disabled_pending_repeat_and_styles", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		const ScopeExit restoreStyle{ [&] { SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
+		NSWindow* native = glfwGetCocoaWindow(MainWindow());
+		NSMenuItem* menu = FullscreenMenuItem(NSApp.mainMenu);
+		REQUIRE(menu != nil);
+		const DesktopSnapshot desktop;
+		for (const WindowStyle style : { WindowStyle::Fixed, WindowStyle::Sizable, WindowStyle::Frameless })
+		{
+			CAPTURE(style);
+			Window::SetStyle(style);
+			Window::SetToggleFullscreenEnabled(false);
+			CHECK_FALSE(Window::IsToggleFullscreenEnabled());
+			CHECK_FALSE([native validateMenuItem:menu]);
+			CHECK((native.collectionBehavior & NSWindowCollectionBehaviorFullScreenPrimary) == 0);
+			NSButton* green = [native standardWindowButton:NSWindowZoomButton];
+			if (style != WindowStyle::Frameless)
+			{
+				REQUIRE(green != nil);
+				CHECK(green.enabled == (style == WindowStyle::Sizable));
+				CHECK_FALSE(green.hidden);
+				CHECK(green.action != NSSelectorFromString(@"toggleFullscreen_Siv3D:"));
+			}
+			[native toggleFullScreen:menu];
+			FullscreenShortcut();
+			Window::SetToggleFullscreenEnabled(true);
+			UpdateWithPause();
+			CHECK_FALSE(Window::GetState().fullscreen);
+			FullscreenShortcut();
+			Window::SetToggleFullscreenEnabled(false);
+			Window::SetToggleFullscreenEnabled(true);
+			UpdateWithPause();
+			CHECK_FALSE(Window::GetState().fullscreen);
+
+			FullscreenShortcut();
+			FullscreenShortcut(true);
+			[native toggleFullScreen:menu]; // Two requests before a frame coalesce.
+			Window::SetToggleFullscreenEnabled(true);
+			UpdateWithPause();
+			REQUIRE(Window::GetState().fullscreen);
+			FullscreenShortcut(true);
+			UpdateWithPause();
+			CHECK(Window::GetState().fullscreen);
+			// Settings changed while fullscreen survive an exit through the shortcut.
+			Scene::SetResizeMode(ResizeMode::Keep);
+			Scene::Resize(320, 240);
+			Scene::SetHighResolutionEnabled(true);
+			Scene::SetTextureFilter(TextureFilter::Nearest);
+			RequestFullscreen(FullscreenRoute::Shortcut);
+			REQUIRE_FALSE(Window::GetState().fullscreen);
+			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+			Window::SetToggleFullscreenEnabled(false);
+			SetFullscreenWithPause(true);
+			REQUIRE(Window::GetState().fullscreen);
+			FullscreenShortcut();
+			UpdateWithPause();
+			CHECK(Window::GetState().fullscreen);
+			SetFullscreenWithPause(false);
+			REQUIRE_FALSE(Window::GetState().fullscreen);
+			CHECK(Window::GetStyle() == style);
+			desktop.check();
+		}
+
+		// Exercise NSApplication's event queue and main-menu key-equivalent path,
+		// including currentEvent-based repeat suppression in toggleFullScreen:.
+		Window::SetStyle(WindowStyle::Sizable);
+		Window::SetToggleFullscreenEnabled(true);
+		[NSApp postEvent:FullscreenKeyEvent(false) atStart:YES];
+		UpdateWithPause();
+		REQUIRE(Window::GetState().fullscreen);
+		[NSApp postEvent:FullscreenKeyEvent(true) atStart:YES];
+		UpdateWithPause();
+		CHECK(Window::GetState().fullscreen);
+		[NSApp postEvent:FullscreenKeyEvent(false) atStart:YES];
+		UpdateWithPause();
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+
+		// Fullscreen enablement must not affect native maximization controls.
+		for (const bool enabled : { false, true })
+		{
+			Window::SetToggleFullscreenEnabled(enabled);
+			NSButton* green = [native standardWindowButton:NSWindowZoomButton];
+			REQUIRE(green != nil);
+			REQUIRE(green.enabled);
+			CHECK_FALSE(green.hidden);
+			[green performClick:nil];
+			UpdateWithPause();
+			CHECK_FALSE(Window::GetState().fullscreen);
+			CHECK(Window::GetState().maximized);
+			Window::Restore();
+			UpdateWithPause();
+			CHECK_FALSE(Window::GetState().maximized);
+		}
+		NSMenuItem* zoom = [[NSMenuItem alloc] initWithTitle:@"Zoom" action:@selector(performZoom:) keyEquivalent:@""];
+		CHECK([native validateMenuItem:zoom]);
+		[native performZoom:zoom];
+		UpdateWithPause();
+		CHECK_FALSE(Window::GetState().fullscreen);
+		CHECK(Window::GetState().maximized);
+		Window::Restore();
+		UpdateWithPause();
+		CHECK_FALSE(Window::GetState().maximized);
+		desktop.check();
 	}
 
 	TEST_CASE("WindowFullscreen.macOS.api_preserves_presentation", "[.fullscreen]")

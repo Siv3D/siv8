@@ -74,6 +74,21 @@ is rounded to a client size in points. Reapplying the current size leaves the
 window fullscreen. Scene resize mode, high resolution, and filtering remain
 selected throughout these operations.
 
+Windows Alt+Enter and macOS Control+Command+F request the same transition as
+`Window::SetFullscreen()`, processed by the next `System::Update()`. On macOS,
+the fullscreen menu uses this path too. The shortcut and menu work for fixed-size
+and frameless windows as well. They use the engine's desktop-covering fullscreen,
+without moving into a native fullscreen Space. The title bar's green button,
+the Window menu's Zoom command, and `Window::Maximize()` remain maximization
+operations. The green button follows the native window style and is disabled
+for fixed-size windows; fullscreen enablement does not control it.
+
+`Window::SetToggleFullscreenEnabled(false)` disables these controls and cancels
+any pending request. Explicit `Window::SetFullscreen()` calls still work.
+Re-enabling does not replay an old request; reapplying `true` preserves a pending
+one. macOS ignores shortcut key repeats and combines multiple requests before a
+frame into one toggle. The menu title follows the current window/fullscreen state.
+
 Previous macOS fullscreen behavior selected a large enumerated display mode.
 Fullscreen point dimensions, backing dimensions, and `fullscreenResolution` can
 therefore change when adopting desktop-mode preservation. The scene size rules

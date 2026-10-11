@@ -21,13 +21,23 @@ Use a resizable window and, where available, monitors with different scale facto
    1200 × 900). Check the size displays and input immediately after each change.
 4. Use **M** to maximize, **R** to restore, **N** to minimize, and the OS to bring
    the window back. For every resize mode with high resolution both on and off,
-   test **F** and, on Windows, **Alt+Enter** to enter and leave fullscreen.
+   test **F** and the platform shortcut (**Alt+Enter** on Windows,
+   **Control+Command+F** on macOS) to enter and leave fullscreen.
+   On macOS, also enter using the Window menu's fullscreen
+   command, then leave with the shortcut or menu. Check Fixed and Sizable styles;
+   change the initial `Window::SetStyle()` argument and rerun for Fixed and
+   Frameless. Use the shortcut/menu for Frameless. No separate fullscreen Space should appear.
+   Hold the shortcut to confirm that macOS toggles only once.
    Also enter with one method and leave with the other. The selected resize mode,
    high resolution setting, and texture filter must remain unchanged. While
    fullscreen, change the mode or toggle **H**, then return to windowed mode;
-   the new settings must persist. Press **T** to disable the Windows shortcut:
-   **Alt+Enter** must do nothing, while **F** must still work. Re-enabling **T**
-   must not execute a previously ignored shortcut.
+   the new settings must persist. Press **T** to disable the platform controls:
+   the shortcut must do nothing, while **F** must still work. On macOS the
+   fullscreen menu must be disabled too. Re-enabling **T** must not execute a
+   previously ignored shortcut. The native green button and Window menu's Zoom
+   command must maximize a Sizable window regardless of **T**. In Fixed style,
+   the green button stays disabled while the enabled fullscreen shortcut/menu
+   still work. Check that the title bar has no extra button covering its title.
    Repeat on monitors to the right, left, above, and below the primary monitor,
    including different DPI settings. Fullscreen must cover exactly the selected
    monitor without changing the OS display mode or rearranging other monitors,
@@ -166,7 +176,7 @@ void Main()
         ClearPrint();
         Print << U"H: high resolution = " << Scene::IsHighResolutionEnabled();
         Print << U"1/2/3: mode = " << Scene::GetResizeMode();
-        Print << U"T: Alt+Enter = " << Window::IsToggleFullscreenEnabled()
+        Print << U"T: fullscreen controls = " << Window::IsToggleFullscreenEnabled()
               << U"  P: filter = " << Scene::GetTextureFilter();
         Print << U"L: " << Scene::Size() << U"  R: " << Scene::RenderSize();
         Print << U"Window: " << Window::GetState().virtualSize

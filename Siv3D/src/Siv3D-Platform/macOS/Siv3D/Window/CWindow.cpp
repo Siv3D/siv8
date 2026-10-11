@@ -74,6 +74,7 @@ namespace s3d
 		}
 		
 		::glfwPreserveVideoMode_Siv3D(m_glfwWindow);
+		::glfwSetFullscreenToggleEnabled_Siv3D(m_glfwWindow, GLFW_TRUE);
 		::glfwSetWindowUserPointer(m_glfwWindow, this);
 		::glfwSetWindowSizeLimits(m_glfwWindow, m_state.minFrameBufferSize.x, m_state.minFrameBufferSize.y,
 								  GLFW_DONT_CARE, GLFW_DONT_CARE);
@@ -103,6 +104,11 @@ namespace s3d
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
 			m_windowTitle.refresh(m_glfwWindow);
+		}
+
+		if (::glfwTakeFullscreenToggleRequest_Siv3D(m_glfwWindow))
+		{
+			setFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
 		}
 		
 		if (::glfwWindowShouldClose(m_glfwWindow))
@@ -419,7 +425,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::setToggleFullscreenEnabled(const bool) {}
+	void CWindow::setToggleFullscreenEnabled(const bool enabled)
+	{
+		::glfwSetFullscreenToggleEnabled_Siv3D(m_glfwWindow, enabled);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -429,7 +438,7 @@ namespace s3d
 
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
-		return false;
+		return ::glfwIsFullscreenToggleEnabled_Siv3D(m_glfwWindow);
 	}
 
 	////////////////////////////////////////////////////////////////

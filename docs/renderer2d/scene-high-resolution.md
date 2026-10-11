@@ -105,11 +105,12 @@ the preceding frame has been presented.
 
 Fullscreen covers the selected monitor without changing its OS display mode.
 Switches preserve the scene resize mode, high resolution setting,
-and texture filter. Windows Alt+Enter uses the same transition as
-`Window::SetFullscreen()`. Keep retains its logical canvas, while Virtual and
+and texture filter. Windows Alt+Enter and macOS Control+Command+F and the fullscreen
+menu use the same transition as `Window::SetFullscreen()`.
+Keep retains its logical canvas, while Virtual and
 Actual follow the fullscreen window's virtual and framebuffer dimensions.
 Settings changed while fullscreen remain selected after returning to windowed
-mode. Applications that expect Alt+Enter to freeze the logical canvas should
+mode. Applications that expect fullscreen switching to freeze the logical canvas should
 select Keep explicitly.
 
 The cursor's base transform is refreshed without consuming an input frame.
@@ -132,11 +133,15 @@ exercises the window-message route for Alt+Enter, same-method and mixed API/shor
 round trips, all resize modes with high resolution on/off, policy changes while
 fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
-On macOS it checks API round trips for all six settings, immediate scene/cursor
+On macOS it checks API and UI round trips for all six settings, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
 position and dimensions for each source/destination monitor pair, native
 minimized state, unchanged native desktop modes and monitor positions, and
-fullscreen resize requests. Capture dimensions and transformed cursor hit tests
+fullscreen resize requests. Local Cocoa events and menu dispatch exercise the
+fullscreen UI routes without injecting global input. The native green button
+and Zoom menu remain maximization operations. Disabled controls,
+pending-request cancellation, shortcut repeats, and fixed/sizable/frameless
+styles are covered. Capture dimensions and transformed cursor hit tests
 are also checked for all six settings on each monitor. The macOS monitor test
 places the window with
 `Window::CenterToScreen(index)` before exercising the public fullscreen API.
