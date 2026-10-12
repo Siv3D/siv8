@@ -151,7 +151,7 @@ namespace s3d
 		{
 			switch (sampleCount)
 			{
-			case MSAASampleCount::NoAA:
+			case MSAASampleCount::NoMSAA:
 			case MSAASampleCount::X2MSAA:
 			case MSAASampleCount::X4MSAA:
 				break;

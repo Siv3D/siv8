@@ -92,7 +92,7 @@ Scene::SetMSAASampleCount(MSAASampleCount::X2MSAA);
 const auto samples = Scene::GetMSAASampleCount();
 ```
 
-The choices are `NoAA` (one sample), 2x, and 4x; the default is 4x. The setting
+The choices are `NoMSAA` (one sample), 2x, and 4x; the default is 4x. The setting
 belongs to the default scene render target, and survives configuration and
 window-size changes. Other render targets have independent sample counts.
 Unsupported GPU sample counts throw `Error` instead of selecting another count.

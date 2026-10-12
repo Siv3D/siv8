@@ -26,6 +26,18 @@ namespace
 
 TEST_CASE("EnumFormatter")
 {
+	SECTION("MSAASampleCount")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ MSAASampleCount::NoMSAA, StringView{ U"NoMSAA" } },
+			std::pair{ MSAASampleCount::X2MSAA, StringView{ U"X2MSAA" } },
+			std::pair{ MSAASampleCount::X4MSAA, StringView{ U"X4MSAA" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
 	SECTION("BrowserApp")
 	{
 		static constexpr std::array Cases =

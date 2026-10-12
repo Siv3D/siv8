@@ -167,7 +167,7 @@ namespace s3d
 		// Reallocation, MSAA changes, and the next frame must not reuse an old resolve.
 		for (const Size size : { Size{ 1, 1 }, Size{ 83, 65 }, Size{ 81, 63 } })
 		{
-			for (const auto samples : { MSAASampleCount::NoAA, Scene::DefaultMSAASampleCount })
+			for (const auto samples : { MSAASampleCount::NoMSAA, Scene::DefaultMSAASampleCount })
 			{
 				CAPTURE(size, samples);
 				Scene::Configure(SceneConfig::Fixed(size));

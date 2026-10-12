@@ -20,7 +20,7 @@ namespace s3d
 {
 	namespace
 	{
-		constexpr std::array SampleCounts{ MSAASampleCount::NoAA, MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA };
+		constexpr std::array SampleCounts{ MSAASampleCount::NoMSAA, MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA };
 
 		struct SceneTest
 		{
@@ -93,7 +93,7 @@ namespace s3d
 				ComPtr<ID3D11Texture2D>{ buffer.getCaptureTexture().first } };
 		# else
 			auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
-			return { ((Scene::GetMSAASampleCount() == MSAASampleCount::NoAA)
+			return { ((Scene::GetMSAASampleCount() == MSAASampleCount::NoMSAA)
 				? renderer->getSceneTextureNonMSAA() : renderer->getSceneTextureMSAA()),
 				renderer->getSceneTextureNonMSAA() };
 		# endif
@@ -185,7 +185,7 @@ namespace s3d
 			{
 				hasPartialCoverage |= ((0 < pixel.r) && (pixel.r < 255));
 			}
-			CHECK(hasPartialCoverage == (samples != MSAASampleCount::NoAA));
+			CHECK(hasPartialCoverage == (samples != MSAASampleCount::NoMSAA));
 		}
 	}
 
