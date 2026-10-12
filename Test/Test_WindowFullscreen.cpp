@@ -82,12 +82,56 @@ namespace s3d
 				<< " scene=" << Scene::Size() << " render=" << Scene::RenderResolution()
 				<< " mode=" << Format(Scene::GetConfig().sizeMode).toUTF8()
 				<< " highResolution=" << (Scene::GetConfig().resolution == SceneResolution::Display)
+				<< " fullscreenSizing=" << Format(Scene::GetConfig().fullscreen).toUTF8()
 				<< " filter=" << Format(Scene::GetConfig().scalingFilter).toUTF8() << '\n';
 		}
 
 		using ResizeFunction = bool (*)(Size, CenterWindow);
 		constexpr ResizeFunction ResizeFunctions[] = { Window::Resize, Window::ResizeVirtual, Window::ResizeActual };
 		constexpr const char* ResizeNames[] = { "Resize", "ResizeVirtual", "ResizeActual" };
+
+		Array<std::pair<size_t, size_t>> MixedDPIRoutes(const Array<MonitorInfo>& monitors)
+		{
+			REQUIRE_FALSE(monitors.isEmpty());
+			Array<std::pair<size_t, size_t>> routes;
+			for (size_t i = 0; i < monitors.size(); ++i)
+			{
+				Catch::cout() << "monitor[" << i << "] " << monitors[i].format().toUTF8() << '\n';
+				for (size_t j = i + 1; j < monitors.size(); ++j)
+				{
+					if (routes.isEmpty() && monitors[i].scaling && monitors[j].scaling
+						&& (monitors[i].scaling != monitors[j].scaling))
+					{
+						// Select one pair in both directions, without a display Cartesian product.
+						routes.emplace_back(i, j);
+						routes.emplace_back(j, i);
+					}
+				}
+			}
+			if (routes.isEmpty())
+			{
+				WARN("No mixed-DPI monitor pair: only same-monitor resize coverage is available.");
+				const size_t monitor = System::GetCurrentMonitorIndex();
+				routes.emplace_back(monitor, monitor);
+			}
+			return routes;
+		}
+
+		void CheckSelectedConfig(const SceneConfig& config, const Size expected)
+		{
+			CHECK(Scene::GetConfig() == config);
+			CHECK(Scene::Size() == expected);
+			SceneMisc::RenderState reference;
+			reference.config = config;
+			reference.size = expected;
+			reference.frameBufferSize = Window::GetState().frameBufferSize;
+			CHECK(Scene::RenderResolution() == reference.renderSize());
+			const auto [scale, area] = reference.composition();
+			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
+			const Mat3x2 all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());
+			CHECK(Cursor::PosF().epsilonEquals(all.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
+			CHECK(Scene::ClientToScene(reference.frameBufferSize * 0.5).epsilonEquals(expected * 0.5, 1e-6));
+		}
 
 # endif
 
@@ -252,28 +296,7 @@ namespace s3d
 		const RestoreWindowAndScene restore;
 		UpdateWithPause();
 		const auto monitors = System::EnumerateMonitors();
-		REQUIRE_FALSE(monitors.isEmpty());
-		Array<std::pair<size_t, size_t>> routes;
-		for (size_t i = 0; i < monitors.size(); ++i)
-		{
-			Catch::cout() << "monitor[" << i << "] " << monitors[i].format().toUTF8() << '\n';
-			for (size_t j = i + 1; j < monitors.size(); ++j)
-			{
-				if (routes.isEmpty() && monitors[i].scaling && monitors[j].scaling
-					&& (monitors[i].scaling != monitors[j].scaling))
-				{
-					// One mixed-DPI pair in both directions is enough; avoid a display Cartesian product.
-					routes.emplace_back(i, j);
-					routes.emplace_back(j, i);
-				}
-			}
-		}
-		if (routes.isEmpty())
-		{
-			WARN("No mixed-DPI monitor pair: only same-monitor resize coverage is available.");
-			const size_t monitor = System::GetCurrentMonitorIndex();
-			routes.emplace_back(monitor, monitor);
-		}
+		const auto routes = MixedDPIRoutes(monitors);
 		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 		const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
 		for (const auto& [source, target] : routes)
@@ -380,6 +403,100 @@ namespace s3d
 		}
 	}
 
+	TEST_CASE("WindowFullscreen.keep_size_resize_restores_monitor", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		UpdateWithPause();
+		const auto routes = MixedDPIRoutes(System::EnumerateMonitors());
+		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
+		for (const auto& [source, target] : routes)
+		{
+			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+			REQUIRE(Window::CenterToScreen(source));
+			UpdateWithPause();
+			REQUIRE(System::GetCurrentMonitorIndex() == source);
+			for (int32 api = 0; api < 3; ++api)
+			{
+				CAPTURE(source, target, ResizeNames[api]);
+				Catch::cout() << "KeepSize route=" << source << "->" << target << " api=" << ResizeNames[api] << '\n';
+				REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+				Scene::Configure(SceneConfig{});
+				const auto windowed = Window::GetState();
+				RECT nativeWindowed{};
+				REQUIRE(::GetWindowRect(MainWindow(), &nativeWindowed));
+				SetFullscreenWithPause(true, target);
+				REQUIRE(Window::GetState().fullscreen);
+				CHECK(System::GetCurrentMonitorIndex() == target);
+				CheckSelectedConfig(SceneConfig{}, windowed.virtualSize);
+				UpdateWithPause();
+				CheckSelectedConfig(SceneConfig{}, windowed.virtualSize);
+				auto config = Scene::GetConfig();
+				Size heldSize = Scene::Size();
+				if (api != 0)
+				{
+					config.resolution = SceneResolution::Display;
+					config.scalingFilter = TextureFilter::Nearest;
+					Scene::Configure(config);
+					CheckSelectedConfig(config, heldSize);
+				}
+				if (api == 2)
+				{
+					config.fullscreen = FullscreenSceneMode::FollowWindow;
+					Scene::Configure(config);
+					heldSize = Window::GetState().virtualSize;
+					CheckSelectedConfig(config, heldSize);
+					config.fullscreen = FullscreenSceneMode::KeepSize;
+					Scene::Configure(config);
+					CheckSelectedConfig(config, heldSize);
+				}
+				Scene::Configure(Scene::GetConfig());
+				CheckSelectedConfig(config, heldSize);
+				const auto full = Window::GetState();
+				CHECK(ResizeFunctions[api]((api == 2) ? full.frameBufferSize : full.virtualSize, CenterWindow::No));
+				CHECK_THROWS_AS(ResizeFunctions[api]({ 0, 600 }, CenterWindow::No), Error);
+				CHECK(Window::GetState().fullscreen);
+				CHECK(Window::GetState().bounds == full.bounds);
+				CheckSelectedConfig(config, heldSize);
+				UpdateWithPause();
+				CHECK(Window::GetState().fullscreen);
+				CheckSelectedConfig(config, heldSize);
+				ReportWindow("KeepSize fullscreen");
+
+				const Size requested{ 800, 600 };
+				const bool resized = ResizeFunctions[api](requested, CenterWindow::No);
+				const auto check = [&](const char* phase)
+				{
+					INFO(phase);
+					ReportWindow(phase);
+					const auto& window = Window::GetState();
+					CHECK_FALSE(window.fullscreen);
+					CHECK(System::GetCurrentMonitorIndex() == source);
+					CHECK(window.scaling == windowed.scaling);
+					CHECK(::GetDpiForWindow(MainWindow()) == Math::Round(windowed.scaling * 96));
+					CHECK(window.bounds.pos == windowed.bounds.pos);
+					RECT bounds{}, client{};
+					REQUIRE(::GetWindowRect(MainWindow(), &bounds));
+					REQUIRE(::GetClientRect(MainWindow(), &client));
+					CHECK(bounds.left == nativeWindowed.left);
+					CHECK(bounds.top == nativeWindowed.top);
+					const Size pixels = (api == 2) ? requested : Math::Round(requested * windowed.scaling).asPoint();
+					const Size points = (api == 2) ? Math::Round(requested / windowed.scaling).asPoint() : requested;
+					CHECK(window.virtualSize == points);
+					CHECK(window.frameBufferSize == pixels);
+					CHECK(Size{ client.right, client.bottom } == pixels);
+					CheckSelectedConfig(config, points);
+				};
+				check("KeepSize resize immediate");
+				System::Sleep(FullscreenPauseMillis);
+				REQUIRE(resized);
+				UpdateWithPause();
+				check("KeepSize resize next frame");
+			}
+		}
+	}
+
 	TEST_CASE("WindowFullscreen.below_minimum_resize_restores_window", "[.fullscreen]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -400,6 +517,9 @@ namespace s3d
 		for (int32 api = 0; api < 3; ++api)
 		{
 			CAPTURE(ResizeNames[api]);
+			auto config = Scene::GetConfig();
+			config.fullscreen = (api == 0) ? FullscreenSceneMode::FollowWindow : FullscreenSceneMode::KeepSize;
+			Scene::Configure(config);
 			SetFullscreenWithPause(true);
 			REQUIRE(Window::GetState().fullscreen);
 			// In-range requests below the minimum return false after restoring the window.
@@ -410,6 +530,7 @@ namespace s3d
 				CHECK(Window::GetState().bounds == windowed.bounds);
 				CHECK(Window::GetState().virtualSize == windowed.virtualSize);
 				CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
+				CHECK(Scene::GetConfig() == config);
 				CheckPresentation(SceneSizeMode::Window, true, TextureFilter::Linear);
 			};
 			check();

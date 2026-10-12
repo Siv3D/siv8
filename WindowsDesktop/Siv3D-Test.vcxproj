@@ -78,7 +78,9 @@
     <ClCompile Include="..\Test\Test_ScreenCoordinates.cpp" />
     <ClCompile Include="..\Test\Test_Keyboard.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp" />
-    <ClCompile Include="..\Test\Test_ScenePresentation.cpp" />
+    <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />

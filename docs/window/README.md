@@ -148,3 +148,7 @@ It also checks restored positions, native client pixels, same-size fullscreen
 requests (including rounded virtual sizes), invalid sizes, settings changed in
 fullscreen, and cursor transforms. If no mixed-DPI pair exists, it reports that
 limitation and checks only the current monitor; this is not mixed-DPI validation.
+The KeepSize case uses the same pair selection and all three Resize APIs, checking
+the default configuration and settings changed in fullscreen, including transitions
+between KeepSize and FollowWindow. Below-minimum requests retain coverage of both
+fullscreen sizing policies without extra fullscreen round trips.

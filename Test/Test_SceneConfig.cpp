@@ -265,3 +265,91 @@ TEST_CASE("SceneConfig.unchanged_and_filter_only_preserve_executed_pixels")
 		CHECK(Scene::GetConfig() == config);
 	}
 }
+
+# if SIV3D_PLATFORM(WINDOWS)
+
+TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
+{
+	REQUIRE_FALSE(Window::GetState().fullscreen);
+	const RestoreSceneConfig restoreScene;
+	const WindowState previous = Window::GetState();
+	const ScopeExit restoreWindow{ [&]
+	{
+		Window::Restore();
+		Window::SetStyle(previous.style);
+		Window::SetPos(previous.bounds.pos);
+		Window::Resize(previous.virtualSize, CenterWindow::No);
+		if (previous.maximized) { Window::Maximize(); }
+		if (previous.minimized) { Window::Minimize(); }
+		System::Sleep(500);
+	} };
+	const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
+	const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
+	Window::Restore();
+	Window::SetStyle(WindowStyle::Sizable);
+	REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+	REQUIRE(System::Update());
+	for (const auto& config : { SceneConfig::Fixed({ 320, 240 }, SceneResolution::Display),
+		SceneConfig::Window(), SceneConfig::Window(SceneResolution::Display), SceneConfig::WindowPixels() })
+	{
+		CAPTURE(config.sizeMode, config.resolution);
+		Scene::Configure(config);
+		const auto windowed = Window::GetState();
+		const Size initialRender = Scene::RenderResolution();
+		const auto check = [&](const char* phase)
+		{
+			INFO(phase);
+			const auto& window = Window::GetState();
+			const Size expected = (config.sizeMode == SceneSizeMode::Fixed) ? config.fixedSceneSize
+				: ((config.sizeMode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
+			CHECK(Scene::GetConfig() == config);
+			CHECK(Scene::Size() == expected);
+			SceneMisc::RenderState reference;
+			reference.config = config;
+			reference.size = expected;
+			reference.frameBufferSize = window.frameBufferSize;
+			CHECK(Scene::RenderResolution() == reference.renderSize());
+			const auto [scale, area] = reference.composition();
+			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
+			const auto all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());
+			CHECK(Cursor::PosF().epsilonEquals(all.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
+			Catch::cout() << phase << " mode=" << Format(config.sizeMode).toUTF8()
+				<< " resolution=" << Format(config.resolution).toUTF8()
+				<< " virtual=" << window.virtualSize << " framebuffer=" << window.frameBufferSize
+				<< " scene=" << Scene::Size() << " render=" << Scene::RenderResolution() << '\n';
+		};
+		Window::Maximize();
+		CHECK(Window::GetState().maximized);
+		check("maximize immediate");
+		CHECK(Scene::RenderResolution() != initialRender);
+		System::Sleep(500);
+		REQUIRE(System::Update());
+		check("maximize next frame");
+		Window::Restore();
+		CHECK_FALSE(Window::GetState().maximized);
+		check("restore immediate");
+		CHECK(Window::GetState().virtualSize == windowed.virtualSize);
+		CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
+		System::Sleep(500);
+		REQUIRE(System::Update());
+		check("restore next frame");
+		CHECK(Scene::RenderResolution() == initialRender);
+
+		const Size sceneBeforeMinimize = Scene::Size();
+		Window::Minimize();
+		System::Sleep(500);
+		CHECK(Window::GetState().minimized);
+		REQUIRE(System::Update());
+		CHECK(Scene::GetConfig() == config);
+		CHECK(Scene::Size() == sceneBeforeMinimize);
+		CHECK(Scene::RenderResolution() == initialRender);
+		Window::Restore();
+		CHECK_FALSE(Window::GetState().minimized);
+		check("unminimize immediate");
+		System::Sleep(500);
+		REQUIRE(System::Update());
+		check("unminimize next frame");
+	}
+}
+
+# endif

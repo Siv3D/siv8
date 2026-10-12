@@ -10,6 +10,10 @@ See the [usage and design guide](../../docs/renderer2d/scene-high-resolution.md)
 Build the complete program below in a Siv3D application on each target platform.
 Do not replace a repository platform `Main.cpp` permanently with this program.
 Use a resizable window and, where available, monitors with different scale factors.
+Pass `--preset=1` through `--preset=6` to select the initial configuration (default: 2).
+Pass `--hide-status` to inspect the drawing without diagnostic text, especially
+for the small PixelArt scene. These options also allow repeatable startup checks
+when injected key presses are shorter than the engine input sampling interval.
 
 1. Start in fixed 800 × 600 mode at display resolution. Keys **1–6** select the
    six configurations in the usage guide, in the same order. Press **H** to switch
@@ -107,7 +111,23 @@ void Main()
 {
     Window::SetStyle(WindowStyle::Sizable);
     Window::Resize(800, 600);
-    Scene::Configure(SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display));
+    const std::array configurations{
+        SceneConfig::Fixed({ 800, 600 }),
+        SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display),
+        SceneConfig::Window(),
+        SceneConfig::Window(SceneResolution::Display),
+        SceneConfig::PixelArt({ 200, 150 }),
+        SceneConfig::WindowPixels(),
+    };
+    const std::array presetKeys{ Key1, Key2, Key3, Key4, Key5, Key6 };
+    const auto& arguments = System::GetCommandLineArgs();
+    size_t initialPreset = 1;
+    for (size_t i = 0; i < configurations.size(); ++i)
+    {
+        if (arguments.contains(U"--preset={}"_fmt(i + 1))) { initialPreset = i; }
+    }
+    const bool showStatus = !arguments.contains(U"--hide-status");
+    Scene::Configure(configurations[initialPreset]);
     Scene::SetBackground(ColorF{ 0.12, 0.15, 0.2 });
     Scene::SetLetterbox(ColorF{ 0.3, 0.05, 0.1 });
 
@@ -138,12 +158,10 @@ void Main()
             captureSize = ScreenCapture::GetFrame().size();
         }
         auto config = Scene::GetConfig();
-        if (Key1.down()) { config = SceneConfig::Fixed({ 800, 600 }); }
-        if (Key2.down()) { config = SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display); }
-        if (Key3.down()) { config = SceneConfig::Window(); }
-        if (Key4.down()) { config = SceneConfig::Window(SceneResolution::Display); }
-        if (Key5.down()) { config = SceneConfig::PixelArt({ 200, 150 }); }
-        if (Key6.down()) { config = SceneConfig::WindowPixels(); }
+        for (size_t i = 0; i < configurations.size(); ++i)
+        {
+            if (presetKeys[i].down()) { config = configurations[i]; }
+        }
         if (KeyH.down())
         {
             config.resolution = (config.resolution == SceneResolution::Display)
@@ -227,24 +245,27 @@ void Main()
         }
 
         ClearPrint();
-        Print << U"H: resolution = " << Scene::GetConfig().resolution;
-        Print << U"1..6: preset, size mode = " << Scene::GetConfig().sizeMode;
-        Print << U"U: fullscreen sizing = " << Scene::GetConfig().fullscreen;
-        Print << U"T: fullscreen controls = " << Window::IsToggleFullscreenEnabled()
-              << U"  P: filter = " << Scene::GetConfig().scalingFilter;
-        Print << U"Scene: " << Scene::Size() << U"  render: " << Scene::RenderResolution();
-        Print << U"Window: " << Window::GetState().virtualSize
-              << U"  framebuffer: " << Window::GetState().frameBufferSize;
-        Print << U"B: monitor = " << System::GetCurrentMonitorIndex()
-              << U"  scale: " << Window::GetState().scaling
-              << U"  full: " << Window::GetState().fullscreen
-              << U"  bounds: " << Window::GetState().bounds;
-        Print << U"Cursor desktop: " << Cursor::ScreenPos() << U"  client pixels: " << Cursor::PosRaw();
-        Print << U"C: camera = " << useCamera << U"  clicks: " << clicks;
-        Print << U"S: last capture = " << captureSize;
-        Print << U"7/8/9/0: resize  M/R/N: window  F: fullscreen  (Shift+)G: next/previous fullscreen";
-        Print << U"Resize immediate: " << resizeImmediate;
-        Print << U"Resize next frame: " << resizeNextFrame;
+        if (showStatus)
+        {
+            Print << U"H: resolution = " << Scene::GetConfig().resolution;
+            Print << U"1..6: preset, size mode = " << Scene::GetConfig().sizeMode;
+            Print << U"U: fullscreen sizing = " << Scene::GetConfig().fullscreen;
+            Print << U"T: fullscreen controls = " << Window::IsToggleFullscreenEnabled()
+                  << U"  P: filter = " << Scene::GetConfig().scalingFilter;
+            Print << U"Scene: " << Scene::Size() << U"  render: " << Scene::RenderResolution();
+            Print << U"Window: " << Window::GetState().virtualSize
+                  << U"  framebuffer: " << Window::GetState().frameBufferSize;
+            Print << U"B: monitor = " << System::GetCurrentMonitorIndex()
+                  << U"  scale: " << Window::GetState().scaling
+                  << U"  full: " << Window::GetState().fullscreen
+                  << U"  bounds: " << Window::GetState().bounds;
+            Print << U"Cursor desktop: " << Cursor::ScreenPos() << U"  client pixels: " << Cursor::PosRaw();
+            Print << U"C: camera = " << useCamera << U"  clicks: " << clicks;
+            Print << U"S: last capture = " << captureSize;
+            Print << U"7/8/9/0: resize  M/R/N: window  F: fullscreen  (Shift+)G: next/previous fullscreen";
+            Print << U"Resize immediate: " << resizeImmediate;
+            Print << U"Resize next frame: " << resizeNextFrame;
+        }
     }
 }
 ```

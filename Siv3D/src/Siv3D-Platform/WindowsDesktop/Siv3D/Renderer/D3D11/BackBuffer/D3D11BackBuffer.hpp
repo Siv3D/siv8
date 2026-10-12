@@ -60,6 +60,18 @@ namespace s3d
 
 		std::pair<ID3D11Texture2D*, Size> getCaptureTexture();
 
+		[[nodiscard]]
+		ID3D11Texture2D* getBackBufferTexture() const noexcept
+		{
+			return m_backBuffer.getTexture();
+		}
+
+		[[nodiscard]]
+		ID3D11Texture2D* getSceneTexture() const noexcept
+		{
+			return m_sceneBuffers.getSceneTexture().getTexture();
+		}
+
 	private:
 		
 		ID3D11Device* m_device			= nullptr;

@@ -173,11 +173,17 @@ Unchanged configurations reuse the buffers and cached transform state.
 six common uses, fullscreen keep/follow transitions, same-dimension fullscreen
 exits, startup in fullscreen, minimized reconfiguration, configuration copies,
 invalid values, size boundaries, and preservation of executed pixels for
-unchanged and filter-only configurations.
+unchanged and filter-only configurations. Windows cases also check immediate and
+next-frame scene dimensions and cursor transforms after maximizing and restoring
+Fixed + Display, both Window resolution policies, and WindowPixels, including
+restoration from minimization.
 [Test_ScenePresentation.cpp](../../Test/Test_ScenePresentation.cpp) exercises
-Metal's final composition path into an offscreen target, comparing Nearest and
-Linear pixels and checking scene-buffer reuse across filter changes and combined
-scene-size/resolution changes with unchanged final buffer dimensions.
+the actual final composition paths: Metal into an offscreen target and D3D11
+into its swap-chain buffer. It compares Nearest → Linear → Nearest pixels and
+checks scene-buffer reuse across filter changes and combined scene-size/resolution
+changes with unchanged final buffer dimensions. D3D11 checks MSAA resolve followed
+by scaled composition, as well as direct resolve into the swap-chain buffer;
+the latter must match the resolved scene pixels, including partial edge coverage.
 
 [Test_SceneHighResolution.cpp](../../Test/Test_SceneHighResolution.cpp) covers
 size calculation, DPI-only changes, all resize modes, rounding, invalid sizes,
@@ -198,7 +204,10 @@ fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
 Fullscreen resize requests additionally check one mixed-DPI monitor pair in both
 directions, restored positions, the six size/resolution combinations with explicit fullscreen following, same-size and invalid requests,
-and immediate/next-frame dimensions and cursor mapping. See the
+and immediate/next-frame dimensions and cursor mapping. A separate Windows case
+covers all three Resize APIs with the default KeepSize policy, settings changed
+in fullscreen, and switching between KeepSize and FollowWindow without adding
+another full combination matrix. See the
 [window validation guide](../window/README.md#validation) for pair selection and
 the fallback on systems without mixed-DPI monitors.
 On macOS it checks API and UI round trips for the six size/resolution combinations with explicit fullscreen following, immediate scene/cursor
@@ -227,7 +236,7 @@ Run the focused tests and then the full suite on the respective host:
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 
