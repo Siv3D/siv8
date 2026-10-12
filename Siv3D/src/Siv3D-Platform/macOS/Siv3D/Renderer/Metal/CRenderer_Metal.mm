@@ -33,12 +33,17 @@ namespace s3d
 	{
 		auto state = m_sceneState;
 		state.configure(config, Window::GetState());
-		applySceneState(state);
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	SceneConfig CRenderer_Metal::getSceneConfig() const noexcept
 	{
 		return m_sceneState.config;
+	}
+
+	void CRenderer_Metal::setSceneSampleCount(const uint32 sampleCount)
+	{
+		applySceneState(m_sceneState, sampleCount);
 	}
 
 	struct VertexData
@@ -132,17 +137,7 @@ namespace s3d
 		
 		{
 			m_sceneState.configure(SceneConfig{}, Window::GetState());
-			const Size sceneSize = m_sceneState.size;
-			
-			if (m_sceneBuffers.sampleCount == 1)
-			{
-				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
-			else
-			{
-				m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
-				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
+			m_sceneBuffers = createSceneBuffers(m_sceneState.renderSize(), m_sceneBuffers.sampleCount);
 		}
 		
 		m_renderPipelineState.init(m_device, m_pShader);
@@ -387,7 +382,7 @@ namespace s3d
 	{
 		auto state = m_sceneState;
 		state.updateWindow(Window::GetState());
-		applySceneState(state);
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -501,42 +496,58 @@ namespace s3d
 			static_cast<int32>(backBufferSizeCGSize.width),
 			static_cast<int32>(backBufferSizeCGSize.height) };
 	}
-	void CRenderer_Metal::applySceneState(const SceneMisc::RenderState& state)
+	CRenderer_Metal::SceneBuffer CRenderer_Metal::createSceneBuffers(const Size size, const uint32 sampleCount) const
 	{
-		if (state == m_sceneState)
+		if (not m_device->supportsTextureSampleCount(sampleCount))
+		{
+			throw Error{ fmt::format("Scene MSAA sample count {} is not supported by the GPU", sampleCount) };
+		}
+		SceneBuffer buffers;
+		buffers.sampleCount = sampleCount;
+		if (sampleCount > 1)
+		{
+			buffers.msaa = MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, sampleCount);
+		}
+		buffers.nonMSAA = ((m_sceneBuffers.nonMSAA.size() == size)
+			? m_sceneBuffers.nonMSAA : MetalInternalTexture2D::CreateRenderTexture(m_device, size));
+		return buffers;
+	}
+
+	void CRenderer_Metal::applySceneState(const SceneMisc::RenderState& state, const uint32 sampleCount)
+	{
+		const bool stateChanged = (state != m_sceneState);
+		const bool samplesChanged = (sampleCount != m_sceneBuffers.sampleCount);
+		if (not stateChanged && not samplesChanged)
 		{
 			return;
 		}
 		SceneMisc::ValidateSceneSize(state.size);
 		const Size size = state.renderSize();
 		SceneMisc::ValidateSceneSize(size);
-		const bool replaceBuffer = (size != getSceneBufferSize());
-		const bool restartScene = (replaceBuffer || (state.size != m_sceneState.size));
+		const bool dimensionsChanged = ((size != getSceneBufferSize()) || (state.size != m_sceneState.size));
+		const bool replaceBuffer = ((size != getSceneBufferSize()) || samplesChanged);
 		SceneBuffer buffers;
 		if (replaceBuffer)
 		{
-			buffers.sampleCount = m_sceneBuffers.sampleCount;
-			if (buffers.sampleCount == 1)
-			{
-				buffers.nonMSAA = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-			}
-			else
-			{
-				buffers.msaa = MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, buffers.sampleCount);
-				buffers.nonMSAA = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-			}
+			buffers = createSceneBuffers(size, sampleCount);
 		}
-		if (restartScene)
+		if (dimensionsChanged || samplesChanged)
 		{
 			if (replaceBuffer)
 			{
 				m_sceneBuffers = std::move(buffers);
 			}
 			m_pRenderer2D->resetScenePass();
+		}
+		if (dimensionsChanged)
+		{
 			m_pRenderer2D->setSceneScale(Float2{ (float(size.x) / state.size.x), (float(size.y) / state.size.y) });
 		}
-		m_sceneState = state;
-		SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		if (stateChanged)
+		{
+			m_sceneState = state;
+			SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		}
 	}
 
 }

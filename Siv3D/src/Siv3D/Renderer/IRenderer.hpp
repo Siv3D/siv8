@@ -48,6 +48,10 @@ namespace s3d
 
 		virtual SceneConfig getSceneConfig() const noexcept = 0;
 
+		virtual void setSceneSampleCount(uint32 sampleCount) = 0;
+
+		virtual uint32 getSceneSampleCount() const noexcept = 0;
+
 		virtual const Size& getSceneSize() const noexcept = 0;
 
 		virtual const Size& getSceneBufferSize() const noexcept = 0;

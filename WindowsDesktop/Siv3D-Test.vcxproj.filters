@@ -175,6 +175,9 @@
     <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneMSAA.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -11,6 +11,7 @@
 
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Error.hpp>
 # include "IScene.hpp"
 # include "SceneTime.hpp"
 # include "SceneStyle.hpp"
@@ -146,10 +147,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetMSAASampleCount(const MSAASampleCount sampleCount)
-		//{
-
-		//}
+		void SetMSAASampleCount(const MSAASampleCount sampleCount)
+		{
+			switch (sampleCount)
+			{
+			case MSAASampleCount::NoAA:
+			case MSAASampleCount::X2MSAA:
+			case MSAASampleCount::X4MSAA:
+				break;
+			default:
+				throw Error{ "Scene::SetMSAASampleCount(): Invalid sample count" };
+			}
+			SIV3D_ENGINE(Renderer)->setSceneSampleCount(FromEnum(sampleCount));
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -157,11 +167,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//MSAASampleCount GetMSAASampleCount() noexcept
-		//{
-
-		//}
+		MSAASampleCount GetMSAASampleCount() noexcept
+		{
+			return static_cast<MSAASampleCount>(SIV3D_ENGINE(Renderer)->getSceneSampleCount());
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -40,6 +40,11 @@ namespace s3d
 		[[nodiscard]]
 		SceneConfig getSceneConfig() const noexcept;
 
+		void setSceneSampleCount(uint32 sampleCount);
+
+		[[nodiscard]]
+		uint32 getSceneSampleCount() const noexcept;
+
 		void updateSceneBufferSize();
 
 		void renderSceneToBackBuffer();
@@ -121,6 +126,9 @@ namespace s3d
 
 		void drawFullScreenTriangle();
 
-		void applySceneState(const SceneMisc::RenderState& state);
+		[[nodiscard]]
+		SceneBuffer createSceneBuffers(Size size, uint32 sampleCount) const;
+
+		void applySceneState(const SceneMisc::RenderState& state, uint32 sampleCount);
 	};
 }

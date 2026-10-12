@@ -29,6 +29,16 @@ namespace s3d
 		return m_backBuffer.getSceneConfig();
 	}
 
+	void CRenderer_D3D11::setSceneSampleCount(const uint32 sampleCount)
+	{
+		m_backBuffer.setSceneSampleCount(sampleCount);
+	}
+
+	uint32 CRenderer_D3D11::getSceneSampleCount() const noexcept
+	{
+		return m_backBuffer.getSceneSampleCount();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)

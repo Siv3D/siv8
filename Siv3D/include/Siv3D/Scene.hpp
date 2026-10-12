@@ -181,7 +181,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetMSAASampleCount(MSAASampleCount sampleCount);
+		/// @brief デフォルト描画先であるシーンの MSAA サンプル数を設定します。
+		/// @param sampleCount サンプル数。デフォルトは Scene::DefaultMSAASampleCount です。
+		/// @remark 即座に反映します。シーン以外の描画先には影響しません。
+		/// @remark 値が変わると実行済みの描画内容をクリアします。未実行の描画は保持され、実行時のサンプル数で描かれます。同じ値の設定では描画内容を維持します。
+		/// @throws Error 値が不正、GPU が非対応、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
+		void SetMSAASampleCount(MSAASampleCount sampleCount);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -189,8 +194,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//MSAASampleCount GetMSAASampleCount() noexcept;
+		/// @brief シーンに適用済みの MSAA サンプル数を返します。
+		/// @return シーンの MSAA サンプル数
+		[[nodiscard]]
+		MSAASampleCount GetMSAASampleCount() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -30,12 +30,22 @@ namespace s3d
 	{
 		auto state = m_sceneState;
 		state.configure(config, Window::GetState());
-		applySceneState(state);
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	SceneConfig D3D11BackBuffer::getSceneConfig() const noexcept
 	{
 		return m_sceneState.config;
+	}
+
+	void D3D11BackBuffer::setSceneSampleCount(const uint32 sampleCount)
+	{
+		applySceneState(m_sceneState, sampleCount);
+	}
+
+	uint32 D3D11BackBuffer::getSceneSampleCount() const noexcept
+	{
+		return m_sceneBuffers.sampleCount;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -58,16 +68,7 @@ namespace s3d
 		
 		{
 			m_sceneState.configure(SceneConfig{}, Window::GetState());
-			const Size sceneSize = m_sceneState.size;
-
-			if (m_sceneBuffers.sampleCount == 1)
-			{
-				m_sceneBuffers.nonMSAA	= D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
-			else
-			{
-				m_sceneBuffers.msaa		= D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
-			}
+			m_sceneBuffers = createSceneBuffers(m_sceneState.renderSize(), m_sceneBuffers.sampleCount);
 		}
 
 		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
@@ -113,7 +114,7 @@ namespace s3d
 	{
 		auto state = m_sceneState;
 		state.updateWindow(Window::GetState());
-		applySceneState(state);
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -353,31 +354,51 @@ namespace s3d
 			m_context->Draw(3, 0);
 		}
 	}
-	void D3D11BackBuffer::applySceneState(const SceneMisc::RenderState& state)
+	D3D11BackBuffer::SceneBuffer D3D11BackBuffer::createSceneBuffers(const Size size, const uint32 sampleCount) const
 	{
-		if (state == m_sceneState)
+		UINT qualityLevels = 0;
+		if (FAILED(m_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, sampleCount, &qualityLevels))
+			|| (qualityLevels == 0))
+		{
+			throw Error{ fmt::format("Scene MSAA sample count {} is not supported by the GPU", sampleCount) };
+		}
+		SceneBuffer buffers;
+		buffers.sampleCount = sampleCount;
+		if (sampleCount > 1)
+		{
+			buffers.msaa = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, sampleCount);
+		}
+		if (m_sceneBuffers.nonMSAA.size() == size)
+		{
+			buffers.nonMSAA = m_sceneBuffers.nonMSAA;
+		}
+		else if (sampleCount == 1)
+		{
+			buffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
+		}
+		// MSAA presentation and capture allocate the resolve target lazily.
+		return buffers;
+	}
+
+	void D3D11BackBuffer::applySceneState(const SceneMisc::RenderState& state, const uint32 sampleCount)
+	{
+		const bool stateChanged = (state != m_sceneState);
+		const bool samplesChanged = (sampleCount != m_sceneBuffers.sampleCount);
+		if (not stateChanged && not samplesChanged)
 		{
 			return;
 		}
 		SceneMisc::ValidateSceneSize(state.size);
 		const Size size = state.renderSize();
 		SceneMisc::ValidateSceneSize(size);
-		const bool replaceBuffer = (size != getSceneBufferSize());
-		const bool restartScene = (replaceBuffer || (state.size != m_sceneState.size));
+		const bool dimensionsChanged = ((size != getSceneBufferSize()) || (state.size != m_sceneState.size));
+		const bool replaceBuffer = ((size != getSceneBufferSize()) || samplesChanged);
 		SceneBuffer buffers;
 		if (replaceBuffer)
 		{
-			buffers.sampleCount = m_sceneBuffers.sampleCount;
-			if (buffers.sampleCount == 1)
-			{
-				buffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
-			}
-			else
-			{
-				buffers.msaa = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, buffers.sampleCount);
-			}
+			buffers = createSceneBuffers(size, sampleCount);
 		}
-		if (restartScene)
+		if (dimensionsChanged || samplesChanged)
 		{
 			if (replaceBuffer)
 			{
@@ -385,10 +406,16 @@ namespace s3d
 				m_sceneBuffers = std::move(buffers);
 			}
 			clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
+		}
+		if (dimensionsChanged)
+		{
 			SIV3D_ENGINE(Renderer2D)->setSceneScale(Float2{ (float(size.x) / state.size.x), (float(size.y) / state.size.y) });
 		}
-		m_sceneState = state;
-		SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		if (stateChanged)
+		{
+			m_sceneState = state;
+			SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		}
 	}
 
 }

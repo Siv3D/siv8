@@ -83,6 +83,34 @@ changes, size limits, and allocation failure, are in
 issuing that frame's draws. Unchanged configurations and filter-only changes
 preserve already rendered pixels.
 
+## Scene MSAA
+
+Set the sample count independently of the presentation configuration:
+
+```cpp
+Scene::SetMSAASampleCount(MSAASampleCount::X2MSAA);
+const auto samples = Scene::GetMSAASampleCount();
+```
+
+The choices are `NoAA` (one sample), 2x, and 4x; the default is 4x. The setting
+belongs to the default scene render target, and survives configuration and
+window-size changes. Other render targets have independent sample counts.
+Unsupported GPU sample counts throw `Error` instead of selecting another count.
+The full change and failure contract is in
+[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp).
+
+Like resizing, a sample-count change preserves pending drawing commands and
+clears already executed drawing. Apply it before drawing when the entire frame
+should use the new count. Sample counts do not change scene coordinates, render
+resolution, or captured image dimensions: `ScreenCapture` returns an image at
+`Scene::RenderResolution()` for every supported MSAA setting.
+
+Each backend prepares replacement scene resources before committing the change.
+The single-sample presentation/capture texture is reused when its dimensions
+match. Metal restarts the scene pass and selects a pipeline cached by sample
+count; D3D11 clears the replacement drawing target and uses its existing resolve
+paths. Switching does not force a flush or wait for GPU completion.
+
 ## Coordinate and pixel sizes
 
 | Use | API |
@@ -168,6 +196,16 @@ The cursor's base transform is refreshed without consuming an input frame.
 Unchanged configurations reuse the buffers and cached transform state.
 
 ## Validation
+
+[Test_SceneMSAA.cpp](../../Test/Test_SceneMSAA.cpp) checks supported sample-count
+transitions, native texture sample counts, resource reuse, pending and executed
+drawing, empty frames, repeated changes, rejected values, and preservation across
+scene configuration changes. Native and scaled presentation are checked at each
+supported sample count. ScreenCapture checks compare dimensions and pixels
+at one-pixel, odd, and display-resolution sizes for each supported sample count,
+and verify partial edge coverage. A backend test rejects a native unsupported
+count separately from public enum validation; unsupported valid enum values are
+also checked when the device exposes one.
 
 [Test_SceneConfig.cpp](../../Test/Test_SceneConfig.cpp) covers the four factories,
 six common uses, fullscreen keep/follow transitions, same-dimension fullscreen

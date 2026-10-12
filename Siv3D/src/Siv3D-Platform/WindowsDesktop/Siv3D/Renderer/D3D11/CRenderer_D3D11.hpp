@@ -55,6 +55,11 @@ namespace s3d
 		[[nodiscard]]
 		SceneConfig getSceneConfig() const noexcept override;
 
+		void setSceneSampleCount(uint32 sampleCount) override;
+
+		[[nodiscard]]
+		uint32 getSceneSampleCount() const noexcept override;
+
 		const Size& getSceneSize() const noexcept override;
 
 		[[nodiscard]]

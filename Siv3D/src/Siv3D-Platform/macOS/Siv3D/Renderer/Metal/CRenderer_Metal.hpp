@@ -58,6 +58,8 @@ namespace s3d
 		[[nodiscard]]
 		SceneConfig getSceneConfig() const noexcept override;
 
+		void setSceneSampleCount(uint32 sampleCount) override;
+
 		const Size& getSceneSize() const noexcept override;
 
 		[[nodiscard]]
@@ -92,7 +94,7 @@ namespace s3d
 		const MetalFrameContext& getFrameContext() const noexcept;
 
 		[[nodiscard]]		
-		uint32 getSceneSampleCount() const noexcept;
+		uint32 getSceneSampleCount() const noexcept override;
 
 		[[nodiscard]]
 		const MetalInternalTexture2D& getSceneTextureMSAA() const noexcept;
@@ -132,7 +134,7 @@ namespace s3d
 		
 		struct SceneBuffer
 		{
-			uint32 sampleCount = FromEnum(Scene::DefaultMSAASampleCount);;
+			uint32 sampleCount = FromEnum(Scene::DefaultMSAASampleCount);
 
 			MetalInternalTexture2D msaa;
 
@@ -158,7 +160,10 @@ namespace s3d
 
 		const MTL::RenderPipelineState* m_fullscreenTriangleRenderPipelineState = nullptr;
 		
-		void applySceneState(const SceneMisc::RenderState& state);
+		[[nodiscard]]
+		SceneBuffer createSceneBuffers(Size size, uint32 sampleCount) const;
+
+		void applySceneState(const SceneMisc::RenderState& state, uint32 sampleCount);
 
 		void resizeBackBuffer(Size backBufferSize);
 
