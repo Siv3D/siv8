@@ -18,6 +18,7 @@ the existing desktop pixel coordinates are retained.
 | `Cursor::ScreenPos()` / `ScreenPreviousPos()` / `ScreenDelta()` | Desktop points | Desktop pixels |
 | `WindowState::virtualSize` | Client points | Client size before desktop scaling |
 | `WindowState::frameBufferSize`, `Cursor::PosRaw()` | Client backing pixels | Client pixels |
+| `Window::SetMinimumFrameBufferSize()`, `WindowState::minFrameBufferSize` | Client backing pixels | Client pixels |
 | `Scene::Size()`, `Cursor::PosF()`, shape hit testing | Scene/user coordinates | Scene/user coordinates |
 | `Scene::RenderResolution()`, captured scene image dimensions | Render-target pixels | Render-target pixels |
 
@@ -52,6 +53,13 @@ backing pixels, which may differ from the panel's physical pixel count. Use
 `displayRect` for desktop placement, and the window's `frameBufferSize` for its
 actual framebuffer dimensions.
 
+`Window::SetMinimumFrameBufferSize()` specifies a minimum for manual resizing in
+pixels. On macOS, the native limit is rounded up to whole points: 321 × 241 pixels
+becomes 161 × 121 points at 2×, and 321 × 241 points at 1×. The stored pixel request
+stays unchanged when the window moves between monitors. The point limit is
+recomputed when the backing scale changes, and applied when the window becomes
+resizable if it was set while using Fixed or Frameless style.
+
 ## Fullscreen
 
 `Window::SetFullscreen()` covers the selected display without changing its OS
@@ -59,6 +67,11 @@ display mode. Resolution, refresh rate, and desktop scaling remain under the
 user's control. The full display rectangle is used, including the area normally
 occupied by the menu bar and Dock. On macOS, a fullscreen window minimizes
 when it loses focus.
+
+If macOS disconnects the fullscreen monitor, GLFW detaches the window from it.
+The next `System::Update()` reads the native fullscreen state along with the new
+geometry. The current `SceneConfig` remains selected; window-following scene sizes
+resume following the restored window, including with `KeepSize` selected.
 
 A Retina fullscreen window keeps its point dimensions separate from its backing
 pixels. `SceneConfig::Window()` preserves the pre-fullscreen scene size and
@@ -161,6 +174,26 @@ boundaries, not in getters or ordinary frame synchronization. This ownership mod
 does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
+
+[Test_WindowMacOS.cpp](../../Test/Test_WindowMacOS.cpp) checks native minimum-size
+limits, point rounding, and style changes in the default suite. A scoped override
+of the window's reported backing scale checks 1× → 2× → 1× reapplication without
+requiring multiple displays; this is not a physical DPI transition test.
+
+Its opt-in monitor case checks minimum-size limits immediately after placement
+and on the next frame on attached displays. Its fullscreen case invokes the
+native detachment path used by GLFW on monitor disconnection, then checks window
+state, Scene configuration, sizing, cursor conversion, placement, resizing, and a
+subsequent shortcut/API fullscreen round trip. This does not unplug a monitor or
+exercise OS display re-enumeration. These cases retain `[.screen-coordinates]` and
+`[.fullscreen]` respectively, with 500 ms pauses after visible transitions:
+
+```sh
+./macOS/run-tests.sh '--test-case=WindowMacOS.*'
+```
+
+Use the [interactive program](../../Test/Manual/SceneHighResolution.md) for
+physical monitor disconnection/reconnection and manual minimum-size checks.
 
 [Test_WindowStateSync.cpp](../../Test/Test_WindowStateSync.cpp) separates controlled
 two-thread handoff checks from real HWND message tests on Windows. The handoff

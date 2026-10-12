@@ -77,6 +77,20 @@ when injected key presses are shorter than the engine input sampling interval.
    desktop coordinates should stay continuous in points; raw client coordinates
    should remain pixels at the window's backing scale. See the
    [coordinate guide](../../docs/window/README.md) for units.
+8. On macOS, add `Window::SetMinimumFrameBufferSize({ 321, 241 });` after the
+   initial `Window::SetStyle()` call. Shrink the window with its border on each
+   attached monitor. At 2×, the native minimum is 161 × 121 points (322 × 242
+   backing pixels); at 1× it is 321 × 241 points/pixels. A native title-bar minimum
+   can further restrict width. Move between scales without setting the minimum
+   again, then repeat after a fullscreen round trip. The pixel request must
+   remain 321 × 241 while the point limit adapts.
+9. On macOS, enter fullscreen on an external monitor, then physically disconnect
+   it. Rendering and input must continue in a window on a remaining display.
+   With preset **3** or **4**, the scene size must resume following the window;
+   the selected configuration and interpolation must remain unchanged. Check
+   **B** placement, border resizing, **7** resizing, and hover/click alignment.
+   Reconnect the monitor, then use the shortcut and **F** for another fullscreen
+   round trip. Record the display layout and scale before and after disconnection.
 
 ## Expected results
 

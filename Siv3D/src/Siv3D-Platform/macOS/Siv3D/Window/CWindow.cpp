@@ -76,8 +76,6 @@ namespace s3d
 		::glfwPreserveVideoMode_Siv3D(m_glfwWindow);
 		::glfwSetFullscreenToggleEnabled_Siv3D(m_glfwWindow, GLFW_TRUE);
 		::glfwSetWindowUserPointer(m_glfwWindow, this);
-		::glfwSetWindowSizeLimits(m_glfwWindow, m_state.minFrameBufferSize.x, m_state.minFrameBufferSize.y,
-								  GLFW_DONT_CARE, GLFW_DONT_CARE);
 		::glfwSetWindowPosCallback(m_glfwWindow, CWindow::OnMove);
 		::glfwSetWindowSizeCallback(m_glfwWindow, CWindow::OnResize);
 		::glfwSetFramebufferSizeCallback(m_glfwWindow, CWindow::OnFrameBufferSize);
@@ -87,6 +85,7 @@ namespace s3d
 		::glfwSetWindowFocusCallback(m_glfwWindow, CWindow::OnFocus);
 
 		updateState();
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -202,6 +201,8 @@ namespace s3d
 		m_state.style = style;
 		
 		updateState();
+		// GLFW defers size limits while the window is not resizable.
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -350,11 +351,9 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
 		
-		m_state.minFrameBufferSize = size;
-		
-		::glfwSetWindowSizeLimits(m_glfwWindow, size.x, size.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
-		
 		updateState();
+		m_state.minFrameBufferSize = size;
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -411,8 +410,6 @@ namespace s3d
 								   m_storedWindowRect.w, m_storedWindowRect.h, GLFW_DONT_CARE);
 		}
 		
-		m_state.fullscreen = fullscreen;
-		
 		updateState();
 
 		// Keep also needs the new framebuffer geometry for rendering and input.
@@ -460,8 +457,16 @@ namespace s3d
 
 	void CWindow::updateState()
 	{
+		const double previousScaling = m_state.scaling;
 		WindowMisc::UpdateGeometry(m_glfwWindow, m_state);
-				
+		if (m_state.scaling != previousScaling)
+		{
+			updateMinimumWindowSize();
+		}
+
+		// GLFW also leaves fullscreen when its monitor is disconnected.
+		m_state.fullscreen = (::glfwGetWindowMonitor(m_glfwWindow) != nullptr);
+
 		// minimized
 		m_state.minimized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
 		
@@ -481,6 +486,23 @@ namespace s3d
 				m_moveResizeStabilizer.reset();
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	updateMinimumWindowSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::updateMinimumWindowSize()
+	{
+		const auto toPoints = [scaling = m_state.scaling](const int32 pixels)
+		{
+			// Preserve GLFW's non-positive limit values; round positive minima up.
+			return (0 < pixels) ? static_cast<int32>(Math::Ceil(pixels / scaling)) : pixels;
+		};
+		::glfwSetWindowSizeLimits(m_glfwWindow, toPoints(m_state.minFrameBufferSize.x),
+			toPoints(m_state.minFrameBufferSize.y), GLFW_DONT_CARE, GLFW_DONT_CARE);
 	}
 
 	////////////////////////////////////////////////////////////////

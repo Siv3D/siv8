@@ -232,6 +232,7 @@ namespace s3d
 
 		/// @brief ウィンドウを手動でリサイズするときの最小サイズを実サイズ基準で設定します。
 		/// @param size 設定するサイズ（ピクセル）
+		/// @remark macOS では、指定したピクセル数を下回らないよう point 単位に切り上げます。
 		void SetMinimumFrameBufferSize(Size size);
 
 		////////////////////////////////////////////////////////////////
