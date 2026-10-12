@@ -47,6 +47,7 @@
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
+- Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` で、2×2 のシーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。Linear、MSAA resolve、バッファ再利用の検証とは切り分け、D3D11 のテクスチャ座標の固定小数点精度と照合する。境界画素の厳密一致を保証する必要があるか、テストの観測位置を見直すかを決める。
 - [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元の未確認の組み合わせ（特に Fixed / SceneSize と PixelArt）を確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。
 - macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。Control + Command + F の実キー入力、メニュー・緑ボタンの実クリックも含む。API とローカル Cocoa イベントによる全画面往復・復帰寸法・最小化状態の自動テストとは区別する。
 - GPU バッファ確保失敗時の維持動作はコード確認に加え、確保失敗を再現できる環境で検証する。
@@ -54,9 +55,11 @@
 
 ## Renderer2D / 組み込みシェーダ最適化
 
+- WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。
+- WARP の `MSDFFont.atlas_dimensions` で、同じグリフを幅 768 のアトラスに移すと輪郭描画は最大 2/255、Print 用シェーダは最大 11/255 の差が出る。幅 128 / 512 と比較し、非 2 冪アトラスの UV・フィルタリング・微分・coverage 計算を切り分ける。既存の 1 階調許容を根拠なく拡大しない。
 - macOS の `Test_MetalFrameErrors.cpp` のログ取得を Catch2 の XML レポーターと両立させる。通常の console レポーターでは成功するが、`--test-case=MetalFrameErrors.* --reporter xml` では `std::clog` の取り込みが競合してログ検証が失敗する。GPU 実行失敗とは区別し、テスト側のログ取得方法を見直す。
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
-- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。[ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較も確認する。引き継いだ目視結果は macOS Debug のみで、Windows の描画検証を代替しない。
+- ScopedQuadWarp2D: Windows で [ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較を目視確認する。自動テストの画像比較と区別する。
 - Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。
