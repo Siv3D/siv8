@@ -40,6 +40,7 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 # Build and test
 
 - Determine the host OS first, and never run build or test commands intended for a different host OS.
+- Treat MSVC `C1001` as a likely compiler/toolchain issue; report it briefly without adding detailed incident histories to siv8 documentation or TODO.md unless a repository-specific workaround needs documenting.
 - If Windows tests report `EXCEPTION_ILLEGAL_INSTRUCTION` or exit with an incomplete test report after an incremental build, preserve the report and follow the [clean-build diagnosis](docs/development/README.md#windows-incremental-build-failures) before repeating the failing run or attributing it to source changes. Reverting source and relinking incrementally does not rule out stale build artifacts.
 - After changing shared code, run the full automated test suite available for the current host. If no automated test workflow is documented for that host, do not substitute another platform's workflow; report the unverified items explicitly.
 - On macOS that suite is `./macOS/run-tests.sh`, run from the repository root; pass `'--test-case=<pattern>'` for focused iteration. It relies on the `--test-only` early-exit block in `macOS/Main.cpp`, so keep that block intact and keep test-only logging and configuration in `Test/`.
