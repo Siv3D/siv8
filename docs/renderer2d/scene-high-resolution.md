@@ -269,12 +269,12 @@ visibly change the real window. Each transition is followed by a 500 ms pause.
 Run the focused tests and then the full suite on the respective host:
 
 ```sh
-./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*'
+./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
 ./macOS/run-tests.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 

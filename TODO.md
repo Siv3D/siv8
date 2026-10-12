@@ -47,7 +47,7 @@
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
-- シーン MSAA の `SceneMSAA.*` を Windows / D3D11 で実行し、NoAA / 2x / 4x の切り替え、未実行描画の保持、直接・拡大表示、スクリーンキャプチャの寸法を確認する。有効な列挙値が GPU 非対応となる環境でも、`Error` と以前の状態の維持を確認する。
+- シーン MSAA の有効な列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` により `Error` と以前の状態の維持を確認する。
 - Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` で、2×2 のシーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。Linear、MSAA resolve、バッファ再利用の検証とは切り分け、D3D11 のテクスチャ座標の固定小数点精度と照合する。境界画素の厳密一致を保証する必要があるか、テストの観測位置を見直すかを決める。
 - [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元の未確認の組み合わせ（特に Fixed / SceneSize と PixelArt）を確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。
 - macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。Control + Command + F の実キー入力、メニュー・緑ボタンの実クリックも含む。API とローカル Cocoa イベントによる全画面往復・復帰寸法・最小化状態の自動テストとは区別する。
