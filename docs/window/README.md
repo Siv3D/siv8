@@ -68,7 +68,8 @@ scaling can resample the framebuffer, so nearest scene sampling alone does not
 guarantee integer scaling on the physical panel.
 
 Calling `Window::Resize()`, `ResizeVirtual()`, or `ResizeActual()` with a changed
-size exits fullscreen and resizes the restored window. The macOS actual-size
+size exits fullscreen and resizes the restored window. Virtual-size requests use
+the restored window's monitor scale. The macOS actual-size
 conversion uses the restored window's monitor scale; a request in backing pixels
 is rounded to a client size in points. Reapplying the current size leaves the
 window fullscreen. Scene resize mode, high resolution, and filtering remain
@@ -134,3 +135,13 @@ command is in the [scene guide](../renderer2d/scene-high-resolution.md#validatio
 Use the [interactive program](../../Test/Manual/SceneHighResolution.md) to check
 continuous dragging, drawing, and physical pointer interaction. Automated native
 coordinate checks do not establish those visual results.
+
+The Windows fullscreen resize case selects one attached mixed-DPI pair and checks
+both directions with `CenterWindow::No`. It records monitor/DPI, window and scene
+dimensions, and presentation settings immediately after resizing and after the
+next frame. All six scene policies use actual-size requests and alternating
+`Resize()` / `ResizeVirtual()` requests, avoiding duplicate alias combinations.
+It also checks restored positions, native client pixels, same-size fullscreen
+requests (including rounded virtual sizes), invalid sizes, settings changed in
+fullscreen, and cursor transforms. If no mixed-DPI pair exists, it reports that
+limitation and checks only the current monitor; this is not mixed-DPI validation.

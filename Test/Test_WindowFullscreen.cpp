@@ -79,6 +79,23 @@ namespace s3d
 			UpdateWithPause();
 		}
 
+		void ReportWindow(const char* phase)
+		{
+			const auto& window = Window::GetState();
+			Catch::cout() << phase << ": monitor=" << System::GetCurrentMonitorIndex()
+				<< " dpi=" << ::GetDpiForWindow(MainWindow()) << " scaling=" << window.scaling
+				<< " fullscreen=" << window.fullscreen << " bounds=" << window.bounds
+				<< " virtual=" << window.virtualSize << " framebuffer=" << window.frameBufferSize
+				<< " scene=" << Scene::Size() << " render=" << Scene::RenderSize()
+				<< " mode=" << Format(Scene::GetResizeMode()).toUTF8()
+				<< " highResolution=" << Scene::IsHighResolutionEnabled()
+				<< " filter=" << Format(Scene::GetTextureFilter()).toUTF8() << '\n';
+		}
+
+		using ResizeFunction = bool (*)(Size, CenterWindow);
+		constexpr ResizeFunction ResizeFunctions[] = { Window::Resize, Window::ResizeVirtual, Window::ResizeActual };
+		constexpr const char* ResizeNames[] = { "Resize", "ResizeVirtual", "ResizeActual" };
+
 # endif
 
 		void CheckPresentation(const ResizeMode mode, const bool highResolution, const TextureFilter filter,
@@ -219,6 +236,164 @@ namespace s3d
 		UpdateWithPause();
 		CHECK(Window::GetState().fullscreen);
 		SetFullscreenWithPause(false);
+	}
+
+	TEST_CASE("WindowFullscreen.resize_restores_monitor", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		UpdateWithPause();
+		const auto monitors = System::EnumerateMonitors();
+		REQUIRE_FALSE(monitors.isEmpty());
+		Array<std::pair<size_t, size_t>> routes;
+		for (size_t i = 0; i < monitors.size(); ++i)
+		{
+			Catch::cout() << "monitor[" << i << "] " << monitors[i].format().toUTF8() << '\n';
+			for (size_t j = i + 1; j < monitors.size(); ++j)
+			{
+				if (routes.isEmpty() && monitors[i].scaling && monitors[j].scaling
+					&& (monitors[i].scaling != monitors[j].scaling))
+				{
+					// One mixed-DPI pair in both directions is enough; avoid a display Cartesian product.
+					routes.emplace_back(i, j);
+					routes.emplace_back(j, i);
+				}
+			}
+		}
+		if (routes.isEmpty())
+		{
+			WARN("No mixed-DPI monitor pair: only same-monitor resize coverage is available.");
+			const size_t monitor = System::GetCurrentMonitorIndex();
+			routes.emplace_back(monitor, monitor);
+		}
+		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
+		for (const auto& [source, target] : routes)
+		{
+			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+			REQUIRE(Window::CenterToScreen(source));
+			UpdateWithPause();
+			REQUIRE(System::GetCurrentMonitorIndex() == source);
+			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			{
+				for (const bool enabled : { false, true })
+				{
+					// Resize delegates to ResizeVirtual: alternate those aliases instead of
+					// repeating their entire matrix. Exercise actual sizes for every policy.
+					for (const int32 api : { (enabled ? 1 : 0), 2 })
+					{
+						CAPTURE(source, target, mode, enabled, ResizeNames[api]);
+						Catch::cout() << "route=" << source << "->" << target << " api=" << ResizeNames[api] << '\n';
+						REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+						const auto windowed = Window::GetState();
+						RECT nativeWindowed{};
+						REQUIRE(::GetWindowRect(MainWindow(), &nativeWindowed));
+						Scene::SetResizeMode((mode == ResizeMode::Virtual) ? ResizeMode::Actual : ResizeMode::Virtual);
+						Scene::SetHighResolutionEnabled(not enabled);
+						Scene::SetTextureFilter(TextureFilter::Linear);
+						ReportWindow("windowed");
+						SetFullscreenWithPause(true, target);
+						REQUIRE(Window::GetState().fullscreen);
+						// All three settings changed in fullscreen must survive the resize exit.
+						Scene::SetResizeMode(mode);
+						if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
+						Scene::SetHighResolutionEnabled(enabled);
+						Scene::SetTextureFilter(TextureFilter::Nearest);
+						ReportWindow("fullscreen");
+						const auto full = Window::GetState();
+						CHECK(System::GetCurrentMonitorIndex() == target);
+						CHECK(full.frameBufferSize == monitors[target].displayRect.size);
+						CheckPresentation(mode, enabled, TextureFilter::Nearest);
+						for (int32 sameAPI = 0; sameAPI < 3; ++sameAPI)
+						{
+							CAPTURE(ResizeNames[sameAPI]);
+							CHECK(ResizeFunctions[sameAPI]((sameAPI == 2) ? full.frameBufferSize : full.virtualSize, CenterWindow::No));
+							CHECK(Window::GetState().fullscreen);
+							CHECK(Window::GetState().bounds == full.bounds);
+							CHECK(Window::GetState().frameBufferSize == full.frameBufferSize);
+							CheckPresentation(mode, enabled, TextureFilter::Nearest);
+						}
+						for (const Size invalid : { Size{ 0, 600 }, Size{ 800, -1 }, Size{ 8193, 600 }, Size{ 800, 8193 } })
+						{
+							CHECK_THROWS_AS(ResizeFunctions[api](invalid, CenterWindow::No), Error);
+						}
+						UpdateWithPause();
+						CHECK(Window::GetState().fullscreen);
+						CHECK(Window::GetState().virtualSize == full.virtualSize);
+						CHECK(Window::GetState().frameBufferSize == full.frameBufferSize);
+						CHECK(Window::GetState().bounds == full.bounds);
+						CheckPresentation(mode, enabled, TextureFilter::Nearest);
+
+						const Size requested{ 800, 600 };
+						const bool resized = ResizeFunctions[api](requested, CenterWindow::No);
+						const auto check = [&](const char* phase)
+						{
+							INFO(phase);
+							ReportWindow(phase);
+							const auto& window = Window::GetState();
+							CHECK_FALSE(window.fullscreen);
+							CHECK(System::GetCurrentMonitorIndex() == source);
+							CHECK(window.scaling == windowed.scaling);
+							CHECK(::GetDpiForWindow(MainWindow()) == Math::Round(windowed.scaling * 96));
+							CHECK(window.bounds.pos == windowed.bounds.pos);
+							RECT bounds{}, client{};
+							REQUIRE(::GetWindowRect(MainWindow(), &bounds));
+							REQUIRE(::GetClientRect(MainWindow(), &client));
+							CHECK(bounds.left == nativeWindowed.left);
+							CHECK(bounds.top == nativeWindowed.top);
+							const Size pixels = (api == 2) ? requested : Math::Round(requested * windowed.scaling).asPoint();
+							const Size points = (api == 2) ? Math::Round(requested / windowed.scaling).asPoint() : requested;
+							CHECK(window.virtualSize == points);
+							CHECK(window.frameBufferSize == pixels);
+							CHECK(Size{ client.right, client.bottom } == pixels);
+							CheckPresentation(mode, enabled, TextureFilter::Nearest);
+							CHECK(Scene::ClientToScene(pixels * 0.5).epsilonEquals(Scene::Size() * 0.5, 1e-6));
+							const auto all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());
+							CHECK(Cursor::PosF().epsilonEquals(all.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
+						};
+						check("resize immediate");
+						System::Sleep(FullscreenPauseMillis);
+						REQUIRE(resized);
+						UpdateWithPause();
+						check("resize next frame");
+					}
+				}
+			}
+		}
+	}
+
+	TEST_CASE("WindowFullscreen.below_minimum_resize_restores_window", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		const ScopeExit restoreMinimum{ [&] { Window::SetMinimumFrameBufferSize(restore.window.minFrameBufferSize); } };
+		UpdateWithPause();
+		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+		Window::SetMinimumFrameBufferSize({ 200, 200 });
+		Scene::SetResizeMode(ResizeMode::Virtual);
+		Scene::SetHighResolutionEnabled(true);
+		Scene::SetTextureFilter(TextureFilter::Linear);
+		const auto windowed = Window::GetState();
+		for (int32 api = 0; api < 3; ++api)
+		{
+			CAPTURE(ResizeNames[api]);
+			SetFullscreenWithPause(true);
+			REQUIRE(Window::GetState().fullscreen);
+			// In-range requests below the minimum return false after restoring the window.
+			CHECK_FALSE(ResizeFunctions[api]({ 1, 1 }, CenterWindow::No));
+			const auto check = [&]
+			{
+				CHECK_FALSE(Window::GetState().fullscreen);
+				CHECK(Window::GetState().bounds == windowed.bounds);
+				CHECK(Window::GetState().virtualSize == windowed.virtualSize);
+				CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
+				CheckPresentation(ResizeMode::Virtual, true, TextureFilter::Linear);
+			};
+			check();
+			System::Sleep(FullscreenPauseMillis);
+			UpdateWithPause();
+			check();
+		}
 	}
 
 	TEST_CASE("WindowFullscreen.bounds_match_selected_monitor", "[.fullscreen]")

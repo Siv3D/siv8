@@ -341,6 +341,17 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
 
+		if (m_state.virtualSize == virtualSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			// Restore the window and its DPI before converting virtual units to pixels.
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
 		const double scaling = WindowMisc::GetScaling(m_dpi);
 		
 		const Size newFrameBufferSize = Math::Round(virtualSize * scaling).asPoint();

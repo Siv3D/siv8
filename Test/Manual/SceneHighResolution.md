@@ -17,8 +17,10 @@ Use a resizable window and, where available, monitors with different scale facto
 2. Resize the window continuously, including wide, tall, and smaller-than-canvas
    sizes. Move between different-DPI monitors and change the OS display scale.
    Repeat with **1** (Virtual), **2** (Actual), and **3** (Keep, 800 × 600).
-3. Use **4** (virtual 800 × 600), **5** (virtual 1200 × 900), and **6** (actual
-   1200 × 900). Check the size displays and input immediately after each change.
+3. Use **4** (`Resize`, virtual 800 × 600), **5** (`ResizeVirtual`, 800 × 600),
+   and **6** (`ResizeActual`, 800 × 600 pixels). All use `CenterWindow::No`.
+   **7** requests a larger virtual 1200 × 900 window. Check the size displays and
+   input immediately after each change.
 4. Use **M** to maximize, **R** to restore, **N** to minimize, and the OS to bring
    the window back. For every resize mode with high resolution both on and off,
    test **F** and the platform shortcut (**Alt+Enter** on Windows,
@@ -45,6 +47,16 @@ Use a resizable window and, where available, monitors with different scale facto
    confirm the selected Retina desktop scale is retained. While fullscreen,
    use **4/5/6** to resize: a changed size must return to a window; the scene
    policy must stay selected.
+   For the mixed-DPI resize check, place the window on monitor A using **B**, then
+   press **G** to enter fullscreen on the next monitor B without moving the
+   window first (**Shift+G** selects the previous monitor). Press **4/5/6** to return.
+   The original window position on A must be retained. On Windows, with A at 125%,
+   **4/5** must give virtual 800 × 600 and framebuffer
+   1000 × 750; **6** must give framebuffer 800 × 600 and virtual 640 × 480.
+   Repeat with A at 150% and B at 125%: **4/5** must give 800 × 600 / 1200 × 900,
+   and **6** must give 533 × 400 / 800 × 600. Read the immediate and next-frame
+   snapshots, then check rendering and click the circle. Change the scene mode,
+   **H**, or **P** while fullscreen and confirm the new settings remain selected.
 5. Press **C** to enable camera controls, then use the wheel and right-drag to
    zoom and move. Toggle **H** during a drag and check that the same point stays
    under the cursor. Press **C** again to return to scene coordinates.
@@ -103,9 +115,23 @@ void Main()
     bool useCamera = false;
     int32 clicks = 0;
     Size captureSize{ 0, 0 };
+    String resizeImmediate, resizeNextFrame;
+    bool recordNextFrame = false;
+    const auto geometry = []
+    {
+        const auto& window = Window::GetState();
+        return U"monitor={} scale={} full={} V={} F={} L={} R={}"_fmt(
+            System::GetCurrentMonitorIndex(), window.scaling, window.fullscreen,
+            window.virtualSize, window.frameBufferSize, Scene::Size(), Scene::RenderSize());
+    };
 
     while (System::Update())
     {
+        if (recordNextFrame)
+        {
+            resizeNextFrame = geometry();
+            recordNextFrame = false;
+        }
         if (ScreenCapture::HasNewFrame())
         {
             captureSize = ScreenCapture::GetFrame().size();
@@ -118,13 +144,29 @@ void Main()
             Scene::SetResizeMode(ResizeMode::Keep);
             Scene::Resize(800, 600);
         }
-        if (Key4.down()) { Window::Resize(800, 600); }
-        if (Key5.down()) { Window::Resize(1200, 900); }
-        if (Key6.down()) { Window::ResizeActual(1200, 900); }
+        if (Key4.down()) { Window::Resize(800, 600, CenterWindow::No); }
+        if (Key5.down()) { Window::ResizeVirtual(800, 600, CenterWindow::No); }
+        if (Key6.down()) { Window::ResizeActual(800, 600, CenterWindow::No); }
+        if (Key7.down()) { Window::Resize(1200, 900, CenterWindow::No); }
+        if (Key4.down() || Key5.down() || Key6.down() || Key7.down())
+        {
+            resizeImmediate = geometry();
+            resizeNextFrame.clear();
+            recordNextFrame = true;
+        }
         if (KeyM.down()) { Window::Maximize(); }
         if (KeyR.down()) { Window::Restore(); }
         if (KeyN.down()) { Window::Minimize(); }
         if (KeyF.down()) { Window::SetFullscreen(!Window::GetState().fullscreen); }
+        if (KeyG.down() && !Window::GetState().fullscreen)
+        {
+            const auto monitors = System::EnumerateMonitors();
+            if (!monitors.isEmpty())
+            {
+                const size_t step = KeyShift.pressed() ? (monitors.size() - 1) : 1;
+                Window::SetFullscreen(true, (System::GetCurrentMonitorIndex() + step) % monitors.size());
+            }
+        }
         if (KeyB.down() && !Window::GetState().fullscreen)
         {
             const auto monitors = System::EnumerateMonitors();
@@ -182,11 +224,15 @@ void Main()
         Print << U"Window: " << Window::GetState().virtualSize
               << U"  framebuffer: " << Window::GetState().frameBufferSize;
         Print << U"B: monitor = " << System::GetCurrentMonitorIndex()
+              << U"  scale: " << Window::GetState().scaling
+              << U"  full: " << Window::GetState().fullscreen
               << U"  bounds: " << Window::GetState().bounds;
         Print << U"Cursor desktop: " << Cursor::ScreenPos() << U"  client pixels: " << Cursor::PosRaw();
         Print << U"C: camera = " << useCamera << U"  clicks: " << clicks;
         Print << U"S: last capture = " << captureSize;
-        Print << U"4/5/6: resize  M/R/N: window  F: fullscreen";
+        Print << U"4/5/6/7: resize  M/R/N: window  F: fullscreen  (Shift+)G: next/previous fullscreen";
+        Print << U"Resize immediate: " << resizeImmediate;
+        Print << U"Resize next frame: " << resizeNextFrame;
     }
 }
 ```

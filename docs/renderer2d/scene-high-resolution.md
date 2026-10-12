@@ -133,6 +133,11 @@ exercises the window-message route for Alt+Enter, same-method and mixed API/shor
 round trips, all resize modes with high resolution on/off, policy changes while
 fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
+Fullscreen resize requests additionally check one mixed-DPI monitor pair in both
+directions, restored positions, all six settings, same-size and invalid requests,
+and immediate/next-frame dimensions and cursor mapping. See the
+[window validation guide](../window/README.md#validation) for pair selection and
+the fallback on systems without mixed-DPI monitors.
 On macOS it checks API and UI round trips for all six settings, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
 position and dimensions for each source/destination monitor pair, native
