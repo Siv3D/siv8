@@ -133,6 +133,27 @@ Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
 
+### Log assertions
+
+Keep `std::clog` redirection inside dedicated test helpers that return the captured
+text before assertions run. Catch2's capturing reporters, including XML, retarget
+the stream while processing assertions, so a capture must not span `CHECK`,
+`REQUIRE`, or other Catch2 reporting calls, including those in called helpers.
+[Test_MetalFrameErrors.cpp](../../Test/Test_MetalFrameErrors.cpp) separates capture
+of error reporting, completion callbacks, draining, and concurrent completion.
+Each helper restores the previous stream buffer through RAII and joins its workers
+before reading the captured text. Stream redirection is process-wide; tests using
+it must not run concurrently with other tests that write to or redirect that stream.
+
+Validate log tests with both reporters on macOS:
+
+```sh
+./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter console
+./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter xml --out /tmp/metal-frame-errors.xml
+./macOS/run-tests.sh
+./macOS/run-tests.sh --reporter xml --out /tmp/siv3d-tests.xml
+```
+
 ### Isolated Image checks on macOS
 
 Run [run-image-checks.sh](../../tools/run-image-checks.sh) outside the sandbox:

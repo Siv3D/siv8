@@ -59,7 +59,6 @@
 
 - WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。
 - WARP の `MSDFFont.atlas_dimensions` で、同じグリフを幅 768 のアトラスに移すと輪郭描画は最大 2/255、Print 用シェーダは最大 11/255 の差が出る。幅 128 / 512 と比較し、非 2 冪アトラスの UV・フィルタリング・微分・coverage 計算を切り分ける。既存の 1 階調許容を根拠なく拡大しない。
-- macOS の `Test_MetalFrameErrors.cpp` のログ取得を Catch2 の XML レポーターと両立させる。通常の console レポーターでは成功するが、`--test-case=MetalFrameErrors.* --reporter xml` では `std::clog` の取り込みが競合してログ検証が失敗する。GPU 実行失敗とは区別し、テスト側のログ取得方法を見直す。
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
 - ScopedQuadWarp2D: Windows で [ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較を目視確認する。自動テストの画像比較と区別する。
 - Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
