@@ -89,7 +89,7 @@ namespace s3d::WindowMisc
 	[[nodiscard]]
 	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		int32& dpi, WindowState& windowState);
+		int32& dpi, WindowState& windowState, void* owner);
 
 	////////////////////////////////////////////////////////////////
 	//

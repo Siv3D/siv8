@@ -11,7 +11,6 @@
 
 # pragma once
 # include <atomic>
-# include <mutex>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
@@ -20,6 +19,8 @@
 # include "User32Lib.hpp"
 # include "WindowClass.hpp"
 # include "WindowTitle.hpp"
+# include "WindowStateSync.hpp"
+# include "WindowProc.hpp"
 
 namespace s3d
 {
@@ -73,6 +74,15 @@ namespace s3d
 
 		void destroy();
 
+		void attach(HWND hWnd) noexcept;
+
+		void beginStateUpdate() noexcept;
+
+		void endStateUpdate();
+
+		void dispatchCommand(WindowThreadCommand& command);
+
+		const WindowState& getOSState() const noexcept;
 
 		void onResize(bool minimized, bool maximized);
 
@@ -104,7 +114,12 @@ namespace s3d
 
 		WindowTitle m_windowTitle;
 
-		WindowState m_state;
+		// All native geometry and policy below belong to the window thread.
+		WindowState m_osState;
+
+		WindowStateSync m_stateSync;
+
+		WindowThreadCommand* m_deferredCommands = nullptr;
 
 		int32 m_dpi = USER_DEFAULT_SCREEN_DPI;
 
@@ -113,7 +128,7 @@ namespace s3d
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
 
-		std::atomic<bool> m_fullscreenTransition = false;
+		bool m_fullscreenTransition = false;
 
 		enum class ToggleFullscreenState : uint8
 		{
@@ -124,10 +139,6 @@ namespace s3d
 
 		std::atomic<ToggleFullscreenState> m_toggleFullscreenState = ToggleFullscreenState::Enabled;
 
-		std::atomic<bool> m_moving = false;
-
-		std::mutex m_minimumFrameBufferSizeMutex;
-
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
 
 		ComPtr<ITaskbarList3> m_taskbarList;
@@ -137,5 +148,28 @@ namespace s3d
 		int32 getSystemMetrics(int32 index) const;
 
 		void setWindowPos(const Rect& rect, uint32 flags);
+
+		void showOnWindowThread();
+
+		void setStyleOnWindowThread(WindowStyle style);
+
+		void setPosOnWindowThread(Point pos);
+
+		bool resizeOnWindowThread(Size size, bool virtualSize);
+
+		bool setFullscreenOnWindowThread(bool fullscreen, size_t monitorIndex);
+
+		bool resize(Size size, bool virtualSize);
+
+		// No shared mutex is held while Win32 synchronously dispatches/reenters.
+		template <class F>
+		void invokeOnWindowThread(F function)
+		{
+			WindowThreadCommand command{ [](void* context) { (*static_cast<F*>(context))(); }, &function, {} };
+			::SendMessageW(m_hWnd, WindowThreadMessage, 0, reinterpret_cast<LPARAM>(&command));
+			command.wait();
+			m_stateSync.synchronize();
+			if (command.exception) { std::rethrow_exception(command.exception); }
+		}
 	};
 }

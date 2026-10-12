@@ -193,7 +193,7 @@ namespace s3d::WindowMisc
 
 	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		int32& dpi, WindowState& windowState)
+		int32& dpi, WindowState& windowState, void* owner)
 	{
 		const double scale = monitor.scaling.value_or(1.0);
 		dpi = static_cast<int32>(std::round(USER_DEFAULT_SCREEN_DPI * scale));
@@ -215,7 +215,7 @@ namespace s3d::WindowMisc
 			nullptr, // No parent window
 			nullptr, // No menu
 			moduleHandle,
-			nullptr);
+			owner);
 	}
 
 	////////////////////////////////////////////////////////////////

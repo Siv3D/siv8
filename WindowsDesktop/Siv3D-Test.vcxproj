@@ -149,6 +149,9 @@
     <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowStateSync.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CursorTransform.cpp" />
     <ClCompile Include="..\Test\Test_Transformer2D.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />

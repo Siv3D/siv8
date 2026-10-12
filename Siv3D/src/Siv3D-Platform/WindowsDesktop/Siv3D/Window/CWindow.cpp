@@ -69,6 +69,14 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CWindow::init()");
 
+		beginStateUpdate();
+		const ScopeExit finishInitialization{ [this]
+		{
+			endStateUpdate();
+			// The engine is still waiting on windowInitialized.get().
+			m_stateSync.synchronize();
+		} };
+
 		// モジュールハンドルを取得する
 		m_moduleHandle = ::GetModuleHandleW(nullptr);
 
@@ -98,7 +106,7 @@ namespace s3d
 				m_windowTitle.actual,
 				m_user32.pAdjustWindowRectExForDpi,
 				m_dpi,
-				m_state);
+				m_osState, this);
 		}
 
 		// ウィンドウの作成に失敗したらエラー
@@ -118,6 +126,7 @@ namespace s3d
 
 		// タスクバーリストを作成する
 		m_taskbarList = WindowMisc::CreateTaskbarList();
+		onBoundsUpdate();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -128,17 +137,15 @@ namespace s3d
 
 	void CWindow::update()
 	{
+		m_stateSync.synchronize();
 		if (m_toggleFullscreenState.load() == ToggleFullscreenState::Requested)
 		{
 			auto expected = ToggleFullscreenState::Requested;
 			if (m_toggleFullscreenState.compare_exchange_strong(expected, ToggleFullscreenState::Enabled))
 			{
-				setFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
+				setFullscreen(not getState().fullscreen, System::GetCurrentMonitorIndex());
 			}
 		}
-
-		m_state.sizeMove = m_moving.load();
-
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
 			m_windowTitle.refresh(m_hWnd);
@@ -186,7 +193,7 @@ namespace s3d
 
 	const WindowState& CWindow::getState() const noexcept
 	{
-		return m_state;
+		return m_stateSync.get();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -197,35 +204,40 @@ namespace s3d
 
 	void CWindow::setStyle(const WindowStyle style)
 	{
+		invokeOnWindowThread([&] { setStyleOnWindowThread(style); });
+	}
+
+	void CWindow::setStyleOnWindowThread(const WindowStyle style)
+	{
 		LOG_SCOPED_DEBUG(fmt::format("CWindow::setStyle(style = {})", FromEnum(style)));
 
-		if (m_state.fullscreen)
+		if (m_osState.fullscreen)
 		{
 			LOG_FAIL("A window in fullscreen mode cannot change its style");
 			return;
 		}
 
-		if (m_state.style == style)
+		if (m_osState.style == style)
 		{
 			return;
 		}
 
 		if (not m_windowShown)
 		{
-			show();
+			showOnWindowThread();
 		}
 
-		const auto currentStyle = m_state.style;
+		const auto currentStyle = m_osState.style;
 		const bool triggerWindowResize = ((currentStyle == WindowStyle::Frameless) || (style == WindowStyle::Frameless));
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(style);
-		m_state.style = style;
+		m_osState.style = style;
 
 		::SetWindowLongPtrW(m_hWnd, GWL_STYLE, windowStyleFlags);
 
 		{
-			const Point pos = m_state.bounds.pos;
+			const Point pos = m_osState.bounds.pos;
 			const double scaling = WindowMisc::GetScaling(m_dpi);
-			const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
+			const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
 			
@@ -234,7 +246,7 @@ namespace s3d
 		}
 
 		onBoundsUpdate();
-		show();
+		showOnWindowThread();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -245,9 +257,14 @@ namespace s3d
 
 	void CWindow::setPos(const Point pos)
 	{
+		invokeOnWindowThread([&] { setPosOnWindowThread(pos); });
+	}
+
+	void CWindow::setPosOnWindowThread(const Point pos)
+	{
 		LOG_SCOPED_DEBUG(fmt::format("CWindow::setPos(pos = {})", pos));
 
-		if (m_state.fullscreen)
+		if (m_osState.fullscreen)
 		{
 			LOG_FAIL("A window in fullscreen mode cannot be moved");
 			return;
@@ -255,8 +272,8 @@ namespace s3d
 
 		{
 			const double scaling = WindowMisc::GetScaling(m_dpi);
-			const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
-			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+			const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
+			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
 			
@@ -273,6 +290,11 @@ namespace s3d
 
 	void CWindow::show()
 	{
+		invokeOnWindowThread([&] { showOnWindowThread(); });
+	}
+
+	void CWindow::showOnWindowThread()
+	{
 		WindowMisc::ShowWindow(m_hWnd);
 
 		m_windowShown = true;
@@ -288,15 +310,18 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::maximize()");
 
-		if (m_state.style == WindowStyle::Fixed)
+		bool maximized = false;
+		invokeOnWindowThread([&]
 		{
-			LOG_FAIL("A window with WindowStyle::Fixed cannot be maximized");
-			return;
-		}
-
-		::ShowWindow(m_hWnd, SW_MAXIMIZE);
-
-		SIV3D_ENGINE(Renderer)->updateSceneSize();
+			if (m_osState.style == WindowStyle::Fixed)
+			{
+				LOG_FAIL("A window with WindowStyle::Fixed cannot be maximized");
+				return;
+			}
+			::ShowWindow(m_hWnd, SW_MAXIMIZE);
+			maximized = true;
+		});
+		if (maximized) { SIV3D_ENGINE(Renderer)->updateSceneSize(); }
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -308,7 +333,7 @@ namespace s3d
 	void CWindow::restore()
 	{
 		LOG_DEBUG("CWindow::restore()");
-		::ShowWindow(m_hWnd, SW_RESTORE);
+		invokeOnWindowThread([&] { ::ShowWindow(m_hWnd, SW_RESTORE); });
 
 		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
@@ -322,7 +347,7 @@ namespace s3d
 	void CWindow::minimize()
 	{
 		LOG_DEBUG("CWindow::minimize()");
-		::ShowWindow(m_hWnd, SW_MINIMIZE);
+		invokeOnWindowThread([&] { ::ShowWindow(m_hWnd, SW_MINIMIZE); });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -335,22 +360,7 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
 
-		if (m_state.virtualSize == virtualSize)
-		{
-			return true;
-		}
-
-		if (m_state.fullscreen)
-		{
-			// Restore the window and its DPI before converting virtual units to pixels.
-			setFullscreen(false, System::GetCurrentMonitorIndex());
-		}
-
-		const double scaling = WindowMisc::GetScaling(m_dpi);
-		
-		const Size newFrameBufferSize = Math::Round(virtualSize * scaling).asPoint();
-
-		return resizeByFrameBufferSize(newFrameBufferSize);
+		return resize(virtualSize, true);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -363,36 +373,49 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
 
-		if (m_state.frameBufferSize == frameBufferSize)
+		return resize(frameBufferSize, false);
+	}
+
+	bool CWindow::resize(const Size size, const bool virtualSize)
+	{
+		// These boundaries preserve the existing intermediate Scene updates on
+		// leaving fullscreen/restoring maximization, including rejected sizes.
+		invokeOnWindowThread([] {});
+		if ((virtualSize ? getState().virtualSize : getState().frameBufferSize) == size)
 		{
 			return true;
 		}
-
-		if (m_state.fullscreen)
+		if (getState().fullscreen)
 		{
 			setFullscreen(false, System::GetCurrentMonitorIndex());
 		}
 
-		if (m_state.maximized)
+		if (virtualSize && (getState().frameBufferSize == Math::Round(size * getState().scaling).asPoint()))
 		{
-			restore();
+			return true;
 		}
+		if (getState().maximized) { restore(); }
 
-		const Size newFrameBufferSize = frameBufferSize;
+		bool resized = false;
+		invokeOnWindowThread([&] { resized = resizeOnWindowThread(size, virtualSize); });
+		return resized;
+	}
 
-		if ((newFrameBufferSize.x < m_state.minFrameBufferSize.x)
-			|| (newFrameBufferSize.y < m_state.minFrameBufferSize.y))
+	bool CWindow::resizeOnWindowThread(const Size size, const bool virtualSize)
+	{
+		const Size newFrameBufferSize = (virtualSize ? Math::Round(size * m_osState.scaling).asPoint() : size);
+
+		if ((newFrameBufferSize.x < m_osState.minFrameBufferSize.x)
+			|| (newFrameBufferSize.y < m_osState.minFrameBufferSize.y))
 		{
 			LOG_FAIL("✖ Failed to resize the window: The specified size is smaller than the minimum size");
 			return false;
 		}
 
-		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
 		const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
-			m_state.bounds.pos, newFrameBufferSize, windowStyleFlags);
+			m_osState.bounds.pos, newFrameBufferSize, windowStyleFlags);
 
-		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
-		
 		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
 		setWindowPos(windowRect, Flags);
 
@@ -411,9 +434,7 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
 		
-		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
-
-		m_state.minFrameBufferSize = size;
+		invokeOnWindowThread([&] { m_osState.minFrameBufferSize = size; });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -424,25 +445,33 @@ namespace s3d
 
 	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex)
 	{
+		bool changed = false;
+		invokeOnWindowThread([&] { changed = setFullscreenOnWindowThread(fullscreen, monitorIndex); });
+		// Keep the selected scene policy; Keep also needs the new presentation size.
+		if (changed) { SIV3D_ENGINE(Renderer)->updateSceneSize(); }
+	}
+
+	bool CWindow::setFullscreenOnWindowThread(const bool fullscreen, const size_t monitorIndex)
+	{
 		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
 
-		if (fullscreen == m_state.fullscreen)
+		if (fullscreen == m_osState.fullscreen)
 		{
-			return;
+			return false;
 		}
 
 		if (not m_windowShown)
 		{
-			show();
+			showOnWindowThread();
 		}
 
-		m_fullscreenTransition.store(true);
-		const ScopeExit finishTransition{ [this] { m_fullscreenTransition.store(false); } };
+		m_fullscreenTransition = true;
+		const ScopeExit finishTransition{ [this] { m_fullscreenTransition = false; } };
 
-		if (m_state.fullscreen == false) // 現在ウィンドウモードの場合
+		if (m_osState.fullscreen == false) // 現在ウィンドウモードの場合
 		{
 			// フルスクリーンモードにする
-			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_state.style));
+			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_osState.style));
 		}
 		else
 		{
@@ -450,7 +479,7 @@ namespace s3d
 				(m_storedWindowRect.right - m_storedWindowRect.left),
 				(m_storedWindowRect.bottom - m_storedWindowRect.top) };
 
-			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_state.style));
+			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_osState.style));
 			// Leave the maximized fullscreen state before applying the saved rectangle.
 			::ShowWindow(m_hWnd, SW_NORMAL);
 			::SetWindowPos(
@@ -465,10 +494,9 @@ namespace s3d
 			::ValidateRect(m_hWnd, nullptr);
 		}
 
-		m_state.fullscreen = fullscreen;
+		m_osState.fullscreen = fullscreen;
 
-		// Keep the selected scene policy; Keep also needs the new presentation size.
-		SIV3D_ENGINE(Renderer)->updateSceneSize();
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -533,6 +561,49 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	void CWindow::attach(const HWND hWnd) noexcept
+	{
+		m_hWnd = hWnd;
+	}
+
+	void CWindow::beginStateUpdate() noexcept
+	{
+		m_stateSync.beginUpdate();
+	}
+
+	void CWindow::endStateUpdate()
+	{
+		if (m_stateSync.endUpdate(m_osState) && m_deferredCommands)
+		{
+			auto* command = m_deferredCommands;
+			m_deferredCommands = command->next;
+			dispatchCommand(*command);
+		}
+	}
+
+	void CWindow::dispatchCommand(WindowThreadCommand& command)
+	{
+		// A cross-thread SendMessage can itself reenter a native notification.
+		// Defer that command until the outer notification has committed; never
+		// block the window thread waiting for the engine to resume.
+		if (m_stateSync.isUpdating())
+		{
+			auto** tail = &m_deferredCommands;
+			while (*tail) { tail = &(*tail)->next; }
+			*tail = &command;
+			return;
+		}
+		beginStateUpdate();
+		command.execute();
+		endStateUpdate();
+		command.complete();
+	}
+
+	const WindowState& CWindow::getOSState() const noexcept
+	{
+		return m_osState;
+	}
+
 	void CWindow::destroy()
 	{
 		LOG_SCOPED_DEBUG("CWindow::destroy()");
@@ -569,18 +640,18 @@ namespace s3d
 
 		if (minimized)
 		{
-			m_state.minimized = true;
-			m_state.maximized = false;
+			m_osState.minimized = true;
+			m_osState.maximized = false;
 		}
 		else if (maximized)
 		{
-			m_state.minimized = false;
-			m_state.maximized = true;
+			m_osState.minimized = false;
+			m_osState.maximized = true;
 		}
 		else
 		{
-			m_state.minimized = false;
-			m_state.maximized = false;
+			m_osState.minimized = false;
+			m_osState.maximized = false;
 		}
 	}
 
@@ -604,7 +675,7 @@ namespace s3d
 			SIV3D_ENGINE(Console)->clearSelection();
 		}
 
-		m_state.focused = focused;
+		m_osState.focused = focused;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -623,8 +694,8 @@ namespace s3d
 		}
 		else
 		{
-			m_state.frameBufferSize = size;
-			m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
+			m_osState.frameBufferSize = size;
+			m_osState.virtualSize = Math::Round(m_osState.frameBufferSize / m_osState.scaling).asPoint();
 		}
 	}
 
@@ -640,19 +711,21 @@ namespace s3d
 
 		// bounds
 		{
-			RECT windowRect;
-			::DwmGetWindowAttribute(m_hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &windowRect, sizeof(RECT));
-			m_state.bounds = ToRect(windowRect);
+			RECT windowRect{};
+			if (SUCCEEDED(::DwmGetWindowAttribute(m_hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &windowRect, sizeof(RECT))))
+			{
+				m_osState.bounds = ToRect(windowRect);
+			}
 		}
 
 		// frame thickness
 		{
-			m_state.frameThickness.set(getSystemMetrics(SM_CXBORDER), getSystemMetrics(SM_CYBORDER));
+			m_osState.frameThickness.set(getSystemMetrics(SM_CXBORDER), getSystemMetrics(SM_CYBORDER));
 		}
 
 		// title bar height
 		{
-			m_state.titleBarHeight = (getSystemMetrics(SM_CYCAPTION)
+			m_osState.titleBarHeight = (getSystemMetrics(SM_CYCAPTION)
 				+ getSystemMetrics(SM_CYFRAME)
 				+ getSystemMetrics(SM_CXPADDEDBORDER));
 		}
@@ -665,7 +738,7 @@ namespace s3d
 		}
 
 		LOG_TRACE(fmt::format("- bounds: {}, frameThickness: {}, titleBarHeight: {}, border: {}",
-			m_state.bounds, m_state.frameThickness, m_state.titleBarHeight, m_border));
+			m_osState.bounds, m_osState.frameThickness, m_osState.titleBarHeight, m_border));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -682,32 +755,32 @@ namespace s3d
 		LOG_TRACE(fmt::format("- dpi = {}({:.0f}%), suggestedPos = {}", dpi, (scaling * 100), suggestedPos));
 
 		m_dpi = dpi;
-		m_state.scaling = scaling;
+		m_osState.scaling = scaling;
 
 		onBoundsUpdate();
 
-		if (m_fullscreenTransition.load())
+		if (m_fullscreenTransition)
 		{
 			// The transition already supplies a monitor-sized or saved physical rectangle.
 			// Do not replace it with a size derived from the previous monitor's geometry.
-			m_state.virtualSize = Math::Round(m_state.frameBufferSize / scaling).asPoint();
+			m_osState.virtualSize = Math::Round(m_osState.frameBufferSize / scaling).asPoint();
 			return;
 		}
 
-		const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
-		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+		const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
 		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 			suggestedPos, newFrameBufferSize, windowStyleFlags);
 
-		if (m_state.style != WindowStyle::Frameless)
+		if (m_osState.style != WindowStyle::Frameless)
 		{
-			windowRect.y = (suggestedPos.y - m_state.titleBarHeight);
+			windowRect.y = (suggestedPos.y - m_osState.titleBarHeight);
 		}
 
 		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
 		setWindowPos(windowRect, Flags);
 	
-		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
+		m_osState.virtualSize = Math::Round(m_osState.frameBufferSize / m_osState.scaling).asPoint();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -718,7 +791,7 @@ namespace s3d
 
 	void CWindow::onEnterSizeMove()
 	{
-		m_moving.store(true);
+		m_osState.sizeMove = true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -729,7 +802,7 @@ namespace s3d
 
 	void CWindow::onExitSizeMove()
 	{
-		m_moving.store(false);
+		m_osState.sizeMove = false;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -740,9 +813,7 @@ namespace s3d
 
 	Size CWindow::getMinTrackSize() noexcept
 	{
-		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
-
-		return (m_state.minFrameBufferSize + m_border);
+		return (m_osState.minFrameBufferSize + m_border);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -785,9 +856,9 @@ namespace s3d
 	{
 		Point pos = rect.pos;
 	
-		if (m_state.style != WindowStyle::Frameless)
+		if (m_osState.style != WindowStyle::Frameless)
 		{
-			pos += Math::Round(Vec2{ (m_state.frameThickness.x * m_state.scaling), m_state.titleBarHeight }).asPoint();
+			pos += Math::Round(Vec2{ (m_osState.frameThickness.x * m_osState.scaling), m_osState.titleBarHeight }).asPoint();
 		}
 
 		const Size size = rect.size;

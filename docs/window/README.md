@@ -109,7 +109,75 @@ There is no universal division by two: converting a legacy position requires
 knowing which monitor and scale produced it. A saved monitor-relative offset
 also needs conversion before adding it to the monitor's point-based origin.
 
+## Windows state ownership
+
+The HWND thread owns native geometry and window policy in
+[CWindow](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/CWindow.hpp):
+the OS state, DPI, border metrics, saved windowed rectangle, fullscreen transition,
+and shown flag. The engine thread owns the published `WindowState` and the title.
+The HWND and loaded User32 entry points are initialized before the startup promise
+releases the engine thread. Destruction keeps the window owner alive until the
+HWND thread has destroyed the window and acknowledged the existing shutdown flag.
+Window messages find their owner through HWND user data from `WM_NCCREATE` through
+`WM_NCDESTROY`, independently of the public snapshot and other component lifetimes.
+
+[WindowStateSync](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/WindowStateSync.hpp)
+copies a completed OS state through a mutex-protected slot into a fixed engine-owned
+object. A retained `Window::GetState()` reference keeps pointing at that object.
+Getters only read it: no lock, wait, allocation, or atomic field loads are added.
+Ordinary frame preparation takes one short mutex lock and copies one `WindowState`,
+before the renderer prepares the backbuffer and Scene and the cursor is updated.
+The HWND thread cannot change that snapshot during those operations.
+
+Explicit native operations run on the HWND thread via a synchronous internal
+command. Completion includes publication to the slot; the engine consumes it
+before returning from the API or updating Scene. This also supplies the intermediate
+geometry read by cross-DPI `CenterToScreen()`. Commands edit the current OS state;
+they never write an engine snapshot back to it. Fullscreen exit and maximized
+restore retain their existing intermediate Scene updates during resize, including
+below-minimum requests. GPU work, Scene updates, and cursor transforms stay on the
+engine thread, with no forced flush and no change to the existing immediate versus
+next-frame Scene update sites. Alt+Enter retains its atomic request/cancellation
+state and uses the same engine-side fullscreen operation.
+
+State-notification scopes nest without locking. Only the outermost completion
+copies to the shared slot, so `WM_SIZE` publishes bounds, flags and both dimensions
+together, and `WM_DPICHANGED` includes its nested resize notifications.
+`WM_WINDOWPOSCHANGED` also encloses the
+[WM_MOVE and WM_SIZE notifications sent by DefWindowProc](https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-windowposchanged).
+The modal move/size loop itself is outside these scopes, allowing each completed
+notification to reach the next frame during continuous dragging. WindowProc reads
+OS state for its own decisions, including the previous maximized flag.
+
+[SendMessage can reenter while a thread waits](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessage).
+If a command arrives inside a state scope, it is linked into a window-owned queue
+using its sender-owned stack storage and executed after that scope commits.
+The sender waits for completion; the HWND thread never waits for the engine.
+Command completion has a separate mutex/condition variable to keep the stack
+storage alive through deferred execution and carry exceptions back to the sender.
+Neither synchronization mutex spans a Win32 call, callback, Scene update, or GPU
+operation. These additional message and completion costs occur at explicit API
+boundaries, not in getters or ordinary frame synchronization. This ownership model
+does not make arbitrary concurrent public Window API calls supported.
+
 ## Validation
+
+[Test_WindowStateSync.cpp](../../Test/Test_WindowStateSync.cpp) separates controlled
+two-thread handoff checks from real HWND message tests on Windows. The handoff
+test pauses at partial and nested updates, checks complete generations, and retains
+a public reference across publication. Native tests check deferred OS updates,
+nearby explicit policy changes without geometry loss, reentrant command completion,
+same-DPI notification reentry, immediate resizing/placement, and next-frame
+backbuffer/Scene/cursor consistency. Real mixed-DPI placement is checked only when
+the attached monitors provide different scale factors. Every native suite also
+starts and shuts down the actual two-thread engine; the runner bounds execution
+and requires complete XML reports. Passing these tests supplements the ownership
+and lock-scope review; it does not constitute a race-detector result.
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowStateSync.*,SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
+./WindowsDesktop/run-tests.ps1 -Configuration Debug -TestArguments '--test-case=WindowStateSync.*'
+```
 
 [Test_ScreenCoordinates.cpp](../../Test/Test_ScreenCoordinates.cpp) compares the
 public geometry against native Cocoa/Core Graphics geometry and checks invalid
