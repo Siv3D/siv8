@@ -101,6 +101,9 @@ namespace s3d
 		
 			D3D11InternalTexture2D nonMSAA;
 
+			// Valid until the scene is cleared or bound for drawing.
+			bool resolved = false;
+
 			D3D11InternalTexture2D& getSceneTexture() noexcept
 			{
 				return ((sampleCount == 1) ? nonMSAA : msaa);
@@ -125,6 +128,8 @@ namespace s3d
 		void unbindAllPSTextures();
 
 		void drawFullScreenTriangle();
+
+		void resolveScene();
 
 		[[nodiscard]]
 		SceneBuffer createSceneBuffers(Size size, uint32 sampleCount) const;

@@ -23,9 +23,11 @@ namespace s3d
 			const SceneConfig config = Scene::GetConfig();
 			const ColorF background = Scene::GetBackground();
 			const ColorF letterbox = Scene::GetLetterbox();
+			const MSAASampleCount samples = Scene::GetMSAASampleCount();
 
 			~RestorePresentation()
 			{
+				Scene::SetMSAASampleCount(samples);
 				Scene::Configure(config);
 				Scene::SetBackground(background);
 				Scene::SetLetterbox(letterbox);
@@ -112,6 +114,75 @@ namespace s3d
 		REQUIRE(readback.capture(buffer.getBackBufferTexture(), buffer.getBackBufferSize()));
 		const Point center = buffer.getLetterboxComposition().second.center().asPoint();
 		CHECK(readback.getImage()[center.y][center.x] == Palette::Black);
+	}
+
+	TEST_CASE("ScenePresentation.D3D11.capture_reuses_resolve_until_scene_changes")
+	{
+		const RestorePresentation restore;
+		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
+		const ScopedViewport2D viewport{ none };
+		const ScopedScissorRect2D scissor{ none };
+		REQUIRE(System::Update());
+		Scene::SetBackground(Palette::Black);
+		Scene::SetMSAASampleCount(Scene::DefaultMSAASampleCount);
+		Scene::Configure(SceneConfig::Fixed({ 81, 63 }));
+		auto* renderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
+		auto& buffer = renderer->getBackBuffer();
+		const auto& device = renderer->getDevice();
+		REQUIRE(buffer.getBackBufferSize() != Scene::RenderResolution());
+		const ComPtr<ID3D11Texture2D> resolved{ buffer.getCaptureTexture().first };
+		ComPtr<ID3D11RenderTargetView> resolvedRTV;
+		REQUIRE(SUCCEEDED(device.getDevice()->CreateRenderTargetView(resolved.Get(), nullptr, &resolvedRTV)));
+
+		Scene::Rect().draw(Palette::Red);
+		Graphics2D::Flush();
+		buffer.renderSceneToBackBuffer();
+		D3D11ScreenCapture readback;
+		readback.init(device);
+		REQUIRE(readback.capture(resolved.Get(), Scene::RenderResolution()));
+		CHECK((readback.getImage() == Image{ Scene::RenderResolution(), Palette::Red }));
+
+		// Put a marker only in the resolved target: another resolve would overwrite it
+		// with the red MSAA scene. This detects redundant GPU work without runtime counters.
+		const Float4 marker = ColorF{ Palette::Green }.toFloat4();
+		device.getContext()->ClearRenderTargetView(resolvedRTV.Get(), marker.getPointer());
+		REQUIRE(renderer->captureScreenshot());
+		CHECK((renderer->getScreenCapture() == Image{ Scene::RenderResolution(), Palette::Green }));
+		buffer.clear(D3D11ClearTarget::BackBuffer);
+		buffer.renderSceneToBackBuffer();
+		REQUIRE(renderer->captureScreenshot());
+		CHECK((renderer->getScreenCapture() == Image{ Scene::RenderResolution(), Palette::Green }));
+
+		// A new drawing batch invalidates the resolved contents, even within one frame.
+		Scene::Rect().draw(Palette::Blue);
+		Graphics2D::Flush();
+		REQUIRE(renderer->captureScreenshot());
+		CHECK((renderer->getScreenCapture() == Image{ Scene::RenderResolution(), Palette::Blue }));
+		buffer.clear(D3D11ClearTarget::Scene);
+		REQUIRE(renderer->captureScreenshot());
+		CHECK((renderer->getScreenCapture() == Image{ Scene::RenderResolution(), Palette::Black }));
+
+		// Reallocation, MSAA changes, and the next frame must not reuse an old resolve.
+		for (const Size size : { Size{ 1, 1 }, Size{ 83, 65 }, Size{ 81, 63 } })
+		{
+			for (const auto samples : { MSAASampleCount::NoAA, Scene::DefaultMSAASampleCount })
+			{
+				CAPTURE(size, samples);
+				Scene::Configure(SceneConfig::Fixed(size));
+				Scene::SetMSAASampleCount(samples);
+				REQUIRE(renderer->captureScreenshot());
+				CHECK((renderer->getScreenCapture() == Image{ size, Palette::Black }));
+				Scene::Rect().draw(Palette::Red);
+				ScreenCapture::RequestCurrentFrame();
+				REQUIRE(System::Update());
+				REQUIRE(ScreenCapture::HasNewFrame());
+				CHECK((ScreenCapture::GetFrame() == Image{ size, Palette::Red }));
+				REQUIRE(renderer->captureScreenshot());
+				CHECK((renderer->getScreenCapture() == Image{ size, Palette::Black }));
+			}
+		}
 	}
 
 	TEST_CASE("ScenePresentation.D3D11.msaa_direct_resolve")

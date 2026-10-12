@@ -344,7 +344,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::captureScreenshot()
+	bool CRenderer_Metal::captureScreenshot()
 	{
 		const Size sceneSize = m_sceneBuffers.nonMSAA.size();
 		
@@ -359,6 +359,8 @@ namespace s3d
 												   m_screenCapture.bytesPerRow(),
 												   MTL::Region(0, 0, sceneSize.x, sceneSize.y),
 												   0);
+
+		return (not m_screenCapture.isEmpty());
 	}
 
 	////////////////////////////////////////////////////////////////

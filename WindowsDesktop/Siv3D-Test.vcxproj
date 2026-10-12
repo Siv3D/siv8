@@ -42,7 +42,9 @@
     <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_EnumFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
-    <ClCompile Include="..\Test\Test_ScreenCapture.cpp" />
+    <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp" />

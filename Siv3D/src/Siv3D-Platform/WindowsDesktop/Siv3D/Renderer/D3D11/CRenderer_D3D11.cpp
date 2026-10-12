@@ -237,10 +237,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_D3D11::captureScreenshot()
+	bool CRenderer_D3D11::captureScreenshot()
 	{
 		auto [texture, size] = m_backBuffer.getCaptureTexture();
-		m_screenCapture.capture(texture, size);
+		return m_screenCapture.capture(texture, size);
 	}
 
 	////////////////////////////////////////////////////////////////

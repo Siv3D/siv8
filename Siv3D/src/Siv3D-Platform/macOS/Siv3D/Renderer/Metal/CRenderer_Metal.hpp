@@ -75,7 +75,8 @@ namespace s3d
 		[[nodiscard]]
 		bool isVSyncEnabled() const override;
 
-		void captureScreenshot() override;
+		[[nodiscard]]
+		bool captureScreenshot() override;
 
 		[[nodiscard]]
 		const Image& getScreenCapture() const override;

@@ -121,7 +121,7 @@
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
 		EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */; };
 		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
-		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; };
+		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };

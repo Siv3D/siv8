@@ -64,7 +64,8 @@ namespace s3d
 
 		virtual bool isVSyncEnabled() const = 0;
 
-		virtual void captureScreenshot() = 0;
+		[[nodiscard]]
+		virtual bool captureScreenshot() = 0;
 
 		virtual const Image& getScreenCapture() const = 0;
 	};

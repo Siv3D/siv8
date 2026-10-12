@@ -84,6 +84,7 @@ namespace s3d
 	{
 		if (clearTarget & D3D11ClearTarget::Scene)
 		{
+			m_sceneBuffers.resolved = false;
 			m_sceneBuffers.getSceneTexture().clear(m_context, m_sceneStyle.backgroundColor);
 		}
 
@@ -158,11 +159,7 @@ namespace s3d
 			}
 			else
 			{
-				if (m_sceneBuffers.nonMSAA.size() != sceneBufferSize)
-				{
-					m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneBufferSize);
-				}
-				m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+				resolveScene();
 
 				bindRenderTarget(m_backBuffer.getRTV());
 				bindTextureAsPSResource(m_sceneBuffers.nonMSAA.getSRV());
@@ -251,6 +248,7 @@ namespace s3d
 
 	void D3D11BackBuffer::bindSceneTextureAsRenderTarget()
 	{
+		m_sceneBuffers.resolved = false;
 		bindRenderTarget(m_sceneBuffers.getSceneTexture().getRTV());
 	}
 
@@ -270,13 +268,7 @@ namespace s3d
 		}
 		else
 		{
-			const Size sceneSize = m_sceneBuffers.msaa.size();
-
-			if (m_sceneBuffers.nonMSAA.size() != sceneSize)
-			{
-				m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
-			m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+			resolveScene();
 
 			return{ m_sceneBuffers.nonMSAA.getTexture(), m_sceneBuffers.nonMSAA.size() };
 		}
@@ -354,6 +346,22 @@ namespace s3d
 			m_context->Draw(3, 0);
 		}
 	}
+	void D3D11BackBuffer::resolveScene()
+	{
+		if (m_sceneBuffers.resolved)
+		{
+			return;
+		}
+
+		const Size sceneSize = m_sceneBuffers.msaa.size();
+		if (m_sceneBuffers.nonMSAA.size() != sceneSize)
+		{
+			m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+		}
+		m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+		m_sceneBuffers.resolved = true;
+	}
+
 	D3D11BackBuffer::SceneBuffer D3D11BackBuffer::createSceneBuffers(const Size size, const uint32 sampleCount) const
 	{
 		UINT qualityLevels = 0;
