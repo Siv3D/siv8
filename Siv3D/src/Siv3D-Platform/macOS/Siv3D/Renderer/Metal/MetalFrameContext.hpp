@@ -52,8 +52,9 @@ namespace s3d
 		// すべての encoder を終了してから呼ぶ。次の waitForFrame() は取り消した番号を返す。
 		void cancel() noexcept;
 
-		// 最後に送信したフレームの完了を待つ。一度も送信していなければ何もしない。
-		void waitForLastSubmittedFrame() const;
+		// 最後に送信したフレームの完了を待ち、正常完了なら true を返す。
+		// 一度も送信していない場合は待機せず false を返す。
+		bool waitForLastSubmittedFrame() const;
 
 		// 未送信のフレームを取り消し、全フレームの GPU 完了とエラー記録を待つ。
 		// 描画スレッドから、すべての encoder を終了し、新たな送信を停止して呼ぶこと。

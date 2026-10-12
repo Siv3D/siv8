@@ -1603,6 +1603,11 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush()
 	{
+		flush(false);
+	}
+
+	void CRenderer2D_Metal::flush(const bool finalScenePass)
+	{
 		ScopeExit cleanUp = [this]()
 		{
 			// 成否にかかわらず、この実行のコマンドと対応するインデックス区間を消費する。
@@ -1626,6 +1631,12 @@ namespace s3d
 		} stat;
 		
 		m_commandManager.flush();
+
+		// 描画がなくても、そのシーンの最初のパスでは背景をクリアする。
+		if (m_scenePassStarted && not m_commandManager.hasDraws())
+		{
+			return;
+		}
 		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Float2 sceneScale = m_commandManager.getSceneScale();
@@ -1647,7 +1658,8 @@ namespace s3d
 		cd->setLoadAction(m_scenePassStarted ? MTL::LoadActionLoad : MTL::LoadActionClear);
 		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore : MTL::StoreActionStoreAndMultisampleResolve);
+		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore
+			: (finalScenePass ? MTL::StoreActionMultisampleResolve : MTL::StoreActionStoreAndMultisampleResolve));
 		
 		LOG_COMMAND("----");
 

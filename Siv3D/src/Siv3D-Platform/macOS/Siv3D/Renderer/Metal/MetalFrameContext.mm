@@ -123,12 +123,15 @@ namespace s3d
 		dispatch_semaphore_signal(m_completionState->semaphore);
 	}
 
-	void MetalFrameContext::waitForLastSubmittedFrame() const
+	bool MetalFrameContext::waitForLastSubmittedFrame() const
 	{
-		if (m_lastSubmittedCommandBuffer)
+		if (not m_lastSubmittedCommandBuffer)
 		{
-			m_lastSubmittedCommandBuffer->waitUntilCompleted();
+			return false;
 		}
+
+		m_lastSubmittedCommandBuffer->waitUntilCompleted();
+		return (m_lastSubmittedCommandBuffer->status() == MTL::CommandBufferStatusCompleted);
 	}
 
 	void MetalFrameContext::drain() noexcept

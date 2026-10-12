@@ -201,7 +201,7 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
-		m_pRenderer2D->flush();
+		m_pRenderer2D->flush(true);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -346,14 +346,17 @@ namespace s3d
 
 	bool CRenderer_Metal::captureScreenshot()
 	{
+		if (not m_frameContext.waitForLastSubmittedFrame())
+		{
+			return false;
+		}
+
 		const Size sceneSize = m_sceneBuffers.nonMSAA.size();
 		
 		if (m_screenCapture.size() != sceneSize)
 		{
 			m_screenCapture.resize(sceneSize);
 		}
-		
-		m_frameContext.waitForLastSubmittedFrame();
 		
 		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
 												   m_screenCapture.bytesPerRow(),

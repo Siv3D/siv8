@@ -160,6 +160,9 @@
     <ClCompile Include="..\Test\Test_MetalPresentation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalScreenCapture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_GLFW.cpp">
       <Filter>Test</Filter>
     </ClCompile>

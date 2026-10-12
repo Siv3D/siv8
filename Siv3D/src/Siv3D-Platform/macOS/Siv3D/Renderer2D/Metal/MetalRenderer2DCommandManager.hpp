@@ -43,6 +43,8 @@ namespace s3d
 
 		void flush();
 
+		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty()); }
+
 		void setSceneScale(Float2 scale);
 		Float2 getSceneScale() const noexcept { return m_current.sceneScale; }
 		float getCurrentRasterScaling() const noexcept { return m_current.rasterScaling; }
