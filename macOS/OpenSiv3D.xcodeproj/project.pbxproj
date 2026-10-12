@@ -40,6 +40,7 @@
 		5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */; };
 		63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */; };
 		45A76FD970C64B5B9ABB3F78 /* Test_SceneHighResolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */; };
+		D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */; };
 		32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		69BE70F1E9AA49D2A2E15E03 /* Test_MemoryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */; };
@@ -108,6 +109,7 @@
 		D311D311D311D31100000003 /* Test_D3D11SwapChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */; };
 		D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */; };
 		D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		24CFF175A6EF47B7AF7C2FF4 /* Test_ScenePresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 790149570411458B9653FABF /* Test_ScenePresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */; };
 		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
@@ -873,6 +875,7 @@
 		F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */; };
 		F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */; };
 		F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */; };
+		C1B340C25CBA4DC39F6E6C7D /* SceneConfig.ipp in Headers */ = {isa = PBXBuildFile; fileRef = B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */; };
 		F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */; };
 		F943AAED2E2A0B05001B4D43 /* TypefaceUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */; };
 		F943AAEE2E2A0B05001B4D43 /* TypefaceUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */; };
@@ -1186,7 +1189,7 @@
 		F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A562C289A6D0049CC26 /* Smooth.ipp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
-		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
+		F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */; };
 		F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FB2BEDF2FF000E21DD /* CScene.cpp */; };
 		F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FC2BEDF2FF000E21DD /* CScene.hpp */; };
 		F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FD2BEDF2FF000E21DD /* IScene.hpp */; };
@@ -1194,7 +1197,7 @@
 		F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */; };
 		F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203002BEDF2FF000E21DD /* SceneTime.hpp */; };
 		F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203012BEDF2FF000E21DD /* SivScene.cpp */; };
-		F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */; };
+		F972030E2BEDF2FF000E21DD /* SivSceneConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */; };
 		F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */; };
 		F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203102BF09DA3000E21DD /* IRenderer.hpp */; };
 		F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203132BF09DD9000E21DD /* Graphics.hpp */; };
@@ -3433,6 +3436,7 @@
 		A0C8D0012026090800000006 /* UnicodeDecodeStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeDecodeStatus.hpp; sourceTree = "<group>"; };
 		A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MemoryReader.cpp; sourceTree = "<group>"; };
 		A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_MetalFrameErrors.cpp; sourceTree = "<group>"; };
+		790149570411458B9653FABF /* Test_ScenePresentation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_ScenePresentation.cpp; sourceTree = "<group>"; };
 		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		B326556F96D34F0A81DE7B33 /* Test_RandomVec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RandomVec3.cpp; sourceTree = "<group>"; };
@@ -3491,6 +3495,7 @@
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
 		9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneHighResolution.cpp; sourceTree = "<group>"; };
+		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
 		95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowFullscreen.cpp; sourceTree = "<group>"; };
 		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		E928752BE27A427C911BFA02 /* Ripple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ripple.hpp; sourceTree = "<group>"; };
@@ -4319,6 +4324,7 @@
 		F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePainting.cpp; sourceTree = "<group>"; };
 		F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.hpp; sourceTree = "<group>"; };
 		F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.ipp; sourceTree = "<group>"; };
+		B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SceneConfig.ipp; sourceTree = "<group>"; };
 		F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Typeface.hpp; sourceTree = "<group>"; };
 		F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypefaceUtility.hpp; sourceTree = "<group>"; };
 		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
@@ -4632,7 +4638,7 @@
 		F9712A562C289A6D0049CC26 /* Smooth.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Smooth.ipp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
-		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
+		F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneConfig.hpp; sourceTree = "<group>"; };
 		F97202FB2BEDF2FF000E21DD /* CScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScene.cpp; sourceTree = "<group>"; };
 		F97202FC2BEDF2FF000E21DD /* CScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScene.hpp; sourceTree = "<group>"; };
 		F97202FD2BEDF2FF000E21DD /* IScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScene.hpp; sourceTree = "<group>"; };
@@ -4640,7 +4646,7 @@
 		F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTime.cpp; sourceTree = "<group>"; };
 		F97203002BEDF2FF000E21DD /* SceneTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneTime.hpp; sourceTree = "<group>"; };
 		F97203012BEDF2FF000E21DD /* SivScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScene.cpp; sourceTree = "<group>"; };
-		F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivResizeMode.cpp; sourceTree = "<group>"; };
+		F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneConfig.cpp; sourceTree = "<group>"; };
 		F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureFilter.cpp; sourceTree = "<group>"; };
 		F97203102BF09DA3000E21DD /* IRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IRenderer.hpp; sourceTree = "<group>"; };
 		F97203132BF09DD9000E21DD /* Graphics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics.hpp; sourceTree = "<group>"; };
@@ -7180,6 +7186,7 @@
 				58E7A5266E884B548FBB528C /* Test_ScreenCoordinates.cpp */,
 				63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */,
 				A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */,
+				790149570411458B9653FABF /* Test_ScenePresentation.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
@@ -7219,6 +7226,7 @@
 				1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */,
 				D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */,
 				9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */,
+				49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */,
 				95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */,
 				BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */,
 				AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */,
@@ -7794,6 +7802,7 @@
 				F902E0E62E9E70B3002C6B92 /* TextFileWriter.ipp */,
 				F9797EF62F6EB6E800518D26 /* TextLayoutResult.ipp */,
 				F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */,
+				B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */,
 				F90DA04E2D1A91AB0003E1E8 /* Texture.ipp */,
 				F90DA04F2D1A91AB0003E1E8 /* TextureDesc.ipp */,
 				F90DA0502D1A91AB0003E1E8 /* TextureDescBuilder.ipp */,
@@ -8198,7 +8207,7 @@
 				F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
-				F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */,
+				F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */,
 				F91171282DCBBF67000A22E6 /* ResolvedGlyph.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
@@ -9035,7 +9044,7 @@
 				F98605A22BE4887C006A4C0F /* RegExp */,
 				F97203112BF09DA3000E21DD /* Renderer */,
 				F980C47F2C04B3EA00A86B68 /* Renderer2D */,
-				F97203042BEDF2FF000E21DD /* ResizeMode */,
+				F97203042BEDF2FF000E21DD /* SceneConfig */,
 				F9D41CF22C9FCDC300290998 /* RoundRect */,
 				F9FD0D132D204FBE00A584CE /* SamplerBorderColor */,
 				F980C4532C00E2AE00A86B68 /* SamplerState */,
@@ -10740,12 +10749,12 @@
 			path = Scene;
 			sourceTree = "<group>";
 		};
-		F97203042BEDF2FF000E21DD /* ResizeMode */ = {
+		F97203042BEDF2FF000E21DD /* SceneConfig */ = {
 			isa = PBXGroup;
 			children = (
-				F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */,
+				F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */,
 			);
-			path = ResizeMode;
+			path = SceneConfig;
 			sourceTree = "<group>";
 		};
 		F97203062BEDF2FF000E21DD /* TextureFilter */ = {
@@ -14908,6 +14917,7 @@
 				F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */,
+				C1B340C25CBA4DC39F6E6C7D /* SceneConfig.ipp in Headers */,
 				F95122082CB62E4300151291 /* best_bin_finder.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
@@ -15650,7 +15660,7 @@
 				F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */,
 				F933AD302E54A345005624D7 /* GlyphContext.hpp in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
-				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
+				F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
@@ -16839,6 +16849,7 @@
 				088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */,
 				63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */,
 				45A76FD970C64B5B9ABB3F78 /* Test_SceneHighResolution.cpp in Sources */,
+				D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */,
 				32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */,
 				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,
 				B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */,
@@ -16976,6 +16987,7 @@
 				D4604704A5ED4A0483159C45 /* Test_ScreenCoordinates.cpp in Sources */,
 				FCCD4144ABA44516BDF2F728 /* Test_Keyboard.cpp in Sources */,
 				D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */,
+				24CFF175A6EF47B7AF7C2FF4 /* Test_ScenePresentation.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
@@ -17605,7 +17617,7 @@
 				F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
-				F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */,
+				F972030E2BEDF2FF000E21DD /* SivSceneConfig.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F91D2BC8441F006A4C0F /* regerror.c in Sources */,
 				F986F9202BC8441F006A4C0F /* reggnu.c in Sources */,

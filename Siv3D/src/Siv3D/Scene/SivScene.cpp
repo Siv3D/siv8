@@ -21,20 +21,19 @@ namespace s3d
 {
 	namespace Scene
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Resize
-		//
-		////////////////////////////////////////////////////////////////
-
-		void Resize(const s3d::Size size)
+		void Configure(const SceneConfig& config)
 		{
-			SIV3D_ENGINE(Renderer)->resizeScene(size);
+			SIV3D_ENGINE(Renderer)->configureScene(config);
 		}
 
-		void Resize(const int32 width, const int32 height)
+		SceneConfig GetConfig() noexcept
 		{
-			Resize(s3d::Size{ width, height });
+			return SIV3D_ENGINE(Renderer)->getSceneConfig();
+		}
+
+		s3d::Size RenderResolution() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -46,27 +45,6 @@ namespace s3d
 		s3d::Size Size() noexcept
 		{
 			return SIV3D_ENGINE(Renderer)->getSceneSize();
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	High resolution rendering
-		//
-		////////////////////////////////////////////////////////////////
-
-		void SetHighResolutionEnabled(const bool enabled)
-		{
-			SIV3D_ENGINE(Renderer)->setHighResolutionEnabled(enabled);
-		}
-
-		bool IsHighResolutionEnabled() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->isHighResolutionEnabled();
-		}
-
-		s3d::Size RenderSize() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -120,28 +98,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		void SetResizeMode(const ResizeMode resizeMode)
-		{
-			return SIV3D_ENGINE(Renderer)->setSceneResizeMode(resizeMode);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		ResizeMode GetResizeMode() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->getSceneResizeMode();
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	SetBackground
 		//
 		////////////////////////////////////////////////////////////////
@@ -182,28 +138,6 @@ namespace s3d
 		const ColorF& GetLetterbox() noexcept
 		{
 			return SIV3D_ENGINE(Renderer)->getSceneStyle().letterboxColor;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	SetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		void SetTextureFilter(const TextureFilter textureFilter)
-		{
-			SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter = textureFilter;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		TextureFilter GetTextureFilter() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter;
 		}
 
 		////////////////////////////////////////////////////////////////

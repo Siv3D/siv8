@@ -45,10 +45,7 @@ namespace s3d
 		struct RestoreWindowAndScene
 		{
 			const WindowState window = Window::GetState();
-			const Size sceneSize = Scene::Size();
-			const ResizeMode mode = Scene::GetResizeMode();
-			const bool highResolution = Scene::IsHighResolutionEnabled();
-			const TextureFilter filter = Scene::GetTextureFilter();
+			const SceneConfig config = Scene::GetConfig();
 			const bool toggleEnabled = Window::IsToggleFullscreenEnabled();
 
 			~RestoreWindowAndScene()
@@ -57,11 +54,7 @@ namespace s3d
 				Window::SetPos(window.bounds.pos);
 				Window::Resize(window.virtualSize, CenterWindow::No);
 				if (window.maximized) { Window::Maximize(); }
-				Scene::SetHighResolutionEnabled(false);
-				Scene::SetResizeMode(mode);
-				Scene::Resize(sceneSize);
-				Scene::SetHighResolutionEnabled(highResolution);
-				Scene::SetTextureFilter(filter);
+				Scene::Configure(config);
 				Window::SetToggleFullscreenEnabled(toggleEnabled);
 			}
 		};
@@ -86,10 +79,10 @@ namespace s3d
 				<< " dpi=" << ::GetDpiForWindow(MainWindow()) << " scaling=" << window.scaling
 				<< " fullscreen=" << window.fullscreen << " bounds=" << window.bounds
 				<< " virtual=" << window.virtualSize << " framebuffer=" << window.frameBufferSize
-				<< " scene=" << Scene::Size() << " render=" << Scene::RenderSize()
-				<< " mode=" << Format(Scene::GetResizeMode()).toUTF8()
-				<< " highResolution=" << Scene::IsHighResolutionEnabled()
-				<< " filter=" << Format(Scene::GetTextureFilter()).toUTF8() << '\n';
+				<< " scene=" << Scene::Size() << " render=" << Scene::RenderResolution()
+				<< " mode=" << Format(Scene::GetConfig().sizeMode).toUTF8()
+				<< " highResolution=" << (Scene::GetConfig().resolution == SceneResolution::Display)
+				<< " filter=" << Format(Scene::GetConfig().scalingFilter).toUTF8() << '\n';
 		}
 
 		using ResizeFunction = bool (*)(Size, CenterWindow);
@@ -98,21 +91,21 @@ namespace s3d
 
 # endif
 
-		void CheckPresentation(const ResizeMode mode, const bool highResolution, const TextureFilter filter,
+		void CheckPresentation(const SceneSizeMode mode, const bool highResolution, const TextureFilter filter,
 			const Size fixedSize = Size{ 400, 300 })
 		{
-			CHECK(Scene::GetResizeMode() == mode);
-			CHECK(Scene::IsHighResolutionEnabled() == highResolution);
-			CHECK(Scene::GetTextureFilter() == filter);
+			CHECK(Scene::GetConfig().sizeMode == mode);
+			CHECK((Scene::GetConfig().resolution == SceneResolution::Display) == highResolution);
+			CHECK(Scene::GetConfig().scalingFilter == filter);
 			const auto& window = Window::GetState();
-			const Size expected = (mode == ResizeMode::Keep) ? fixedSize
-				: ((mode == ResizeMode::Virtual) ? window.virtualSize : window.frameBufferSize);
+			const Size expected = (mode == SceneSizeMode::Fixed) ? fixedSize
+				: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
 			CHECK(Scene::Size() == expected);
 			SceneMisc::RenderState reference;
 			reference.size = expected;
 			reference.frameBufferSize = window.frameBufferSize;
-			reference.highResolutionEnabled = highResolution;
-			CHECK(Scene::RenderSize() == reference.renderSize());
+			reference.config.resolution = (highResolution ? SceneResolution::Display : SceneResolution::SceneSize);
+			CHECK(Scene::RenderResolution() == reference.renderSize());
 			const auto [scale, area] = reference.composition();
 			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
 		}
@@ -126,16 +119,21 @@ namespace s3d
 		const RestoreWindowAndScene restore;
 		Window::SetToggleFullscreenEnabled(true);
 		UpdateWithPause();
-		for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+		for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 		{
 			for (const bool enabled : { false, true })
 			{
 				INFO(static_cast<int32>(mode));
 				INFO(enabled);
-				Scene::SetResizeMode(mode);
-				if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
-				Scene::SetHighResolutionEnabled(enabled);
-				Scene::SetTextureFilter(TextureFilter::Nearest);
+				{
+					auto config = Scene::GetConfig();
+					config.sizeMode = mode;
+					config.fullscreen = FullscreenSceneMode::FollowWindow;
+					config.fixedSceneSize = Size{ 400, 300 };
+					config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+					config.scalingFilter = TextureFilter::Nearest;
+					Scene::Configure(config);
+				}
 
 				AltEnter();
 				REQUIRE(Window::GetState().fullscreen);
@@ -182,22 +180,32 @@ namespace s3d
 		for (const bool exitByShortcut : { false, true })
 		{
 			INFO(exitByShortcut);
-			Scene::SetResizeMode(ResizeMode::Virtual);
-			Scene::SetHighResolutionEnabled(false);
-			Scene::SetTextureFilter(TextureFilter::Linear);
+			{
+				auto config = Scene::GetConfig();
+				config.sizeMode = SceneSizeMode::Window;
+				config.fullscreen = FullscreenSceneMode::FollowWindow;
+				config.resolution = SceneResolution::SceneSize;
+				config.scalingFilter = TextureFilter::Linear;
+				Scene::Configure(config);
+			}
 			AltEnter();
 			REQUIRE(Window::GetState().fullscreen);
 
-			Scene::SetResizeMode(ResizeMode::Keep);
-			Scene::Resize(320, 240);
-			Scene::SetHighResolutionEnabled(true);
-			Scene::SetTextureFilter(TextureFilter::Nearest);
+			{
+				auto config = Scene::GetConfig();
+				config.sizeMode = SceneSizeMode::Fixed;
+				config.fullscreen = FullscreenSceneMode::FollowWindow;
+				config.fixedSceneSize = Size{ 320, 240 };
+				config.resolution = SceneResolution::Display;
+				config.scalingFilter = TextureFilter::Nearest;
+				Scene::Configure(config);
+			}
 			if (exitByShortcut) { AltEnter(); }
 			else { SetFullscreenWithPause(false); }
 			REQUIRE_FALSE(Window::GetState().fullscreen);
-			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 			UpdateWithPause();
-			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 		}
 
 		// A disabled shortcut does not change the window, or leave a deferred toggle behind.
@@ -206,13 +214,13 @@ namespace s3d
 		CHECK_FALSE(Window::GetState().fullscreen);
 		SetFullscreenWithPause(true);
 		REQUIRE(Window::GetState().fullscreen);
-		CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+		CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 		SetFullscreenWithPause(false);
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		Window::SetToggleFullscreenEnabled(true);
 		UpdateWithPause();
 		CHECK_FALSE(Window::GetState().fullscreen);
-		CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+		CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 
 		// Re-enabling before the next frame must not revive an ignored message.
 		Window::SetToggleFullscreenEnabled(false);
@@ -274,7 +282,7 @@ namespace s3d
 			REQUIRE(Window::CenterToScreen(source));
 			UpdateWithPause();
 			REQUIRE(System::GetCurrentMonitorIndex() == source);
-			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool enabled : { false, true })
 				{
@@ -288,17 +296,27 @@ namespace s3d
 						const auto windowed = Window::GetState();
 						RECT nativeWindowed{};
 						REQUIRE(::GetWindowRect(MainWindow(), &nativeWindowed));
-						Scene::SetResizeMode((mode == ResizeMode::Virtual) ? ResizeMode::Actual : ResizeMode::Virtual);
-						Scene::SetHighResolutionEnabled(not enabled);
-						Scene::SetTextureFilter(TextureFilter::Linear);
+						{
+							auto config = Scene::GetConfig();
+							config.sizeMode = (mode == SceneSizeMode::Window) ? SceneSizeMode::WindowPixels : SceneSizeMode::Window;
+							config.fullscreen = FullscreenSceneMode::FollowWindow;
+							config.resolution = (not enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+							config.scalingFilter = TextureFilter::Linear;
+							Scene::Configure(config);
+						}
 						ReportWindow("windowed");
 						SetFullscreenWithPause(true, target);
 						REQUIRE(Window::GetState().fullscreen);
 						// All three settings changed in fullscreen must survive the resize exit.
-						Scene::SetResizeMode(mode);
-						if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
-						Scene::SetHighResolutionEnabled(enabled);
-						Scene::SetTextureFilter(TextureFilter::Nearest);
+						{
+							auto config = Scene::GetConfig();
+							config.sizeMode = mode;
+							config.fullscreen = FullscreenSceneMode::FollowWindow;
+							config.fixedSceneSize = Size{ 400, 300 };
+							config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+							config.scalingFilter = TextureFilter::Nearest;
+							Scene::Configure(config);
+						}
 						ReportWindow("fullscreen");
 						const auto full = Window::GetState();
 						CHECK(System::GetCurrentMonitorIndex() == target);
@@ -370,9 +388,14 @@ namespace s3d
 		UpdateWithPause();
 		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 		Window::SetMinimumFrameBufferSize({ 200, 200 });
-		Scene::SetResizeMode(ResizeMode::Virtual);
-		Scene::SetHighResolutionEnabled(true);
-		Scene::SetTextureFilter(TextureFilter::Linear);
+		{
+			auto config = Scene::GetConfig();
+			config.sizeMode = SceneSizeMode::Window;
+			config.fullscreen = FullscreenSceneMode::FollowWindow;
+			config.resolution = SceneResolution::Display;
+			config.scalingFilter = TextureFilter::Linear;
+			Scene::Configure(config);
+		}
 		const auto windowed = Window::GetState();
 		for (int32 api = 0; api < 3; ++api)
 		{
@@ -387,7 +410,7 @@ namespace s3d
 				CHECK(Window::GetState().bounds == windowed.bounds);
 				CHECK(Window::GetState().virtualSize == windowed.virtualSize);
 				CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
-				CheckPresentation(ResizeMode::Virtual, true, TextureFilter::Linear);
+				CheckPresentation(SceneSizeMode::Window, true, TextureFilter::Linear);
 			};
 			check();
 			System::Sleep(FullscreenPauseMillis);
@@ -401,9 +424,14 @@ namespace s3d
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		UpdateWithPause();
-		Scene::SetResizeMode(ResizeMode::Actual);
-		Scene::SetHighResolutionEnabled(false);
-		Scene::SetTextureFilter(TextureFilter::Linear);
+		{
+			auto config = Scene::GetConfig();
+			config.sizeMode = SceneSizeMode::WindowPixels;
+			config.fullscreen = FullscreenSceneMode::FollowWindow;
+			config.resolution = SceneResolution::SceneSize;
+			config.scalingFilter = TextureFilter::Linear;
+			Scene::Configure(config);
+		}
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
 		for (size_t i = 0; i < monitors.size(); ++i)
@@ -421,7 +449,7 @@ namespace s3d
 			REQUIRE(::GetWindowRect(MainWindow(), &bounds));
 			CHECK(Rect{ bounds.left, bounds.top, (bounds.right - bounds.left), (bounds.bottom - bounds.top) } == expected);
 			CHECK(Window::GetState().frameBufferSize == expected.size);
-			CheckPresentation(ResizeMode::Actual, false, TextureFilter::Linear);
+			CheckPresentation(SceneSizeMode::WindowPixels, false, TextureFilter::Linear);
 			SetFullscreenWithPause(false);
 			UpdateWithPause();
 			REQUIRE(::GetWindowRect(MainWindow(), &bounds));
@@ -578,16 +606,21 @@ namespace s3d
 		{
 			REQUIRE(Window::CenterToScreen(monitor));
 			UpdateWithPause();
-			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool highResolution : { false, true })
 				{
 					CAPTURE(monitor, mode, highResolution);
 					Window::SetStyle(highResolution ? WindowStyle::Sizable : WindowStyle::Fixed);
-					Scene::SetResizeMode(mode);
-					if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
-					Scene::SetHighResolutionEnabled(highResolution);
-					Scene::SetTextureFilter(TextureFilter::Nearest);
+					{
+						auto config = Scene::GetConfig();
+						config.sizeMode = mode;
+						config.fullscreen = FullscreenSceneMode::FollowWindow;
+						config.fixedSceneSize = Size{ 400, 300 };
+						config.resolution = (highResolution ? SceneResolution::Display : SceneResolution::SceneSize);
+						config.scalingFilter = TextureFilter::Nearest;
+						Scene::Configure(config);
+					}
 					const auto windowed = Window::GetState();
 					for (const auto route : { FullscreenRoute::Shortcut, FullscreenRoute::Menu,
 						FullscreenRoute::API })
@@ -664,13 +697,18 @@ namespace s3d
 			UpdateWithPause();
 			CHECK(Window::GetState().fullscreen);
 			// Settings changed while fullscreen survive an exit through the shortcut.
-			Scene::SetResizeMode(ResizeMode::Keep);
-			Scene::Resize(320, 240);
-			Scene::SetHighResolutionEnabled(true);
-			Scene::SetTextureFilter(TextureFilter::Nearest);
+			{
+				auto config = Scene::GetConfig();
+				config.sizeMode = SceneSizeMode::Fixed;
+				config.fullscreen = FullscreenSceneMode::FollowWindow;
+				config.fixedSceneSize = Size{ 320, 240 };
+				config.resolution = SceneResolution::Display;
+				config.scalingFilter = TextureFilter::Nearest;
+				Scene::Configure(config);
+			}
 			RequestFullscreen(FullscreenRoute::Shortcut);
 			REQUIRE_FALSE(Window::GetState().fullscreen);
-			CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 			Window::SetToggleFullscreenEnabled(false);
 			SetFullscreenWithPause(true);
 			REQUIRE(Window::GetState().fullscreen);
@@ -738,15 +776,20 @@ namespace s3d
 			CAPTURE(monitor);
 			REQUIRE(Window::CenterToScreen(monitor));
 			UpdateWithPause();
-			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool enabled : { false, true })
 				{
 					CAPTURE(mode, enabled);
-					Scene::SetResizeMode(mode);
-					if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
-					Scene::SetHighResolutionEnabled(enabled);
-					Scene::SetTextureFilter(TextureFilter::Nearest);
+					{
+						auto config = Scene::GetConfig();
+						config.sizeMode = mode;
+						config.fullscreen = FullscreenSceneMode::FollowWindow;
+						config.fixedSceneSize = Size{ 400, 300 };
+						config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+						config.scalingFilter = TextureFilter::Nearest;
+						Scene::Configure(config);
+					}
 					SetFullscreenWithPause(true);
 					REQUIRE(Window::GetState().fullscreen);
 					desktop.check();
@@ -767,7 +810,7 @@ namespace s3d
 						CHECK(Circle{ logical, 3 }.mouseOver());
 						CHECK_FALSE(Circle{ logical + Point{ 30, 0 }, 3 }.mouseOver());
 						REQUIRE(ScreenCapture::HasNewFrame());
-						CHECK(ScreenCapture::GetFrame().size() == Scene::RenderSize());
+						CHECK(ScreenCapture::GetFrame().size() == Scene::RenderResolution());
 					}
 					// Reapplying fullscreen must not change the selected policy.
 					SetFullscreenWithPause(true);
@@ -802,12 +845,17 @@ namespace s3d
 				CAPTURE(i, monitors[i].name, monitors[i].displayRect, monitors[i].scaling.value_or(1.0));
 				const auto windowed = Window::GetState();
 				CAPTURE(windowed.bounds.pos, windowed.virtualSize, windowed.frameBufferSize, windowed.scaling);
-				Scene::SetResizeMode(ResizeMode::Virtual);
-				Scene::SetHighResolutionEnabled(false);
-				Scene::SetTextureFilter(TextureFilter::Linear);
+				{
+					auto config = Scene::GetConfig();
+					config.sizeMode = SceneSizeMode::Window;
+					config.fullscreen = FullscreenSceneMode::FollowWindow;
+					config.resolution = SceneResolution::SceneSize;
+					config.scalingFilter = TextureFilter::Linear;
+					Scene::Configure(config);
+				}
 				SetFullscreenWithPause(true, i);
 				REQUIRE(Window::GetState().fullscreen);
-				CheckPresentation(ResizeMode::Virtual, false, TextureFilter::Linear);
+				CheckPresentation(SceneSizeMode::Window, false, TextureFilter::Linear);
 				UpdateWithPause();
 				desktop.check();
 				// Compare to the desktop before entering fullscreen, not the new mode.
@@ -818,20 +866,25 @@ namespace s3d
 				CHECK(Window::GetState().virtualSize == fullscreenMonitor.displayRect.size);
 				CHECK(Window::GetState().frameBufferSize == fullscreenMonitor.fullscreenResolution);
 				CHECK(Window::GetState().scaling == fullscreenMonitor.scaling.value_or(1.0));
-				CheckPresentation(ResizeMode::Virtual, false, TextureFilter::Linear);
-				Scene::SetResizeMode(ResizeMode::Keep);
-				Scene::Resize(320, 240);
-				Scene::SetHighResolutionEnabled(true);
-				Scene::SetTextureFilter(TextureFilter::Nearest);
+				CheckPresentation(SceneSizeMode::Window, false, TextureFilter::Linear);
+				{
+					auto config = Scene::GetConfig();
+					config.sizeMode = SceneSizeMode::Fixed;
+					config.fullscreen = FullscreenSceneMode::FollowWindow;
+					config.fixedSceneSize = Size{ 320, 240 };
+					config.resolution = SceneResolution::Display;
+					config.scalingFilter = TextureFilter::Nearest;
+					Scene::Configure(config);
+				}
 				SetFullscreenWithPause(false);
 				REQUIRE_FALSE(Window::GetState().fullscreen);
-				CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+				CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 				UpdateWithPause();
 				desktop.check();
 				CHECK(Window::GetState().bounds == windowed.bounds);
 				CHECK(Window::GetState().virtualSize == windowed.virtualSize);
 				CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
-				CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest, Size{ 320, 240 });
+				CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 			}
 		}
 	}
@@ -844,10 +897,15 @@ namespace s3d
 		UpdateWithPause();
 		const DesktopSnapshot desktop;
 		REQUIRE_FALSE(desktop.monitors.isEmpty());
-		Scene::SetResizeMode(ResizeMode::Keep);
-		Scene::Resize(400, 300);
-		Scene::SetHighResolutionEnabled(true);
-		Scene::SetTextureFilter(TextureFilter::Nearest);
+		{
+			auto config = Scene::GetConfig();
+			config.sizeMode = SceneSizeMode::Fixed;
+			config.fullscreen = FullscreenSceneMode::FollowWindow;
+			config.fixedSceneSize = Size{ 400, 300 };
+			config.resolution = SceneResolution::Display;
+			config.scalingFilter = TextureFilter::Nearest;
+			Scene::Configure(config);
+		}
 		for (size_t source = 0; source < desktop.monitors.size(); ++source)
 		{
 			for (size_t target = 0; target < desktop.monitors.size(); ++target)
@@ -886,10 +944,10 @@ namespace s3d
 					CHECK(Window::GetState().bounds.pos == windowed.bounds.pos);
 					if (api == 2) { CHECK(Window::GetState().frameBufferSize == requested); }
 					else { CHECK(Window::GetState().virtualSize == requested); }
-					CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest);
+					CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest);
 					UpdateWithPause();
 					desktop.check();
-					CheckPresentation(ResizeMode::Keep, true, TextureFilter::Nearest);
+					CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest);
 				}
 			}
 		}
@@ -938,6 +996,68 @@ namespace s3d
 	}
 
 # endif
+
+	TEST_CASE("WindowFullscreen.scene_config_default_and_reconfigure", "[.fullscreen]")
+	{
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		Window::SetToggleFullscreenEnabled(true);
+		UpdateWithPause();
+		const auto monitors = System::EnumerateMonitors();
+		REQUIRE(not monitors.isEmpty());
+		for (const auto& monitor : monitors)
+		{
+			Catch::cout() << "SceneConfig monitor: " << monitor.name.toUTF8()
+				<< " desktop=" << monitor.displayRect << " framebuffer=" << monitor.fullscreenResolution
+				<< " scale=" << monitor.scaling.value_or(1.0) << '\n';
+		}
+		const auto shortcut = []
+		{
+# if SIV3D_PLATFORM(WINDOWS)
+			AltEnter();
+# else
+			RequestFullscreen(FullscreenRoute::Shortcut);
+# endif
+		};
+		const auto check = [](const SceneConfig& config, const Size expected)
+		{
+			CHECK(Scene::GetConfig() == config);
+			CHECK(Scene::Size() == expected);
+			const auto& window = Window::GetState();
+			SceneMisc::RenderState reference;
+			reference.config = config;
+			reference.size = expected;
+			reference.frameBufferSize = window.frameBufferSize;
+			CHECK(Scene::RenderResolution() == reference.renderSize());
+			const auto [scale, area] = reference.composition();
+			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
+			CHECK(Scene::ClientToScene(window.frameBufferSize * 0.5).epsilonEquals(expected * 0.5, 1e-6));
+		};
+		// Two mixed-route round trips cover both entry paths without multiplying all presets.
+		for (const bool enterByShortcut : { false, true })
+		{
+			Scene::Configure(SceneConfig{});
+			const Size windowScene = Scene::Size();
+			if (enterByShortcut) { shortcut(); }
+			else { SetFullscreenWithPause(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size()); }
+			REQUIRE(Window::GetState().fullscreen);
+			check(SceneConfig{}, windowScene);
+			UpdateWithPause();
+			check(SceneConfig{}, windowScene);
+			auto config = SceneConfig::Window(SceneResolution::Display);
+			config.scalingFilter = TextureFilter::Nearest;
+			Scene::Configure(config);
+			check(config, windowScene);
+			Scene::Configure(Scene::GetConfig());
+			check(config, windowScene);
+			if (enterByShortcut) { SetFullscreenWithPause(false); }
+			else { shortcut(); }
+			REQUIRE_FALSE(Window::GetState().fullscreen);
+			check(config, Window::GetState().virtualSize);
+			UpdateWithPause();
+			check(config, Window::GetState().virtualSize);
+		}
+	}
 }
 
 # endif

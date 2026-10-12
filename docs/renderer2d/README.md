@@ -5,8 +5,8 @@
 
 ## Scene rendering
 
-- [Scene high resolution rendering](scene-high-resolution.md): opt-in rendering,
-  logical sizes, engine-owned scaling, migration, and validation.
+- [Scene configuration and render resolution](scene-high-resolution.md): presets,
+  fullscreen presentation, scene sizing, resolution scaling, and validation.
 
 ## Shader design
 

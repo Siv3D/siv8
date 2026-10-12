@@ -17,7 +17,7 @@
 namespace s3d
 {
 	struct SceneStyle;
-	enum class ResizeMode : uint8;
+	struct SceneConfig;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer
 	{
@@ -44,17 +44,11 @@ namespace s3d
 
 		virtual SceneStyle& getSceneStyle() noexcept = 0;
 
-		virtual void setSceneResizeMode(ResizeMode resizeMode) = 0;
+		virtual void configureScene(const SceneConfig& config) = 0;
 
-		virtual ResizeMode getSceneResizeMode() const noexcept = 0;
-
-		virtual void resizeScene(Size size) = 0;
+		virtual SceneConfig getSceneConfig() const noexcept = 0;
 
 		virtual const Size& getSceneSize() const noexcept = 0;
-
-		virtual void setHighResolutionEnabled(bool enabled) = 0;
-
-		virtual bool isHighResolutionEnabled() const noexcept = 0;
 
 		virtual const Size& getSceneBufferSize() const noexcept = 0;
 

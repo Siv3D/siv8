@@ -26,6 +26,18 @@
 
 namespace s3d
 {
+	void D3D11BackBuffer::configureScene(const SceneConfig& config)
+	{
+		auto state = m_sceneState;
+		state.configure(config, Window::GetState());
+		applySceneState(state);
+	}
+
+	SceneConfig D3D11BackBuffer::getSceneConfig() const noexcept
+	{
+		return m_sceneState.config;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	init
@@ -45,7 +57,7 @@ namespace s3d
 		m_backBuffer	= D3D11InternalTexture2D::CreateFromSwapChain(m_device, m_swapChain1);
 		
 		{
-			m_sceneState.updateWindow(Window::GetState(), true);
+			m_sceneState.configure(SceneConfig{}, Window::GetState());
 			const Size sceneSize = m_sceneState.size;
 
 			if (m_sceneBuffers.sampleCount == 1)
@@ -93,39 +105,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void D3D11BackBuffer::setSceneResizeMode(const ResizeMode resizeMode)
-	{
-		auto state = m_sceneState;
-		state.resizeMode = resizeMode;
-		state.updateWindow(Window::GetState(), true);
-		applySceneState(state);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode D3D11BackBuffer::getSceneResizeMode() const noexcept
-	{
-		return m_sceneState.resizeMode;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	updateSceneBufferSize
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11BackBuffer::updateSceneBufferSize(const bool force)
+	void D3D11BackBuffer::updateSceneBufferSize()
 	{
 		auto state = m_sceneState;
-		state.updateWindow(Window::GetState(), force);
+		state.updateWindow(Window::GetState());
 		applySceneState(state);
 	}
 
@@ -227,36 +214,10 @@ namespace s3d
 		return m_backBuffer.size();
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeScene
-	//
-	////////////////////////////////////////////////////////////////
-
-	void D3D11BackBuffer::resizeScene(const Size size)
-	{
-		SceneMisc::ValidateSceneSize(size);
-		auto state = m_sceneState;
-		state.updateWindow(Window::GetState());
-		state.size = size;
-		applySceneState(state);
-	}
 
 	const Size& D3D11BackBuffer::getSceneSize() const noexcept
 	{
 		return m_sceneState.size;
-	}
-
-	void D3D11BackBuffer::setHighResolutionEnabled(const bool enabled)
-	{
-		auto state = m_sceneState;
-		state.highResolutionEnabled = enabled;
-		applySceneState(state);
-	}
-
-	bool D3D11BackBuffer::isHighResolutionEnabled() const noexcept
-	{
-		return m_sceneState.highResolutionEnabled;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -367,7 +328,7 @@ namespace s3d
 
 		// render states
 		{
-			const SamplerState samplerState = ((m_sceneStyle.textureFilter == TextureFilter::Linear) ?
+			const SamplerState samplerState = ((m_sceneState.config.scalingFilter == TextureFilter::Linear) ?
 				SamplerState::ClampLinear : SamplerState::ClampNearest);
 			m_pRenderer->getSamplerState().setPS(0, samplerState);
 			m_pRenderer->getBlendState().set(BlendState::Opaque);

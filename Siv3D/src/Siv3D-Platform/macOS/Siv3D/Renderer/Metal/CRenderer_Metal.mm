@@ -29,6 +29,18 @@
 
 namespace s3d
 {
+	void CRenderer_Metal::configureScene(const SceneConfig& config)
+	{
+		auto state = m_sceneState;
+		state.configure(config, Window::GetState());
+		applySceneState(state);
+	}
+
+	SceneConfig CRenderer_Metal::getSceneConfig() const noexcept
+	{
+		return m_sceneState.config;
+	}
+
 	struct VertexData
 	{
 		simd::float4 position;
@@ -119,7 +131,7 @@ namespace s3d
 		m_commandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
 		{
-			m_sceneState.updateWindow(Window::GetState(), true);
+			m_sceneState.configure(SceneConfig{}, Window::GetState());
 			const Size sceneSize = m_sceneState.size;
 			
 			if (m_sceneBuffers.sampleCount == 1)
@@ -182,7 +194,7 @@ namespace s3d
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
-		updateSceneBufferSize(false);
+		updateSceneBufferSize();
 		m_frameContext.beginFrame(m_commandQueue.get());
 	}
 
@@ -212,29 +224,7 @@ namespace s3d
 
 			if (CA::MetalDrawable* drawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable])
 			{
-				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-				
-				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(drawable->texture());
-				cd->setLoadAction(MTL::LoadActionClear);
-				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
-				cd->setStoreAction(MTL::StoreActionStore);
-				
-				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
-				renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
-				const auto [s, viewRect] = getLetterboxComposition();
-				const MTL::Viewport viewport = {
-					.originX = viewRect.x,
-					.originY = viewRect.y,
-					.width = viewRect.w,
-					.height = viewRect.h,
-					.znear = 0.0,
-					.zfar = 1.0
-				};
-				renderCommandEncoder->setViewport(viewport);
-				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
-				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
-				renderCommandEncoder->endEncoding();
+				renderSceneToBackBuffer(commandBuffer, drawable->texture());
 
 				commandBuffer->presentDrawable(drawable);
 			}
@@ -244,6 +234,36 @@ namespace s3d
 		}
 
 		return true;
+	}
+
+	void CRenderer_Metal::renderSceneToBackBuffer(MTL::CommandBuffer* commandBuffer, MTL::Texture* target)
+	{
+		NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+
+		MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
+		cd->setTexture(target);
+		cd->setLoadAction(MTL::LoadActionClear);
+		cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
+		cd->setStoreAction(MTL::StoreActionStore);
+
+		MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+		renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
+		const auto [s, viewRect] = getLetterboxComposition();
+		const MTL::Viewport viewport = {
+			.originX = viewRect.x,
+			.originY = viewRect.y,
+			.width = viewRect.w,
+			.height = viewRect.h,
+			.znear = 0.0,
+			.zfar = 1.0
+		};
+		renderCommandEncoder->setViewport(viewport);
+		m_samplerState.resetStates();
+		m_samplerState.setPS(renderCommandEncoder, 0,
+			(m_sceneState.config.scalingFilter == TextureFilter::Nearest) ? SamplerState::ClampNearest : SamplerState::ClampLinear);
+		renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
+		renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
+		renderCommandEncoder->endEncoding();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -257,61 +277,9 @@ namespace s3d
 		return m_sceneStyle;
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_Metal::setSceneResizeMode(const ResizeMode resizeMode)
-	{
-		auto state = m_sceneState;
-		state.resizeMode = resizeMode;
-		state.updateWindow(Window::GetState(), true);
-		applySceneState(state);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode CRenderer_Metal::getSceneResizeMode() const noexcept
-	{
-		return m_sceneState.resizeMode;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeScene
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_Metal::resizeScene(const Size size)
-	{
-		SceneMisc::ValidateSceneSize(size);
-		auto state = m_sceneState;
-		state.updateWindow(Window::GetState());
-		state.size = size;
-		applySceneState(state);
-	}
-
 	const Size& CRenderer_Metal::getSceneSize() const noexcept
 	{
 		return m_sceneState.size;
-	}
-
-	void CRenderer_Metal::setHighResolutionEnabled(const bool enabled)
-	{
-		auto state = m_sceneState;
-		state.highResolutionEnabled = enabled;
-		applySceneState(state);
-	}
-
-	bool CRenderer_Metal::isHighResolutionEnabled() const noexcept
-	{
-		return m_sceneState.highResolutionEnabled;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -415,10 +383,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::updateSceneBufferSize(const bool force)
+	void CRenderer_Metal::updateSceneBufferSize()
 	{
 		auto state = m_sceneState;
-		state.updateWindow(Window::GetState(), force);
+		state.updateWindow(Window::GetState());
 		applySceneState(state);
 	}
 

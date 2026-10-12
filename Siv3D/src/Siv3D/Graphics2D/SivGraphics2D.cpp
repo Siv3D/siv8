@@ -249,7 +249,7 @@ namespace s3d
 			//}
 			//else
 			{
-				return Scene::RenderSize();
+				return Scene::RenderResolution();
 			}
 		}
 

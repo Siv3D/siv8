@@ -296,10 +296,7 @@ namespace s3d
 
 		::ShowWindow(m_hWnd, SW_MAXIMIZE);
 
-		if (Scene::GetResizeMode() != ResizeMode::Keep)
-		{
-			SIV3D_ENGINE(Renderer)->updateSceneSize();
-		}
+		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -313,10 +310,7 @@ namespace s3d
 		LOG_DEBUG("CWindow::restore()");
 		::ShowWindow(m_hWnd, SW_RESTORE);
 
-		if (Scene::GetResizeMode() != ResizeMode::Keep)
-		{
-			SIV3D_ENGINE(Renderer)->updateSceneSize();
-		}
+		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////

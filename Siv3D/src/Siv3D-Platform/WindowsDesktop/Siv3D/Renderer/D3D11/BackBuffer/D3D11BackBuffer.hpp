@@ -35,12 +35,12 @@ namespace s3d
 		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept;
 
-		void setSceneResizeMode(ResizeMode resizeMode);
+		void configureScene(const SceneConfig& config);
 
 		[[nodiscard]]
-		ResizeMode getSceneResizeMode() const noexcept;
+		SceneConfig getSceneConfig() const noexcept;
 
-		void updateSceneBufferSize(bool force = true);
+		void updateSceneBufferSize();
 
 		void renderSceneToBackBuffer();
 
@@ -49,13 +49,7 @@ namespace s3d
 		[[nodiscard]]
 		const Size& getBackBufferSize() const noexcept;
 
-		void resizeScene(Size size);
-
 		const Size& getSceneSize() const noexcept;
-
-		void setHighResolutionEnabled(bool enabled);
-
-		bool isHighResolutionEnabled() const noexcept;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept;

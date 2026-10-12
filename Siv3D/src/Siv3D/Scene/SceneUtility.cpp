@@ -18,32 +18,64 @@ namespace s3d
 {
 	namespace SceneMisc
 	{
-		void RenderState::updateWindow(const WindowState& window, const bool force)
+		void RenderState::configure(const SceneConfig& settings, const WindowState& window)
+		{
+			if ((settings.sizeMode != SceneSizeMode::Fixed && settings.sizeMode != SceneSizeMode::Window && settings.sizeMode != SceneSizeMode::WindowPixels)
+				|| (settings.resolution != SceneResolution::SceneSize && settings.resolution != SceneResolution::Display)
+				|| (settings.fullscreen != FullscreenSceneMode::KeepSize && settings.fullscreen != FullscreenSceneMode::FollowWindow)
+				|| (settings.scalingFilter != TextureFilter::Nearest && settings.scalingFilter != TextureFilter::Linear))
+			{
+				throw Error{ "Invalid scene configuration" };
+			}
+			if (settings.sizeMode == SceneSizeMode::Fixed)
+			{
+				ValidateSceneSize(settings.fixedSceneSize);
+			}
+			config = settings;
+			updateWindowGeometry(window);
+			updateSceneSize();
+		}
+
+		void RenderState::updateWindow(const WindowState& window)
+		{
+			if (updateWindowGeometry(window))
+			{
+				updateSceneSize();
+			}
+		}
+
+		bool RenderState::updateWindowGeometry(const WindowState& window)
 		{
 			if (window.minimized || (window.frameBufferSize.x <= 0) || (window.frameBufferSize.y <= 0)
 				|| (window.virtualSize.x <= 0) || (window.virtualSize.y <= 0))
 			{
-				return;
+				return false;
 			}
-			if (not force && (virtualSize == window.virtualSize) && (frameBufferSize == window.frameBufferSize))
+			if ((virtualSize == window.virtualSize) && (frameBufferSize == window.frameBufferSize) && (fullscreen == window.fullscreen))
 			{
-				return;
+				return false;
 			}
 			virtualSize = window.virtualSize;
 			frameBufferSize = window.frameBufferSize;
-			if (resizeMode == ResizeMode::Virtual)
+			fullscreen = window.fullscreen;
+			return true;
+		}
+
+		void RenderState::updateSceneSize()
+		{
+			if (config.sizeMode == SceneSizeMode::Fixed)
 			{
-				size = virtualSize;
+				size = config.fixedSceneSize;
 			}
-			else if (resizeMode == ResizeMode::Actual)
+			else if (not (fullscreen && (config.fullscreen == FullscreenSceneMode::KeepSize)))
 			{
-				size = frameBufferSize;
+				size = ((config.sizeMode == SceneSizeMode::Window) ? virtualSize : frameBufferSize);
 			}
 		}
 
 		Size RenderState::renderSize() const noexcept
 		{
-			if (not highResolutionEnabled)
+			if (config.resolution == SceneResolution::SceneSize)
 			{
 				return size;
 			}

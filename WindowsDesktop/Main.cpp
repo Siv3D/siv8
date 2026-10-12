@@ -14,7 +14,7 @@ void Main()
 
 	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
-	//Scene::SetResizeMode(ResizeMode::Keep);
+	//Scene::Configure(SceneConfig::Fixed({ 800, 600 }));
 
 	const Texture texture{ U"example/windmill.png" };
 	const Texture emoji{ U"🔥"_emoji, 200 };

@@ -673,7 +673,7 @@
     <Filter Include="src\Siv3D\Profiler">
       <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\ResizeMode">
+    <Filter Include="src\Siv3D\SceneConfig">
       <UniqueIdentifier>{e1b912b6-75cc-42af-9275-dcd202afc743}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\TextureFilter">
@@ -3504,7 +3504,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\ResizeMode.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneConfig.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp">
@@ -4705,6 +4705,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SceneConfig.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheManager.hpp">
@@ -8117,8 +8120,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
       <Filter>src\Siv3D\Profiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp">
-      <Filter>src\Siv3D\ResizeMode</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneConfig\SivSceneConfig.cpp">
+      <Filter>src\Siv3D\SceneConfig</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp">
       <Filter>src\Siv3D\TextureFilter</Filter>

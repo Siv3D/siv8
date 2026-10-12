@@ -11,7 +11,7 @@
 
 # pragma once
 # include <Siv3D/Renderer/IRenderer.hpp>
-# include <Siv3D/ResizeMode.hpp>
+# include <Siv3D/SceneConfig.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
@@ -53,18 +53,12 @@ namespace s3d
 		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept override;
 
-		void setSceneResizeMode(ResizeMode resizeMode) override;
+		void configureScene(const SceneConfig& config) override;
 
 		[[nodiscard]]
-		ResizeMode getSceneResizeMode() const noexcept override;
-
-		void resizeScene(Size size) override;
+		SceneConfig getSceneConfig() const noexcept override;
 
 		const Size& getSceneSize() const noexcept override;
-
-		void setHighResolutionEnabled(bool enabled) override;
-
-		bool isHighResolutionEnabled() const noexcept override;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;
@@ -84,7 +78,9 @@ namespace s3d
 		[[nodiscard]]
 		const Image& getScreenCapture() const override;
 		
-		void updateSceneBufferSize(bool force = true);
+		void updateSceneBufferSize();
+
+		void renderSceneToBackBuffer(MTL::CommandBuffer* commandBuffer, MTL::Texture* target);
 
 		[[nodiscard]]
 		MTL::Device* getDevice() const noexcept;

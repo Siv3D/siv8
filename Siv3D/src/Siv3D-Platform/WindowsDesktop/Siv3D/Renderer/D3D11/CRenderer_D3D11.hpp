@@ -50,18 +50,12 @@ namespace s3d
 		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept override;
 
-		void setSceneResizeMode(ResizeMode resizeMode) override;
+		void configureScene(const SceneConfig& config) override;
 
 		[[nodiscard]]
-		ResizeMode getSceneResizeMode() const noexcept override;
-
-		void resizeScene(Size size) override;
+		SceneConfig getSceneConfig() const noexcept override;
 
 		const Size& getSceneSize() const noexcept override;
-
-		void setHighResolutionEnabled(bool enabled) override;
-
-		bool isHighResolutionEnabled() const noexcept override;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;

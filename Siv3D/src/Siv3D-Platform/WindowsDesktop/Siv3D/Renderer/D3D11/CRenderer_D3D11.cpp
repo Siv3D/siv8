@@ -19,6 +19,16 @@
 
 namespace s3d
 {
+	void CRenderer_D3D11::configureScene(const SceneConfig& config)
+	{
+		m_backBuffer.configureScene(config);
+	}
+
+	SceneConfig CRenderer_D3D11::getSceneConfig() const noexcept
+	{
+		return m_backBuffer.getSceneConfig();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -111,7 +121,7 @@ namespace s3d
 		{
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
-		m_backBuffer.updateSceneBufferSize(false);
+		m_backBuffer.updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -153,39 +163,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_D3D11::setSceneResizeMode(const ResizeMode resizeMode)
-	{
-		m_backBuffer.setSceneResizeMode(resizeMode);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode CRenderer_D3D11::getSceneResizeMode() const noexcept
-	{
-		return m_backBuffer.getSceneResizeMode();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeSceneBuffer
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_D3D11::resizeScene(const Size size)
-	{
-		m_backBuffer.resizeScene(size);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	getSceneBufferSize
 	//
 	////////////////////////////////////////////////////////////////
@@ -193,16 +170,6 @@ namespace s3d
 	const Size& CRenderer_D3D11::getSceneSize() const noexcept
 	{
 		return m_backBuffer.getSceneSize();
-	}
-
-	void CRenderer_D3D11::setHighResolutionEnabled(const bool enabled)
-	{
-		m_backBuffer.setHighResolutionEnabled(enabled);
-	}
-
-	bool CRenderer_D3D11::isHighResolutionEnabled() const noexcept
-	{
-		return m_backBuffer.isHighResolutionEnabled();
 	}
 
 	const Size& CRenderer_D3D11::getSceneBufferSize() const noexcept

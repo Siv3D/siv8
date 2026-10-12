@@ -58,7 +58,7 @@ void Main()
 	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 	Window::SetTitle(U"GLFW compatibility");
 	Window::SetStyle(WindowStyle::Sizable);
-	Scene::SetResizeMode(ResizeMode::Keep);
+	Scene::Configure(SceneConfig::Fixed(Scene::Size()));
 	DragDrop::AcceptText(true);
 	bool acceptText = true;
 	uint32 yenDownCount = 0, yenUpCount = 0;

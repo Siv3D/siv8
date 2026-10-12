@@ -1,4 +1,4 @@
-# Scene high resolution and input
+# Scene configuration and input
 
 This program checks scene layout and pointer input while the OS changes the
 window's size or DPI. It complements the numerical and image comparisons in
@@ -11,18 +11,20 @@ Build the complete program below in a Siv3D application on each target platform.
 Do not replace a repository platform `Main.cpp` permanently with this program.
 Use a resizable window and, where available, monitors with different scale factors.
 
-1. Start in fixed 800 × 600 mode. Press **H** to toggle high resolution rendering.
-   Compare the displayed logical and render sizes, circle edges, text, and hover
+1. Start in fixed 800 × 600 mode at display resolution. Keys **1–6** select the
+   six configurations in the usage guide, in the same order. Press **H** to switch
+   between SceneSize and Display resolution.
+   Compare the displayed scene size and render resolution, circle edges, text, and hover
    feedback. Click the center circle and check the click count.
 2. Resize the window continuously, including wide, tall, and smaller-than-canvas
    sizes. Move between different-DPI monitors and change the OS display scale.
-   Repeat with **1** (Virtual), **2** (Actual), and **3** (Keep, 800 × 600).
-3. Use **4** (`Resize`, virtual 800 × 600), **5** (`ResizeVirtual`, 800 × 600),
-   and **6** (`ResizeActual`, 800 × 600 pixels). All use `CenterWindow::No`.
-   **7** requests a larger virtual 1200 × 900 window. Check the size displays and
+   Repeat with all six configurations, including PixelArt and WindowPixels.
+3. Use **7** (`Resize`, virtual 800 × 600), **8** (`ResizeVirtual`, 800 × 600),
+   and **9** (`ResizeActual`, 800 × 600 pixels). All use `CenterWindow::No`.
+   **0** requests a larger virtual 1200 × 900 window. Check the size displays and
    input immediately after each change.
 4. Use **M** to maximize, **R** to restore, **N** to minimize, and the OS to bring
-   the window back. For every resize mode with high resolution both on and off,
+   the window back. For all six configurations, and both fullscreen sizing policies selected by **U**,
    test **F** and the platform shortcut (**Alt+Enter** on Windows,
    **Control+Command+F** on macOS) to enter and leave fullscreen.
    On macOS, also enter using the Window menu's fullscreen
@@ -31,7 +33,7 @@ Use a resizable window and, where available, monitors with different scale facto
    Frameless. Use the shortcut/menu for Frameless. No separate fullscreen Space should appear.
    Hold the shortcut to confirm that macOS toggles only once.
    Also enter with one method and leave with the other. The selected resize mode,
-   high resolution setting, and texture filter must remain unchanged. While
+   resolution policy, fullscreen sizing policy, and scaling filter must remain unchanged. While
    fullscreen, change the mode or toggle **H**, then return to windowed mode;
    the new settings must persist. Press **T** to disable the platform controls:
    the shortcut must do nothing, while **F** must still work. On macOS the
@@ -45,16 +47,16 @@ Use a resizable window and, where available, monitors with different scale facto
    monitor without changing the OS display mode or rearranging other monitors,
    and returning must restore the window's position and dimensions. On macOS,
    confirm the selected Retina desktop scale is retained. While fullscreen,
-   use **4/5/6** to resize: a changed size must return to a window; the scene
+   use **7/8/9** to resize: a changed size must return to a window; the scene
    policy must stay selected.
    For the mixed-DPI resize check, place the window on monitor A using **B**, then
    press **G** to enter fullscreen on the next monitor B without moving the
-   window first (**Shift+G** selects the previous monitor). Press **4/5/6** to return.
+   window first (**Shift+G** selects the previous monitor). Press **7/8/9** to return.
    The original window position on A must be retained. On Windows, with A at 125%,
-   **4/5** must give virtual 800 × 600 and framebuffer
-   1000 × 750; **6** must give framebuffer 800 × 600 and virtual 640 × 480.
-   Repeat with A at 150% and B at 125%: **4/5** must give 800 × 600 / 1200 × 900,
-   and **6** must give 533 × 400 / 800 × 600. Read the immediate and next-frame
+   **7/8** must give virtual 800 × 600 and framebuffer
+   1000 × 750; **9** must give framebuffer 800 × 600 and virtual 640 × 480.
+   Repeat with A at 150% and B at 125%: **7/8** must give 800 × 600 / 1200 × 900,
+   and **9** must give 533 × 400 / 800 × 600. Read the immediate and next-frame
    snapshots, then check rendering and click the circle. Change the scene mode,
    **H**, or **P** while fullscreen and confirm the new settings remain selected.
 5. Press **C** to enable camera controls, then use the wheel and right-drag to
@@ -74,24 +76,25 @@ Use a resizable window and, where available, monitors with different scale facto
 
 ## Expected results
 
-- Toggling H preserves logical size, layout, camera view, hover targets, and cursor
+- Toggling H preserves scene size, layout, camera view, hover targets, and cursor
   position. The text and curves can become sharper; bitmap assets are not rebuilt.
-- Virtual follows the observed virtual window size. Actual follows framebuffer
-  pixels without another DPI multiplication. Keep preserves 800 × 600.
-- Fullscreen preserves the current scene policy. Virtual/Actual follow the
-  fullscreen dimensions; Keep retains its logical size. High resolution and
-  filtering remain as selected. **P** switches Linear/Nearest for this check.
-- With high resolution enabled, render size follows the fitted display area,
-  never falling below logical size. Wide/tall windows keep centered letterboxing.
+- Window follows the observed window size excluding DPI scale. WindowPixels
+  follows framebuffer pixels. Fixed retains the specified scene size.
+- Fullscreen preserves the configuration. Window presets retain their current
+  scene size; WindowPixels follows fullscreen pixels. **U** changes the fullscreen
+  sizing policy. Changes made in fullscreen must remain selected after exiting.
+- Display resolution follows the fitted display area, never falling below scene
+  size. Wide/tall windows keep centered letterboxing. PixelArt uses Nearest but
+  does not guarantee integer scaling. **P** switches Linear/Nearest.
 - The red border follows the scene bounds and all four yellow corner markers
   remain inside it. The cyan pointer marker aligns with hover/click feedback,
   including through camera transforms. Letterbox coordinates are not clamped.
 - Minimize/restore does not create a zero-sized scene or corrupt later frames.
   Fullscreen and monitor transitions leave rendering and input aligned.
 - Without camera movement, a toggle changes detail rather than object size or
-  pattern spacing. Print remains readable in the logical scene coordinate system.
+  pattern spacing. Print remains readable in the scene coordinate system.
 
-Record backend, OS scale, observed virtual/framebuffer/logical/render sizes, mode,
+Record backend, OS scale, observed window/framebuffer/scene/render sizes, mode,
 and operation when a result differs. OS transition checks require a real display;
 passing the automated suite alone does not establish them.
 
@@ -104,9 +107,7 @@ void Main()
 {
     Window::SetStyle(WindowStyle::Sizable);
     Window::Resize(800, 600);
-    Scene::SetResizeMode(ResizeMode::Keep);
-    Scene::Resize(800, 600);
-    Scene::SetHighResolutionEnabled(true);
+    Scene::Configure(SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display));
     Scene::SetBackground(ColorF{ 0.12, 0.15, 0.2 });
     Scene::SetLetterbox(ColorF{ 0.3, 0.05, 0.1 });
 
@@ -122,7 +123,7 @@ void Main()
         const auto& window = Window::GetState();
         return U"monitor={} scale={} full={} V={} F={} L={} R={}"_fmt(
             System::GetCurrentMonitorIndex(), window.scaling, window.fullscreen,
-            window.virtualSize, window.frameBufferSize, Scene::Size(), Scene::RenderSize());
+            window.virtualSize, window.frameBufferSize, Scene::Size(), Scene::RenderResolution());
     };
 
     while (System::Update())
@@ -136,19 +137,34 @@ void Main()
         {
             captureSize = ScreenCapture::GetFrame().size();
         }
-        if (KeyH.down()) { Scene::SetHighResolutionEnabled(!Scene::IsHighResolutionEnabled()); }
-        if (Key1.down()) { Scene::SetResizeMode(ResizeMode::Virtual); }
-        if (Key2.down()) { Scene::SetResizeMode(ResizeMode::Actual); }
-        if (Key3.down())
+        auto config = Scene::GetConfig();
+        if (Key1.down()) { config = SceneConfig::Fixed({ 800, 600 }); }
+        if (Key2.down()) { config = SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display); }
+        if (Key3.down()) { config = SceneConfig::Window(); }
+        if (Key4.down()) { config = SceneConfig::Window(SceneResolution::Display); }
+        if (Key5.down()) { config = SceneConfig::PixelArt({ 200, 150 }); }
+        if (Key6.down()) { config = SceneConfig::WindowPixels(); }
+        if (KeyH.down())
         {
-            Scene::SetResizeMode(ResizeMode::Keep);
-            Scene::Resize(800, 600);
+            config.resolution = (config.resolution == SceneResolution::Display)
+                ? SceneResolution::SceneSize : SceneResolution::Display;
         }
-        if (Key4.down()) { Window::Resize(800, 600, CenterWindow::No); }
-        if (Key5.down()) { Window::ResizeVirtual(800, 600, CenterWindow::No); }
-        if (Key6.down()) { Window::ResizeActual(800, 600, CenterWindow::No); }
-        if (Key7.down()) { Window::Resize(1200, 900, CenterWindow::No); }
-        if (Key4.down() || Key5.down() || Key6.down() || Key7.down())
+        if (KeyU.down())
+        {
+            config.fullscreen = (config.fullscreen == FullscreenSceneMode::KeepSize)
+                ? FullscreenSceneMode::FollowWindow : FullscreenSceneMode::KeepSize;
+        }
+        if (KeyP.down())
+        {
+            config.scalingFilter = (config.scalingFilter == TextureFilter::Linear)
+                ? TextureFilter::Nearest : TextureFilter::Linear;
+        }
+        if (config != Scene::GetConfig()) { Scene::Configure(config); }
+        if (Key7.down()) { Window::Resize(800, 600, CenterWindow::No); }
+        if (Key8.down()) { Window::ResizeVirtual(800, 600, CenterWindow::No); }
+        if (Key9.down()) { Window::ResizeActual(800, 600, CenterWindow::No); }
+        if (Key0.down()) { Window::Resize(1200, 900, CenterWindow::No); }
+        if (Key7.down() || Key8.down() || Key9.down() || Key0.down())
         {
             resizeImmediate = geometry();
             resizeNextFrame.clear();
@@ -176,11 +192,6 @@ void Main()
             }
         }
         if (KeyT.down()) { Window::SetToggleFullscreenEnabled(!Window::IsToggleFullscreenEnabled()); }
-        if (KeyP.down())
-        {
-            Scene::SetTextureFilter((Scene::GetTextureFilter() == TextureFilter::Linear)
-                ? TextureFilter::Nearest : TextureFilter::Linear);
-        }
         if (KeyC.down())
         {
             useCamera = !useCamera;
@@ -201,7 +212,7 @@ void Main()
             target.draw(target.mouseOver() ? Palette::Orange : Palette::White);
             if (target.leftClicked()) { ++clicks; }
             RoundRect{ Scene::CenterF() + Vec2{ -150, 100 }, 300, 70, 16 }.draw(Pattern::Checker{});
-            font(U"Scene high resolution").draw(24, Scene::CenterF() + Vec2{ -150, -130 });
+            font(U"Scene configuration").draw(24, Scene::CenterF() + Vec2{ -150, -130 });
             Circle{ Cursor::PosF(), 5 }.drawFrame(2, Palette::Cyan);
         };
         if (useCamera)
@@ -216,11 +227,12 @@ void Main()
         }
 
         ClearPrint();
-        Print << U"H: high resolution = " << Scene::IsHighResolutionEnabled();
-        Print << U"1/2/3: mode = " << Scene::GetResizeMode();
+        Print << U"H: resolution = " << Scene::GetConfig().resolution;
+        Print << U"1..6: preset, size mode = " << Scene::GetConfig().sizeMode;
+        Print << U"U: fullscreen sizing = " << Scene::GetConfig().fullscreen;
         Print << U"T: fullscreen controls = " << Window::IsToggleFullscreenEnabled()
-              << U"  P: filter = " << Scene::GetTextureFilter();
-        Print << U"L: " << Scene::Size() << U"  R: " << Scene::RenderSize();
+              << U"  P: filter = " << Scene::GetConfig().scalingFilter;
+        Print << U"Scene: " << Scene::Size() << U"  render: " << Scene::RenderResolution();
         Print << U"Window: " << Window::GetState().virtualSize
               << U"  framebuffer: " << Window::GetState().frameBufferSize;
         Print << U"B: monitor = " << System::GetCurrentMonitorIndex()
@@ -230,7 +242,7 @@ void Main()
         Print << U"Cursor desktop: " << Cursor::ScreenPos() << U"  client pixels: " << Cursor::PosRaw();
         Print << U"C: camera = " << useCamera << U"  clicks: " << clicks;
         Print << U"S: last capture = " << captureSize;
-        Print << U"4/5/6/7: resize  M/R/N: window  F: fullscreen  (Shift+)G: next/previous fullscreen";
+        Print << U"7/8/9/0: resize  M/R/N: window  F: fullscreen  (Shift+)G: next/previous fullscreen";
         Print << U"Resize immediate: " << resizeImmediate;
         Print << U"Resize next frame: " << resizeNextFrame;
     }

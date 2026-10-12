@@ -15,19 +15,12 @@ namespace
 {
 	struct RestoreScene
 	{
-		const Size size = Scene::Size();
-		const ResizeMode mode = Scene::GetResizeMode();
-		const bool highResolution = Scene::IsHighResolutionEnabled();
+		const SceneConfig config = Scene::GetConfig();
 		const ColorF background = Scene::GetBackground();
 
 		~RestoreScene()
 		{
-			Scene::SetResizeMode(ResizeMode::Keep);
-			Scene::SetHighResolutionEnabled(false);
-			Scene::Resize(size);
-			Scene::SetResizeMode(mode);
-			Scene::Resize(size);
-			Scene::SetHighResolutionEnabled(highResolution);
+			Scene::Configure(config);
 			Scene::SetBackground(background);
 		}
 	};
@@ -70,7 +63,7 @@ TEST_CASE("SceneHighResolution.size_and_presentation")
 		state.frameBufferSize = c.framebuffer;
 		const auto [scale, rect] = state.composition();
 		CHECK(state.renderSize() == c.logical);
-		state.highResolutionEnabled = true;
+		state.config.resolution = SceneResolution::Display;
 		CHECK(state.renderSize() == c.render);
 		CHECK(state.composition() == std::pair{ scale, rect });
 		CHECK(rect.center().epsilonEquals(c.framebuffer * 0.5, 1e-9));
@@ -81,29 +74,29 @@ TEST_CASE("SceneHighResolution.size_and_presentation")
 
 TEST_CASE("SceneHighResolution.window_modes_and_transitions")
 {
-	for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+	for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 	{
 		for (const bool enabled : { false, true })
 		{
 			SceneMisc::RenderState state;
-			state.resizeMode = mode;
-			state.highResolutionEnabled = enabled;
+			state.config.sizeMode = mode;
+			state.config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
 			WindowState window;
 			window.virtualSize = { 1000, 750 };
 			window.frameBufferSize = { 1500, 1125 };
 			state.updateWindow(window);
-			const Size expected = (mode == ResizeMode::Keep) ? Size{ 800, 600 }
-				: ((mode == ResizeMode::Virtual) ? window.virtualSize : window.frameBufferSize);
+			const Size expected = (mode == SceneSizeMode::Fixed) ? Size{ 800, 600 }
+				: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
 			CHECK(state.size == expected);
 			CHECK(state.renderSize() == (enabled ? window.frameBufferSize : expected));
 			// A DPI-only change keeps virtual dimensions and the fixed scene intact.
 			window.frameBufferSize = { 2000, 1500 };
 			state.updateWindow(window);
-			CHECK(state.size == ((mode == ResizeMode::Actual) ? window.frameBufferSize : expected));
+			CHECK(state.size == ((mode == SceneSizeMode::WindowPixels) ? window.frameBufferSize : expected));
 			const auto valid = state;
 			window.minimized = true;
 			window.frameBufferSize = { 0, 0 };
-			state.updateWindow(window, true);
+			state.updateWindow(window);
 			CHECK(state == valid);
 			window.minimized = false;
 			state.updateWindow(window);
@@ -115,10 +108,10 @@ TEST_CASE("SceneHighResolution.window_modes_and_transitions")
 	}
 	SceneMisc::RenderState state;
 	WindowState window;
-	state.size = { 320, 240 };
+	state.configure(SceneConfig::Fixed({ 320, 240 }), window);
 	state.updateWindow(window);
 	CHECK(state.size == Size{ 320, 240 });
-	state.updateWindow(window, true);
+	state.configure(SceneConfig::Window(), window);
 	CHECK(state.size == window.virtualSize);
 }
 
@@ -126,15 +119,17 @@ TEST_CASE("SceneHighResolution.validation_and_api_round_trip")
 {
 	const RestoreScene restore;
 	REQUIRE(System::Update());
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::SetHighResolutionEnabled(false);
-	Scene::Resize(200, 100);
-	CHECK(Scene::RenderSize() == Scene::Size());
+	Scene::Configure(SceneConfig::Fixed(Size{ 200, 100 }, SceneResolution::SceneSize));
+	CHECK(Scene::RenderResolution() == Scene::Size());
 	const Vec2 cursor = Cursor::PosF();
 	const Vec2 previous = Cursor::PreviousPosF();
 	const auto base = Cursor::GetBaseWindowTransform();
-	Scene::SetHighResolutionEnabled(true);
-	CHECK(Scene::IsHighResolutionEnabled());
+	{
+		auto config = Scene::GetConfig();
+		config.resolution = SceneResolution::Display;
+		Scene::Configure(config);
+	}
+	CHECK((Scene::GetConfig().resolution == SceneResolution::Display));
 	CHECK(Scene::Size() == Size{ 200, 100 });
 	CHECK(Scene::Width() == 200);
 	CHECK(Scene::Height() == 100);
@@ -142,25 +137,29 @@ TEST_CASE("SceneHighResolution.validation_and_api_round_trip")
 	CHECK(Scene::CenterF() == Vec2{ 100, 50 });
 	CHECK(Scene::Rect() == Rect{ 200, 100 });
 	CHECK(Graphics2D::GetDrawingSize() == Scene::Size());
-	CHECK(Graphics2D::GetRenderTargetSize() == Scene::RenderSize());
+	CHECK(Graphics2D::GetRenderTargetSize() == Scene::RenderResolution());
 	CHECK(Cursor::PosF() == cursor);
 	CHECK(Cursor::PreviousPosF() == previous);
 	CHECK(Cursor::GetBaseWindowTransform() == base);
 	CHECK(Scene::ClientToScene(Cursor::PosRaw()).epsilonEquals(base.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
-	const Size render = Scene::RenderSize();
+	const Size render = Scene::RenderResolution();
 	for (const Size invalid : { Size{ 0, 1 }, Size{ 1, 0 }, Size{ -1, 100 }, Size{ 16385, 1 }, Size{ 1, 16385 } })
 	{
-		CHECK_THROWS_AS(Scene::Resize(invalid), Error);
+		CHECK_THROWS_AS(Scene::Configure(SceneConfig::Fixed(invalid)), Error);
 		CHECK(Scene::Size() == Size{ 200, 100 });
-		CHECK(Scene::RenderSize() == render);
-		CHECK(Scene::IsHighResolutionEnabled());
+		CHECK(Scene::RenderResolution() == render);
+		CHECK((Scene::GetConfig().resolution == SceneResolution::Display));
 	}
 	CHECK_NOTHROW(SceneMisc::ValidateSceneSize({ 1, 1 }));
 	CHECK_NOTHROW(SceneMisc::ValidateSceneSize({ 16384, 16384 }));
-	Scene::SetHighResolutionEnabled(false);
-	CHECK_FALSE(Scene::IsHighResolutionEnabled());
+	{
+		auto config = Scene::GetConfig();
+		config.resolution = SceneResolution::SceneSize;
+		Scene::Configure(config);
+	}
+	CHECK_FALSE((Scene::GetConfig().resolution == SceneResolution::Display));
 	CHECK(Scene::Size() == Size{ 200, 100 });
-	CHECK(Scene::RenderSize() == Scene::Size());
+	CHECK(Scene::RenderResolution() == Scene::Size());
 }
 
 TEST_CASE("SceneHighResolution.draw_camera_flush_and_state_restore")
@@ -171,10 +170,8 @@ TEST_CASE("SceneHighResolution.draw_camera_flush_and_state_restore")
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::Resize(200, 100);
-	Scene::SetHighResolutionEnabled(true);
-	const Size renderSize = Scene::RenderSize();
+	Scene::Configure(SceneConfig::Fixed(Size{ 200, 100 }, SceneResolution::Display));
+	const Size renderSize = Scene::RenderResolution();
 	REQUIRE(renderSize.x > Scene::Width());
 	const Camera2D sceneCamera;
 	CHECK(sceneCamera.getCenter() == Scene::CenterF());
@@ -204,8 +201,12 @@ TEST_CASE("SceneHighResolution.draw_camera_flush_and_state_restore")
 	// Reapplying the same configuration must not clear an already executed pass.
 	Scene::Rect().draw(Palette::Red);
 	Graphics2D::Flush();
-	Scene::SetHighResolutionEnabled(true);
-	Scene::Resize(200, 100);
+	{
+		auto config = Scene::GetConfig();
+		config.resolution = SceneResolution::Display;
+		config.fixedSceneSize = Size{ 200, 100 };
+		Scene::Configure(config);
+	}
 	CHECK(AtLogical(CaptureScene(), { 200, 100 }, { 100, 50 }) == Palette::Red);
 }
 
@@ -217,23 +218,35 @@ TEST_CASE("SceneHighResolution.resize_keeps_pending_draws")
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
+	{
+		auto config = Scene::GetConfig();
+		config.sizeMode = SceneSizeMode::Fixed;
+		Scene::Configure(config);
+	}
 	for (const bool enabled : { false, true })
 	{
 		INFO(enabled);
-		Scene::SetHighResolutionEnabled(enabled);
-		Scene::Resize(200, 100);
+		{
+			auto config = Scene::GetConfig();
+			config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+			config.fixedSceneSize = Size{ 200, 100 };
+			Scene::Configure(config);
+		}
 		{
 			const Transformer2D move{ Mat3x2::Translate(20, 20) };
 			Rect{ 20, 20 }.draw(Palette::Red);
 		}
 		// The old coordinates remain recorded, but the pending draw uses the new target.
-		const Size oldRender = Scene::RenderSize();
-		Scene::Resize(400, 200);
-		if (enabled) { CHECK(Scene::RenderSize() == oldRender); }
+		const Size oldRender = Scene::RenderResolution();
+		{
+			auto config = Scene::GetConfig();
+			config.fixedSceneSize = Size{ 400, 200 };
+			Scene::Configure(config);
+		}
+		if (enabled) { CHECK(Scene::RenderResolution() == oldRender); }
 		Rect{ 180, 80, 40, 40 }.draw(Palette::Blue);
 		const Image image = CaptureScene();
-		CHECK(image.size() == Scene::RenderSize());
+		CHECK(image.size() == Scene::RenderResolution());
 		CHECK(AtLogical(image, { 400, 200 }, { 30, 30 }) == Palette::Red);
 		CHECK(AtLogical(image, { 400, 200 }, { 200, 100 }) == Palette::Blue);
 		CHECK(AtLogical(image, { 400, 200 }, { 350, 180 }) == Palette::Black);
@@ -248,17 +261,29 @@ TEST_CASE("SceneHighResolution.toggle_keeps_pending_draws")
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::Resize(200, 100);
+	{
+		auto config = Scene::GetConfig();
+		config.sizeMode = SceneSizeMode::Fixed;
+		config.fixedSceneSize = Size{ 200, 100 };
+		Scene::Configure(config);
+	}
 	for (const bool enabled : { false, true })
 	{
 		INFO(enabled);
-		Scene::SetHighResolutionEnabled(enabled);
+		{
+			auto config = Scene::GetConfig();
+			config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+			Scene::Configure(config);
+		}
 		Scene::Rect().draw(Palette::Red);
-		Scene::SetHighResolutionEnabled(not enabled);
+		{
+			auto config = Scene::GetConfig();
+			config.resolution = (not enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+			Scene::Configure(config);
+		}
 		Rect{ 80, 30, 40, 40 }.draw(Palette::Blue);
 		const Image image = CaptureScene();
-		CHECK(image.size() == Scene::RenderSize());
+		CHECK(image.size() == Scene::RenderResolution());
 		CHECK(AtLogical(image, { 200, 100 }, { 10, 10 }) == Palette::Red);
 		CHECK(AtLogical(image, { 200, 100 }, { 190, 90 }) == Palette::Red);
 		CHECK(AtLogical(image, { 200, 100 }, { 100, 50 }) == Palette::Blue);
@@ -272,19 +297,31 @@ TEST_CASE("SceneHighResolution.resize_discards_only_executed_drawing")
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
+	{
+		auto config = Scene::GetConfig();
+		config.sizeMode = SceneSizeMode::Fixed;
+		Scene::Configure(config);
+	}
 	for (const bool enabled : { false, true })
 	{
 		INFO(enabled);
-		Scene::SetHighResolutionEnabled(enabled);
-		Scene::Resize(200, 100);
+		{
+			auto config = Scene::GetConfig();
+			config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+			config.fixedSceneSize = Size{ 200, 100 };
+			Scene::Configure(config);
+		}
 		Scene::Rect().draw(Palette::Red);
 		Graphics2D::Flush();
 		// Already executed pixels are cleared; pending commands and their vertex ranges survive.
 		Rect{ 20, 20, 20, 20 }.draw(Palette::Green);
-		const Size oldRender = Scene::RenderSize();
-		Scene::Resize(400, 200);
-		if (enabled) { CHECK(Scene::RenderSize() == oldRender); }
+		const Size oldRender = Scene::RenderResolution();
+		{
+			auto config = Scene::GetConfig();
+			config.fixedSceneSize = Size{ 400, 200 };
+			Scene::Configure(config);
+		}
+		if (enabled) { CHECK(Scene::RenderResolution() == oldRender); }
 		Rect{ 160, 60, 80, 80 }.draw(Palette::Yellow);
 		const Image image = CaptureScene();
 		CHECK(AtLogical(image, { 400, 200 }, { 10, 10 }) == Palette::Black);
@@ -302,9 +339,7 @@ TEST_CASE("SceneHighResolution.pending_batches_and_clipping_after_shrink")
 	const ScopedScissorRect2D scissor{ none };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::SetHighResolutionEnabled(false);
-	Scene::Resize(400, 300);
+	Scene::Configure(SceneConfig::Fixed(Size{ 400, 300 }, SceneResolution::SceneSize));
 	{
 		// The command stream, not the scene buffer, keeps this texture alive.
 		const Texture texture{ Image{ 4, 4, Palette::Green } };
@@ -324,10 +359,24 @@ TEST_CASE("SceneHighResolution.pending_batches_and_clipping_after_shrink")
 	for (int32 i = 0; i < 17000; ++i)
 	{
 		Rect{ -10, -10, 1, 1 }.draw();
-		if (i == 8000) { Scene::Resize(600, 450); }
-		if (i == 16000) { Scene::Resize(300, 225); }
+		if (i == 8000)
+		{
+			auto config = Scene::GetConfig();
+			config.fixedSceneSize = Size{ 600, 450 };
+			Scene::Configure(config);
+		}
+		if (i == 16000)
+		{
+			auto config = Scene::GetConfig();
+			config.fixedSceneSize = Size{ 300, 225 };
+			Scene::Configure(config);
+		}
 	}
-	Scene::Resize(200, 150);
+	{
+		auto config = Scene::GetConfig();
+		config.fixedSceneSize = Size{ 200, 150 };
+		Scene::Configure(config);
+	}
 	Rect{ 140, 50, 40, 40 }.draw(Palette::Blue);
 	const Image image = CaptureScene();
 	REQUIRE(image.size() == Size{ 200, 150 });
@@ -348,10 +397,8 @@ TEST_CASE("SceneHighResolution.pixel_viewport_and_scissor")
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::Resize(200, 100);
-	Scene::SetHighResolutionEnabled(true);
-	const Size pixels = Scene::RenderSize();
+	Scene::Configure(SceneConfig::Fixed(Size{ 200, 100 }, SceneResolution::Display));
+	const Size pixels = Scene::RenderResolution();
 	const Rect viewport{ pixels.x / 4, pixels.y / 4, pixels.x / 2, pixels.y / 2 };
 	{
 		const ScopedViewport2D view{ viewport };
@@ -383,12 +430,20 @@ TEST_CASE("SceneHighResolution.standard_drawing_matches_explicit_scale")
 	const ConstantBuffer<Float4> offset{ Float4{ 5, 3, 0, 0 } };
 	const ScopedVSConstantBuffer2D constants{ 2, offset };
 	REQUIRE(System::Update());
-	Scene::SetResizeMode(ResizeMode::Keep);
+	{
+		auto config = Scene::GetConfig();
+		config.sizeMode = SceneSizeMode::Fixed;
+		Scene::Configure(config);
+	}
 	Scene::SetBackground(ColorF{ 0.1, 0.15, 0.2 });
 	const Size logical{ 400, 300 };
-	Scene::Resize(logical);
-	Scene::SetHighResolutionEnabled(true);
-	const Size pixels = Scene::RenderSize();
+	{
+		auto config = Scene::GetConfig();
+		config.fixedSceneSize = logical;
+		config.resolution = SceneResolution::Display;
+		Scene::Configure(config);
+	}
+	const Size pixels = Scene::RenderResolution();
 	REQUIRE(pixels.x > logical.x);
 	const Mat3x2 scale = Mat3x2::Scale(Float2{ float(pixels.x) / logical.x, float(pixels.y) / logical.y });
 	const auto draw = [&]
@@ -405,8 +460,12 @@ TEST_CASE("SceneHighResolution.standard_drawing_matches_explicit_scale")
 	const Image highResolution = CaptureScene();
 	const auto highMetrics = Profiler::GetFrameMetrics();
 	CHECK(Graphics2D::GetRMSScaling() == 1.0f);
-	Scene::SetHighResolutionEnabled(false);
-	Scene::Resize(pixels);
+	{
+		auto config = Scene::GetConfig();
+		config.resolution = SceneResolution::SceneSize;
+		config.fixedSceneSize = pixels;
+		Scene::Configure(config);
+	}
 	{
 		const Transformer2D explicitScale{ scale };
 		draw();
@@ -426,15 +485,23 @@ TEST_CASE("SceneHighResolution.standard_drawing_matches_explicit_scale")
 		const ScopedCustomShader2D shader{ vs };
 		Rect{ 20, 30, 30, 40 }.draw(ColorF{ 1, 0.4, 0.2, 0.6 });
 	};
-	Scene::Resize(logical);
-	Scene::SetHighResolutionEnabled(true);
+	{
+		auto config = Scene::GetConfig();
+		config.fixedSceneSize = logical;
+		config.resolution = SceneResolution::Display;
+		Scene::Configure(config);
+	}
 	{
 		const ScopedQuadWarp2D projective{ *h };
 		drawWarp();
 	}
 	const Image highWarp = CaptureScene();
-	Scene::SetHighResolutionEnabled(false);
-	Scene::Resize(pixels);
+	{
+		auto config = Scene::GetConfig();
+		config.resolution = SceneResolution::SceneSize;
+		config.fixedSceneSize = pixels;
+		Scene::Configure(config);
+	}
 	{
 		const ScopedQuadWarp2D projective{ *h * Mat3x3{ scale } };
 		drawWarp();
@@ -448,13 +515,17 @@ TEST_CASE("SceneHighResolution.window_resize_immediate_and_next_frame")
 	const Size oldWindow = Window::GetState().virtualSize;
 	const ScopeExit restoreWindow{ [&] { Window::Resize(oldWindow, CenterWindow::No); } };
 	REQUIRE(System::Update());
-	for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+	for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 	{
 		for (const bool enabled : { false, true })
 		{
-			Scene::SetResizeMode(mode);
-			Scene::Resize(400, 300);
-			Scene::SetHighResolutionEnabled(enabled);
+			{
+				auto config = Scene::GetConfig();
+				config.sizeMode = mode;
+				config.fixedSceneSize = Size{ 400, 300 };
+				config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+				Scene::Configure(config);
+			}
 			for (const bool actual : { false, true })
 			{
 				INFO(static_cast<int32>(mode));
@@ -466,14 +537,14 @@ TEST_CASE("SceneHighResolution.window_resize_immediate_and_next_frame")
 				{
 					const auto& window = Window::GetState();
 					if (not actual) { CHECK(window.virtualSize == Size{ 640, 480 }); }
-					const Size expected = (mode == ResizeMode::Keep) ? Size{ 400, 300 }
-						: ((mode == ResizeMode::Virtual) ? window.virtualSize : window.frameBufferSize);
+					const Size expected = (mode == SceneSizeMode::Fixed) ? Size{ 400, 300 }
+						: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
 					CHECK(Scene::Size() == expected);
 					SceneMisc::RenderState reference;
 					reference.size = expected;
 					reference.frameBufferSize = window.frameBufferSize;
-					reference.highResolutionEnabled = enabled;
-					CHECK(Scene::RenderSize() == reference.renderSize());
+					reference.config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
+					CHECK(Scene::RenderResolution() == reference.renderSize());
 					CHECK(Scene::ClientToScene(window.frameBufferSize * 0.5).epsilonEquals(expected * 0.5, 1e-6));
 					const auto [scale, area] = reference.composition();
 					const Mat3x2 base = Mat3x2::Scale(scale).translated(area.pos);

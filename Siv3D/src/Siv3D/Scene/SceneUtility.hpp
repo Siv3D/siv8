@@ -30,19 +30,26 @@ namespace s3d
 			Size size = Scene::DefaultSceneSize;
 			Size virtualSize = Scene::DefaultSceneSize;
 			Size frameBufferSize = Scene::DefaultSceneSize;
-			ResizeMode resizeMode = Scene::DefaultResizeMode;
-			bool highResolutionEnabled = false;
+			SceneConfig config;
+			bool fullscreen = false;
 
 			friend bool operator ==(const RenderState&, const RenderState&) = default;
 
-			// force also applies a newly selected resize mode or an explicit window resize.
-			void updateWindow(const WindowState& window, bool force = false);
+			void configure(const SceneConfig& settings, const WindowState& window);
+
+			void updateWindow(const WindowState& window);
 
 			[[nodiscard]]
 			Size renderSize() const noexcept;
 
 			[[nodiscard]]
 			std::pair<double, RectF> composition() const noexcept;
+
+		private:
+
+			bool updateWindowGeometry(const WindowState& window);
+
+			void updateSceneSize();
 		};
 
 		void ValidateSceneSize(Size size);

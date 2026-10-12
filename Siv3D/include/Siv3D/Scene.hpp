@@ -13,7 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
-# include "ResizeMode.hpp"
+# include "SceneConfig.hpp"
 # include "TextureFilter.hpp"
 # include "MSAASampleCount.hpp"
 
@@ -21,8 +21,8 @@ namespace s3d
 {
 	namespace Scene
 	{
-		/// @brief シーンの論理的な幅と高さのデフォルト値です。
-		inline constexpr s3d::Size DefaultSceneSize{ 800, 600 };
+		/// @brief シーンの幅と高さのデフォルト値です。
+		inline constexpr s3d::Size DefaultSceneSize = SceneConfig{}.fixedSceneSize;
 
 		/// @brief シーンの背景色のデフォルト色です。
 		inline constexpr ColorF DefaultBackgroundColor = Palette::DefaultBackground;
@@ -33,42 +33,30 @@ namespace s3d
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）のデフォルト値です。
 		inline constexpr double DefaultMaxDeltaTime = 0.1;
 
-		/// @brief ウィンドウをリサイズしたときのシーンのサイズの扱いのデフォルト値です。
-		inline constexpr ResizeMode DefaultResizeMode = ResizeMode::Virtual;
-
-		/// @brief ウィンドウのフレームバッファのサイズがシーンのサイズと異なる際、シーンの拡大縮小描画に用いるテクスチャフィルタのデフォルト値です。
-		inline constexpr TextureFilter DefaultTextureFilter = TextureFilter::Linear;
-
 		/// @brief シーンのマルチサンプリングのデフォルト値です。
 		inline constexpr MSAASampleCount DefaultMSAASampleCount = MSAASampleCount::X4MSAA;
 	}
 
 	namespace Scene
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Resize
-		//
-		////////////////////////////////////////////////////////////////
+		/// @brief シーンの表示設定を置き換えます。
+		/// @param config 新しい表示設定。既定の設定は SceneConfig{} です。
+		/// @remark 現在のウィンドウ状態に合わせて即座に反映します。ウィンドウの状態、背景色、レターボックス色は変更しません。
+		/// @remark `FullscreenSceneMode::KeepSize` の全画面中は、`SceneSizeMode::Fixed` 以外の設定では現在のシーンサイズを維持します。ウィンドウ復帰後はその時点の設定に従います。
+		/// @remark シーンサイズまたは描画解像度が変わると、実行済みの描画内容をクリアします。未実行の描画は保持され、実行時の描画解像度で描かれます。記録済みの座標や図形の分割数は再計算しません。
+		/// @remark 寸法が変わらない設定変更では、描画済み内容を維持します。
+		/// @throws Error 設定値が不正な場合、シーンサイズまたは描画解像度が各軸 1～16384 の範囲外の場合、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
+		void Configure(const SceneConfig& config);
 
-		/// @brief シーンの論理的な幅と高さを変更します。
-		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		/// @remark サイズは即座に反映されます。リサイズモードは変更しません。
-		/// @remark 論理サイズまたは描画解像度が変わると、実行済みの描画内容をクリアします。未実行の描画は保持され、実行時の描画解像度と高精細化倍率で描かれます。
-		/// @remark 記録済みの座標や図形の分割数は再計算しません。
-		/// @throws Error 論理サイズまたは描画解像度が範囲外の場合、または描画バッファを確保できない場合。以前のシーンを維持します。
-		/// @param size 新しい論理サイズ。各成分は 1～16384
-		void Resize(s3d::Size size);
+		/// @brief 適用済みの表示設定を返します。
+		/// @return 設定のコピー。追従によって変化した寸法は含みません。
+		[[nodiscard]]
+		SceneConfig GetConfig() noexcept;
 
-		/// @brief シーンの論理的な幅と高さを変更します。
-		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		/// @remark サイズは即座に反映されます。リサイズモードは変更しません。
-		/// @remark 論理サイズまたは描画解像度が変わると、実行済みの描画内容をクリアします。未実行の描画は保持され、実行時の描画解像度と高精細化倍率で描かれます。
-		/// @remark 記録済みの座標や図形の分割数は再計算しません。
-		/// @throws Error 論理サイズまたは描画解像度が範囲外の場合、または描画バッファを確保できない場合。以前のシーンを維持します。
-		/// @param width 新しい論理的な幅。1～16384
-		/// @param height 新しい論理的な高さ。1～16384
-		void Resize(int32 width, int32 height);
+		/// @brief シーンの描画解像度を返します。
+		/// @return 描画バッファのピクセル数
+		[[nodiscard]]
+		s3d::Size RenderResolution() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -76,34 +64,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの論理的な幅と高さを返します。
-		/// @return シーンの論理的な幅と高さ
+		/// @brief 現在のシーンの幅と高さを返します。
+		/// @return シーンの幅と高さ
 		[[nodiscard]]
 		s3d::Size Size() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	High resolution rendering
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief シーンの高精細描画を有効または無効にします。
-		/// @param enabled 高精細描画を有効にする場合 true
-		/// @remark デフォルトは false です。表示領域のピクセル数に合わせて描画解像度を増やします。論理サイズ未満には下げません。
-		/// @remark 論理サイズ、リサイズモード、カーソル座標は変更しません。
-		/// @remark 設定は即座に反映されます。描画解像度を変更するときの描画の扱いは Resize() と同じです。
-		/// @throws Error 描画解像度が上限（各軸 16384）を超える場合、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
-		void SetHighResolutionEnabled(bool enabled);
-
-		/// @brief シーンの高精細描画が有効かを返します。
-		/// @return 有効な場合 true
-		[[nodiscard]]
-		bool IsHighResolutionEnabled() noexcept;
-
-		/// @brief シーンの描画バッファのサイズ（ピクセル）を返します。
-		/// @return 実際の描画解像度。高精細描画が無効な場合は Size() と同じ
-		[[nodiscard]]
-		s3d::Size RenderSize() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -111,8 +75,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの論理的な幅を返します。
-		/// @return シーンの論理的な幅
+		/// @brief 現在のシーンの幅を返します。
+		/// @return シーンの幅
 		[[nodiscard]]
 		int32 Width() noexcept;
 
@@ -122,8 +86,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの論理的な高さを返します。
-		/// @return シーンの論理的な高さ
+		/// @brief 現在のシーンの高さを返します。
+		/// @return シーンの高さ
 		[[nodiscard]]
 		int32 Height() noexcept;
 
@@ -169,30 +133,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかを設定します。
-		/// @remark デフォルトは `Scene::DefaultResizeMode` です。
-		/// @remark 現在のウィンドウに合わせて即座に論理サイズと描画解像度を更新します。サイズ変更時の描画の扱いは Resize() と同じです。
-		/// @throws Error 論理サイズまたは描画解像度が上限（各軸 16384）を超える場合、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
-		/// @param resizeMode シーンのリサイズモード
-		void SetResizeMode(ResizeMode resizeMode);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかの現在の設定を返します。
-		/// @return シーンのリサイズモード
-		[[nodiscard]]
-		ResizeMode GetResizeMode() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	SetBackground
 		//
 		////////////////////////////////////////////////////////////////
@@ -234,28 +174,6 @@ namespace s3d
 		/// @return レターボックスの色
 		[[nodiscard]]
 		const ColorF& GetLetterbox() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	SetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタを設定します。
-		/// @remark デフォルトは `Scene::DefaultTextureFilter` です。	
-		/// @param textureFilter シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		void SetTextureFilter(TextureFilter textureFilter);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタの現在の設定を返します。
-		/// @return シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		[[nodiscard]]
-		TextureFilter GetTextureFilter() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -19,14 +19,14 @@ the existing desktop pixel coordinates are retained.
 | `WindowState::virtualSize` | Client points | Client size before desktop scaling |
 | `WindowState::frameBufferSize`, `Cursor::PosRaw()` | Client backing pixels | Client pixels |
 | `Scene::Size()`, `Cursor::PosF()`, shape hit testing | Scene/user coordinates | Scene/user coordinates |
-| `Scene::RenderSize()`, captured scene image dimensions | Render-target pixels | Render-target pixels |
+| `Scene::RenderResolution()`, captured scene image dimensions | Render-target pixels | Render-target pixels |
 
 The API contracts are in [Window.hpp](../../Siv3D/include/Siv3D/Window.hpp),
 [WindowState.hpp](../../Siv3D/include/Siv3D/WindowState.hpp),
 [MonitorInfo.hpp](../../Siv3D/include/Siv3D/MonitorInfo.hpp), and
 [Cursor.hpp](../../Siv3D/include/Siv3D/Cursor.hpp).
-See [scene high resolution](../renderer2d/scene-high-resolution.md) for the
-independent choice of logical size and rendering resolution.
+See [scene configuration](../renderer2d/scene-high-resolution.md) for the
+independent choice of scene size and render resolution.
 
 ## Using desktop and client coordinates
 
@@ -43,9 +43,9 @@ Do not calculate client pixels by subtracting the window position from
 This also handles a cursor outside the window on a monitor with a different DPI.
 
 Moving a window between macOS monitors keeps its point dimensions while its
-framebuffer dimensions can change. `ResizeMode::Keep` retains the logical scene
-size, `Virtual` follows the client point dimensions, and `Actual` follows the
-framebuffer pixels. The selected high-resolution and interpolation settings
+framebuffer dimensions can change. `SceneSizeMode::Fixed` retains the scene
+size, `Window` follows the client point dimensions, and `WindowPixels` follows the
+framebuffer pixels. The selected render-resolution and interpolation settings
 continue to apply. Monitor `fullscreenResolution` is the framebuffer size in
 pixels for fullscreen at the current desktop setting. On macOS it describes
 backing pixels, which may differ from the panel's physical pixel count. Use
@@ -61,19 +61,20 @@ occupied by the menu bar and Dock. On macOS, a fullscreen window minimizes
 when it loses focus.
 
 A Retina fullscreen window keeps its point dimensions separate from its backing
-pixels. `Virtual` follows the point dimensions; high resolution rendering uses
-the available framebuffer pixels. `Actual` follows those pixels directly.
-Applications with a fixed game canvas should select `Keep`. macOS's final display
-scaling can resample the framebuffer, so nearest scene sampling alone does not
-guarantee integer scaling on the physical panel.
+pixels. `SceneConfig::Window()` preserves the pre-fullscreen scene size and
+fits that scene into the fullscreen area. `SceneResolution::Display` increases
+render resolution to use the fitted framebuffer pixels. To expand scene
+coordinates in fullscreen, select `FullscreenSceneMode::FollowWindow`.
+`SceneConfig::WindowPixels()` follows framebuffer pixels in both window states.
+Fixed configurations retain their specified scene size. macOS's final display
+composition may resample the framebuffer according to the selected desktop mode.
 
 Calling `Window::Resize()`, `ResizeVirtual()`, or `ResizeActual()` with a changed
 size exits fullscreen and resizes the restored window. Virtual-size requests use
 the restored window's monitor scale. The macOS actual-size
 conversion uses the restored window's monitor scale; a request in backing pixels
 is rounded to a client size in points. Reapplying the current size leaves the
-window fullscreen. Scene resize mode, high resolution, and filtering remain
-selected throughout these operations.
+window fullscreen. The current `SceneConfig` remains selected throughout these operations.
 
 Windows Alt+Enter and macOS Control+Command+F request the same transition as
 `Window::SetFullscreen()`, processed by the next `System::Update()`. On macOS,
@@ -121,7 +122,8 @@ monitors, pausing for 500 ms after transitions. Opt in explicitly:
 ```
 
 The opt-in cases cover decorated/resizable/frameless placement, both centering
-overloads, position round trips, all six scene policies, cursor warping through
+overloads, position round trips, all three scene-size modes with both resolution
+policies, cursor warping through
 local and camera transforms, hit testing, and raw cursor pixels when the pointer
 is on another monitor. Actual mixed-DPI and negative-origin coverage depends on
 the connected display layout.
@@ -139,7 +141,8 @@ coordinate checks do not establish those visual results.
 The Windows fullscreen resize case selects one attached mixed-DPI pair and checks
 both directions with `CenterWindow::No`. It records monitor/DPI, window and scene
 dimensions, and presentation settings immediately after resizing and after the
-next frame. All six scene policies use actual-size requests and alternating
+next frame. All three scene-size modes with both resolution policies and explicit
+fullscreen following use actual-size requests and alternating
 `Resize()` / `ResizeVirtual()` requests, avoiding duplicate alias combinations.
 It also checks restored positions, native client pixels, same-size fullscreen
 requests (including rounded virtual sizes), invalid sizes, settings changed in

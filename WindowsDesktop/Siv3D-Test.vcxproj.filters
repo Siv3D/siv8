@@ -172,6 +172,9 @@
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -209,6 +212,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_SceneHighResolution.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneConfig.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">

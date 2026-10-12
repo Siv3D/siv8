@@ -1,35 +1,87 @@
-# Scene high resolution rendering
+# Scene configuration and render resolution
 
-Enable high resolution rendering before drawing:
+Configure scene presentation before drawing:
 
 ```cpp
-Scene::SetHighResolutionEnabled(true);
+Scene::Configure(SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display));
 ```
 
-With the default `ResizeMode::Virtual`, existing layout based on `Scene::Size()`,
-`Scene::Center()`, and `Scene::Rect()` keeps using the window's virtual dimensions.
-The engine allocates more scene pixels when the display provides them, and keeps
-rendering and cursor coordinates aligned. An additional `Transformer2D` for DPI
-scaling is unnecessary.
-
-For a fixed game canvas that becomes sharper in a larger window:
+The game uses an 800 × 600 scene coordinate system. The engine chooses a larger
+render resolution when the display provides room, keeping drawing and cursor
+coordinates aligned. Window size and style remain independent:
 
 ```cpp
-Scene::SetResizeMode(ResizeMode::Keep);
-Scene::Resize(800, 600);
-Scene::SetHighResolutionEnabled(true);
+Window::SetStyle(WindowStyle::Sizable);
 Window::Resize(1200, 900);
 ```
 
-Continue drawing in the 800 × 600 coordinate system. `Scene::Resize()` specifies
-that coordinate system; it does not select `Keep` automatically. `Actual` instead
-follows the framebuffer dimensions, so enabling high resolution rendering does
-not apply another DPI multiplier. Disabling the feature keeps the logical size.
+## Six common uses
+
+Pass one of these configurations to `Scene::Configure()`:
+
+| Use | Configuration | Scene size | Render resolution |
+| --- | --- | --- | --- |
+| Fixed scene | `SceneConfig::Fixed({800, 600})` | 800 × 600 | 800 × 600 |
+| Fixed scene at display resolution | `SceneConfig::Fixed({800, 600}, SceneResolution::Display)` | 800 × 600 | Fitted display area, at least the scene size |
+| Follow the window (default) | `SceneConfig::Window()` | Window size excluding DPI scale | Scene size |
+| Follow the window at display resolution | `SceneConfig::Window(SceneResolution::Display)` | Window size excluding DPI scale | Fitted display area, at least the scene size |
+| Pixel art | `SceneConfig::PixelArt({200, 150})` | 200 × 150 | 200 × 150 |
+| Window pixels | `SceneConfig::WindowPixels()` | Client framebuffer pixels | Scene size |
+
+`PixelArt()` uses Nearest sampling; the other factories use Linear. Nearest does
+not restrict the presentation scale to integers. `Display` refers to the area
+occupied by the scene, excluding letterbox margins, and never reduces render
+resolution below scene size. An 800 × 600 scene in a 1920 × 1080 framebuffer is
+rendered at 1440 × 1080 with `Display`.
+
+Without an explicit call, the engine uses `SceneConfig{}`, equal to
+`SceneConfig::Window()`. Window configurations preserve their current scene size
+in fullscreen. `WindowPixels()` follows the fullscreen framebuffer instead.
+Fixed configurations retain their specified size in either window state.
+
+## Changing configuration
+
+Factories produce values without changing the engine. Edit a value and apply it
+once, or read back a copy of the applied configuration:
+
+```cpp
+auto config = Scene::GetConfig();
+config.resolution = SceneResolution::SceneSize;
+Scene::Configure(config);
+```
+
+For a fixed configuration, edit `fixedSceneSize` to change the scene dimensions.
+For an automatically sized configuration, `fixedSceneSize` is unused and remains
+stored as provided. `GetConfig()` returns policy, not a snapshot of current window
+or scene dimensions. Use `Scene::Size()` and `Scene::RenderResolution()` for those.
+
+To use the full coordinate range of a fullscreen window:
+
+```cpp
+auto config = SceneConfig::Window(SceneResolution::Display);
+config.fullscreen = FullscreenSceneMode::FollowWindow;
+Scene::Configure(config);
+```
+
+Switching to `FollowWindow` while fullscreen immediately follows the current
+window geometry. Switching to `KeepSize` preserves the scene size at that moment.
+Changing only resolution or filtering under `KeepSize` retains the current size.
+Selecting a fixed configuration applies its specified size immediately. Returning
+to windowed mode uses the currently selected policy; no previous configuration is
+restored.
+
+These six uses are starting points, not an exhaustive list of combinations.
+For example, set `scalingFilter = TextureFilter::Nearest` on a window configuration.
+Applying a factory result replaces all presentation settings, so switching from
+`PixelArt()` to `Fixed()` also selects Linear sampling. Background and letterbox
+colors, and window operations, remain independent.
 
 The authoritative contracts, including immediate updates, clearing on size
 changes, size limits, and allocation failure, are in
-[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp). Change the configuration before
-issuing that frame's draws. Reapplying an unchanged size does not clear the scene.
+[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp) and
+[SceneConfig.hpp](../../Siv3D/include/Siv3D/SceneConfig.hpp). Apply changes before
+issuing that frame's draws. Unchanged configurations and filter-only changes
+preserve already rendered pixels.
 
 ## Coordinate and pixel sizes
 
@@ -37,7 +89,7 @@ issuing that frame's draws. Reapplying an unchanged size does not clear the scen
 | --- | --- |
 | Scene layout, centers, and hit testing | `Scene::Size()` and its related getters |
 | Default camera drawing area | `Graphics2D::GetDrawingSize()` |
-| Scene pixel dimensions and captured image dimensions | `Scene::RenderSize()` |
+| Scene pixel dimensions and captured image dimensions | `Scene::RenderResolution()` |
 | Current render target's pixel dimensions | `Graphics2D::GetRenderTargetSize()` |
 
 When migrating code that scales rendering and cursor coordinates manually,
@@ -46,7 +98,7 @@ coordinates, object placement, and camera movement.
 
 Code that used `Scene::Size()` for texel offsets or buffer allocation should use
 the appropriate pixel-size getter. Viewports and scissor rectangles remain in
-render-target pixels; they do not become logical rectangles. A custom fragment
+render-target pixels rather than scene coordinates. A custom fragment
 shader's raster position also remains in pixels. A custom vertex shader receives
 the scene scaling through the standard engine transform; a shader that ignores
 that transform must implement its own coordinate mapping.
@@ -58,10 +110,10 @@ four times as many pixels, with additional storage for MSAA.
 
 ## Rendering design
 
-[SceneUtility](../../Siv3D/src/Siv3D/Scene/SceneUtility.hpp) holds the logical size
+[SceneUtility](../../Siv3D/src/Siv3D/Scene/SceneUtility.hpp) holds the scene size
 L, last usable window geometry, and configuration. For framebuffer size F, the
 presentation scale is `s = min(F.x / L.x, F.y / L.y)`. The scene is centered with
-its aspect ratio preserved. When enabled, render size R is the nearest integer
+its aspect ratio preserved. With `SceneResolution::Display`, render resolution R is the nearest integer
 size to `L * max(1, s)`. Otherwise R equals L. Shrinking the window does not reduce
 R below L. A minimized or zero-sized window retains the last usable geometry.
 
@@ -84,19 +136,22 @@ at draw recording time; public `GetRMSScaling()` retains its Local/Camera meanin
 Explicitly constructed CPU geometry retains its requested quality.
 
 Window events and explicit resize APIs share the same size calculation. In
-particular, `ResizeActual()` with `Virtual` uses the observed virtual size, not
+particular, `ResizeActual()` with `SceneSizeMode::Window` uses the observed virtual size, not
 the physical-size argument. DPI is derived from the actual framebuffer geometry
 rather than multiplying a nominal OS scale again.
 
-Backends allocate replacement buffers before committing a change. Resizing does
+The shared state calculates the final scene size and render resolution from the
+complete configuration. Each backend allocates replacement buffers before
+committing the configuration, including its scaling filter. There is no sequence
+of intermediate setter states or intermediate buffer allocations. Resizing does
 not force a flush or discard pending draw commands. Those commands execute against
 the current scene buffer using its resolution scale. Recorded geometry, user
 transforms, physical viewports/scissors, and subdivision counts retain their
-original values. A change to either logical or render size clears pixels from
+original values. A change to either scene size or render resolution clears pixels from
 already executed draws, including draws submitted by an explicit
 `Graphics2D::Flush()`. Resizing cannot reconstruct those pixels.
 
-For example, drawing an 800 × 600 rectangle and then resizing the logical scene
+For example, drawing an 800 × 600 rectangle and then resizing the scene
 to 1600 × 1200 leaves an 800 × 600 rectangle in the pending commands. It is drawn
 into the resized scene. If it was already flushed, its pixels are lost instead.
 Configure sizes before drawing to avoid mixing layout based on different sizes.
@@ -104,19 +159,25 @@ OS-driven window resizing is applied during preparation of the next frame, after
 the preceding frame has been presented.
 
 Fullscreen covers the selected monitor without changing its OS display mode.
-Switches preserve the scene resize mode, high resolution setting,
-and texture filter. Windows Alt+Enter and macOS Control+Command+F and the fullscreen
-menu use the same transition as `Window::SetFullscreen()`.
-Keep retains its logical canvas, while Virtual and
-Actual follow the fullscreen window's virtual and framebuffer dimensions.
-Settings changed while fullscreen remain selected after returning to windowed
-mode. Applications that expect fullscreen switching to freeze the logical canvas should
-select Keep explicitly.
+Windows Alt+Enter and macOS Control+Command+F and the fullscreen menu use the
+same transition as `Window::SetFullscreen()`. They preserve the configuration
+and apply its fullscreen sizing rule. The default is a presentation of the
+existing scene, fitted with letterboxing; it does not expand game coordinates.
 
 The cursor's base transform is refreshed without consuming an input frame.
 Unchanged configurations reuse the buffers and cached transform state.
 
 ## Validation
+
+[Test_SceneConfig.cpp](../../Test/Test_SceneConfig.cpp) covers the four factories,
+six common uses, fullscreen keep/follow transitions, same-dimension fullscreen
+exits, startup in fullscreen, minimized reconfiguration, configuration copies,
+invalid values, size boundaries, and preservation of executed pixels for
+unchanged and filter-only configurations.
+[Test_ScenePresentation.cpp](../../Test/Test_ScenePresentation.cpp) exercises
+Metal's final composition path into an offscreen target, comparing Nearest and
+Linear pixels and checking scene-buffer reuse across filter changes and combined
+scene-size/resolution changes with unchanged final buffer dimensions.
 
 [Test_SceneHighResolution.cpp](../../Test/Test_SceneHighResolution.cpp) covers
 size calculation, DPI-only changes, all resize modes, rounding, invalid sizes,
@@ -128,17 +189,19 @@ Image comparisons check shapes, patterns, bitmap/MSDF text, projective transform
 and a custom vertex shader against explicit scaling at the same resolution.
 Frame metrics compare subdivision and draw counts.
 
-[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) on Windows
+[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) checks default
+fullscreen size preservation and reconfiguration through mixed API/shortcut
+round trips, including another-DPI display when available. On Windows it
 exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
-round trips, all resize modes with high resolution on/off, policy changes while
+round trips, all size modes with both resolution policies and explicit fullscreen following, policy changes while
 fullscreen, disabled shortcuts (including cancellation before the next frame),
 and fullscreen bounds and restored window dimensions on each attached monitor.
 Fullscreen resize requests additionally check one mixed-DPI monitor pair in both
-directions, restored positions, all six settings, same-size and invalid requests,
+directions, restored positions, the six size/resolution combinations with explicit fullscreen following, same-size and invalid requests,
 and immediate/next-frame dimensions and cursor mapping. See the
 [window validation guide](../window/README.md#validation) for pair selection and
 the fallback on systems without mixed-DPI monitors.
-On macOS it checks API and UI round trips for all six settings, immediate scene/cursor
+On macOS it checks API and UI round trips for the six size/resolution combinations with explicit fullscreen following, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
 position and dimensions for each source/destination monitor pair, native
 minimized state, unchanged native desktop modes and monitor positions, and
@@ -147,7 +210,7 @@ fullscreen UI routes without injecting global input. The native green button
 and Zoom menu remain maximization operations. Disabled controls,
 pending-request cancellation, shortcut repeats, and fixed/sizable/frameless
 styles are covered. Capture dimensions and transformed cursor hit tests
-are also checked for all six settings on each monitor. The macOS monitor test
+are also checked for the six size/resolution combinations with explicit fullscreen following on each monitor. The macOS monitor test
 places the window with
 `Window::CenterToScreen(index)` before exercising the public fullscreen API.
 See [desktop coordinates](../window/README.md) for point-based macOS placement
@@ -159,12 +222,12 @@ visibly change the real window. Each transition is followed by a 500 ms pause.
 Run the focused tests and then the full suite on the respective host:
 
 ```sh
-./macOS/run-tests.sh '--test-case=SceneHighResolution*'
+./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*'
 ./macOS/run-tests.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneHighResolution*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 

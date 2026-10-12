@@ -242,7 +242,7 @@ namespace s3d
 
 		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
 		/// @remark ディスプレイの表示モードを変更せず、指定したモニター全体に表示します。
-		/// @remark シーンのリサイズモード、高精細描画の設定、拡大縮小フィルタは維持します。
+		/// @remark Scene::GetConfig() が返す表示設定を維持します。
 		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
 		/// @param monitorIndex 表示するモニタのインデックス
 		void SetFullscreen(bool fullscreen, size_t monitorIndex = System::GetCurrentMonitorIndex());

@@ -34,10 +34,7 @@ namespace s3d
 		struct RestoreWindowAndScene
 		{
 			const WindowState window = Window::GetState();
-			const Size scene = Scene::Size();
-			const ResizeMode mode = Scene::GetResizeMode();
-			const bool highResolution = Scene::IsHighResolutionEnabled();
-			const TextureFilter filter = Scene::GetTextureFilter();
+			const SceneConfig config = Scene::GetConfig();
 
 			~RestoreWindowAndScene()
 			{
@@ -45,11 +42,7 @@ namespace s3d
 				Window::Resize(window.virtualSize, CenterWindow::No);
 				Window::SetPos(window.bounds.pos);
 				if (window.maximized) { Window::Maximize(); }
-				Scene::SetHighResolutionEnabled(false);
-				Scene::SetResizeMode(mode);
-				Scene::Resize(scene);
-				Scene::SetHighResolutionEnabled(highResolution);
-				Scene::SetTextureFilter(filter);
+				Scene::Configure(config);
 				System::Sleep(500);
 			}
 		};
@@ -76,17 +69,17 @@ namespace s3d
 			CHECK(Window::GetPos() == state.bounds.pos);
 		}
 
-		void CheckPresentation(const ResizeMode mode, const bool highResolution)
+		void CheckPresentation(const SceneSizeMode mode, const bool highResolution)
 		{
 			const auto& window = Window::GetState();
-			const Size logical = (mode == ResizeMode::Keep) ? Size{ 400, 300 }
-				: ((mode == ResizeMode::Virtual) ? window.virtualSize : window.frameBufferSize);
+			const Size logical = (mode == SceneSizeMode::Fixed) ? Size{ 400, 300 }
+				: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
 			const double fit = Min(static_cast<double>(window.frameBufferSize.x) / logical.x,
 				static_cast<double>(window.frameBufferSize.y) / logical.y);
-			CHECK(Scene::GetResizeMode() == mode);
-			CHECK(Scene::IsHighResolutionEnabled() == highResolution);
+			CHECK(Scene::GetConfig().sizeMode == mode);
+			CHECK((Scene::GetConfig().resolution == SceneResolution::Display) == highResolution);
 			CHECK(Scene::Size() == logical);
-			CHECK(Scene::RenderSize() == (highResolution ? Math::Round(logical * Max(1.0, fit)).asPoint() : logical));
+			CHECK(Scene::RenderResolution() == (highResolution ? Math::Round(logical * Max(1.0, fit)).asPoint() : logical));
 			CHECK(Scene::ClientToScene(window.frameBufferSize * 0.5).epsilonEquals(logical * 0.5, 1e-6));
 		}
 	}
@@ -133,9 +126,14 @@ namespace s3d
 		const RestoreWindowAndScene restore;
 		Window::Restore();
 		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
-		Scene::SetResizeMode(ResizeMode::Keep);
-		Scene::Resize(400, 300);
-		Scene::SetHighResolutionEnabled(true);
+		{
+			auto config = Scene::GetConfig();
+			config.sizeMode = SceneSizeMode::Fixed;
+			config.fullscreen = FullscreenSceneMode::FollowWindow;
+			config.fixedSceneSize = Size{ 400, 300 };
+			config.resolution = SceneResolution::Display;
+			Scene::Configure(config);
+		}
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
 		for (const WindowStyle style : { WindowStyle::Fixed, WindowStyle::Sizable, WindowStyle::Frameless })
@@ -153,7 +151,7 @@ namespace s3d
 				const Rect bounds = Window::GetState().bounds;
 				CHECK(bounds.pos == (workArea.pos + (workArea.size - bounds.size) / 2));
 				CheckNativeWindow();
-				CheckPresentation(ResizeMode::Keep, true);
+				CheckPresentation(SceneSizeMode::Fixed, true);
 				UpdateWithPause();
 				CHECK(System::GetCurrentMonitorIndex() == i);
 				CHECK(Window::GetState().virtualSize == before);
@@ -198,14 +196,19 @@ namespace s3d
 			REQUIRE(Window::CenterToScreen(i));
 			UpdateWithPause();
 			CHECK(System::GetCurrentMonitorIndex() == i);
-			for (const ResizeMode mode : { ResizeMode::Keep, ResizeMode::Virtual, ResizeMode::Actual })
+			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool highResolution : { false, true })
 				{
 					CAPTURE(i, mode, highResolution);
-					Scene::SetResizeMode(mode);
-					if (mode == ResizeMode::Keep) { Scene::Resize(400, 300); }
-					Scene::SetHighResolutionEnabled(highResolution);
+					{
+						auto config = Scene::GetConfig();
+						config.sizeMode = mode;
+						config.fullscreen = FullscreenSceneMode::FollowWindow;
+						config.fixedSceneSize = Size{ 400, 300 };
+						config.resolution = (highResolution ? SceneResolution::Display : SceneResolution::SceneSize);
+						Scene::Configure(config);
+					}
 					CheckPresentation(mode, highResolution);
 					const Point logical{ 40, 30 };
 					const Mat3x2 all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());

@@ -1594,8 +1594,8 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// リサイズモード | Resize mode
-# include <Siv3D/ResizeMode.hpp>
+// シーンの表示設定 | Scene configuration
+# include <Siv3D/SceneConfig.hpp>
 
 // MSAA サンプル数 | MSAA sample count
 # include <Siv3D/MSAASampleCount.hpp>
