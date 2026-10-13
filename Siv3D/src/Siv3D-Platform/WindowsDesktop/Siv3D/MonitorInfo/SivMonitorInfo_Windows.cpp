@@ -15,6 +15,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/DLL.hpp>
+# include <Siv3D/Error.hpp>
 # include <ShellScalingApi.h> // GetDpiForMonitor()
 # include <cwchar>
 
@@ -188,6 +189,32 @@ namespace s3d
 
 	namespace WindowsMonitor
 	{
+		Optional<size_t> FindCurrentMonitorIndex(const HWND window, const Array<MonitorInfo>& monitors, const Functions& functions)
+		{
+			if (monitors.isEmpty()) { return none; }
+			const HMONITOR currentMonitor = functions.monitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY);
+			MONITORINFOEXW info{};
+			info.cbSize = sizeof(info);
+			if ((not currentMonitor) || (not functions.getMonitorInfo(currentMonitor, &info))) { return none; }
+
+			const String deviceName = Unicode::FromWstring(info.szDevice);
+			for (size_t i = 0; i < monitors.size(); ++i)
+			{
+				if (monitors[i].displayDeviceName == deviceName) { return i; }
+			}
+			return none;
+		}
+
+		MonitorInfo GetCurrentMonitor(const HWND window, const Functions& functions)
+		{
+			const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+			if (const auto index = FindCurrentMonitorIndex(window, monitors, functions))
+			{
+				return monitors[*index];
+			}
+			throw Error{ "System::GetCurrentMonitor(): Current monitor not found" };
+		}
+
 		void EnumerateMonitorDevices(const FunctionRef<bool(const DISPLAY_DEVICEW&, const DISPLAY_DEVICEW*)> visitor,
 			decltype(::EnumDisplayDevicesW)* enumDisplayDevices)
 		{
@@ -295,6 +322,17 @@ namespace s3d
 			GetFriendlyName(monitors);
 
 			return monitors;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCurrentMonitor
+		//
+		////////////////////////////////////////////////////////////////
+
+		MonitorInfo GetCurrentMonitor()
+		{
+			return WindowsMonitor::GetCurrentMonitor(static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle()));
 		}
 
 		////////////////////////////////////////////////////////////////

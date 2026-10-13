@@ -9,8 +9,9 @@
   at the repository root owns unfinished work.
 - Mark proposals with their status and release scope; do not describe them as
   implemented behavior.
-- Update affected documentation with code changes. Avoid transient test counts,
-  commit hashes, machine state, and redundant “last updated” dates.
+- Update affected documentation with code changes. Link to canonical design and
+  validation guidance instead of repeating it; omit transient counts, commit
+  hashes, machine state, and redundant “last updated” dates.
 - Preserve executable test programs in Test/Manual when separating explanations.
   Put development tools in tools and describe their usage in the subject docs.
 - Validate documentation changes with `python3 tools/check_docs.py` and

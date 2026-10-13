@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -18,21 +18,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ResizeMode
+	//	SceneResolution
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief シーンの自動リサイズモード
-	enum class ResizeMode : uint8
+	/// @brief シーンの描画解像度の決め方
+	enum class SceneResolution : uint8
 	{
-		/// @brief シーンのサイズをウィンドウの実サイズに合わせる
-		Actual,
+		/// @brief シーンサイズと同じピクセル数で描く
+		SceneSize,
 
-		/// @brief シーンのサイズをウィンドウの仮想サイズに合わせる（デフォルト）
-		Virtual,
-
-		/// @brief シーンのサイズは変更しない
-		Keep,
+		/// @brief シーンの表示領域に合わせて描画解像度を増やす。シーンサイズ未満には下げない
+		Display,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -41,5 +38,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, ResizeMode value);
+	/// @brief 描画解像度の方針を文字列に変換します。
+	/// @param formatData 出力先
+	/// @param value 変換する値
+	void Formatter(FormatData& formatData, SceneResolution value);
 }

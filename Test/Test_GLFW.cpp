@@ -124,6 +124,73 @@ namespace s3d
 		}
 	}
 
+	TEST_CASE("GLFW.FullscreenRequests")
+	{
+		@autoreleasepool
+		{
+			GLFWwindow* window = EngineWindow();
+			NSWindow* nativeWindow = glfwGetCocoaWindow(window);
+			NSView* view = glfwGetCocoaView(window);
+			const bool enabled = Window::IsToggleFullscreenEnabled();
+			const ScopeExit restore{ [=]
+			{
+				Window::SetToggleFullscreenEnabled(false);
+				Window::SetToggleFullscreenEnabled(enabled);
+			} };
+			const auto state = Window::GetState();
+			NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"" action:@selector(toggleFullScreen:)
+				keyEquivalent:@"f"];
+			const auto shortcut = [&](const bool repeat, const NSEventModifierFlags modifiers)
+			{
+				return [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint
+					modifierFlags:modifiers timestamp:0 windowNumber:nativeWindow.windowNumber
+					context:nil characters:@"f" charactersIgnoringModifiers:@"f" isARepeat:repeat keyCode:0x03];
+			};
+			const NSEventModifierFlags modifiers = (NSEventModifierFlagControl | NSEventModifierFlagCommand);
+			Window::SetToggleFullscreenEnabled(false);
+			CHECK_FALSE(Window::IsToggleFullscreenEnabled());
+			CHECK_FALSE([nativeWindow validateMenuItem:item]);
+			CHECK([view performKeyEquivalent:shortcut(false, modifiers)]);
+			[nativeWindow toggleFullScreen:nil];
+			Window::SetToggleFullscreenEnabled(true);
+			CHECK_FALSE(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			CHECK(Window::IsToggleFullscreenEnabled());
+			CHECK([nativeWindow validateMenuItem:item]);
+			CHECK([item.title isEqualToString:(state.fullscreen ? @"Exit Full Screen" : @"Enter Full Screen")]);
+			CHECK((nativeWindow.collectionBehavior & NSWindowCollectionBehaviorFullScreenNone) != 0);
+			CHECK((nativeWindow.collectionBehavior & NSWindowCollectionBehaviorFullScreenPrimary) == 0);
+
+			// Reapplying enabled preserves a request, and repeated UI actions coalesce.
+			[nativeWindow toggleFullScreen:nil];
+			[nativeWindow toggleFullScreen:nil];
+			Window::SetToggleFullscreenEnabled(true);
+			CHECK(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			CHECK_FALSE(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			CHECK([view performKeyEquivalent:shortcut(true, modifiers)]);
+			CHECK_FALSE(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			const char* keys = glfwGetKeysSiv3D(window);
+			const int previousF = keys[GLFW_KEY_F];
+			CHECK([view performKeyEquivalent:shortcut(false, modifiers)]);
+			CHECK(keys[GLFW_KEY_F] == previousF);
+			Window::SetToggleFullscreenEnabled(false);
+			Window::SetToggleFullscreenEnabled(true);
+			CHECK_FALSE(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			CHECK([view performKeyEquivalent:shortcut(false, modifiers)]);
+			CHECK(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			// Other modifier combinations must not enqueue fullscreen.
+			const NSEventModifierFlags otherModifiers[] = { NSEventModifierFlagCommand, NSEventModifierFlagControl,
+				(modifiers | NSEventModifierFlagShift), (modifiers | NSEventModifierFlagOption) };
+			for (const auto other : otherModifiers)
+			{
+				[view performKeyEquivalent:shortcut(false, other)];
+				CHECK_FALSE(glfwTakeFullscreenToggleRequest_Siv3D(window));
+			}
+			CHECK(Window::GetState().fullscreen == state.fullscreen);
+			CHECK(Window::GetState().bounds == state.bounds);
+			CHECK((nativeWindow.styleMask & NSWindowStyleMaskFullScreen) == 0);
+		}
+	}
+
 	TEST_CASE("GLFW.Siv3DWindowMoveNotifications")
 	{
 		GLFWwindow* window = EngineWindow();

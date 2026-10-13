@@ -38,12 +38,15 @@ namespace s3d
 		String displayDeviceName;
 
 		/// @brief ディスプレイ全体の位置とサイズ
+		/// @remark Window::SetPos() と同じスクリーン座標系です。位置・サイズともに Windows ではピクセル、macOS では point です。
 		Rect displayRect = Rect::Empty();
 
 		/// @brief タスクバーなどを除いた利用可能な領域の位置とサイズ
+		/// @remark Window::SetPos() と同じスクリーン座標系です。位置・サイズともに Windows ではピクセル、macOS では point です。
 		Rect workArea = Rect::Empty();
 
-		/// @brief フルスクリーン時の解像度
+		/// @brief 現在の表示設定でフルスクリーンにした場合のフレームバッファサイズ（ピクセル）
+		/// @remark macOS ではパネルの物理画素数と一致しない場合があります。取得できない場合は { 0, 0 } です。
 		Size fullscreenResolution{ 0, 0 };
 
 		/// @brief 物理的なサイズ (mm)

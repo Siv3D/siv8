@@ -13,6 +13,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Window.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -72,9 +73,9 @@ namespace s3d
 			}
 		}
 		
+		::glfwPreserveVideoMode_Siv3D(m_glfwWindow);
+		::glfwSetFullscreenToggleEnabled_Siv3D(m_glfwWindow, GLFW_TRUE);
 		::glfwSetWindowUserPointer(m_glfwWindow, this);
-		::glfwSetWindowSizeLimits(m_glfwWindow, m_state.minFrameBufferSize.x, m_state.minFrameBufferSize.y,
-								  GLFW_DONT_CARE, GLFW_DONT_CARE);
 		::glfwSetWindowPosCallback(m_glfwWindow, CWindow::OnMove);
 		::glfwSetWindowSizeCallback(m_glfwWindow, CWindow::OnResize);
 		::glfwSetFramebufferSizeCallback(m_glfwWindow, CWindow::OnFrameBufferSize);
@@ -84,6 +85,7 @@ namespace s3d
 		::glfwSetWindowFocusCallback(m_glfwWindow, CWindow::OnFocus);
 
 		updateState();
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -101,6 +103,11 @@ namespace s3d
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
 			m_windowTitle.refresh(m_glfwWindow);
+		}
+
+		if (::glfwTakeFullscreenToggleRequest_Siv3D(m_glfwWindow))
+		{
+			Window::SetFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
 		}
 		
 		if (::glfwWindowShouldClose(m_glfwWindow))
@@ -194,6 +201,8 @@ namespace s3d
 		m_state.style = style;
 		
 		updateState();
+		// GLFW defers size limits while the window is not resizable.
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -212,7 +221,7 @@ namespace s3d
 			return;
 		}
 		
-		::glfwSetWindowPos(m_glfwWindow, pos.x, pos.y);
+		WindowMisc::SetPos(m_glfwWindow, pos);
 		
 		updateState();
 	}
@@ -286,6 +295,16 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
 
+		if (m_state.virtualSize == virtualSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
 		::glfwSetWindowSize(m_glfwWindow, virtualSize.x, virtualSize.y);
 
 		updateState();
@@ -303,6 +322,17 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
 		
+		if (m_state.frameBufferSize == frameBufferSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			// Convert using the restored window's screen, which can have another DPI.
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
 		const double scaling = m_state.scaling;
 		const Size newVirtualSize = Math::Round(frameBufferSize / scaling).asPoint();	
 		return resizeByVirtualSize(newVirtualSize);
@@ -318,11 +348,9 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
 		
-		m_state.minFrameBufferSize = size;
-		
-		::glfwSetWindowSizeLimits(m_glfwWindow, size.x, size.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
-		
 		updateState();
+		m_state.minFrameBufferSize = size;
+		updateMinimumWindowSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -335,32 +363,50 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
 
-		if (fullscreen == m_state.fullscreen)
+		updateState();
+		if ((not fullscreen) && (not m_state.fullscreen))
 		{
 			return;
 		}
 		
-		if (m_state.fullscreen == false) // 現在ウィンドウモード
+		if (fullscreen)
 		{
-			const auto monitors = System::EnumerateMonitors();
-			
-			if (monitors.size() <= monitorIndex)
+			int32 numMonitors = 0;
+			GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors);
+			if ((not monitors) || (numMonitors <= 0))
 			{
-				monitorIndex = System::GetCurrentMonitorIndex();
+				return;
 			}
 
-			::glfwGetWindowPos(m_glfwWindow, &m_storedWindowRect.x, &m_storedWindowRect.y);
-			m_storedWindowRect.y += m_state.titleBarHeight;
-			m_storedWindowRect.pos = (m_storedWindowRect.pos / monitors[monitorIndex].scaling.value_or(1.0)).asPoint();
-			m_storedWindowRect.size = m_state.virtualSize;
-			
-			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
-			
-			int32 numMonitors;
-			if (GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors))
+			if (static_cast<size_t>(numMonitors) <= monitorIndex)
 			{
-				::glfwSetWindowMonitor(m_glfwWindow, monitors[monitorIndex], 0, 0, fullscreenResolution.x, fullscreenResolution.y, GLFW_DONT_CARE);
+				// In fullscreen the fallback is the monitor already attached to this window.
+				if (m_state.fullscreen) { return; }
+				monitorIndex = System::GetCurrentMonitorIndex();
 			}
+			if (static_cast<size_t>(numMonitors) <= monitorIndex)
+			{
+				return;
+			}
+			GLFWmonitor* target = monitors[monitorIndex];
+			if (target == ::glfwGetWindowMonitor(m_glfwWindow)) { return; }
+			const GLFWvidmode* mode = ::glfwGetVideoMode(target);
+			if (not mode)
+			{
+				return;
+			}
+
+			if (not m_state.fullscreen)
+			{
+				// Save only on entry; monitor changes retain the original windowed geometry.
+				m_storedWindowRect.pos = (m_state.bounds.pos + Point{ 0, m_state.titleBarHeight });
+				m_storedWindowRect.size = m_state.virtualSize;
+			}
+			
+			// The Cocoa window policy bypasses video-mode selection, including modes
+			// absent from GLFW's enumeration. These dimensions are desktop points.
+			::glfwSetWindowMonitor(m_glfwWindow, target, 0, 0,
+				mode->width, mode->height, mode->refreshRate);
 		}
 		else
 		{
@@ -368,14 +414,7 @@ namespace s3d
 								   m_storedWindowRect.w, m_storedWindowRect.h, GLFW_DONT_CARE);
 		}
 		
-		m_state.fullscreen = fullscreen;
-		
 		updateState();
-
-		//if (Scene::GetResizeMode() != ResizeMode::Keep)
-		//{
-		//	SIV3D_ENGINE(Renderer)->updateSceneSize();
-		//}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -384,7 +423,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::setToggleFullscreenEnabled(const bool) {}
+	void CWindow::setToggleFullscreenEnabled(const bool enabled)
+	{
+		::glfwSetFullscreenToggleEnabled_Siv3D(m_glfwWindow, enabled);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -394,7 +436,7 @@ namespace s3d
 
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
-		return false;
+		return ::glfwIsFullscreenToggleEnabled_Siv3D(m_glfwWindow);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -416,26 +458,18 @@ namespace s3d
 
 	void CWindow::updateState()
 	{
-		// frameBufferSize
-		::glfwGetFramebufferSize(m_glfwWindow, &m_state.frameBufferSize.x, &m_state.frameBufferSize.y);
-		
-		// scaling
-		float xScale, yScale;
-		::glfwGetWindowContentScale(m_glfwWindow, &xScale, &yScale);
-		m_state.scaling = Max(xScale, yScale);
-		
-		// titleBarHeight
-		m_state.titleBarHeight = WindowMisc::GetTitleBarHeight(m_glfwWindow);
-		
-		// bounds
-		int32 windowPosX, windowPosY, windowSizeX, windowSizeY;
-		::glfwGetWindowPos(m_glfwWindow, &windowPosX, &windowPosY);
-		::glfwGetWindowSize(m_glfwWindow, &windowSizeX, &windowSizeY);
-		m_state.bounds.pos.set(windowPosX, windowPosY);
-		m_state.bounds.size.set(windowSizeX, windowSizeY);
-				
+		const double previousScaling = m_state.scaling;
+		WindowMisc::UpdateGeometry(m_glfwWindow, m_state);
+		if (m_state.scaling != previousScaling)
+		{
+			updateMinimumWindowSize();
+		}
+
+		// GLFW also leaves fullscreen when its monitor is disconnected.
+		m_state.fullscreen = (::glfwGetWindowMonitor(m_glfwWindow) != nullptr);
+
 		// minimized
-		m_state.maximized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
+		m_state.minimized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);
 		
 		// maximized
 		m_state.maximized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_MAXIMIZED) == GLFW_TRUE)
@@ -453,6 +487,23 @@ namespace s3d
 				m_moveResizeStabilizer.reset();
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	updateMinimumWindowSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::updateMinimumWindowSize()
+	{
+		const auto toPoints = [scaling = m_state.scaling](const int32 pixels)
+		{
+			// Preserve GLFW's non-positive limit values; round positive minima up.
+			return (0 < pixels) ? static_cast<int32>(Math::Ceil(pixels / scaling)) : pixels;
+		};
+		::glfwSetWindowSizeLimits(m_glfwWindow, toPoints(m_state.minFrameBufferSize.x),
+			toPoints(m_state.minFrameBufferSize.y), GLFW_DONT_CARE, GLFW_DONT_CARE);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -486,7 +537,6 @@ namespace s3d
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			pWindow->m_state.bounds.size = size;
 			pWindow->m_state.virtualSize = size;
 		}
 	}

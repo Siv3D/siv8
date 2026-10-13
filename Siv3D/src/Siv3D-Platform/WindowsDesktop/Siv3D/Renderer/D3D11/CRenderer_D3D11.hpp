@@ -50,12 +50,17 @@ namespace s3d
 		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept override;
 
-		void setSceneResizeMode(ResizeMode resizeMode) override;
+		void configureScene(const SceneConfig& config) override;
 
 		[[nodiscard]]
-		ResizeMode getSceneResizeMode() const noexcept override;
+		SceneConfig getSceneConfig() const noexcept override;
 
-		void resizeSceneBuffer(Size size) override;
+		void setSceneSampleCount(uint32 sampleCount) override;
+
+		[[nodiscard]]
+		uint32 getSceneSampleCount() const noexcept override;
+
+		const Size& getSceneSize() const noexcept override;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;
@@ -70,7 +75,8 @@ namespace s3d
 		[[nodiscard]]
 		bool isVSyncEnabled() const override;
 
-		void captureScreenshot() override;
+		[[nodiscard]]
+		bool captureScreenshot() override;
 
 		[[nodiscard]]
 		const Image& getScreenCapture() const override;

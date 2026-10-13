@@ -60,6 +60,53 @@
 void GLFW_Siv3D_ReportPenEnter(bool enter, bool isPen);
 
 void GLFW_Siv3D_ReportTabletPoint(double normalPressure, double tangentialPressure, double tiltX, double tiltY);
+
+enum
+{
+    SIV3D_FULLSCREEN_NATIVE,
+    SIV3D_FULLSCREEN_DISABLED,
+    SIV3D_FULLSCREEN_ENABLED,
+    SIV3D_FULLSCREEN_REQUESTED
+};
+
+@interface GLFWWindow : NSWindow
+{
+    _GLFWwindow* window;
+}
+- (void)setGlfwWindow:(_GLFWwindow*)glfwWindow;
+- (void)toggleFullscreen_Siv3D:(id)sender;
+@end
+
+static void configureFullscreenMenu(NSMenu* menu)
+{
+    for (NSInteger i = 0; i < [menu numberOfItems]; ++i)
+    {
+        NSMenuItem* item = [menu itemAtIndex:i];
+        configureFullscreenMenu([item submenu]);
+        if ([item action] == @selector(toggleFullScreen:))
+        {
+            // Replace the native fullscreen item: AppKit continues rewriting its
+            // shortcut even after changing its action to an engine selector.
+            NSMenuItem* replacement = [[NSMenuItem alloc] initWithTitle:[item title]
+                action:@selector(toggleFullscreen_Siv3D:) keyEquivalent:@"f"];
+            [replacement setKeyEquivalentModifierMask:NSEventModifierFlagControl | NSEventModifierFlagCommand];
+            [menu removeItemAtIndex:i];
+            [menu insertItem:replacement atIndex:i];
+            [replacement release];
+        }
+    }
+}
+
+static void applyEngineFullscreenPolicy(_GLFWwindow* window)
+{
+    if (window->ns.fullscreenToggle == SIV3D_FULLSCREEN_NATIVE)
+        return;
+
+    // The engine owns fullscreen; never enter a separate Cocoa fullscreen Space.
+    [window->ns.object setCollectionBehavior:NSWindowCollectionBehaviorManaged |
+                                            NSWindowCollectionBehaviorFullScreenNone |
+                                            NSWindowCollectionBehaviorFullScreenDisallowsTiling];
+}
 //
 //-----------------------------------------------
 
@@ -141,7 +188,9 @@ static void updateCursorMode(_GLFWwindow* window)
 //
 static void acquireMonitor(_GLFWwindow* window)
 {
-    _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
+    // [Siv3D] Also applies when restoring a minimized fullscreen window.
+    if (!window->ns.preserveVideoMode)
+        _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
                                     _glfwTransformYCocoa(bounds.origin.y + bounds.size.height - 1),
@@ -161,7 +210,9 @@ static void releaseMonitor(_GLFWwindow* window)
         return;
 
     _glfwInputMonitorWindow(window->monitor, NULL);
-    _glfwRestoreVideoModeCocoa(window->monitor);
+    // [Siv3D] Do not restore a mode when this window never changed it.
+    if (!window->ns.preserveVideoMode)
+        _glfwRestoreVideoModeCocoa(window->monitor);
 }
 
 // Translates macOS key modifiers into GLFW ones
@@ -893,6 +944,20 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {
+    // [Siv3D] Claim repeats and disabled shortcuts as well, without forwarding F
+    // to the game or allowing AppKit to start its own fullscreen transition.
+    const NSEventModifierFlags shortcutModifiers = NSEventModifierFlagControl | NSEventModifierFlagCommand;
+    const NSEventModifierFlags modifiers = [event modifierFlags] &
+        (shortcutModifiers | NSEventModifierFlagOption | NSEventModifierFlagShift);
+    if (window->ns.fullscreenToggle != SIV3D_FULLSCREEN_NATIVE &&
+        modifiers == shortcutModifiers &&
+        [[[event charactersIgnoringModifiers] lowercaseString] isEqualToString:@"f"])
+    {
+        if (![event isARepeat])
+            [window->ns.object toggleFullScreen:nil];
+        return YES;
+    }
+
     // HACK: Some key combinations are consumed before reaching keyDown:
     //       so we claim those events and emit them here
     const int key = translateKey([event keyCode]);
@@ -1079,10 +1144,49 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 // GLFW window class
 //------------------------------------------------------------------------
 
-@interface GLFWWindow : NSWindow {}
-@end
-
 @implementation GLFWWindow
+
+- (void)setGlfwWindow:(_GLFWwindow*)glfwWindow
+{
+    window = glfwWindow;
+}
+
+// [Siv3D] Fullscreen actions only enqueue a request. The engine
+// consumes it at its frame boundary, through the public API's transition path.
+- (void)toggleFullScreen:(id)sender
+{
+    [self toggleFullscreen_Siv3D:sender];
+}
+
+- (void)toggleFullscreen_Siv3D:(id)sender
+{
+    if (!window || window->ns.fullscreenToggle == SIV3D_FULLSCREEN_NATIVE)
+    {
+        [super toggleFullScreen:sender];
+        return;
+    }
+
+    NSEvent* event = [NSApp currentEvent];
+    if ([event type] == NSEventTypeKeyDown && [event isARepeat])
+        return;
+
+    if (window->ns.fullscreenToggle == SIV3D_FULLSCREEN_ENABLED)
+        window->ns.fullscreenToggle = SIV3D_FULLSCREEN_REQUESTED;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem*)item
+{
+    if (window && window->ns.fullscreenToggle != SIV3D_FULLSCREEN_NATIVE)
+    {
+        if ([item action] == @selector(toggleFullscreen_Siv3D:) ||
+            [item action] == @selector(toggleFullScreen:))
+        {
+            [item setTitle:window->monitor ? @"Exit Full Screen" : @"Enter Full Screen"];
+            return window->ns.fullscreenToggle != SIV3D_FULLSCREEN_DISABLED;
+        }
+    }
+    return [super validateMenuItem:item];
+}
 
 - (BOOL)canBecomeKeyWindow
 {
@@ -1162,6 +1266,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GLFW_FALSE;
     }
+
+    [window->ns.object setGlfwWindow:window];
 
     if (window->monitor)
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
@@ -1796,6 +1902,8 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         [window->ns.object setTitle:[window->ns.object miniwindowTitle]];
     }
 
+    applyEngineFullscreenPolicy(window);
+
     } // autoreleasepool
 }
 
@@ -1878,6 +1986,8 @@ void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
         [window->ns.object setCollectionBehavior:behavior];
     }
 
+    applyEngineFullscreenPolicy(window);
+
     } // autoreleasepool
 }
 
@@ -1899,6 +2009,8 @@ void _glfwSetWindowDecoratedCocoa(_GLFWwindow* window, GLFWbool enabled)
 
     [window->ns.object setStyleMask:styleMask];
     [window->ns.object makeFirstResponder:window->ns.view];
+
+    applyEngineFullscreenPolicy(window);
 
     } // autoreleasepool
 }
@@ -2548,6 +2660,52 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
+
+// [Siv3D] Enable once on a newly created, windowed engine window.
+GLFWAPI void glfwPreserveVideoMode_Siv3D(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT();
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(window->monitor == NULL);
+    window->ns.preserveVideoMode = GLFW_TRUE;
+}
+
+// [Siv3D] These entry points, like Cocoa event delivery, run on the main thread.
+GLFWAPI void glfwSetFullscreenToggleEnabled_Siv3D(GLFWwindow* handle, int enabled)
+{
+    @autoreleasepool {
+    _GLFW_REQUIRE_INIT();
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    if (window->ns.fullscreenToggle == SIV3D_FULLSCREEN_NATIVE)
+        configureFullscreenMenu([NSApp mainMenu]);
+    if (!enabled)
+        window->ns.fullscreenToggle = SIV3D_FULLSCREEN_DISABLED;
+    else if (window->ns.fullscreenToggle != SIV3D_FULLSCREEN_REQUESTED)
+        window->ns.fullscreenToggle = SIV3D_FULLSCREEN_ENABLED;
+    applyEngineFullscreenPolicy(window);
+    } // autoreleasepool
+}
+
+GLFWAPI int glfwIsFullscreenToggleEnabled_Siv3D(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    return window->ns.fullscreenToggle >= SIV3D_FULLSCREEN_ENABLED;
+}
+
+GLFWAPI int glfwTakeFullscreenToggleRequest_Siv3D(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    if (window->ns.fullscreenToggle != SIV3D_FULLSCREEN_REQUESTED)
+        return GLFW_FALSE;
+    window->ns.fullscreenToggle = SIV3D_FULLSCREEN_ENABLED;
+    return GLFW_TRUE;
+}
 
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {

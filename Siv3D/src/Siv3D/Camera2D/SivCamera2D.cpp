@@ -16,7 +16,7 @@
 namespace s3d
 {
 	Camera2D::Camera2D(const Camera2DControl& cameraControl)
-		: Camera2D{ (Graphics2D::GetRenderTargetSize() * 0.5), 1.0, cameraControl } {}
+		: Camera2D{ (Graphics2D::GetDrawingSize() * 0.5), 1.0, cameraControl } {}
 
 	Camera2D::Camera2D(const Vec2& center, const Camera2DControl& cameraControl)
 		: Camera2D{ center, 1.0, cameraControl } {}
@@ -70,9 +70,9 @@ namespace s3d
 		m_scaleChangeVelocity = 0.0;
 	}
 
-	void Camera2D::update(const double deltaTime, const SizeF sceneSize)
+	void Camera2D::update(const double deltaTime, const SizeF drawingSize)
 	{
-		updateWheel(sceneSize);
+		updateWheel(drawingSize);
 		updateControls(deltaTime);
 		updateMouse(deltaTime);
 
@@ -88,7 +88,7 @@ namespace s3d
 
 		if (m_pointedScale)
 		{
-			const Vec2 v = m_pointedScale->first - (sceneSize * 0.5);
+			const Vec2 v = m_pointedScale->first - (drawingSize * 0.5);
 			m_targetCenter = m_center = (m_pointedScale->second - v / m_scale);
 		}
 		else
@@ -136,7 +136,7 @@ namespace s3d
 		}
 	}
 
-	void Camera2D::updateWheel(const SizeF& sceneSize)
+	void Camera2D::updateWheel(const SizeF& drawingSize)
 	{
 		if (m_cameraControl.wheelZoomSpeed == Camera2DControl::NoWheelZoom)
 		{
@@ -167,7 +167,7 @@ namespace s3d
 		const auto t2 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
 
 		const Point cursorPos = Cursor::Pos();
-		const Vec2 point = (m_center + (cursorPos - (sceneSize * 0.5)) / m_scale);
+		const Vec2 point = (m_center + (cursorPos - (drawingSize * 0.5)) / m_scale);
 		m_pointedScale.emplace(cursorPos, point);
 	}
 

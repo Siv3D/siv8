@@ -19,11 +19,6 @@ namespace s3d
 		[[nodiscard]]
 		static bool CreateStagingTexture(ID3D11Device* device, ComPtr<ID3D11Texture2D>& stagingTexture, const Size& size)
 		{
-			if (stagingTexture)
-			{
-				stagingTexture.Reset();
-			}
-
 			const CD3D11_TEXTURE2D_DESC desc{
 				DXGI_FORMAT_R8G8B8A8_UNORM,
 				static_cast<uint32>(size.x), static_cast<uint32>(size.y),
@@ -114,13 +109,15 @@ namespace s3d
 		// [ステージング・テクスチャ] が未作成か異なるサイズの場合、再作成
 		if (size != m_image.size())
 		{
-			if (not CreateStagingTexture(m_device, m_stagingTexture, size))
+			ComPtr<ID3D11Texture2D> stagingTexture;
+			if (not CreateStagingTexture(m_device, stagingTexture, size))
 			{
 				return false;
 			}
 			
 			// Image をテクスチャのサイズにリサイズ
 			m_image.resize(size);
+			m_stagingTexture = std::move(stagingTexture);
 		}
 
 		// [ステージング・テクスチャ] へコピー

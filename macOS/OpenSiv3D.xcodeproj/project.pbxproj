@@ -25,6 +25,7 @@
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
 		2D2E4D0545A04EAAABA02DA2 /* Mat4x4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */; };
 		2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		3F61E875DDEE4710A8E29A15 /* Test_MetalScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92CD289F5A06488B90531350 /* Test_MetalScreenCapture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */; };
 		37C087F1A38D0BB48EB7A454 /* ScopedQuadWarp2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */; };
 		3C12E829669A3CAA88A3728F /* Test_BigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 315A1A954557FA476A89D60D /* Test_BigFloat.cpp */; };
@@ -39,6 +40,12 @@
 		5E416ED3BF56463B99B4622C /* Test_LineStringIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFF94ACA4F194DF6A0EF1CA6 /* Test_LineStringIndexCount.cpp */; };
 		5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */; };
 		63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */; };
+		45A76FD970C64B5B9ABB3F78 /* Test_SceneHighResolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */; };
+		D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */; };
+		32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		D40DB715FB894747959F2B98 /* Test_WindowMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		E450BA1048C14C68926AE6A1 /* Test_WindowSceneSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		69BE70F1E9AA49D2A2E15E03 /* Test_MemoryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */; };
 		6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -90,6 +97,7 @@
 		BE294983A7514B508DCCB001 /* Truchet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BE294983A7514B508DCCB002 /* Truchet.hpp */; };
 		BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */; };
 		BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D604008E420486985B6EF7F /* Test_GLFW.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		D4604704A5ED4A0483159C45 /* Test_ScreenCoordinates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58E7A5266E884B548FBB528C /* Test_ScreenCoordinates.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
@@ -105,6 +113,8 @@
 		D311D311D311D31100000003 /* Test_D3D11SwapChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */; };
 		D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */; };
 		D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		24CFF175A6EF47B7AF7C2FF4 /* Test_ScenePresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 790149570411458B9653FABF /* Test_ScenePresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		95D49E74CAF04733BBFE5C42 /* Test_SceneMSAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60222ED4C864488A0709353 /* Test_SceneMSAA.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */; };
 		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
@@ -115,7 +125,7 @@
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
 		EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */; };
 		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
-		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; };
+		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };
@@ -490,6 +500,8 @@
 		F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DA52B9F175E00383E4D /* SivVector3D.cpp */; };
 		F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DA72B9F175E00383E4D /* SivVector4D.cpp */; };
 		F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070DA92B9F175E00383E4D /* IWindow.hpp */; };
+		133CA6A9A42F4A5C956128B6 /* WindowUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B247EBA269684AAAB6699DEF /* WindowUtility.hpp */; };
+		E76853E1622E477EB83BE4FD /* SivWindow_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */; };
 		F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */; };
 		F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9070E032B9F176B00383E4D /* SivFileSystem_macOS.mm */; };
 		F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E052B9F176B00383E4D /* SivTime.cpp */; };
@@ -870,6 +882,7 @@
 		F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */; };
 		F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */; };
 		F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */; };
+		C1B340C25CBA4DC39F6E6C7D /* SceneConfig.ipp in Headers */ = {isa = PBXBuildFile; fileRef = B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */; };
 		F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */; };
 		F943AAED2E2A0B05001B4D43 /* TypefaceUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */; };
 		F943AAEE2E2A0B05001B4D43 /* TypefaceUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */; };
@@ -1183,7 +1196,10 @@
 		F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A562C289A6D0049CC26 /* Smooth.ipp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
-		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
+		F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */; };
+		9071747C53A8405CB00D1DD2 /* SceneSizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */; };
+		D6F4563BCFE04D9687962725 /* SceneResolution.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46D246F808284ABE9240B2A7 /* SceneResolution.hpp */; };
+		FED35CAADFC445CB924FEAB4 /* FullscreenSceneMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */; };
 		F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FB2BEDF2FF000E21DD /* CScene.cpp */; };
 		F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FC2BEDF2FF000E21DD /* CScene.hpp */; };
 		F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FD2BEDF2FF000E21DD /* IScene.hpp */; };
@@ -1191,7 +1207,9 @@
 		F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */; };
 		F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203002BEDF2FF000E21DD /* SceneTime.hpp */; };
 		F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203012BEDF2FF000E21DD /* SivScene.cpp */; };
-		F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */; };
+		18823A171BD94243A0AAFC43 /* SivSceneSizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */; };
+		B70D55149CC64E84A2F9B5DA /* SivSceneResolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */; };
+		388735418473435AA6BF3B44 /* SivFullscreenSceneMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */; };
 		F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */; };
 		F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203102BF09DA3000E21DD /* IRenderer.hpp */; };
 		F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203132BF09DD9000E21DD /* Graphics.hpp */; };
@@ -3349,6 +3367,9 @@
 		5435E1B72EC85F4384FF1602 /* SivSpline2DMeasure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */; };
 		BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */; };
 		F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */; };
+		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		8E7B8A80CDF64F0D9D0319EE /* Test_WindowFullscreen_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3408,12 +3429,14 @@
 		479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DIndexCount.cpp; sourceTree = "<group>"; };
 		49B271520CBD0A5ACF08FF2B /* Test_FontGlyph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FontGlyph.cpp; sourceTree = "<group>"; };
 		4D604008E420486985B6EF7F /* Test_GLFW.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_GLFW.cpp; sourceTree = "<group>"; };
+		58E7A5266E884B548FBB528C /* Test_ScreenCoordinates.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_ScreenCoordinates.cpp; sourceTree = "<group>"; };
 		4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat3x2.cpp; sourceTree = "<group>"; };
 		52C1E04CCB2651870953FC0F /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		6360779D59BA45A4BFE36368 /* TriangleFan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFan.hpp; sourceTree = "<group>"; };
 		63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Keyboard.cpp; sourceTree = "<group>"; };
 		67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayException.cpp; sourceTree = "<group>"; };
 		6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_MetalPresentation.cpp; sourceTree = "<group>"; };
+		92CD289F5A06488B90531350 /* Test_MetalScreenCapture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_MetalScreenCapture.cpp; sourceTree = "<group>"; };
 		7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineBufferPolygon.cpp; sourceTree = "<group>"; };
 		70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MSDFFont.cpp; sourceTree = "<group>"; };
 		70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EllipseGeometry.hpp; sourceTree = "<group>"; };
@@ -3429,6 +3452,8 @@
 		A0C8D0012026090800000006 /* UnicodeDecodeStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeDecodeStatus.hpp; sourceTree = "<group>"; };
 		A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MemoryReader.cpp; sourceTree = "<group>"; };
 		A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_MetalFrameErrors.cpp; sourceTree = "<group>"; };
+		790149570411458B9653FABF /* Test_ScenePresentation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_ScenePresentation.cpp; sourceTree = "<group>"; };
+		A60222ED4C864488A0709353 /* Test_SceneMSAA.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_SceneMSAA.cpp; sourceTree = "<group>"; };
 		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		B326556F96D34F0A81DE7B33 /* Test_RandomVec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RandomVec3.cpp; sourceTree = "<group>"; };
@@ -3486,6 +3511,12 @@
 		D94C71C8E32144768219A411 /* BezierGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BezierGeometry.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
+		9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneHighResolution.cpp; sourceTree = "<group>"; };
+		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
+		95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowFullscreen.cpp; sourceTree = "<group>"; };
+		5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowMacOS.cpp; sourceTree = "<group>"; };
+		E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowSceneSync.cpp; sourceTree = "<group>"; };
+		ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = Test_WindowStateSync.cpp; sourceTree = "<group>"; };
 		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		E928752BE27A427C911BFA02 /* Ripple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ripple.hpp; sourceTree = "<group>"; };
 		E9EF3FEBDCC677B856F78774 /* Test_Mesh3DTransform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DTransform.cpp; sourceTree = "<group>"; };
@@ -3867,6 +3898,8 @@
 		F9070DA52B9F175E00383E4D /* SivVector3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector3D.cpp; sourceTree = "<group>"; };
 		F9070DA72B9F175E00383E4D /* SivVector4D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector4D.cpp; sourceTree = "<group>"; };
 		F9070DA92B9F175E00383E4D /* IWindow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IWindow.hpp; sourceTree = "<group>"; };
+		B247EBA269684AAAB6699DEF /* WindowUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowUtility.hpp; sourceTree = "<group>"; };
+		BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivWindow_macOS.cpp; sourceTree = "<group>"; };
 		F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowFactory.cpp; sourceTree = "<group>"; };
 		F9070E032B9F176B00383E4D /* SivFileSystem_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivFileSystem_macOS.mm; sourceTree = "<group>"; };
 		F9070E052B9F176B00383E4D /* SivTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTime.cpp; sourceTree = "<group>"; };
@@ -4313,6 +4346,7 @@
 		F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePainting.cpp; sourceTree = "<group>"; };
 		F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.hpp; sourceTree = "<group>"; };
 		F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.ipp; sourceTree = "<group>"; };
+		B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SceneConfig.ipp; sourceTree = "<group>"; };
 		F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Typeface.hpp; sourceTree = "<group>"; };
 		F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypefaceUtility.hpp; sourceTree = "<group>"; };
 		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
@@ -4626,7 +4660,10 @@
 		F9712A562C289A6D0049CC26 /* Smooth.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Smooth.ipp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
-		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
+		F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneConfig.hpp; sourceTree = "<group>"; };
+		17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneSizeMode.hpp; sourceTree = "<group>"; };
+		46D246F808284ABE9240B2A7 /* SceneResolution.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneResolution.hpp; sourceTree = "<group>"; };
+		A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FullscreenSceneMode.hpp; sourceTree = "<group>"; };
 		F97202FB2BEDF2FF000E21DD /* CScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScene.cpp; sourceTree = "<group>"; };
 		F97202FC2BEDF2FF000E21DD /* CScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScene.hpp; sourceTree = "<group>"; };
 		F97202FD2BEDF2FF000E21DD /* IScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScene.hpp; sourceTree = "<group>"; };
@@ -4634,7 +4671,9 @@
 		F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTime.cpp; sourceTree = "<group>"; };
 		F97203002BEDF2FF000E21DD /* SceneTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneTime.hpp; sourceTree = "<group>"; };
 		F97203012BEDF2FF000E21DD /* SivScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScene.cpp; sourceTree = "<group>"; };
-		F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivResizeMode.cpp; sourceTree = "<group>"; };
+		F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneSizeMode.cpp; sourceTree = "<group>"; };
+		3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneResolution.cpp; sourceTree = "<group>"; };
+		B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFullscreenSceneMode.cpp; sourceTree = "<group>"; };
 		F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureFilter.cpp; sourceTree = "<group>"; };
 		F97203102BF09DA3000E21DD /* IRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IRenderer.hpp; sourceTree = "<group>"; };
 		F97203132BF09DD9000E21DD /* Graphics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics.hpp; sourceTree = "<group>"; };
@@ -6470,6 +6509,7 @@
 		F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DLoft.cpp; sourceTree = "<group>"; };
 		F9A3D31A30A1000000C0DE01 /* Test_Mesh3DNormals.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DNormals.cpp; sourceTree = "<group>"; };
 		F9A3D31B30A1000000C0DE01 /* Mesh3DTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DTestHelper.hpp; sourceTree = "<group>"; };
+		F9A3D31B30A1000000C0DE02 /* WindowSceneTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowSceneTestHelper.hpp; sourceTree = "<group>"; };
 		F9A3D41130A2000000C0DE01 /* Mesh3DCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DCommon.hpp; sourceTree = "<group>"; };
 		F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.hpp; sourceTree = "<group>"; };
 		F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.ipp; sourceTree = "<group>"; };
@@ -6846,6 +6886,13 @@
 		C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2DMeasure.cpp; sourceTree = "<group>"; };
 		6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spline2D.cpp; sourceTree = "<group>"; };
 		96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLengthTable.hpp; sourceTree = "<group>"; };
+		983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTextureAllocationFailure.hpp; sourceTree = "<group>"; };
+		2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_SceneAllocationFailure.cpp; sourceTree = "<group>"; };
+		BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper.hpp; sourceTree = "<group>"; };
+		7CDE7269E28444E49FA889E2 /* WindowFullscreenTestHelper_Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_Windows.hpp; sourceTree = "<group>"; };
+		0E2FBD7EBF3143538B3A9BD6 /* WindowFullscreenTestHelper_macOS.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_macOS.hpp; sourceTree = "<group>"; };
+		7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_WindowFullscreen_Windows.cpp; sourceTree = "<group>"; };
+		1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_WindowFullscreen_macOS.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7170,9 +7217,13 @@
 				AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
 				6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */,
+				92CD289F5A06488B90531350 /* Test_MetalScreenCapture.cpp */,
 				4D604008E420486985B6EF7F /* Test_GLFW.cpp */,
+				58E7A5266E884B548FBB528C /* Test_ScreenCoordinates.cpp */,
 				63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */,
 				A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */,
+				790149570411458B9653FABF /* Test_ScenePresentation.cpp */,
+				A60222ED4C864488A0709353 /* Test_SceneMSAA.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
@@ -7211,6 +7262,12 @@
 				2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */,
 				1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */,
 				D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */,
+				9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */,
+				49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */,
+				95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */,
+				5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */,
+				E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */,
+				ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */,
 				BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */,
 				AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */,
 				1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */,
@@ -7268,6 +7325,14 @@
 				F90702CD2B9DAEB900383E4D /* Test_Version.cpp */,
 				F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */,
 				F9A3D31B30A1000000C0DE01 /* Mesh3DTestHelper.hpp */,
+				F9A3D31B30A1000000C0DE02 /* WindowSceneTestHelper.hpp */,
+				1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */,
+				7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */,
+				0E2FBD7EBF3143538B3A9BD6 /* WindowFullscreenTestHelper_macOS.hpp */,
+				7CDE7269E28444E49FA889E2 /* WindowFullscreenTestHelper_Windows.hpp */,
+				BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */,
+				2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */,
+				983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */,
 				A5D4F61430A6000000000002 /* Mesh3DAssemblyExamples.hpp */,
 				10054A3EC0A44694AD05344E /* Siv3DTestFramework.hpp */,
 				7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */,
@@ -7785,6 +7850,7 @@
 				F902E0E62E9E70B3002C6B92 /* TextFileWriter.ipp */,
 				F9797EF62F6EB6E800518D26 /* TextLayoutResult.ipp */,
 				F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */,
+				B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */,
 				F90DA04E2D1A91AB0003E1E8 /* Texture.ipp */,
 				F90DA04F2D1A91AB0003E1E8 /* TextureDesc.ipp */,
 				F90DA0502D1A91AB0003E1E8 /* TextureDescBuilder.ipp */,
@@ -8189,7 +8255,10 @@
 				F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
-				F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */,
+				F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */,
+				17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */,
+				46D246F808284ABE9240B2A7 /* SceneResolution.hpp */,
+				A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */,
 				F91171282DCBBF67000A22E6 /* ResolvedGlyph.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
@@ -8802,6 +8871,7 @@
 				F9528A8B2BA0253700222F45 /* SivWindow.cpp */,
 				F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */,
 				F9070DA92B9F175E00383E4D /* IWindow.hpp */,
+				B247EBA269684AAAB6699DEF /* WindowUtility.hpp */,
 			);
 			path = Window;
 			sourceTree = "<group>";
@@ -9026,7 +9096,9 @@
 				F98605A22BE4887C006A4C0F /* RegExp */,
 				F97203112BF09DA3000E21DD /* Renderer */,
 				F980C47F2C04B3EA00A86B68 /* Renderer2D */,
-				F97203042BEDF2FF000E21DD /* ResizeMode */,
+				9E7D4741375A4408BB97F4F0 /* SceneSizeMode */,
+				2FC6FC220D1643269643274D /* SceneResolution */,
+				BD3897C41FA04C7FA1803EB8 /* FullscreenSceneMode */,
 				F9D41CF22C9FCDC300290998 /* RoundRect */,
 				F9FD0D132D204FBE00A584CE /* SamplerBorderColor */,
 				F980C4532C00E2AE00A86B68 /* SamplerState */,
@@ -9264,6 +9336,7 @@
 				F99881862F4829D000C8991D /* DockProgressBar.mm */,
 				F98605892BDBDB37006A4C0F /* WindowMisc.hpp */,
 				F98605882BDBDB37006A4C0F /* WindowMisc.mm */,
+				BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */,
 				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
 				F9528A852BA018CE00222F45 /* WindowTitle.hpp */,
 				F9070E882B9F183100383E4D /* CWindow.cpp */,
@@ -10731,12 +10804,28 @@
 			path = Scene;
 			sourceTree = "<group>";
 		};
-		F97203042BEDF2FF000E21DD /* ResizeMode */ = {
+		9E7D4741375A4408BB97F4F0 /* SceneSizeMode */ = {
 			isa = PBXGroup;
 			children = (
-				F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */,
+				F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */,
 			);
-			path = ResizeMode;
+			path = SceneSizeMode;
+			sourceTree = "<group>";
+		};
+		2FC6FC220D1643269643274D /* SceneResolution */ = {
+			isa = PBXGroup;
+			children = (
+				3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */,
+			);
+			path = SceneResolution;
+			sourceTree = "<group>";
+		};
+		BD3897C41FA04C7FA1803EB8 /* FullscreenSceneMode */ = {
+			isa = PBXGroup;
+			children = (
+				B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */,
+			);
+			path = FullscreenSceneMode;
 			sourceTree = "<group>";
 		};
 		F97203062BEDF2FF000E21DD /* TextureFilter */ = {
@@ -14899,6 +14988,7 @@
 				F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */,
+				C1B340C25CBA4DC39F6E6C7D /* SceneConfig.ipp in Headers */,
 				F95122082CB62E4300151291 /* best_bin_finder.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
@@ -15109,6 +15199,7 @@
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
+				133CA6A9A42F4A5C956128B6 /* WindowUtility.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
 				F98602022BCFBB53006A4C0F /* SkMipmapBuilder.h in Headers */,
@@ -15641,7 +15732,10 @@
 				F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */,
 				F933AD302E54A345005624D7 /* GlyphContext.hpp in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
-				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
+				F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */,
+				9071747C53A8405CB00D1DD2 /* SceneSizeMode.hpp in Headers */,
+				D6F4563BCFE04D9687962725 /* SceneResolution.hpp in Headers */,
+				FED35CAADFC445CB924FEAB4 /* FullscreenSceneMode.hpp in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
@@ -16829,6 +16923,15 @@
 				8BE058AFFF786F7654F81743 /* Test_QuadWarp.cpp in Sources */,
 				088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */,
 				63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */,
+				45A76FD970C64B5B9ABB3F78 /* Test_SceneHighResolution.cpp in Sources */,
+				D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */,
+				32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */,
+				D40DB715FB894747959F2B98 /* Test_WindowMacOS.cpp in Sources */,
+				E450BA1048C14C68926AE6A1 /* Test_WindowSceneSync.cpp in Sources */,
+				8E7B8A80CDF64F0D9D0319EE /* Test_WindowFullscreen_macOS.cpp in Sources */,
+				EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */,
+				8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */,
+				ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */,
 				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,
 				B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */,
 				7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */,
@@ -16961,9 +17064,13 @@
 				422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
 				2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */,
+				3F61E875DDEE4710A8E29A15 /* Test_MetalScreenCapture.cpp in Sources */,
 				BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */,
+				D4604704A5ED4A0483159C45 /* Test_ScreenCoordinates.cpp in Sources */,
 				FCCD4144ABA44516BDF2F728 /* Test_Keyboard.cpp in Sources */,
 				D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */,
+				24CFF175A6EF47B7AF7C2FF4 /* Test_ScenePresentation.cpp in Sources */,
+				95D49E74CAF04733BBFE5C42 /* Test_SceneMSAA.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
@@ -17593,7 +17700,9 @@
 				F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
-				F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */,
+				18823A171BD94243A0AAFC43 /* SivSceneSizeMode.cpp in Sources */,
+				B70D55149CC64E84A2F9B5DA /* SivSceneResolution.cpp in Sources */,
+				388735418473435AA6BF3B44 /* SivFullscreenSceneMode.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F91D2BC8441F006A4C0F /* regerror.c in Sources */,
 				F986F9202BC8441F006A4C0F /* reggnu.c in Sources */,
@@ -17631,6 +17740,7 @@
 				F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,
 				F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */,
+				E76853E1622E477EB83BE4FD /* SivWindow_macOS.cpp in Sources */,
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9797EBB2F6DA46100518D26 /* MP3Encoder.cpp in Sources */,
 				F9797EBC2F6DA46100518D26 /* AACEncoder.cpp in Sources */,

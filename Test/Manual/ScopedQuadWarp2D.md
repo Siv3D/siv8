@@ -89,7 +89,6 @@ in [TODO.md](../../TODO.md).
 void Main()
 {
 	Window::Resize(1280, 720);
-	Scene::Resize(1280, 720);
 	Scene::SetBackground(ColorF{ 0.86, 0.83, 0.78 });
 	const Texture photo{ U"example/bay.jpg" };
 	const Font heavy{ FontMethod::MSDF, 48, Typeface::Heavy }, medium{ FontMethod::MSDF, 48, Typeface::Medium };

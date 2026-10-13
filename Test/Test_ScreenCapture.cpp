@@ -10,9 +10,61 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Scene/SceneStyle.hpp>
+# include <Siv3D/ScreenCapture/CScreenCapture.hpp>
+
+# if SIV3D_PLATFORM(WINDOWS)
+# include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
+# endif
 
 namespace
 {
+	class CaptureRenderer final : public ISiv3DRenderer
+	{
+	public:
+		Image image{ 3, 2, Palette::Red };
+		bool captureResult = true;
+		uint32 captureCalls = 0;
+		mutable uint32 imageReads = 0;
+
+		bool captureScreenshot() override
+		{
+			++captureCalls;
+			return captureResult;
+		}
+
+		const Image& getScreenCapture() const override
+		{
+			++imageReads;
+			return image;
+		}
+
+		StringView getName() const override { return U"Capture test renderer"; }
+		EngineOption::Renderer getRendererType() const noexcept override { return EngineOption::Renderer::Direct3D11; }
+		void init() override {}
+		void waitForFrame() override {}
+		void beginFrame() override {}
+		void flush() override {}
+		bool present() override { return true; }
+		SceneStyle& getSceneStyle() noexcept override { return m_style; }
+		void configureScene(const SceneConfig&) override {}
+		SceneConfig getSceneConfig() const noexcept override { return SceneConfig{}; }
+		void setSceneSampleCount(uint32) override {}
+		uint32 getSceneSampleCount() const noexcept override { return 1; }
+		const Size& getSceneSize() const noexcept override { return m_size; }
+		const Size& getSceneBufferSize() const noexcept override { return m_size; }
+		std::pair<double, RectF> getLetterboxComposition() const noexcept override { return { 1.0, RectF{ m_size } }; }
+		void updateSceneSize() override {}
+		void setVSyncEnabled(bool) override {}
+		bool isVSyncEnabled() const override { return false; }
+
+	private:
+		SceneStyle m_style;
+		Size m_size{ 3, 2 };
+	};
+
 	struct ScopedCaptureSettings
 	{
 		const FilePath directory = ScreenCapture::GetScreenshotDirectory();
@@ -46,6 +98,49 @@ TEST_CASE("ScreenCapture.default_directory")
 {
 	CHECK(ScreenCapture::GetScreenshotDirectory()
 		== FileSystem::PathAppend(FileSystem::GetFolderPath(SpecialFolder::Pictures), U"Screenshot/"));
+}
+
+TEST_CASE("ScreenCapture.capture_failure_does_not_publish_or_save_stale_image")
+{
+	CaptureRenderer renderer;
+	CScreenCapture capture;
+	capture.setScreenshotShortcutKeys({});
+	const FilePath saved = Test::OutputPath(U"screen-capture/readback/saved.png");
+	const FilePath failed = Test::OutputPath(U"screen-capture/readback/failed.png");
+
+	// Multiple requests share one readback, including memory-only requests.
+	capture.requestScreenCapture();
+	capture.requestScreenCapture(saved);
+	capture.update(renderer);
+	REQUIRE(capture.hasNewFrame());
+	CHECK(renderer.captureCalls == 1);
+	CHECK(Image{ saved } == renderer.image);
+	const uint32 previousReads = renderer.imageReads;
+
+	// A failed readback may leave a nonempty previous image in the backend.
+	renderer.captureResult = false;
+	renderer.image.fill(Palette::Blue);
+	capture.requestScreenCapture(saved);
+	capture.requestScreenCapture(failed);
+	capture.requestScreenCapture();
+	capture.update(renderer);
+	CHECK_FALSE(capture.hasNewFrame());
+	CHECK(renderer.captureCalls == 2);
+	CHECK(renderer.imageReads == previousReads);
+	CHECK((Image{ saved } == Image{ 3, 2, Palette::Red }));
+	CHECK_FALSE(FileSystem::Exists(failed));
+
+	// Failed requests are consumed, and a later request can succeed.
+	renderer.captureResult = true;
+	capture.update(renderer);
+	CHECK_FALSE(capture.hasNewFrame());
+	CHECK(renderer.captureCalls == 2);
+	CHECK_FALSE(FileSystem::Exists(failed));
+	capture.requestScreenCapture(saved);
+	capture.update(renderer);
+	CHECK(capture.hasNewFrame());
+	CHECK(renderer.captureCalls == 3);
+	CHECK(Image{ saved } == renderer.image);
 }
 
 TEST_CASE("ScreenCapture.named_and_automatic_save")
@@ -183,6 +278,32 @@ TEST_CASE("ScreenCapture.failed_save_does_not_redirect_or_block_other_requests")
 }
 
 # if SIV3D_PLATFORM(WINDOWS)
+
+TEST_CASE("ScreenCapture.D3D11.failed_staging_resize_preserves_readback")
+{
+	auto* renderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
+	const auto& device = renderer->getDevice();
+	const Size size{ 7, 3 };
+	auto source = D3D11InternalTexture2D::CreateRenderTexture(device.getDevice(), size);
+	source.clear(device.getContext(), Palette::Red);
+	D3D11ScreenCapture capture;
+	capture.init(device);
+	REQUIRE(capture.capture(source.getTexture(), size));
+	const Color* const pixels = capture.getImage().data();
+	CHECK((capture.getImage() == Image{ size, Palette::Red }));
+
+	// Texture creation must fail before the mismatched source can be copied.
+	const Size unsupportedSize{ D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 1 };
+	CHECK_FALSE(capture.capture(source.getTexture(), unsupportedSize));
+	CHECK(capture.getImage().data() == pixels);
+	CHECK((capture.getImage() == Image{ size, Palette::Red }));
+
+	// The old-size staging texture must still be usable after the failed resize.
+	source.clear(device.getContext(), Palette::Blue);
+	REQUIRE(capture.capture(source.getTexture(), size));
+	CHECK(capture.getImage().data() == pixels);
+	CHECK((capture.getImage() == Image{ size, Palette::Blue }));
+}
 
 TEST_CASE("ScreenCapture.windows_drive_and_root_relative_paths")
 {

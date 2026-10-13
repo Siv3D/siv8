@@ -1594,8 +1594,17 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// リサイズモード | Resize mode
-# include <Siv3D/ResizeMode.hpp>
+// シーンサイズの決め方 | Scene size mode
+# include <Siv3D/SceneSizeMode.hpp>
+
+// 描画解像度の決め方 | Scene resolution
+# include <Siv3D/SceneResolution.hpp>
+
+// 全画面中のシーンサイズの扱い | Fullscreen scene mode
+# include <Siv3D/FullscreenSceneMode.hpp>
+
+// シーンの表示設定 | Scene configuration
+# include <Siv3D/SceneConfig.hpp>
 
 // MSAA サンプル数 | MSAA sample count
 # include <Siv3D/MSAASampleCount.hpp>

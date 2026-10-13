@@ -182,6 +182,8 @@ namespace s3d
 
 		virtual void flush() = 0;
 
+		virtual void setSceneScale(Float2 scale) = 0;
+
 
 		virtual Float4 getColorMul() const = 0;
 

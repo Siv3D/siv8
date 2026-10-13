@@ -37,14 +37,14 @@ namespace s3d
 		return m_scale;
 	}
 
-	constexpr RectF BasicCamera2D::getRegion(const Size renderTargetSize) const noexcept
+	constexpr RectF BasicCamera2D::getRegion(const Size drawingSize) const noexcept
 	{
-		return{ (m_center - ((renderTargetSize * 0.5) / m_scale)), (renderTargetSize / m_scale) };
+		return{ (m_center - ((drawingSize * 0.5) / m_scale)), (drawingSize / m_scale) };
 	}
-	constexpr Mat3x2 BasicCamera2D::getMat3x2(const Size renderTargetSize) const noexcept
+	constexpr Mat3x2 BasicCamera2D::getMat3x2(const Size drawingSize) const noexcept
 	{
 		return Mat3x2::Scale(m_scale)
-			.translated((renderTargetSize * 0.5) - m_center * m_scale);
+			.translated((drawingSize * 0.5) - m_center * m_scale);
 	}
 
 	inline Transformer2D BasicCamera2D::createTransformer() const

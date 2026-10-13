@@ -11,7 +11,6 @@
 
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/Error.hpp>
 
 namespace s3d
 {
@@ -72,33 +71,5 @@ namespace s3d
 	void Formatter(FormatData& formatData, const MonitorInfo& value)
 	{
 		formatData.string.append(value.format());
-	}
-
-	namespace System
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetCurrentMonitor
-		//
-		////////////////////////////////////////////////////////////////
-
-		MonitorInfo GetCurrentMonitor()
-		{
-			const Array<MonitorInfo> monitors = EnumerateMonitors();
-
-			if (not monitors)
-			{
-				throw Error{ "System::GetCurrentMonitor(): No monitor found" };
-			}
-
-			const size_t monitorIndex = GetCurrentMonitorIndex();
-
-			if (monitors.size() <= monitorIndex)
-			{
-				throw Error{ "System::GetCurrentMonitor(): Monitor index out of range" };
-			}
-
-			return monitors[monitorIndex];
-		}
 	}
 }

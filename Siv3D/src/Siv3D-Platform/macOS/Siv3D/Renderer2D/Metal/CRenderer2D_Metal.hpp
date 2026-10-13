@@ -376,6 +376,13 @@ namespace s3d
 
 		void flush() override;
 
+		// フレーム末尾では、後続の描画に備えた MSAA サンプルの保存を省く。
+		void flush(bool finalScenePass);
+
+		void setSceneScale(Float2 scale) override { m_commandManager.setSceneScale(scale); }
+
+		void resetScenePass() noexcept { m_scenePassStarted = false; }
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	getColorMul, setColorMul

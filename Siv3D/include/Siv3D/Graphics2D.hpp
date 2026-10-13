@@ -199,16 +199,22 @@ namespace s3d
 		/// @brief 現在のローカル座標変換と 2D カメラ座標変換を合成した行列の RMS 拡大率を返します。
 		/// @return 合成行列の Mat3x2::rmsScaling() の値。線形部分がゼロの場合は 0
 		/// @remark 等方スケールでは、線幅をこの値で割ることで画面上の太さを補正できます。非一様スケールやせん断では近似になります。
-		/// @remark ScopedQuadWarp2D の射影変換は含みません。
+		/// @remark ScopedQuadWarp2D の射影変換とシーンの高精細描画の倍率は含みません。
 		/// @remark 戻り値が 0 の場合は、線幅やパターンの補正に逆数を使用できません。
 		[[nodiscard]]
 		float GetRMSScaling() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	GetRenderTargetSize
+		//	GetDrawingSize, GetRenderTargetSize
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 描画座標で表した、現在の描画先の幅と高さを返します。
+		/// @return シーンへの描画では Scene::Size()
+		/// @remark Local / Camera / QuadWarp の変換やビューポート設定は含みません。
+		[[nodiscard]]
+		Size GetDrawingSize() noexcept;
 
 		/// @brief 現在のレンダーターゲットのサイズ（ピクセル）を返します
 		/// @return 現在のレンダーターゲットのサイズ（ピクセル）

@@ -17,6 +17,8 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -24,6 +26,28 @@
 
 namespace s3d
 {
+	void D3D11BackBuffer::configureScene(const SceneConfig& config)
+	{
+		auto state = m_sceneState;
+		state.configure(config, Window::GetState());
+		applySceneState(state, m_sceneBuffers.sampleCount);
+	}
+
+	SceneConfig D3D11BackBuffer::getSceneConfig() const noexcept
+	{
+		return m_sceneState.config;
+	}
+
+	void D3D11BackBuffer::setSceneSampleCount(const uint32 sampleCount)
+	{
+		applySceneState(m_sceneState, sampleCount);
+	}
+
+	uint32 D3D11BackBuffer::getSceneSampleCount() const noexcept
+	{
+		return m_sceneBuffers.sampleCount;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	init
@@ -43,16 +67,8 @@ namespace s3d
 		m_backBuffer	= D3D11InternalTexture2D::CreateFromSwapChain(m_device, m_swapChain1);
 		
 		{
-			const Size sceneSize = Window::GetState().virtualSize;
-
-			if (m_sceneBuffers.sampleCount == 1)
-			{
-				m_sceneBuffers.nonMSAA	= D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
-			else
-			{
-				m_sceneBuffers.msaa		= D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
-			}
+			m_sceneState.configure(SceneConfig{}, Window::GetState());
+			m_sceneBuffers = createSceneBuffers(m_sceneState.renderResolution(), m_sceneBuffers.sampleCount);
 		}
 
 		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
@@ -68,6 +84,7 @@ namespace s3d
 	{
 		if (clearTarget & D3D11ClearTarget::Scene)
 		{
+			m_sceneBuffers.resolved = false;
 			m_sceneBuffers.getSceneTexture().clear(m_context, m_sceneStyle.backgroundColor);
 		}
 
@@ -90,46 +107,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void D3D11BackBuffer::setSceneResizeMode(const ResizeMode resizeMode)
-	{
-		m_sceneResizeMode = resizeMode;
-
-		updateSceneBufferSize();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode D3D11BackBuffer::getSceneResizeMode() const noexcept
-	{
-		return m_sceneResizeMode;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	updateSceneBufferSize
 	//
 	////////////////////////////////////////////////////////////////
 
 	void D3D11BackBuffer::updateSceneBufferSize()
 	{
-		LOG_TRACE("D3D11BackBuffer::updateSceneBufferSize()");
-
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
+		auto state = m_sceneState;
+		state.updateWindow(Window::GetState());
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -148,7 +134,8 @@ namespace s3d
 		{
 			const Size sceneBufferSize = m_sceneBuffers.nonMSAA.size();
 
-			if (backBufferSize == sceneBufferSize)
+			if ((backBufferSize == sceneBufferSize)
+				&& (getLetterboxComposition().second == RectF{ backBufferSize }))
 			{
 				m_sceneBuffers.nonMSAA.copyTo(m_context, m_backBuffer);
 			}
@@ -165,17 +152,14 @@ namespace s3d
 		{
 			const Size sceneBufferSize = m_sceneBuffers.msaa.size();
 
-			if (backBufferSize == sceneBufferSize)
+			if ((backBufferSize == sceneBufferSize)
+				&& (getLetterboxComposition().second == RectF{ backBufferSize }))
 			{
 				m_sceneBuffers.msaa.resolveTo(m_context, m_backBuffer);
 			}
 			else
 			{
-				if (m_sceneBuffers.nonMSAA.size() != sceneBufferSize)
-				{
-					m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneBufferSize);
-				}
-				m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+				resolveScene();
 
 				bindRenderTarget(m_backBuffer.getRTV());
 				bindTextureAsPSResource(m_sceneBuffers.nonMSAA.getSRV());
@@ -215,7 +199,6 @@ namespace s3d
 			clear(D3D11ClearTarget::BackBuffer);
 		}
 
-		updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -229,37 +212,10 @@ namespace s3d
 		return m_backBuffer.size();
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeSceneBuffer
-	//
-	////////////////////////////////////////////////////////////////
 
-	void D3D11BackBuffer::resizeSceneBuffer(const Size size)
+	const Size& D3D11BackBuffer::getSceneSize() const noexcept
 	{
-		assert((0 < size.x) && (0 < size.y));
-
-		if (getSceneBufferSize() == size)
-		{
-			return;
-		}
-
-		LOG_DEBUG(fmt::format("D3D11BackBuffer::resizeSceneBuffer({})", size));
-
-		unbindAllRenderTargets();
-
-		m_sceneBuffers = {};
-
-		if (m_sceneBuffers.sampleCount == 1)
-		{
-			m_sceneBuffers.nonMSAA	= D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
-		}
-		else
-		{
-			m_sceneBuffers.msaa		= D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
-		}
-
-		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
+		return m_sceneState.sceneSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -281,7 +237,7 @@ namespace s3d
 
 	std::pair<double, RectF> D3D11BackBuffer::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(m_backBuffer.size(), getSceneBufferSize());
+		return m_sceneState.composition();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -292,6 +248,7 @@ namespace s3d
 
 	void D3D11BackBuffer::bindSceneTextureAsRenderTarget()
 	{
+		m_sceneBuffers.resolved = false;
 		bindRenderTarget(m_sceneBuffers.getSceneTexture().getRTV());
 	}
 
@@ -311,17 +268,7 @@ namespace s3d
 		}
 		else
 		{
-			const Size sceneSize = m_sceneBuffers.msaa.size();
-
-			if (m_backBuffer.size() == sceneSize)
-			{
-				if (m_sceneBuffers.nonMSAA.size() != sceneSize)
-				{
-					m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-				}
-
-				m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
-			}
+			resolveScene();
 
 			return{ m_sceneBuffers.nonMSAA.getTexture(), m_sceneBuffers.nonMSAA.size() };
 		}
@@ -374,7 +321,7 @@ namespace s3d
 
 		// render states
 		{
-			const SamplerState samplerState = ((m_sceneStyle.textureFilter == TextureFilter::Linear) ?
+			const SamplerState samplerState = ((m_sceneState.config.scalingFilter == TextureFilter::Linear) ?
 				SamplerState::ClampLinear : SamplerState::ClampNearest);
 			m_pRenderer->getSamplerState().setPS(0, samplerState);
 			m_pRenderer->getBlendState().set(BlendState::Opaque);
@@ -399,4 +346,84 @@ namespace s3d
 			m_context->Draw(3, 0);
 		}
 	}
+	void D3D11BackBuffer::resolveScene()
+	{
+		if (m_sceneBuffers.resolved)
+		{
+			return;
+		}
+
+		const Size sceneSize = m_sceneBuffers.msaa.size();
+		if (m_sceneBuffers.nonMSAA.size() != sceneSize)
+		{
+			m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+		}
+		m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+		m_sceneBuffers.resolved = true;
+	}
+
+	D3D11BackBuffer::SceneBuffer D3D11BackBuffer::createSceneBuffers(const Size size, const uint32 sampleCount) const
+	{
+		UINT qualityLevels = 0;
+		if (FAILED(m_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, sampleCount, &qualityLevels))
+			|| (qualityLevels == 0))
+		{
+			throw Error{ fmt::format("Scene MSAA sample count {} is not supported by the GPU", sampleCount) };
+		}
+		SceneBuffer buffers;
+		buffers.sampleCount = sampleCount;
+		if (sampleCount > 1)
+		{
+			buffers.msaa = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, sampleCount);
+		}
+		if (m_sceneBuffers.nonMSAA.size() == size)
+		{
+			buffers.nonMSAA = m_sceneBuffers.nonMSAA;
+		}
+		else if (sampleCount == 1)
+		{
+			buffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
+		}
+		// MSAA presentation and capture allocate the resolve target lazily.
+		return buffers;
+	}
+
+	void D3D11BackBuffer::applySceneState(const SceneMisc::RenderState& state, const uint32 sampleCount)
+	{
+		const bool stateChanged = (state != m_sceneState);
+		const bool samplesChanged = (sampleCount != m_sceneBuffers.sampleCount);
+		if (not stateChanged && not samplesChanged)
+		{
+			return;
+		}
+		SceneMisc::ValidateSceneSize(state.sceneSize);
+		const Size renderResolution = state.renderResolution();
+		SceneMisc::ValidateSceneSize(renderResolution);
+		const bool dimensionsChanged = ((renderResolution != getSceneBufferSize()) || (state.sceneSize != m_sceneState.sceneSize));
+		const bool replaceBuffer = ((renderResolution != getSceneBufferSize()) || samplesChanged);
+		SceneBuffer buffers;
+		if (replaceBuffer)
+		{
+			buffers = createSceneBuffers(renderResolution, sampleCount);
+		}
+		if (dimensionsChanged || samplesChanged)
+		{
+			if (replaceBuffer)
+			{
+				unbindAllRenderTargets();
+				m_sceneBuffers = std::move(buffers);
+			}
+			clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
+		}
+		if (dimensionsChanged)
+		{
+			SIV3D_ENGINE(Renderer2D)->setSceneScale(Float2{ (float(renderResolution.x) / state.sceneSize.x), (float(renderResolution.y) / state.sceneSize.y) });
+		}
+		if (stateChanged)
+		{
+			m_sceneState = state;
+			SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		}
+	}
+
 }

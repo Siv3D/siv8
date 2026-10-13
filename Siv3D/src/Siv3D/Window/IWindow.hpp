@@ -41,6 +41,8 @@ namespace s3d
 	
 		virtual const WindowState& getState() const noexcept = 0;
 
+		// Native operations publish WindowState, including intermediate geometry.
+		// Public Window operations apply Scene once after their native work completes.
 		virtual void setStyle(WindowStyle style) = 0;
 
 		virtual void setPos(Point pos) = 0;

@@ -11,9 +11,7 @@
 
 # pragma once
 # include <atomic>
-# include <mutex>
 # include <Siv3D/WindowState.hpp>
-# include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
@@ -21,6 +19,9 @@
 # include "User32Lib.hpp"
 # include "WindowClass.hpp"
 # include "WindowTitle.hpp"
+# include "WindowStateSync.hpp"
+# include "WindowProc.hpp"
+# include <Siv3D/MonitorInfo/WindowsMonitor.hpp>
 
 namespace s3d
 {
@@ -64,6 +65,8 @@ namespace s3d
 
 		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
 
+		void setFullscreen(bool fullscreen, size_t monitorIndex, const WindowsMonitor::Functions& functions);
+
 		void setToggleFullscreenEnabled(bool enabled) override;
 
 		bool isToggleFullscreenEnabled() const override;
@@ -74,6 +77,15 @@ namespace s3d
 
 		void destroy();
 
+		void attach(HWND hWnd) noexcept;
+
+		void beginStateUpdate() noexcept;
+
+		void endStateUpdate();
+
+		void dispatchCommand(WindowThreadCommand& command);
+
+		const WindowState& getOSState() const noexcept;
 
 		void onResize(bool minimized, bool maximized);
 
@@ -105,7 +117,12 @@ namespace s3d
 
 		WindowTitle m_windowTitle;
 
-		WindowState m_state;
+		// All native geometry and policy below belong to the window thread.
+		WindowState m_osState;
+
+		WindowStateSync m_stateSync;
+
+		WindowThreadCommand* m_deferredCommands = nullptr;
 
 		int32 m_dpi = USER_DEFAULT_SCREEN_DPI;
 
@@ -114,15 +131,18 @@ namespace s3d
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
 
-		Optional<ResizeMode> m_oldResizeMode;
+		bool m_fullscreenTransition = false;
 
-		bool m_toggleFullscreenEnabled = true;
+		enum class ToggleFullscreenState : uint8
+		{
+			Disabled,
 
-		std::atomic<bool> m_toggleFullscreenRequested = false;
+			Enabled,
 
-		std::atomic<bool> m_moving = false;
+			Requested,
+		};
 
-		std::mutex m_minimumFrameBufferSizeMutex;
+		std::atomic<ToggleFullscreenState> m_toggleFullscreenState = ToggleFullscreenState::Enabled;
 
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
 
@@ -132,8 +152,31 @@ namespace s3d
 
 		int32 getSystemMetrics(int32 index) const;
 
+		Point getNativeWindowPos(Point visibleFramePos) const;
+
 		void setWindowPos(const Rect& rect, uint32 flags);
 
-		void setFullscreen(bool fullscreen, size_t monitorIndex, bool skipSceneResize);
+		void showOnWindowThread();
+
+		void setStyleOnWindowThread(WindowStyle style);
+
+		void setPosOnWindowThread(Point pos);
+
+		bool resizeOnWindowThread(Size size, bool virtualSize);
+
+		bool setFullscreenOnWindowThread(bool fullscreen, size_t monitorIndex, const WindowsMonitor::Functions& functions);
+
+		bool resize(Size size, bool virtualSize);
+
+		// No shared mutex is held while Win32 synchronously dispatches/reenters.
+		template <class F>
+		void invokeOnWindowThread(F function)
+		{
+			WindowThreadCommand command{ [](void* context) { (*static_cast<F*>(context))(); }, &function, {} };
+			::SendMessageW(m_hWnd, WindowThreadMessage, 0, reinterpret_cast<LPARAM>(&command));
+			command.wait();
+			m_stateSync.synchronize();
+			if (command.exception) { std::rethrow_exception(command.exception); }
+		}
 	};
 }

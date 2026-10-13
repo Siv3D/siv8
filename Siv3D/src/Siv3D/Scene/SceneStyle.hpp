@@ -20,7 +20,5 @@ namespace s3d
 		ColorF letterboxColor		= Scene::DefaultLetterboxColor;
 
 		ColorF backgroundColor		= Scene::DefaultBackgroundColor;
-
-		TextureFilter textureFilter	= Scene::DefaultTextureFilter;
 	};
 }

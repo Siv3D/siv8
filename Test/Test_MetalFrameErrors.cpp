@@ -66,6 +66,8 @@ namespace s3d
 {
 	namespace
 	{
+		// Catch2 retargets std::clog while reporting assertions. Confine captures to
+		// the assertion-free helpers below, joining workers before reading the log.
 		class LogCapture
 		{
 		public:
@@ -77,11 +79,9 @@ namespace s3d
 				std::clog.rdbuf(m_previous);
 			}
 
-			std::string take()
+			std::string text() const
 			{
-				auto text = m_stream.str();
-				m_stream.str({});
-				return text;
+				return m_stream.str();
 			}
 
 		private:
@@ -101,15 +101,85 @@ namespace s3d
 			return buffer;
 		}
 
-		auto CompleteAsync(Siv3DTestFrameCommandBuffer* buffer, MTLCommandBufferStatus status, NSError* error = nil)
+		std::string CaptureReportedErrors(MetalFrameContext& context)
 		{
-			return std::async(std::launch::async, [buffer, status, error]
+			LogCapture log;
+			context.reportErrors();
+			return log.text();
+		}
+
+		std::string CaptureCompletionLog(Siv3DTestFrameCommandBuffer* buffer,
+			MTLCommandBufferStatus status, NSError* error = nil)
+		{
+			LogCapture log;
+			auto completion = std::async(std::launch::async, [buffer, status, error]
 			{
 				@autoreleasepool
 				{
 					[buffer completeWithStatus:status error:error];
 				}
 			});
+			completion.get();
+			return log.text();
+		}
+
+		std::string CaptureDrainedErrors(MetalFrameContext& context)
+		{
+			LogCapture log;
+			context.drain();
+			context.reportErrors();
+			return log.text();
+		}
+
+		using SubmittedFrames = std::array<Siv3DTestFrameCommandBuffer*, MetalFrameContext::MaxInflightFrames>;
+
+		std::string CaptureDrainedErrors(MetalFrameContext& context, const SubmittedFrames& buffers)
+		{
+			LogCapture log;
+			auto completion = std::async(std::launch::async, [&]
+			{
+				@autoreleasepool
+				{
+					// Complete the newest first so waiting for only that frame is insufficient.
+					for (auto* buffer : buffers | std::views::reverse)
+					{
+						[buffer completeWithStatus:MTLCommandBufferStatusError error:nil];
+					}
+				}
+			});
+			context.drain();
+			context.reportErrors();
+			completion.get();
+			return log.text();
+		}
+
+		std::string CaptureConcurrentErrors(MetalFrameContext& context, const SubmittedFrames& buffers)
+		{
+			LogCapture log;
+			std::latch start{ 1 };
+			std::array<std::future<void>, MetalFrameContext::MaxInflightFrames> completions;
+			ScopeExit releaseStart{ [&] { start.count_down(); } };
+			for (size_t i = 0; i < buffers.size(); ++i)
+			{
+				auto* buffer = buffers[i];
+				completions[i] = std::async(std::launch::async, [buffer, &start]
+				{
+					start.wait();
+					@autoreleasepool
+					{
+						[buffer completeWithStatus:MTLCommandBufferStatusError error:nil];
+					}
+				});
+			}
+			start.count_down();
+			releaseStart.release();
+			context.reportErrors();
+			for (auto& completion : completions)
+			{
+				completion.get();
+			}
+			context.reportErrors();
+			return log.text();
 		}
 
 		size_t AvailableFrameSlots(dispatch_semaphore_t semaphore)
@@ -142,13 +212,10 @@ namespace s3d
 	{
 		MetalFrameContext context;
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		LogCapture log;
-		context.reportErrors();
+		CHECK(CaptureReportedErrors(context).empty());
 		auto* buffer = Submit(context, queue);
-		CompleteAsync(buffer, MTLCommandBufferStatusCompleted).get();
-		CHECK(log.take().empty());
-		context.reportErrors();
-		CHECK(log.take().empty());
+		CHECK(CaptureCompletionLog(buffer, MTLCommandBufferStatusCompleted).empty());
+		CHECK(CaptureReportedErrors(context).empty());
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
 	}
 
@@ -156,26 +223,26 @@ namespace s3d
 	{
 		MetalFrameContext context;
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		LogCapture log;
 		// Successful submissions also advance the diagnostic sequence number.
-		CompleteAsync(Submit(context, queue), MTLCommandBufferStatusCompleted).get();
+		auto* successful = Submit(context, queue);
+		CHECK(CaptureCompletionLog(successful, MTLCommandBufferStatusCompleted).empty());
 		auto* buffer = Submit(context, queue);
 		__weak NSError* weakError;
+		std::string completionLog;
 		@autoreleasepool
 		{
 			NSError* error = [NSError errorWithDomain:@"Siv3DTestGPUError" code:9
 				userInfo:@{ NSLocalizedDescriptionKey: @"Injected GPU failure" }];
 			weakError = error;
-			CompleteAsync(buffer, MTLCommandBufferStatusError, error).get();
+			completionLog = CaptureCompletionLog(buffer, MTLCommandBufferStatusError, error);
 			// The pending record must own the error independently of the buffer.
 			buffer.error = nil;
 		}
 		REQUIRE(weakError != nil);
-		CHECK(log.take().empty());
+		CHECK(completionLog.empty());
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
 
-		context.reportErrors();
-		const auto output = log.take();
+		const auto output = CaptureReportedErrors(context);
 		CHECK(output.contains("[error] Metal GPU execution failed"));
 		CHECK(output.contains("first submission = 2"));
 		CHECK(output.contains("failures = 1"));
@@ -183,34 +250,30 @@ namespace s3d
 		CHECK(output.contains("code = 9"));
 		CHECK(output.contains("Injected GPU failure"));
 		CHECK(weakError == nil);
-		context.reportErrors();
-		CHECK(log.take().empty());
+		CHECK(CaptureReportedErrors(context).empty());
 	}
 
 	TEST_CASE("MetalFrameErrors.missing_details_and_multiple_failures")
 	{
 		MetalFrameContext context;
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		LogCapture log;
 		for (size_t i = 0; i < MetalFrameContext::MaxInflightFrames; ++i)
 		{
 			NSError* error = ((i == 0) ? nil : [NSError errorWithDomain:@"LaterError" code:2 userInfo:nil]);
-			CompleteAsync(Submit(context, queue), MTLCommandBufferStatusError, error).get();
+			auto* buffer = Submit(context, queue);
+			CHECK(CaptureCompletionLog(buffer, MTLCommandBufferStatusError, error).empty());
 		}
-		CHECK(log.take().empty());
-		context.reportErrors();
-		const auto output = log.take();
+		const auto output = CaptureReportedErrors(context);
 		CHECK(output.contains("first submission = 1"));
 		CHECK(output.contains("failures = 3"));
 		CHECK(output.contains("No Metal error details"));
 		CHECK_FALSE(output.contains("LaterError"));
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
-		context.reportErrors();
-		CHECK(log.take().empty());
+		CHECK(CaptureReportedErrors(context).empty());
 
-		CompleteAsync(Submit(context, queue), MTLCommandBufferStatusError).get();
-		context.reportErrors();
-		const auto next = log.take();
+		auto* buffer = Submit(context, queue);
+		CHECK(CaptureCompletionLog(buffer, MTLCommandBufferStatusError).empty());
+		const auto next = CaptureReportedErrors(context);
 		CHECK(next.contains("first submission = 4"));
 		CHECK(next.contains("failures = 1"));
 	}
@@ -219,83 +282,47 @@ namespace s3d
 	{
 		auto context = std::make_unique<MetalFrameContext>();
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		LogCapture log;
 		auto* buffer = Submit(*context, queue);
 		__weak dispatch_semaphore_t weakSemaphore = context->getSemaphore();
 		context.reset();
 		REQUIRE(weakSemaphore != nil);
 		dispatch_semaphore_t semaphore = weakSemaphore;
 		CHECK(AvailableFrameSlots(semaphore) == (MetalFrameContext::MaxInflightFrames - 1));
-		CompleteAsync(buffer, MTLCommandBufferStatusError).get();
+		const auto output = CaptureCompletionLog(buffer, MTLCommandBufferStatusError);
 		CHECK(AvailableFrameSlots(semaphore) == MetalFrameContext::MaxInflightFrames);
-		CHECK(log.take().empty());
+		CHECK(output.empty());
 	}
 
 	TEST_CASE("MetalFrameErrors.shutdown_drains_pending_errors")
 	{
 		MetalFrameContext context;
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		std::array<Siv3DTestFrameCommandBuffer*, MetalFrameContext::MaxInflightFrames> buffers;
+		SubmittedFrames buffers;
 		for (auto& buffer : buffers)
 		{
 			buffer = Submit(context, queue);
 		}
-		LogCapture log;
-		auto completion = std::async(std::launch::async, [&]
-		{
-			@autoreleasepool
-			{
-				// Complete the newest first so waiting for only that frame is insufficient.
-				for (auto* buffer : buffers | std::views::reverse)
-				{
-					[buffer completeWithStatus:MTLCommandBufferStatusError error:nil];
-				}
-			}
-		});
-		context.drain();
-		context.reportErrors();
-		CHECK(ReportedFailures(log.take()) == MetalFrameContext::MaxInflightFrames);
-		completion.get();
+		const auto output = CaptureDrainedErrors(context, buffers);
+		CHECK(ReportedFailures(output) == MetalFrameContext::MaxInflightFrames);
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
-		context.drain();
-		context.reportErrors();
-		CHECK(log.take().empty());
+		CHECK(CaptureDrainedErrors(context).empty());
 	}
 
 	TEST_CASE("MetalFrameErrors.concurrent_completion_and_reporting")
 	{
 		MetalFrameContext context;
 		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
-		LogCapture log;
 		for (size_t round = 0; round < 8; ++round)
 		{
-			std::latch start{ 1 };
-			std::array<std::future<void>, MetalFrameContext::MaxInflightFrames> completions;
-			ScopeExit releaseStart{ [&] { start.count_down(); } };
-			for (auto& completion : completions)
+			SubmittedFrames buffers;
+			for (auto& buffer : buffers)
 			{
-				auto* buffer = Submit(context, queue);
-				completion = std::async(std::launch::async, [buffer, &start]
-				{
-					start.wait();
-					@autoreleasepool
-					{
-						[buffer completeWithStatus:MTLCommandBufferStatusError error:nil];
-					}
-				});
+				buffer = Submit(context, queue);
 			}
-			start.count_down();
-			releaseStart.release();
-			context.reportErrors();
-			for (auto& completion : completions)
-			{
-				completion.get();
-			}
-			context.reportErrors();
-			CHECK(ReportedFailures(log.take()) == MetalFrameContext::MaxInflightFrames);
+			const auto output = CaptureConcurrentErrors(context, buffers);
+			CHECK(ReportedFailures(output) == MetalFrameContext::MaxInflightFrames);
 			CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
-			context.reportErrors();
-			CHECK(log.take().empty());
+			CHECK(CaptureReportedErrors(context).empty());
 		}
 	}
 }

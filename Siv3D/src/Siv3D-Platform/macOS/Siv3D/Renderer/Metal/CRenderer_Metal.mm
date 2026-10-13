@@ -21,12 +21,31 @@
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Metal/CRenderer2D_Metal.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <cstdio>
 
 namespace s3d
 {
+	void CRenderer_Metal::configureScene(const SceneConfig& config)
+	{
+		auto state = m_sceneState;
+		state.configure(config, Window::GetState());
+		applySceneState(state, m_sceneBuffers.sampleCount);
+	}
+
+	SceneConfig CRenderer_Metal::getSceneConfig() const noexcept
+	{
+		return m_sceneState.config;
+	}
+
+	void CRenderer_Metal::setSceneSampleCount(const uint32 sampleCount)
+	{
+		applySceneState(m_sceneState, sampleCount);
+	}
+
 	struct VertexData
 	{
 		simd::float4 position;
@@ -117,17 +136,8 @@ namespace s3d
 		m_commandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
 		{
-			const Size sceneSize = Window::GetState().virtualSize;
-			
-			if (m_sceneBuffers.sampleCount == 1)
-			{
-				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
-			else
-			{
-				m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
-				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
-			}
+			m_sceneState.configure(SceneConfig{}, Window::GetState());
+			m_sceneBuffers = createSceneBuffers(m_sceneState.renderResolution(), m_sceneBuffers.sampleCount);
 		}
 		
 		m_renderPipelineState.init(m_device, m_pShader);
@@ -173,11 +183,13 @@ namespace s3d
 	void CRenderer_Metal::beginFrame()
 	{
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
-			windowFrameBufferSize != getBackBufferSize())
+			(0 < windowFrameBufferSize.x) && (0 < windowFrameBufferSize.y)
+			&& (windowFrameBufferSize != getBackBufferSize()))
 		{
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
+		updateSceneBufferSize();
 		m_frameContext.beginFrame(m_commandQueue.get());
 	}
 
@@ -189,7 +201,7 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
-		m_pRenderer2D->flush();
+		m_pRenderer2D->flush(true);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -207,29 +219,7 @@ namespace s3d
 
 			if (CA::MetalDrawable* drawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable])
 			{
-				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-				
-				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(drawable->texture());
-				cd->setLoadAction(MTL::LoadActionClear);
-				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
-				cd->setStoreAction(MTL::StoreActionStore);
-				
-				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
-				renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
-				const auto [s, viewRect] = getLetterboxComposition();
-				const MTL::Viewport viewport = {
-					.originX = viewRect.x,
-					.originY = viewRect.y,
-					.width = viewRect.w,
-					.height = viewRect.h,
-					.znear = 0.0,
-					.zfar = 1.0
-				};
-				renderCommandEncoder->setViewport(viewport);
-				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
-				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
-				renderCommandEncoder->endEncoding();
+				renderSceneToBackBuffer(commandBuffer, drawable->texture());
 
 				commandBuffer->presentDrawable(drawable);
 			}
@@ -239,6 +229,36 @@ namespace s3d
 		}
 
 		return true;
+	}
+
+	void CRenderer_Metal::renderSceneToBackBuffer(MTL::CommandBuffer* commandBuffer, MTL::Texture* target)
+	{
+		NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+
+		MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
+		cd->setTexture(target);
+		cd->setLoadAction(MTL::LoadActionClear);
+		cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
+		cd->setStoreAction(MTL::StoreActionStore);
+
+		MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+		renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
+		const auto [s, viewRect] = getLetterboxComposition();
+		const MTL::Viewport viewport = {
+			.originX = viewRect.x,
+			.originY = viewRect.y,
+			.width = viewRect.w,
+			.height = viewRect.h,
+			.znear = 0.0,
+			.zfar = 1.0
+		};
+		renderCommandEncoder->setViewport(viewport);
+		m_samplerState.resetStates();
+		m_samplerState.setPS(renderCommandEncoder, 0,
+			(m_sceneState.config.scalingFilter == TextureFilter::Nearest) ? SamplerState::ClampNearest : SamplerState::ClampLinear);
+		renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
+		renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
+		renderCommandEncoder->endEncoding();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -252,58 +272,9 @@ namespace s3d
 		return m_sceneStyle;
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_Metal::setSceneResizeMode(const ResizeMode resizeMode)
+	const Size& CRenderer_Metal::getSceneSize() const noexcept
 	{
-		m_sceneResizeMode = resizeMode;
-
-		updateSceneBufferSize();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode CRenderer_Metal::getSceneResizeMode() const noexcept
-	{
-		return m_sceneResizeMode;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeSceneBuffer
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_Metal::resizeSceneBuffer(const Size size)
-	{
-		assert((0 < size.x) && (0 < size.y));
-
-		if (getSceneBufferSize() == size)
-		{
-			return;
-		}
-
-		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeSceneBuffer({})", size));
-
-		m_sceneBuffers = {};
-		
-		if (m_sceneBuffers.sampleCount == 1)
-		{
-			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-		}
-		else
-		{
-			m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
-			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
-		}
+		return m_sceneState.sceneSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -325,7 +296,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), getSceneBufferSize());
+		return m_sceneState.composition();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -336,14 +307,7 @@ namespace s3d
 
 	void CRenderer_Metal::updateSceneSize()
 	{
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
+		updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -380,8 +344,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::captureScreenshot()
+	bool CRenderer_Metal::captureScreenshot()
 	{
+		if (not m_frameContext.waitForLastSubmittedFrame())
+		{
+			return false;
+		}
+
 		const Size sceneSize = m_sceneBuffers.nonMSAA.size();
 		
 		if (m_screenCapture.size() != sceneSize)
@@ -389,12 +358,12 @@ namespace s3d
 			m_screenCapture.resize(sceneSize);
 		}
 		
-		m_frameContext.waitForLastSubmittedFrame();
-		
 		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
 												   m_screenCapture.bytesPerRow(),
 												   MTL::Region(0, 0, sceneSize.x, sceneSize.y),
 												   0);
+
+		return (not m_screenCapture.isEmpty());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -416,14 +385,9 @@ namespace s3d
 
 	void CRenderer_Metal::updateSceneBufferSize()
 	{
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
+		auto state = m_sceneState;
+		state.updateWindow(Window::GetState());
+		applySceneState(state, m_sceneBuffers.sampleCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -528,7 +492,6 @@ namespace s3d
 
 		m_metalLayer.drawableSize = CGSizeMake(backBufferSize.x, backBufferSize.y);
 
-		updateSceneBufferSize();
 	}
 
 	Size CRenderer_Metal::getBackBufferSize() const
@@ -538,5 +501,59 @@ namespace s3d
 			static_cast<int32>(backBufferSizeCGSize.width),
 			static_cast<int32>(backBufferSizeCGSize.height) };
 	}
+	CRenderer_Metal::SceneBuffer CRenderer_Metal::createSceneBuffers(const Size size, const uint32 sampleCount) const
+	{
+		if (not m_device->supportsTextureSampleCount(sampleCount))
+		{
+			throw Error{ fmt::format("Scene MSAA sample count {} is not supported by the GPU", sampleCount) };
+		}
+		SceneBuffer buffers;
+		buffers.sampleCount = sampleCount;
+		if (sampleCount > 1)
+		{
+			buffers.msaa = MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, sampleCount);
+		}
+		buffers.nonMSAA = ((m_sceneBuffers.nonMSAA.size() == size)
+			? m_sceneBuffers.nonMSAA : MetalInternalTexture2D::CreateRenderTexture(m_device, size));
+		return buffers;
+	}
+
+	void CRenderer_Metal::applySceneState(const SceneMisc::RenderState& state, const uint32 sampleCount)
+	{
+		const bool stateChanged = (state != m_sceneState);
+		const bool samplesChanged = (sampleCount != m_sceneBuffers.sampleCount);
+		if (not stateChanged && not samplesChanged)
+		{
+			return;
+		}
+		SceneMisc::ValidateSceneSize(state.sceneSize);
+		const Size renderResolution = state.renderResolution();
+		SceneMisc::ValidateSceneSize(renderResolution);
+		const bool dimensionsChanged = ((renderResolution != getSceneBufferSize()) || (state.sceneSize != m_sceneState.sceneSize));
+		const bool replaceBuffer = ((renderResolution != getSceneBufferSize()) || samplesChanged);
+		SceneBuffer buffers;
+		if (replaceBuffer)
+		{
+			buffers = createSceneBuffers(renderResolution, sampleCount);
+		}
+		if (dimensionsChanged || samplesChanged)
+		{
+			if (replaceBuffer)
+			{
+				m_sceneBuffers = std::move(buffers);
+			}
+			m_pRenderer2D->resetScenePass();
+		}
+		if (dimensionsChanged)
+		{
+			m_pRenderer2D->setSceneScale(Float2{ (float(renderResolution.x) / state.sceneSize.x), (float(renderResolution.y) / state.sceneSize.y) });
+		}
+		if (stateChanged)
+		{
+			m_sceneState = state;
+			SIV3D_ENGINE(Cursor)->updateBaseWindowTransform();
+		}
+	}
+
 }
  

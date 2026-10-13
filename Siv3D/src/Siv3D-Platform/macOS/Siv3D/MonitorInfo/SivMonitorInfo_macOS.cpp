@@ -10,9 +10,11 @@
 //-----------------------------------------------
 
 # include <Siv3D/MonitorInfo.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
+# include "../Window/WindowMisc.hpp"
 
 extern"C"
 {
@@ -49,7 +51,9 @@ namespace s3d
 				int32 wx, wy, ww, wh;
 				::glfwGetMonitorInfo_Siv3D(monitor, &displayID, &unitNumber,
 										 &xPos, &yPos, &width, &height,
-										 &wx, &wy, &ww, &wh);
+										 nullptr, nullptr, nullptr, nullptr);
+				// The standard GLFW work-area query uses desktop points.
+				::glfwGetMonitorWorkarea(monitor, &wx, &wy, &ww, &wh);
 				
 				Optional<Size> sizeMillimeter;
 				{
@@ -69,10 +73,6 @@ namespace s3d
 					if (const double scale = Max(xscale, yscale); 0.0 < scale)
 					{
 						scaling = scale;
-						xPos = static_cast<int32>(xPos * scale);
-						yPos = static_cast<int32>(yPos * scale);
-						width = static_cast<int32>(width * scale);
-						height = static_cast<int32>(height * scale);
 					}
 				}
 				
@@ -87,18 +87,7 @@ namespace s3d
 					}
 				}
 				
-				Size fullscreenResolution{ 0, 0 };
-				{
-					int32 numModes = 0;
-					
-					if (const GLFWvidmode* vidModes = ::glfwGetVideoModes(monitor, &numModes))
-					{
-						if (numModes)
-						{
-							fullscreenResolution.set(vidModes[numModes - 1].width, vidModes[numModes - 1].height);
-						}
-					}
-				}
+				const Size fullscreenResolution = WindowMisc::GetFullscreenResolution(monitor);
 
 				const MonitorInfo info =
 				{
@@ -120,6 +109,31 @@ namespace s3d
 			return results;
 		}
 	
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCurrentMonitor
+		//
+		////////////////////////////////////////////////////////////////
+
+		MonitorInfo GetCurrentMonitor()
+		{
+			const Array<MonitorInfo> monitors = EnumerateMonitors();
+
+			if (not monitors)
+			{
+				throw Error{ "System::GetCurrentMonitor(): No monitor found" };
+			}
+
+			const size_t monitorIndex = GetCurrentMonitorIndex();
+
+			if (monitors.size() <= monitorIndex)
+			{
+				throw Error{ "System::GetCurrentMonitor(): Monitor index out of range" };
+			}
+
+			return monitors[monitorIndex];
+		}
+
 		size_t GetCurrentMonitorIndex()
 		{
 			GLFWwindow* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());

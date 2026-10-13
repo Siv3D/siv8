@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,30 +10,21 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/ResizeMode.hpp>
+# include <Siv3D/SceneResolution.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
-	namespace
-	{
-		static constexpr std::array ResizeModeStrings =
-		{
-			U"Actual"_sv,
-			U"Virtual"_sv,
-			U"Keep"_sv,
-		};
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const ResizeMode value)
+	void Formatter(FormatData& formatData, const SceneResolution value)
 	{
-		formatData.string.append(ResizeModeStrings[FromEnum(value)]);
+		static constexpr std::array names{ U"SceneSize"_sv, U"Display"_sv };
+		formatData.string.append(names[FromEnum(value)]);
 	}
 }

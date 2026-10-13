@@ -19,6 +19,26 @@
 
 namespace s3d
 {
+	void CRenderer_D3D11::configureScene(const SceneConfig& config)
+	{
+		m_backBuffer.configureScene(config);
+	}
+
+	SceneConfig CRenderer_D3D11::getSceneConfig() const noexcept
+	{
+		return m_backBuffer.getSceneConfig();
+	}
+
+	void CRenderer_D3D11::setSceneSampleCount(const uint32 sampleCount)
+	{
+		m_backBuffer.setSceneSampleCount(sampleCount);
+	}
+
+	uint32 CRenderer_D3D11::getSceneSampleCount() const noexcept
+	{
+		return m_backBuffer.getSceneSampleCount();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -106,10 +126,12 @@ namespace s3d
 		m_backBuffer.clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
-			windowFrameBufferSize != m_backBuffer.getBackBufferSize())
+			(0 < windowFrameBufferSize.x) && (0 < windowFrameBufferSize.y)
+			&& (windowFrameBufferSize != m_backBuffer.getBackBufferSize()))
 		{
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
+		m_backBuffer.updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -151,42 +173,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_D3D11::setSceneResizeMode(const ResizeMode resizeMode)
-	{
-		m_backBuffer.setSceneResizeMode(resizeMode);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSceneResizeMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	ResizeMode CRenderer_D3D11::getSceneResizeMode() const noexcept
-	{
-		return m_backBuffer.getSceneResizeMode();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	resizeSceneBuffer
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer_D3D11::resizeSceneBuffer(const Size size)
-	{
-		m_backBuffer.resizeSceneBuffer(size);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	getSceneBufferSize
 	//
 	////////////////////////////////////////////////////////////////
+
+	const Size& CRenderer_D3D11::getSceneSize() const noexcept
+	{
+		return m_backBuffer.getSceneSize();
+	}
 
 	const Size& CRenderer_D3D11::getSceneBufferSize() const noexcept
 	{
@@ -243,10 +237,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_D3D11::captureScreenshot()
+	bool CRenderer_D3D11::captureScreenshot()
 	{
 		auto [texture, size] = m_backBuffer.getCaptureTexture();
-		m_screenCapture.capture(texture, size);
+		return m_screenCapture.capture(texture, size);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -326,4 +320,3 @@ namespace s3d
 		return m_depthStencilState;
 	}
 }
- 

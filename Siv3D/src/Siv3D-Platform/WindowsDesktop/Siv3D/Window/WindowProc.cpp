@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "WindowProc.hpp"
+# include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
@@ -25,17 +26,37 @@
 
 namespace s3d
 {
-	namespace
-	{
-		[[nodiscard]]
-		static CWindow* GetWindow()
-		{
-			return static_cast<CWindow*>(SIV3D_ENGINE(Window));
-		}
-	}
-
 	LRESULT CALLBACK WindowProc(const HWND hWnd, const UINT message, const WPARAM wParam, LPARAM lParam)
 	{
+		auto* pWindow = reinterpret_cast<CWindow*>(::GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+		if (message == WM_NCCREATE)
+		{
+			pWindow = static_cast<CWindow*>(reinterpret_cast<CREATESTRUCTW*>(lParam)->lpCreateParams);
+			::SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWindow));
+			pWindow->attach(hWnd);
+		}
+
+		// Do not wrap WM_SYSCOMMAND/DefWindowProc's modal move/size loop:
+		// each notification in that loop must remain available to the next frame.
+		const bool stateUpdate = (pWindow && ((message == WM_WINDOWPOSCHANGED) || (message == WM_MOVE) || (message == WM_SIZE)
+			|| (message == WM_DPICHANGED) || (message == WM_SETFOCUS) || (message == WM_KILLFOCUS)
+			|| (message == WM_ENTERSIZEMOVE) || (message == WM_EXITSIZEMOVE)));
+		if (stateUpdate) { pWindow->beginStateUpdate(); }
+		const ScopeExit finishStateUpdate{ [=]
+		{
+			if (stateUpdate) { pWindow->endStateUpdate(); }
+		} };
+
+		if ((message == WindowThreadMessage) && pWindow)
+		{
+			pWindow->dispatchCommand(*reinterpret_cast<WindowThreadCommand*>(lParam));
+			return 0;
+		}
+		if (message == WM_NCDESTROY)
+		{
+			::SetWindowLongPtrW(hWnd, GWLP_USERDATA, 0);
+		}
+
 		// エンジンコンポーネントにアクセスできるか
 		const bool engineAvailable = Siv3DEngine::isAvailable();
 
@@ -69,9 +90,9 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_MOVE");
 
-				if (engineAvailable)
+				if (pWindow)
 				{
-					GetWindow()->onBoundsUpdate();
+					pWindow->onBoundsUpdate();
 				}
 
 				return 0;
@@ -80,13 +101,12 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_SIZE");
 
-				if (engineAvailable)
+				if (pWindow)
 				{
-					auto pWindow = GetWindow();
 					pWindow->onBoundsUpdate();
 
 					const bool minimized = (wParam == SIZE_MINIMIZED);
-					const bool maximized = ((wParam == SIZE_MAXIMIZED) || (pWindow->getState().maximized && (wParam != SIZE_RESTORED)));		
+					const bool maximized = ((wParam == SIZE_MAXIMIZED) || (pWindow->getOSState().maximized && (wParam != SIZE_RESTORED)));
 					pWindow->onResize(minimized, maximized);
 
 					const Size frameBufferSize{ LOWORD(lParam), HIWORD(lParam) };
@@ -99,9 +119,9 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_SETFOCUS");
 
-				if (engineAvailable)
+				if (engineAvailable && pWindow)
 				{
-					GetWindow()->onFocus(true);
+					pWindow->onFocus(true);
 				}
 
 				break;
@@ -110,9 +130,9 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_KILLFOCUS");
 
-				if (engineAvailable)
+				if (engineAvailable && pWindow)
 				{
-					GetWindow()->onFocus(false);
+					pWindow->onFocus(false);
 				}
 
 				break;
@@ -149,9 +169,9 @@ namespace s3d
 		}
 		case WM_GETMINMAXINFO:
 			{
-				if (engineAvailable)
+				if (pWindow)
 				{
-					const Size minSize = GetWindow()->getMinTrackSize();
+					const Size minSize = pWindow->getMinTrackSize();
 					
 					LPMINMAXINFO pMinMaxInfo = reinterpret_cast<LPMINMAXINFO>(lParam);
 					pMinMaxInfo->ptMinTrackSize.x = minSize.x;
@@ -162,11 +182,11 @@ namespace s3d
 			}
 		case WM_SYSKEYDOWN:
 			{
-				if (engineAvailable)
+				if (pWindow)
 				{
 					if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // Alt + Enter
 					{
-						GetWindow()->requestToggleFullscreen();
+						pWindow->requestToggleFullscreen();
 						return 0;
 					}
 				}
@@ -329,9 +349,9 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_ENTERSIZEMOVE");
 		
-				if (engineAvailable)
+				if (pWindow)
 				{
-					GetWindow()->onEnterSizeMove();
+					pWindow->onEnterSizeMove();
 				}
 
 				break;
@@ -340,9 +360,9 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_EXITSIZEMOVE");
 
-				if (engineAvailable)
+				if (pWindow)
 				{
-					GetWindow()->onExitSizeMove();
+					pWindow->onExitSizeMove();
 				}
 
 				break;
@@ -377,11 +397,11 @@ namespace s3d
 			{
 				LOG_DEBUG("WM_DPICHANGED");
 				
-				if (engineAvailable)
+				if (pWindow)
 				{
 					const uint32 newDPI = HIWORD(wParam);
 					const RECT* rect = reinterpret_cast<const RECT*>(lParam);
-					GetWindow()->onDPIChange(newDPI, Point{ rect->left, rect->top });
+					pWindow->onDPIChange(newDPI, Point{ rect->left, rect->top });
 				}
 
 				return true;

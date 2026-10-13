@@ -167,7 +167,7 @@ namespace s3d
 			if (withPriorDraws)
 			{
 				RectF{ 0, 0, 16, 16 }.draw(Palette::Lime);
-				renderer->flush();
+				Graphics2D::Flush();
 				// This draw uses the cached pipeline and succeeds in the failing flush.
 				RectF{ 20, 0, 16, 16 }.draw(Palette::Yellow);
 			}
@@ -179,17 +179,17 @@ namespace s3d
 			}
 			// Discard the rest of this flush too, including a different index count.
 			Triangle{ Vec2{ 60, 0 }, Vec2{ 76, 0 }, Vec2{ 60, 16 } }.draw(Palette::Blue);
-			CHECK_THROWS_AS(renderer->flush(), InternalEngineError);
+			CHECK_THROWS_AS(Graphics2D::Flush(), InternalEngineError);
 			CHECK(device.creationCount == (creationsBeforeFailure + 1));
 
 			// Neither an empty flush nor a later draw may replay the discarded geometry.
 			device.failCreation = NO;
 			if (emptyFlush)
 			{
-				renderer->flush();
+				Graphics2D::Flush();
 			}
 			RectF{ 80, 0, 16, 16 }.draw(Palette::Red);
-			renderer->flush();
+			Graphics2D::Flush();
 			RectF{ 100, 0, 16, 16 }.draw(Palette::Cyan);
 			ScreenCapture::RequestCurrentFrame();
 			REQUIRE(System::Update());

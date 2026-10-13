@@ -81,6 +81,8 @@ namespace s3d
 		DockProgressBar m_dockProgress;
 
 		void updateState();
+
+		void updateMinimumWindowSize();
 		
 		static void OnMove(GLFWwindow* glfwWindow, int x, int y);
 		

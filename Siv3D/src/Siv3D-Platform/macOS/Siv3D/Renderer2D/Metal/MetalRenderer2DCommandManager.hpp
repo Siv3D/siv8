@@ -43,6 +43,12 @@ namespace s3d
 
 		void flush();
 
+		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty()); }
+
+		void setSceneScale(Float2 scale);
+		Float2 getSceneScale() const noexcept { return m_current.sceneScale; }
+		float getCurrentRasterScaling() const noexcept { return m_current.rasterScaling; }
+
 		const Array<MetalRenderer2DCommand>& getCommands() const noexcept;
 
 		void pushDraw(uint32 indexCount);
@@ -125,6 +131,7 @@ namespace s3d
 
 		void updateAffineTransform();
 		void updateTransform();
+		void updateRasterScaling();
 
 		ConstantBuffer2DCommands m_constantBuffers;
 
@@ -207,6 +214,10 @@ namespace s3d
 			Mat3x3 combinedTransform			= Mat3x3::Identity();
 
 			float rmsScaling					= 1.0f;
+
+			Float2 sceneScale{ 1.0f, 1.0f };
+
+			float rasterScaling = 1.0f;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

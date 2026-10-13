@@ -186,6 +186,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextLayoutResult.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SceneConfig.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
@@ -649,7 +650,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RectanglePack.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\ResizeMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneConfig.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneSizeMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneResolution.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FullscreenSceneMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Resource.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FastMath.hpp" />
@@ -990,6 +994,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\User32Lib.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowClass.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowStateSync.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.hpp" />
@@ -1138,6 +1143,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Window\WindowUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftconfig.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftheader.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftmodule.h" />
@@ -1650,6 +1656,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\User32Lib.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowClass.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\SivWindow_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AACQuality\SivAACQuality.cpp" />
@@ -1977,7 +1984,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_StraightEdged.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneSizeMode\SivSceneSizeMode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneResolution\SivSceneResolution.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FullscreenSceneMode\SivFullscreenSceneMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerBorderColor\SivSamplerBorderColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerStateBuilder\SivSamplerStateBuilder.cpp" />

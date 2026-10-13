@@ -13,7 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
-# include "ResizeMode.hpp"
+# include "SceneConfig.hpp"
 # include "TextureFilter.hpp"
 # include "MSAASampleCount.hpp"
 
@@ -21,8 +21,8 @@ namespace s3d
 {
 	namespace Scene
 	{
-		/// @brief シーンの幅と高さ（ピクセル）のデフォルト値です。
-		inline constexpr s3d::Size DefaultSceneSize{ 800, 600 };
+		/// @brief シーンの幅と高さのデフォルト値です。
+		inline constexpr s3d::Size DefaultSceneSize = SceneConfig{}.fixedSceneSize;
 
 		/// @brief シーンの背景色のデフォルト色です。
 		inline constexpr ColorF DefaultBackgroundColor = Palette::DefaultBackground;
@@ -33,12 +33,6 @@ namespace s3d
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）のデフォルト値です。
 		inline constexpr double DefaultMaxDeltaTime = 0.1;
 
-		/// @brief ウィンドウをリサイズしたときのシーンのサイズの扱いのデフォルト値です。
-		inline constexpr ResizeMode DefaultResizeMode = ResizeMode::Virtual;
-
-		/// @brief ウィンドウのフレームバッファのサイズがシーンのサイズと異なる際、シーンの拡大縮小描画に用いるテクスチャフィルタのデフォルト値です。
-		inline constexpr TextureFilter DefaultTextureFilter = TextureFilter::Linear;
-
 		/// @brief シーンのマルチサンプリングのデフォルト値です。
 		inline constexpr MSAASampleCount DefaultMSAASampleCount = MSAASampleCount::X4MSAA;
 	}
@@ -47,20 +41,40 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	Resize
+		//	Configure
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief シーンの幅と高さを変更します。
-		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		/// @param size 新しいシーンの幅と高さ（ピクセル）
-		void Resize(s3d::Size size);
+		/// @brief シーンの表示設定を置き換えます。
+		/// @param config 新しい表示設定。既定の設定は SceneConfig{} です。
+		/// @remark 現在のウィンドウ状態に合わせて即座に反映します。ウィンドウの状態、背景色、レターボックス色は変更しません。
+		/// @remark `FullscreenSceneMode::KeepSize` の全画面中は、`SceneSizeMode::Fixed` 以外の設定では現在のシーンサイズを維持します。ウィンドウ復帰後はその時点の設定に従います。
+		/// @remark シーンサイズまたは描画解像度が変わると、実行済みの描画内容をクリアします。未実行の描画は保持され、実行時の描画解像度で描かれます。記録済みの座標や図形の分割数は再計算しません。
+		/// @remark 寸法が変わらない設定変更では、描画済み内容を維持します。
+		/// @throws Error 設定値が不正な場合、シーンサイズまたは描画解像度が各軸 1～16384 の範囲外の場合、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
+		void Configure(const SceneConfig& config);
 
-		/// @brief シーンの幅と高さを変更します。
-		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		/// @param width 新しいシーンの幅（ピクセル）
-		/// @param height 新しいシーンの高さ（ピクセル）
-		void Resize(int32 width, int32 height);
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetConfig
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 適用済みの表示設定を返します。
+		/// @return 設定のコピー。追従によって変化した寸法は含みません。
+		[[nodiscard]]
+		SceneConfig GetConfig() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	RenderResolution
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief シーンの描画解像度を返します。
+		/// @return 描画バッファのピクセル数
+		[[nodiscard]]
+		s3d::Size RenderResolution() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -68,8 +82,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの幅と高さ（ピクセル）を返します。
-		/// @return シーンの幅と高さ（ピクセル）
+		/// @brief 現在のシーンの幅と高さを返します。
+		/// @return シーンの幅と高さ
 		[[nodiscard]]
 		s3d::Size Size() noexcept;
 
@@ -79,8 +93,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの幅（ピクセル）を返します。
-		/// @return シーンの幅（ピクセル）
+		/// @brief 現在のシーンの幅を返します。
+		/// @return シーンの幅
 		[[nodiscard]]
 		int32 Width() noexcept;
 
@@ -90,8 +104,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のシーンの高さ（ピクセル）を返します。
-		/// @return シーンの高さ（ピクセル）
+		/// @brief 現在のシーンの高さを返します。
+		/// @return シーンの高さ
 		[[nodiscard]]
 		int32 Height() noexcept;
 
@@ -134,28 +148,6 @@ namespace s3d
 		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
 		Float HorizontalAspectRatio() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	SetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかを設定します。
-		/// @remark デフォルトは `Scene::DefaultResizeMode` です。	
-		/// @param resizeMode シーンのリサイズモード
-		void SetResizeMode(ResizeMode resizeMode);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかの現在の設定を返します。
-		/// @return シーンのリサイズモード
-		[[nodiscard]]
-		ResizeMode GetResizeMode() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -203,33 +195,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタを設定します。
-		/// @remark デフォルトは `Scene::DefaultTextureFilter` です。	
-		/// @param textureFilter シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		void SetTextureFilter(TextureFilter textureFilter);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタの現在の設定を返します。
-		/// @return シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		[[nodiscard]]
-		TextureFilter GetTextureFilter() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	SetMSAASampleCount
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetMSAASampleCount(MSAASampleCount sampleCount);
+		/// @brief デフォルト描画先であるシーンの MSAA サンプル数を設定します。
+		/// @param sampleCount サンプル数。デフォルトは Scene::DefaultMSAASampleCount です。
+		/// @remark 即座に反映します。シーン以外の描画先には影響しません。
+		/// @remark 値が変わると実行済みの描画内容をクリアします。未実行の描画は保持され、実行時のサンプル数で描かれます。同じ値の設定では描画内容を維持します。
+		/// @throws Error 値が不正、GPU が非対応、または描画バッファを確保できない場合。以前の設定とシーンを維持します。
+		void SetMSAASampleCount(MSAASampleCount sampleCount);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -237,8 +212,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//MSAASampleCount GetMSAASampleCount() noexcept;
+		/// @brief シーンに適用済みの MSAA サンプル数を返します。
+		/// @return シーンの MSAA サンプル数
+		[[nodiscard]]
+		MSAASampleCount GetMSAASampleCount() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -308,7 +285,7 @@ namespace s3d
 		/// @brief クライアント座標をシーンの座標に変換します。
 		/// @remark `Cursor::PosRaw()` が返す座標をシーンの座標に変換できます。
 		/// @param pos クライアント座標（ピクセル）
-		/// @return シーン座標（ピクセル）
+		/// @return シーン座標
 		[[nodiscard]]
 		Vec2 ClientToScene(Vec2 pos) noexcept;
 	}

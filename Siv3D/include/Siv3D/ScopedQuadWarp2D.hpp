@@ -16,7 +16,7 @@
 namespace s3d
 {
 	/// @brief スコープ内の 2D 描画に射影変換を適用します。
-	/// @remark 適用順は Local、Camera、このスコープの変換、Viewport の画面変換です。
+	/// @remark 適用順は Local、Camera、このスコープの変換、シーンの解像度変換、Viewport の画面変換です。
 	/// @remark 座標は Local と Camera 適用後の、現在の Viewport 原点を基準とします。
 	/// @remark カーソル、シザー矩形、曲線の分割品質、RMS 拡大率には適用されません。
 	/// @remark 変換元の四角形によるクリッピングは行いません。

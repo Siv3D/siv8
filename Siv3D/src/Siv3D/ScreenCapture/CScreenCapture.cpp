@@ -100,6 +100,11 @@ namespace s3d
 
 	void CScreenCapture::update()
 	{
+		update(*SIV3D_ENGINE(Renderer));
+	}
+
+	void CScreenCapture::update(ISiv3DRenderer& renderer)
+	{
 		m_hasNewFrame = false;
 
 		// スクリーンショットのキー入力をチェック
@@ -113,11 +118,7 @@ namespace s3d
 			return;
 		}
 
-		SIV3D_ENGINE(Renderer)->captureScreenshot();
-
-		const Image& image = SIV3D_ENGINE(Renderer)->getScreenCapture();
-
-		if (not image)
+		if (not renderer.captureScreenshot())
 		{
 			LOG_FAIL("✖ failed to capture a screen shot");
 			m_requestedPaths.clear();
@@ -125,7 +126,7 @@ namespace s3d
 		}
 
 		// スクリーンショットの保存
-		SaveScreenCapture(image, m_requestedPaths);
+		SaveScreenCapture(renderer.getScreenCapture(), m_requestedPaths);
 
 		m_requestedPaths.clear();
 

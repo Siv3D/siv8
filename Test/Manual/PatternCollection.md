@@ -374,8 +374,7 @@ void Main()
 {
 	Window::Resize(960, 700);
 	Window::SetTitle(U"Pattern collection");
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::Resize(960, 700);
+	Scene::Configure(SceneConfig::Fixed(Size{ 960, 700 }));
 	Scene::SetBackground(ColorF{ 0.075, 0.085, 0.105 });
 	const Font label{ 30, Typeface::Bold };
 	const Font ui{ 16, Typeface::Medium };

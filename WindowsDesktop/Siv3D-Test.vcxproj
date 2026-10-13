@@ -42,7 +42,9 @@
     <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_EnumFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
-    <ClCompile Include="..\Test\Test_ScreenCapture.cpp" />
+    <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp" />
@@ -74,9 +76,17 @@
     <ClCompile Include="..\Test\Test_MetalShader.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
     <ClCompile Include="..\Test\Test_MetalPresentation.cpp" />
+    <ClCompile Include="..\Test\Test_MetalScreenCapture.cpp" />
     <ClCompile Include="..\Test\Test_GLFW.cpp" />
+    <ClCompile Include="..\Test\Test_ScreenCoordinates.cpp" />
     <ClCompile Include="..\Test\Test_Keyboard.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp" />
+    <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneMSAA.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
@@ -134,6 +144,27 @@
     <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
     <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
+    <ClCompile Include="..\Test\Test_SceneHighResolution.cpp" />
+    <ClCompile Include="..\Test\Test_SceneConfig.cpp" />
+    <ClCompile Include="..\Test\Test_WindowMacOS.cpp" />
+    <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_macOS.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_Windows.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowStateSync.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CursorTransform.cpp" />
     <ClCompile Include="..\Test\Test_Transformer2D.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />
@@ -189,6 +220,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp" />
+    <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />

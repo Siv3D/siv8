@@ -147,6 +147,12 @@ typedef struct _GLFWwindowNS
     GLFWbool        occluded;
     GLFWbool        scaleFramebuffer;
 
+    // [Siv3D] Fullscreen covers the current desktop without changing its mode.
+    GLFWbool        preserveVideoMode;
+
+    // [Siv3D] Main-thread UI toggle state; zero retains native GLFW behavior.
+    int             fullscreenToggle;
+
     // Cached window properties to filter out duplicate events
     int             width, height;
     int             fbWidth, fbHeight;

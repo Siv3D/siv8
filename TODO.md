@@ -40,10 +40,39 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
+## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
+
+- 全画面中の OS 表示倍率・解像度・リフレッシュレート変更と、物理的なモニター切断・再接続を検証する。残った画面で表示・操作を続けられ、再接続後も全画面往復と設定維持ができること。native detach の自動検査とは区別する。
+- 最小サイズ設定後に異種 DPI 間を手動移動し、枠ドラッグの下限が backing pixel 指定を維持することを確認する。上下・左右配置の連続ドラッグとポインター座標も目視確認する。手順は [手動テスト](Test/Manual/SceneHighResolution.md) に集約する。
+
+## `Siv3D/include/Siv3D/Scene.hpp`
+
+### 描画の境界・失敗時の検証
+
+- 有効な MSAA 列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` による `Error` と以前の状態の維持を確認する。
+- Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` では、2×2 シーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。D3D11 のテクスチャ座標精度と照合し、厳密一致を保証するか、観測位置を見直すか決める。Linear・MSAA resolve・バッファ再利用とは切り分け、許容差を一律に緩めない。
+- GPU 確保失敗後の状態維持と再試行を、D3D11 の確保段階と実際に確保が失敗する環境で検証する。Metal の [Configure / MSAA](Test/Test_SceneAllocationFailure.cpp)・[Window → Scene](Test/Test_WindowSceneSync.cpp) の失敗注入検査とは区別する。
+
+### 残る手動確認
+
+[共通プログラム](Test/Manual/SceneHighResolution.md) を使い、確認した設定・操作・モニター条件だけを完了扱いにする。描画、ホバー・クリック、復帰位置・寸法、SceneConfig の維持を確認する。
+
+| 対象 | 未確認の条件・組み合わせ |
+| --- | --- |
+| Windows / D3D11 | 全 6 設定 × API / Alt+Enter 往復・混在の目視網羅。特に Fixed / SceneSize と PixelArt の異種 DPI 移動、最大化・最小化復元。真上・真下の独立配置、全画面中の複数回モニター移動後の復帰 |
+| macOS / Metal | 異種 DPI 移動、最大化・最小化復元、全画面。実キーの Control+Command+F、メニューと緑ボタンの実クリック（緑ボタンは最大化） |
+| 両方 | OS 倍率変更、横長・縦長・シーンより小さいウィンドウへの連続リサイズ、右ドラッグ中の解像度方針切り替え |
+
+### 次の描画先実装との接続
+
+- RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
+
 ## Renderer2D / 組み込みシェーダ最適化
 
+- WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。
+- WARP の `MSDFFont.atlas_dimensions` で、同じグリフを幅 768 のアトラスに移すと輪郭描画は最大 2/255、Print 用シェーダは最大 11/255 の差が出る。幅 128 / 512 と比較し、非 2 冪アトラスの UV・フィルタリング・微分・coverage 計算を切り分ける。既存の 1 階調許容を根拠なく拡大しない。
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
-- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。[ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較も確認する。引き継いだ目視結果は macOS Debug のみで、Windows の描画検証を代替しない。
+- ScopedQuadWarp2D: Windows で [ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較を目視確認する。自動テストの画像比較と区別する。
 - Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。

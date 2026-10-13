@@ -193,7 +193,7 @@ namespace s3d::WindowMisc
 
 	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		int32& dpi, WindowState& windowState)
+		int32& dpi, WindowState& windowState, void* owner)
 	{
 		const double scale = monitor.scaling.value_or(1.0);
 		dpi = static_cast<int32>(std::round(USER_DEFAULT_SCREEN_DPI * scale));
@@ -215,7 +215,7 @@ namespace s3d::WindowMisc
 			nullptr, // No parent window
 			nullptr, // No menu
 			moduleHandle,
-			nullptr);
+			owner);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -342,33 +342,66 @@ namespace s3d::WindowMisc
 	//
 	////////////////////////////////////////////////////////////////
 
-	Size SetFullscreen(const HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, const uint32 baseWindowStyle)
+	bool SetFullscreen(const HWND hWnd, const size_t monitorIndex, RECT& storedWindowRect, const uint32 baseWindowStyle,
+		const WindowsMonitor::Functions& functions)
 	{
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		const Optional<size_t> target = (monitorIndex < monitors.size()) ? Optional<size_t>{ monitorIndex }
+			: WindowsMonitor::FindCurrentMonitorIndex(hWnd, monitors, functions);
+		if (not target) { return false; }
+		const Rect fullscreenRect = monitors[*target].displayRect;
+
+		// Resolve the target before changing either the saved rectangle or native style.
 		::GetWindowRect(hWnd, &storedWindowRect);
 		::SetWindowLongW(hWnd, GWL_STYLE, (baseWindowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME)));
-
-		const Array<MonitorInfo> monitors = System::EnumerateMonitors();
-
-		if (monitors.size() <= monitorIndex)
-		{
-			monitorIndex = System::GetCurrentMonitorIndex();
-		}
-
-		const Rect fullscreenRect = monitors[monitorIndex].displayRect;
-		const Size result = fullscreenRect.size;
 
 		::SetWindowPos(
 			hWnd,
 			HWND_TOPMOST,
 			fullscreenRect.x,
 			fullscreenRect.y,
-			(fullscreenRect.x + fullscreenRect.w),
-			(fullscreenRect.y + fullscreenRect.h),
+			fullscreenRect.w,
+			fullscreenRect.h,
 			SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		::ShowWindow(hWnd, SW_MAXIMIZE);
 		::ValidateRect(hWnd, nullptr);
 
-		return result;
+		return true;
+	}
+
+	bool MoveFullscreen(const HWND hWnd, const size_t monitorIndex, const WindowsMonitor::Functions& functions)
+	{
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		const auto current = WindowsMonitor::FindCurrentMonitorIndex(hWnd, monitors, functions);
+		const Optional<size_t> target = (monitorIndex < monitors.size()) ? Optional<size_t>{ monitorIndex } : current;
+		if ((not target) || (target == current)) { return false; }
+		const Rect rect = monitors[*target].displayRect;
+		if (not ::SetWindowPos(hWnd, HWND_TOPMOST, rect.x, rect.y, rect.w, rect.h, SWP_NOACTIVATE))
+		{
+			return false;
+		}
+		::ValidateRect(hWnd, nullptr);
+		return true;
+	}
+
+	bool CenterToScreen(ISiv3DWindow& window, const Optional<size_t> monitorIndex, const WindowsMonitor::Functions& functions)
+	{
+		window.show();
+		if (window.getState().fullscreen) { return false; }
+
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		if (monitorIndex && (monitors.size() <= *monitorIndex)) { return false; }
+		const auto current = WindowsMonitor::FindCurrentMonitorIndex(static_cast<HWND>(window.getHandle()), monitors, functions);
+		if (not current) { return false; }
+		const size_t target = monitorIndex.value_or(*current);
+		const Rect workArea = monitors[target].workArea;
+		if ((*current != target) && (monitors[*current].scaling != monitors[target].scaling))
+		{
+			window.setPos(workArea.pos); // Synchronize the destination DPI and bounds before centering.
+		}
+		const Rect bounds = window.getState().bounds;
+		window.setPos(workArea.pos + (workArea.size - bounds.size) / 2);
+		return true;
 	}
 }
