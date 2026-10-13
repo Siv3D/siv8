@@ -85,6 +85,11 @@ and [SivWindow_macOS.cpp](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/Window/SivW
 These helpers perform native placement only, so Resize can reuse them before its
 single Scene update. The Windows file also defines `Platform::Windows::Window::GetHWND()`.
 
+Monitor enumeration and current-monitor lookup are implemented together in
+[SivMonitorInfo_Windows.cpp](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/MonitorInfo/SivMonitorInfo_Windows.cpp)
+and [SivMonitorInfo_macOS.cpp](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/MonitorInfo/SivMonitorInfo_macOS.cpp).
+The shared `SivMonitorInfo.cpp` contains monitor information formatting.
+
 Only the final scene size and render resolution determine whether to clear or
 replace the scene buffers. Native intermediate sizes do not discard executed
 pixels or allocate temporary scene buffers. Pending drawing is retained and no

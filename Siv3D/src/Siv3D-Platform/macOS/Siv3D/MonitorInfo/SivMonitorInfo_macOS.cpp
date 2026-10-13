@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/MonitorInfo.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
@@ -108,6 +109,31 @@ namespace s3d
 			return results;
 		}
 	
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCurrentMonitor
+		//
+		////////////////////////////////////////////////////////////////
+
+		MonitorInfo GetCurrentMonitor()
+		{
+			const Array<MonitorInfo> monitors = EnumerateMonitors();
+
+			if (not monitors)
+			{
+				throw Error{ "System::GetCurrentMonitor(): No monitor found" };
+			}
+
+			const size_t monitorIndex = GetCurrentMonitorIndex();
+
+			if (monitors.size() <= monitorIndex)
+			{
+				throw Error{ "System::GetCurrentMonitor(): Monitor index out of range" };
+			}
+
+			return monitors[monitorIndex];
+		}
+
 		size_t GetCurrentMonitorIndex()
 		{
 			GLFWwindow* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());

@@ -11,12 +11,6 @@
 
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/Error.hpp>
-# if SIV3D_PLATFORM(WINDOWS)
-# include <Siv3D/MonitorInfo/WindowsMonitor.hpp>
-# include <Siv3D/Window/IWindow.hpp>
-# include <Siv3D/Engine/Siv3DEngine.hpp>
-# endif
 
 namespace s3d
 {
@@ -77,37 +71,5 @@ namespace s3d
 	void Formatter(FormatData& formatData, const MonitorInfo& value)
 	{
 		formatData.string.append(value.format());
-	}
-
-	namespace System
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetCurrentMonitor
-		//
-		////////////////////////////////////////////////////////////////
-
-		MonitorInfo GetCurrentMonitor()
-		{
-# if SIV3D_PLATFORM(WINDOWS)
-			return WindowsMonitor::GetCurrentMonitor(static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle()));
-# else
-			const Array<MonitorInfo> monitors = EnumerateMonitors();
-
-			if (not monitors)
-			{
-				throw Error{ "System::GetCurrentMonitor(): No monitor found" };
-			}
-
-			const size_t monitorIndex = GetCurrentMonitorIndex();
-
-			if (monitors.size() <= monitorIndex)
-			{
-				throw Error{ "System::GetCurrentMonitor(): Monitor index out of range" };
-			}
-
-			return monitors[monitorIndex];
-# endif
-		}
 	}
 }
