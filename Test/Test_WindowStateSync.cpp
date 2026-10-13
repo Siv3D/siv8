@@ -279,8 +279,7 @@ namespace s3d
 			const auto centered = Window::GetState();
 			CheckNativeGeometry();
 			const Point requestedCenter = work.pos + (work.size - beforeCenter.bounds.size) / 2;
-			// Native non-client placement may adjust the requested coordinate.
-			// Centering must match SetPos with the correct work-area center.
+			CHECK(centered.bounds.pos == requestedCenter);
 			Window::SetPos(requestedCenter);
 			CAPTURE(i, work, beforeCenter.bounds, beforeCenter.virtualSize, beforeCenter.frameBufferSize,
 				Window::GetState().bounds, Window::GetState().virtualSize, Window::GetState().frameBufferSize,

@@ -122,6 +122,25 @@ There is no universal division by two: converting a legacy position requires
 knowing which monitor and scale produced it. A saved monitor-relative offset
 also needs conversion before adding it to the monitor's point-based origin.
 
+## Windows native placement
+
+The public outer frame uses DWM's visible frame bounds. Win32 `GetWindowRect()`
+and `SetWindowPos()` include the invisible resize border. Explicit placement
+converts between these origins using the current native and DWM rectangles;
+it does not reconstruct the offset by adding independently rounded system metrics.
+If placement changes DPI, one final move uses the destination frame offset while
+keeping the client size established by the DPI notification. A style change applies
+the new frame before restoring the visible origin.
+
+Resizing with `CenterWindow::No` uses `SWP_NOMOVE`, so repeated size changes do
+not feed the public position through a coordinate conversion. `WM_DPICHANGED`
+already supplies a native origin, which is used directly while preserving the
+existing virtual-size policy. Fullscreen continues to save and restore native
+rectangles. These operations run on the HWND thread within the existing state
+update boundary. Native/DWM offset queries occur only during explicit placement
+or style correction; public getters and ordinary resize notifications do not add
+queries or locks for this conversion.
+
 ## Windows state ownership
 
 Windows operations that select the current display from a captured monitor list
@@ -239,11 +258,27 @@ and lock-scope review; it does not constitute a race-detector result.
 ./WindowsDesktop/run-tests.ps1 -Configuration Debug -TestArguments '--test-case=WindowStateSync.*'
 ```
 
-[Test_ScreenCoordinates.cpp](../../Test/Test_ScreenCoordinates.cpp) compares the
-public geometry against native Cocoa/Core Graphics geometry and checks invalid
-monitor indices in the default suite. Its placement and cursor tests are hidden
-with `[.screen-coordinates]`: they move the real window and pointer on attached
-monitors, pausing for 500 ms after transitions. Opt in explicitly:
+[Test_ScreenCoordinates.cpp](../../Test/Test_ScreenCoordinates.cpp) checks Windows
+visible-frame placement, repeated position and resize round trips, both centering
+overloads, and style changes against native rectangles. These cases run in the
+normal suite on attached displays, including mixed DPI and negative origins when
+available. A same-DPI message dispatched through the real HWND thread separately
+checks the native origin contract and reentry; it does not simulate changing the
+OS display scale.
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.*,WindowStateSync.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.initial_placement'
+```
+
+Run the initial-placement case alone to check `SetPos()` on the initially hidden
+HWND before the first `System::Update()`. The report records whether the window
+was already visible; the same case also runs after earlier cases in the full suite.
+
+On macOS the same file compares public geometry against native Cocoa/Core Graphics
+geometry and checks invalid monitor indices in the default suite. Its placement
+and cursor tests are hidden with `[.screen-coordinates]`: they move the real window
+and pointer on attached monitors, pausing for 500 ms after transitions. Opt in explicitly:
 
 ```sh
 ./macOS/run-tests.sh '--test-case=ScreenCoordinates.*'

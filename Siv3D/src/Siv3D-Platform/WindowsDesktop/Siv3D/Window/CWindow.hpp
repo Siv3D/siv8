@@ -150,6 +150,8 @@ namespace s3d
 
 		int32 getSystemMetrics(int32 index) const;
 
+		Point getNativeWindowPos(Point visibleFramePos) const;
+
 		void setWindowPos(const Rect& rect, uint32 flags);
 
 		void showOnWindowThread();

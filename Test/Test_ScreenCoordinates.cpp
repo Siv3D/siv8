@@ -248,4 +248,190 @@ namespace s3d
 	}
 }
 
+# elif SIV3D_PLATFORM(WINDOWS)
+
+# include <Siv3D/Windows/Windows.hpp>
+# include <dwmapi.h>
+
+namespace s3d
+{
+	namespace
+	{
+		HWND MainWindow()
+		{
+			return static_cast<HWND>(Platform::Windows::Window::GetHWND());
+		}
+
+		Rect NativeWindowRect()
+		{
+			RECT rect{};
+			REQUIRE(::GetWindowRect(MainWindow(), &rect));
+			return { rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top };
+		}
+
+		void CheckVisibleFrame(const Point expected)
+		{
+			RECT frame{};
+			REQUIRE(SUCCEEDED(::DwmGetWindowAttribute(MainWindow(), DWMWA_EXTENDED_FRAME_BOUNDS, &frame, sizeof(frame))));
+			const Rect visible{ frame.left, frame.top, frame.right - frame.left, frame.bottom - frame.top };
+			CHECK(visible.pos == expected);
+			CHECK(Window::GetState().bounds == visible);
+		}
+
+		struct RestoreWindowAndScene
+		{
+			const WindowState window = Window::GetState();
+			const SceneConfig config = Scene::GetConfig();
+
+			~RestoreWindowAndScene()
+			{
+				Window::Restore();
+				Window::SetMinimumFrameBufferSize(window.minFrameBufferSize);
+				Window::SetStyle(window.style);
+				Window::ResizeActual(window.frameBufferSize, CenterWindow::No);
+				Window::SetPos(window.bounds.pos);
+				if (window.maximized) { Window::Maximize(); }
+				if (window.minimized) { Window::Minimize(); }
+				Scene::Configure(config);
+			}
+		};
+	}
+
+	TEST_CASE("ScreenCoordinates.Windows.initial_placement")
+	{
+		// Run this case alone to exercise the initially hidden HWND before the first frame.
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		const bool visible = (::IsWindowVisible(MainWindow()) != FALSE);
+		Catch::cout() << "initial HWND visible=" << visible << '\n';
+		const Point requested = (System::GetCurrentMonitor().workArea.pos + Point{ 140, 160 });
+		Window::SetPos(requested);
+		CHECK((::IsWindowVisible(MainWindow()) != FALSE) == visible);
+		CHECK(Window::GetPos() == requested);
+		REQUIRE(System::Update());
+		CheckVisibleFrame(requested);
+	}
+
+	TEST_CASE("ScreenCoordinates.Windows.placement_round_trips")
+	{
+		REQUIRE(System::Update());
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		Window::Restore();
+		Window::SetMinimumFrameBufferSize({ 1, 1 });
+		REQUIRE(Window::Resize(500, 350, CenterWindow::No));
+		const auto monitors = System::EnumerateMonitors();
+		REQUIRE_FALSE(monitors.isEmpty());
+		for (const auto style : { WindowStyle::Fixed, WindowStyle::Sizable, WindowStyle::Frameless })
+		{
+			const Point beforeStyle = Window::GetPos();
+			Window::SetStyle(style);
+			CheckVisibleFrame(beforeStyle);
+			for (size_t i = 0; i < monitors.size(); ++i)
+			{
+				CAPTURE(style, i, monitors[i].workArea, monitors[i].scaling);
+				Catch::cout() << "placement style=" << static_cast<int32>(style) << " monitor[" << i << "] " << monitors[i].format().toUTF8() << '\n';
+				const Point anchor = (monitors[i].workArea.pos + Point{ 140, 160 });
+				// Includes a direct move across DPI boundaries, without a preliminary centering call.
+				Window::SetPos(anchor);
+				CheckVisibleFrame(anchor);
+				CHECK(System::GetCurrentMonitorIndex() == i);
+				for (int32 repeat = 0; repeat < 4; ++repeat)
+				{
+					CAPTURE(repeat);
+					Window::SetPos(Window::GetPos());
+					CheckVisibleFrame(anchor);
+					Window::SetPos(anchor + Point{ 17, -11 });
+					CheckVisibleFrame(anchor + Point{ 17, -11 });
+					Window::SetPos(anchor);
+					CheckVisibleFrame(anchor);
+				}
+				for (const bool indexed : { true, false })
+				{
+					REQUIRE((indexed ? Window::CenterToScreen(i) : Window::CenterToScreen()));
+					const Point centered = (monitors[i].workArea.pos + (monitors[i].workArea.size - Window::GetState().bounds.size) / 2);
+					CheckVisibleFrame(centered);
+				}
+				const auto immediate = Window::GetState();
+				System::Sleep(500);
+				REQUIRE(System::Update());
+				CHECK(Window::GetState().bounds == immediate.bounds);
+				CheckVisibleFrame(immediate.bounds.pos);
+			}
+		}
+	}
+
+	TEST_CASE("ScreenCoordinates.Windows.resize_preserves_position")
+	{
+		REQUIRE(System::Update());
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		Window::Restore();
+		Window::SetMinimumFrameBufferSize({ 1, 1 });
+		const auto monitors = System::EnumerateMonitors();
+		REQUIRE_FALSE(monitors.isEmpty());
+		using ResizeFunction = bool (*)(Size, CenterWindow);
+		const ResizeFunction resize[] = { Window::Resize, Window::ResizeVirtual, Window::ResizeActual };
+		for (const auto style : { WindowStyle::Fixed, WindowStyle::Sizable, WindowStyle::Frameless })
+		{
+			Window::SetStyle(style);
+			for (size_t i = 0; i < monitors.size(); ++i)
+			{
+				CAPTURE(style, i, monitors[i].scaling);
+				REQUIRE(Window::CenterToScreen(i));
+				const Point visible = Window::GetPos();
+				const Point native = NativeWindowRect().pos;
+				for (int32 repeat = 0; repeat < 4; ++repeat)
+				{
+					for (int32 api = 0; api < 3; ++api)
+					{
+						CAPTURE(repeat, api);
+						const Size requested{ 500 + 13 * (repeat % 2) + api, 350 + 7 * (repeat % 2) + api };
+						REQUIRE(resize[api](requested, CenterWindow::No));
+						CHECK((api == 2 ? Window::GetState().frameBufferSize : Window::GetState().virtualSize) == requested);
+						CHECK(NativeWindowRect().pos == native);
+						CheckVisibleFrame(visible);
+					}
+				}
+				System::Sleep(500);
+				REQUIRE(System::Update());
+				CHECK(NativeWindowRect().pos == native);
+				CheckVisibleFrame(visible);
+			}
+		}
+	}
+
+	TEST_CASE("ScreenCoordinates.Windows.dpi_notification_uses_native_origin")
+	{
+		REQUIRE(System::Update());
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const RestoreWindowAndScene restore;
+		Window::Restore();
+		Window::SetStyle(WindowStyle::Sizable);
+		REQUIRE(Window::Resize(500, 350, CenterWindow::No));
+		const auto monitors = System::EnumerateMonitors();
+		REQUIRE_FALSE(monitors.isEmpty());
+		for (size_t i = 0; i < monitors.size(); ++i)
+		{
+			CAPTURE(i, monitors[i].scaling);
+			REQUIRE(Window::CenterToScreen(i));
+			const Point visible = Window::GetPos();
+			const Rect native = NativeWindowRect();
+			const auto dpi = ::GetDpiForWindow(MainWindow());
+			for (int32 repeat = 0; repeat < 4; ++repeat)
+			{
+				CAPTURE(repeat);
+				RECT suggested{ native.x, native.y, native.x + native.w, native.y + native.h };
+				// Dispatch through the real HWND thread. Same-DPI notification checks
+				// the coordinate contract and reentry; this is not an OS scale-change test.
+				::SendMessageW(MainWindow(), WM_DPICHANGED, MAKEWPARAM(dpi, dpi), reinterpret_cast<LPARAM>(&suggested));
+				Window::SetMinimumFrameBufferSize(restore.window.minFrameBufferSize); // Publish the completed notification.
+				CHECK(NativeWindowRect().pos == native.pos);
+				CheckVisibleFrame(visible);
+			}
+			System::Sleep(500);
+		}
+	}
+}
+
 # endif

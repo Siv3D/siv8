@@ -228,6 +228,7 @@ namespace s3d
 		}
 
 		const auto currentStyle = m_osState.style;
+		const Point visibleFramePos = m_osState.bounds.pos;
 		const bool triggerWindowResize = ((currentStyle == WindowStyle::Frameless) || (style == WindowStyle::Frameless));
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(style);
 		m_osState.style = style;
@@ -235,17 +236,23 @@ namespace s3d
 		::SetWindowLongPtrW(m_hWnd, GWL_STYLE, windowStyleFlags);
 
 		{
-			const Point pos = m_osState.bounds.pos;
 			const double scaling = WindowMisc::GetScaling(m_dpi);
 			const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
-				pos, newFrameBufferSize, windowStyleFlags);
+				Point{ 0, 0 }, newFrameBufferSize, windowStyleFlags);
 			
-			const uint32 flags = ((triggerWindowResize ? 0 : SWP_NOSIZE) | SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+			const uint32 flags = ((triggerWindowResize ? 0 : SWP_NOSIZE) | SWP_NOMOVE | SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 			setWindowPos(windowRect, flags);
 		}
 
 		onBoundsUpdate();
+		// The invisible border can change with the style. Preserve the visible origin
+		// using the new frame, after SWP_FRAMECHANGED has applied the native style.
+		if (m_osState.bounds.pos != visibleFramePos)
+		{
+			setWindowPos(Rect{ getNativeWindowPos(visibleFramePos), Size{ 0, 0 } },
+				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
 		showOnWindowThread();
 	}
 
@@ -271,14 +278,22 @@ namespace s3d
 		}
 
 		{
+			const int32 previousDPI = m_dpi;
 			const double scaling = WindowMisc::GetScaling(m_dpi);
 			const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
 			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
-			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
-				pos, newFrameBufferSize, windowStyleFlags);
+			Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
+				Point{ 0, 0 }, newFrameBufferSize, windowStyleFlags);
+			windowRect.pos = getNativeWindowPos(pos);
 			
 			constexpr uint32 Flags = (SWP_DEFERERASE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 			setWindowPos(windowRect, Flags);
+			if (m_dpi != previousDPI)
+			{
+				// WM_DPICHANGED may have selected a new native origin and border.
+				// Finish this explicit placement at the requested visible origin once.
+				setWindowPos(Rect{ getNativeWindowPos(pos), Size{ 0, 0 } }, (Flags | SWP_NOSIZE));
+			}
 		}
 	}
 
@@ -414,9 +429,9 @@ namespace s3d
 
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
 		const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
-			m_osState.bounds.pos, newFrameBufferSize, windowStyleFlags);
+			Point{ 0, 0 }, newFrameBufferSize, windowStyleFlags);
 
-		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
+		constexpr uint32 Flags = (SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 		setWindowPos(windowRect, Flags);
 
 		::ShowWindow(m_hWnd, SW_NORMAL);
@@ -778,12 +793,9 @@ namespace s3d
 		const Size newFrameBufferSize = Math::Round(m_osState.virtualSize * scaling).asPoint();
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_osState.style);
 		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
-			suggestedPos, newFrameBufferSize, windowStyleFlags);
-
-		if (m_osState.style != WindowStyle::Frameless)
-		{
-			windowRect.y = (suggestedPos.y - m_osState.titleBarHeight);
-		}
+			Point{ 0, 0 }, newFrameBufferSize, windowStyleFlags);
+		// WM_DPICHANGED supplies a native window origin, including invisible borders.
+		windowRect.pos = suggestedPos;
 
 		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
 		setWindowPos(windowRect, Flags);
@@ -860,15 +872,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	Point CWindow::getNativeWindowPos(const Point visibleFramePos) const
+	{
+		RECT native{}, visible{};
+		if (::GetWindowRect(m_hWnd, &native)
+			&& SUCCEEDED(::DwmGetWindowAttribute(m_hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visible, sizeof(visible))))
+		{
+			return (visibleFramePos + Point{ native.left - visible.left, native.top - visible.top });
+		}
+		return visibleFramePos;
+	}
+
 	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)
 	{
-		Point pos = rect.pos;
-	
-		if (m_osState.style != WindowStyle::Frameless)
-		{
-			pos += Math::Round(Vec2{ (m_osState.frameThickness.x * m_osState.scaling), m_osState.titleBarHeight }).asPoint();
-		}
-
+		const Point pos = rect.pos;
 		const Size size = rect.size;
 
 		LOG_DEBUG(fmt::format("SetWindowPos({}, {}, {}, {}, {:#x})", pos.x, pos.y, size.x, size.y, flags));
