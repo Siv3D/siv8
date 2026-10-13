@@ -42,18 +42,20 @@ immediately. This lock does not coordinate manually launched tests or IDE builds
 Console (`.txt`) and XML reports are retained in
 `WindowsDesktop/Intermediate/TestReports/` and can be
 removed when no longer needed. After reading a complete XML report from a
-zero-exit run, the runner appends captured test stdout/stderr to the console
-report and prints it, including benchmark tables. The empty `runner.lock` file may remain after a
-run; its existence does not indicate a held lock. The early-exit block in
+zero-exit run, the runner appends captured test stdout/stderr from
+`TestCase/OverallResult` to the console report and prints it, including benchmark
+tables. The empty `runner.lock` file may remain after a run; its existence does
+not indicate a held lock. The early-exit block in
 `WindowsDesktop/Main.cpp` is required by this workflow. Windows registration
 validation checks the Visual Studio project and its filters; it does not
 validate the Xcode project.
 
 After changing the runner, use `python tools/test_windows_runner.py` to check its
-success/failure handling, argument forwarding, lock release and timeout cleanup
-in a disposable checkout. This requires Windows' .NET Framework C# compiler and
+success/failure handling, captured output, argument forwarding, lock release and
+timeout cleanup in a disposable checkout. This requires Windows' .NET Framework C# compiler and
 PowerShell 7; it uses a small fake application and does not build or launch Siv3D.
-Also run the real suite to verify the build and application integration.
+The fixture must match the vendored XML reporter's structure. Also run the real
+suite to verify the build and application integration.
 
 On macOS, run from the repository root, outside the sandbox:
 
@@ -131,8 +133,32 @@ the normal full suite. To inspect selection without executing UI tests, launch
 the built executable with `--test-only --list-tests` and the intended filter;
 the Windows wrapper reserves listing options for direct executable use.
 
-See [window validation](../window/README.md#validation) for native coverage and
-required monitor conditions.
+For tag-only changes, confirm that test bodies are unchanged, inspect case names
+and tags, and run the normal suite. Check selection as sets: the default contains
+all non-hidden cases, no hidden cases, and the UI group contains the intended
+native scenarios. Avoid fixed expected counts across platforms. Retagging alone
+does not require replaying fullscreen transitions.
+
+Run the Windows initial-placement check in a fresh process on its own so that
+`SetPos()` runs on the initially hidden HWND before the first `System::Update()`:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.initial_placement'
+```
+
+The same case can run later in the full suite; its report records initial
+visibility. See [window validation](../window/README.md#validation) for native
+coverage and required monitor conditions.
+
+### Validation evidence
+
+Record the host, backend, configuration, selected cases, report outcome, and any
+conditions that were unavailable or skipped. Keep logs and detailed results with
+the runner's artifacts; durable guides describe procedures, and `TODO.md` holds
+remaining work. Distinguish injected inputs, real native API paths, physical
+key/mouse observation, and OS setting changes or monitor unplugging. One does
+not establish the results of another. Concurrency tests supplement ownership and
+lock-scope review; passing tests alone does not establish freedom from data races.
 
 ### Catch2
 
@@ -171,12 +197,12 @@ Each helper restores the previous stream buffer through RAII and joins its worke
 before reading the captured text. Stream redirection is process-wide; tests using
 it must not run concurrently with other tests that write to or redirect that stream.
 
-Validate log tests with both reporters on macOS:
+After changing log capture, validate the focused tests with both reporters on
+macOS, then run the full suite once:
 
 ```sh
 ./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter console
 ./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter xml --out /tmp/metal-frame-errors.xml
-./macOS/run-tests.sh
 ./macOS/run-tests.sh --reporter xml --out /tmp/siv3d-tests.xml
 ```
 
@@ -216,10 +242,10 @@ engine suite and do not verify the Windows allocator or MemorySanitizer behavior
 
 ### MSVC warnings in tests
 
-Compare clean test-application builds in both Release and Debug with the existing
-`/W4` settings. When the engine library already matches the sources, configuration
-and toolchain, the application-only `Rebuild` command below regenerates every test
-translation unit without rebuilding the engine. Keep the build logs and follow
+For warning cleanup, compare clean test-application builds in Release and Debug
+with the existing `/W4` settings. When the engine library already matches the
+sources, configuration and toolchain, the application-only `Rebuild` command below
+regenerates every test translation unit without rebuilding the engine. Keep the build logs and follow
 template instantiation traces: a warning reported in a standard-library header
 can originate in either an expected test value or an engine template.
 
@@ -243,37 +269,28 @@ blanket warning suppression or edits to vendored Catch2 sources.
 
 ### Windows incremental build failures
 
-If a test run displays `EXCEPTION_ILLEGAL_INSTRUCTION`, inspect the build and
-runner reports before rerunning it. An incomplete Catch2 XML report is a failed
-run even when the application exits with code zero. Repeatedly running the same
-executable can repeatedly display exception dialogs without improving the diagnosis.
-
-A texture-lifetime regression investigation encountered this in
-`TOML.getOpt_getOr_get`: the focused texture tests passed, while the full suite
-and an isolated TOML run terminated. Restoring the renderer source and rebuilding
-incrementally produced the same termination. The engine had been recompiled, but
-the test application still reused compilation/link-time artifacts. Rebuilding the
-test application, including its PCH, object files and LTCG artifacts, made the
-full suite pass without changing TOML code. This supports stale or inconsistent
-incremental artifacts as the cause; it does not identify the exact faulty artifact
-or establish that every illegal-instruction exception has this cause.
-
-Use this order when investigating a recurrence:
+Distinguish compiler/linker failures from runtime failures. Treat MSVC `C1001`
+as a likely toolchain issue and preserve its build log before changing source.
+For an exception such as `EXCEPTION_ILLEGAL_INSTRUCTION` or an incomplete test
+report after an incremental build, use the diagnosis below. Missing or incomplete
+XML is a failed run even if the process exits with zero. Clean rebuilding is a
+diagnostic step, not a requirement for every change.
 
 1. Preserve the console/XML reports under `WindowsDesktop/Intermediate/TestReports/`.
-   Record the last test started, the exception, configuration, toolchain and whether
-   the build reused object files or LTCG output. The last test name is a starting
-   point for investigation, not proof that its implementation is faulty.
+   Keep the build log too. Record the last test started, the exception, configuration,
+   toolchain and whether the build reused object files or LTCG output. The last test
+   name is a starting point for investigation, not proof that its implementation is faulty.
 2. Stop repeated runs of the same binary. Before comparing current and reverted
    source, establish a clean build. An engine rebuild alone does not ensure that
    the test application's PCH, objects or LTCG artifacts have been regenerated.
 3. With no other runner or IDE build active in this checkout, rebuild the matching
-   configuration using MSBuild `Rebuild`, then run the full suite. Use the commands
+   configuration using MSBuild `Rebuild`, then repeat the failing selection and
+   required regression suite under the same conditions. Use the commands
    below from the repository root in PowerShell 7. Do not manually delete broad
    build directories or alter unrelated source to work around the exception.
-4. Confirm a complete XML report with no failures. If the cleanly rebuilt suite passes,
-   describe the artifact explanation as supported by the result, without claiming
-   a source fix. If the exception persists, preserve the new evidence and investigate
+4. Require complete XML with no failures and inspect the selected cases and skips.
+   A pass after rebuilding alone is not a source fix or proof of the exact faulty artifact.
+   If the exception persists, preserve the new evidence and investigate
    the faulting instruction, call stack and CPU instruction requirements instead
    of continuing blind retries.
 

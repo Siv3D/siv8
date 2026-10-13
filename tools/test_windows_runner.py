@@ -45,10 +45,14 @@ class App {
         }
         bool failed = mode.EndsWith("failure") || mode.EndsWith("false-success");
         string passed = mode.EndsWith("zero") || mode.EndsWith("skipped") || failed ? "0" : "1";
+        string skipped = mode.EndsWith("skipped") ? "1" : "0";
         string totals = " successes=\"" + passed + "\" failures=\"" + (failed ? "1" : "0") +
-            "\" expectedFailures=\"0\" skips=\"" + (mode.EndsWith("skipped") ? "1" : "0") + "\"";
-        File.WriteAllText(xmlOutput, "<Catch2TestRun><TestCase><StdOut>fixture stdout \u65e5\u672c\u8a9e</StdOut>" +
-            "<StdErr>fixture stderr</StdErr></TestCase><OverallResults" + totals +
+            "\" expectedFailures=\"0\" skips=\"" + skipped + "\"";
+        string captured = mode.EndsWith("no-capture") ? "" :
+            "<StdOut>fixture stdout \u65e5\u672c\u8a9e</StdOut><StdErr>fixture stderr</StdErr>";
+        File.WriteAllText(xmlOutput, "<Catch2TestRun><TestCase><OverallResult success=\"" +
+            (failed ? "false" : "true") + "\" skips=\"" + skipped + "\">" + captured +
+            "</OverallResult></TestCase><OverallResults" + totals +
             "/><OverallResultsCases" + totals + "/></Catch2TestRun>");
         return mode.EndsWith("failure") || mode.EndsWith("bad-exit") ? 3 : 0;
     }
@@ -108,8 +112,14 @@ class RunnerTests(unittest.TestCase):
         report_path = next(arg[len("console::out="):] for arg in args if arg.startswith("console::out="))
         report = (self.app / report_path).read_text(encoding="utf-8")
         for message in ("fixture stdout 日本語", "fixture stderr"):
-            self.assertIn(message, output)
-            self.assertIn(message, report)
+            self.assertEqual(output.count(message), 1, output)
+            self.assertEqual(report.count(message), 1, report)
+
+    def test_success_without_captured_output(self):
+        output = self.run_case("-TestArguments", "--runner-fixture=no-capture")
+        self.assertIn("Catch2 console report fixture", output)
+        self.assertNotIn("fixture stdout", output)
+        self.assertNotIn("fixture stderr", output)
 
     def test_incomplete_and_failed_runs(self):
         for mode, error in [("missing", "did not complete"), ("incomplete", "did not complete"),

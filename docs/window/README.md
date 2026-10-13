@@ -78,22 +78,9 @@ native restoration, size request, and optional centering before applying Scene;
 a `false` resize result still applies the observed final window state. Shortcut
 requests use the public fullscreen path.
 
-Platform-specific centering is declared in
-[WindowUtility.hpp](../../Siv3D/src/Siv3D/Window/WindowUtility.hpp) and implemented in
-[SivWindow_Windows.cpp](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/SivWindow_Windows.cpp)
-and [SivWindow_macOS.cpp](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/Window/SivWindow_macOS.cpp).
-These helpers perform native placement only, so Resize can reuse them before its
-single Scene update. The Windows file also defines `Platform::Windows::Window::GetHWND()`.
-
-Monitor enumeration and current-monitor lookup are implemented together in
-[SivMonitorInfo_Windows.cpp](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/MonitorInfo/SivMonitorInfo_Windows.cpp)
-and [SivMonitorInfo_macOS.cpp](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/MonitorInfo/SivMonitorInfo_macOS.cpp).
-The shared `SivMonitorInfo.cpp` contains monitor information formatting.
-
-Only the final scene size and render resolution determine whether to clear or
-replace the scene buffers. Native intermediate sizes do not discard executed
-pixels or allocate temporary scene buffers. Pending drawing is retained and no
-flush is forced. Separate public calls each apply their own result.
+Native intermediate sizes do not trigger Scene resource updates. Separate public
+calls each apply their own result. See [Scene resource updates](../renderer2d/scene-high-resolution.md#rendering-design)
+for buffer reuse and the treatment of pending and executed drawing.
 
 A native operation and its Scene update are not a rollback transaction. In
 particular, Windows can restore a fullscreen or maximized window before rejecting
@@ -130,14 +117,9 @@ The next `System::Update()` reads the native fullscreen state along with the new
 geometry. The current `SceneConfig` remains selected; window-following scene sizes
 resume following the restored window, including with `KeepSize` selected.
 
-A Retina fullscreen window keeps its point dimensions separate from its backing
-pixels. `SceneConfig::Window()` preserves the pre-fullscreen scene size and
-fits that scene into the fullscreen area. `SceneResolution::Display` increases
-render resolution to use the fitted framebuffer pixels. To expand scene
-coordinates in fullscreen, select `FullscreenSceneMode::FollowWindow`.
-`SceneConfig::WindowPixels()` follows framebuffer pixels in both window states.
-Fixed configurations retain their specified scene size. macOS's final display
-composition may resample the framebuffer according to the selected desktop mode.
+See [Scene configurations](../renderer2d/scene-high-resolution.md#six-common-uses)
+for each preset's fullscreen sizing rule. macOS's final display composition may
+resample the framebuffer according to the selected desktop mode.
 
 Calling `Window::Resize()`, `ResizeVirtual()`, or `ResizeActual()` with a changed
 size exits fullscreen and resizes the restored window. Virtual-size requests use
@@ -160,11 +142,6 @@ any pending request. Explicit `Window::SetFullscreen()` calls still work.
 Re-enabling does not replay an old request; reapplying `true` preserves a pending
 one. macOS ignores shortcut key repeats and combines multiple requests before a
 frame into one toggle. The menu title follows the current window/fullscreen state.
-
-Previous macOS fullscreen behavior selected a large enumerated display mode.
-Fullscreen point dimensions, backing dimensions, and `fullscreenResolution` can
-therefore change when adopting desktop-mode preservation. The scene size rules
-remain the same; the desktop setting now supplies their input dimensions.
 
 ## Migrating stored macOS positions
 
@@ -219,8 +196,9 @@ cross-DPI centering retains the intermediate move and synchronized bounds read.
 
 The HWND thread owns native geometry and window policy in
 [CWindow](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/CWindow.hpp):
-the OS state, DPI, border metrics, saved windowed rectangle, fullscreen transition,
-and shown flag. The engine thread owns the published `WindowState` and the title.
+the OS state, DPI, border metrics, style, minimum size, saved windowed rectangle,
+fullscreen transition, and shown flag. The engine thread owns the published
+`WindowState` and the title.
 The HWND and loaded User32 entry points are initialized before the startup promise
 releases the engine thread. Destruction keeps the window owner alive until the
 HWND thread has destroyed the window and acknowledged the existing shutdown flag.
@@ -268,189 +246,44 @@ does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
 
-Native fullscreen, maximize/minimize, cross-monitor placement, and desktop
-pointer tests share `[.window-ui]`. Run `[window-ui]` explicitly, or use
-`[fullscreen]` / `[screen-coordinates]` for those subsets. The default suite
-retains geometry calculations, native state checks, and local window resizing.
-The [test selection guide](../development/README.md#window-ui-tests) explains
-how to exclude UI cases when using name filters.
+Use the [development guide](../development/README.md#window-ui-tests) for test
+selection, transition pauses, and report checks. Fullscreen, maximize/minimize,
+cross-monitor placement, and desktop pointer cases use `[.window-ui]`; the default
+suite still checks calculations, native state, and local resizing.
 
-[WindowSceneTestHelper.hpp](../../Test/WindowSceneTestHelper.hpp) shares passive
-Window/Scene snapshots, placement restoration, and transition pauses. Each test
-keeps its restoration sequence and additional guards locally. Placement calls
-specify the size unit and position/size order explicitly. `PauseForWindowTransition()`
-waits 500 ms without advancing a frame; `UpdateWithPause()` performs one asserted
-`System::Update()` before that wait. Keep unconditional and conditional waits,
-guard lifetimes, and the order of Scene, MSAA, style, and window restoration when
-reusing these helpers.
+| Tests | Responsibility |
+| --- | --- |
+| [WindowSceneSync](../../Test/Test_WindowSceneSync.cpp) | Immediate and next-frame Scene/cursor state, final geometry of compound operations, below-minimum rejection, buffer reuse and executed/pending drawing; Metal allocation failure and retry |
+| [WindowStateSync](../../Test/Test_WindowStateSync.cpp) | Windows state generations and stable references, native notifications, reentrant commands and exceptions, API synchronization, startup/shutdown |
+| [MonitorInfo](../../Test/Test_MonitorInfo.cpp) | Enumeration rules and identity against one snapshot; missing, reordered, or resized lists; failure before mutation and recovery |
+| [ScreenCoordinates](../../Test/Test_ScreenCoordinates.cpp) | Public/native coordinates, initial placement, frame styles, centering, DPI transitions, and pointer conversion |
+| [WindowFullscreen](../../Test/Test_WindowFullscreen.cpp), [Windows](../../Test/Test_WindowFullscreen_Windows.cpp), [macOS](../../Test/Test_WindowFullscreen_macOS.cpp) | API/shortcut routes and cancellation, policy changes, fullscreen monitor changes, original window restoration, and Resize semantics; macOS desktop-mode preservation |
+| [WindowMacOS](../../Test/Test_WindowMacOS.cpp) | Pixel minimum sizes, point rounding and style changes, scale reapplication, and native fullscreen detachment |
 
-Fullscreen tests keep shared scenarios in
-[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp), with native
-cases in [the Windows source](../../Test/Test_WindowFullscreen_Windows.cpp) and
-[the macOS source](../../Test/Test_WindowFullscreen_macOS.cpp).
-[WindowFullscreenTestHelper.hpp](../../Test/WindowFullscreenTestHelper.hpp)
-contains their restoration guard and presentation checks; the matching
-`_Windows.hpp` and `_macOS.hpp` helpers contain native input and geometry access.
+Run Windows `ScreenCoordinates.Windows.initial_placement` alone to check the
+initially hidden HWND before the first frame; see the command in the development
+guide. Its execution later in the full suite checks a different starting state.
 
-[Test_WindowSceneSync.cpp](../../Test/Test_WindowSceneSync.cpp) checks public
-operation boundaries: immediate and next-frame presentation for the six common
-scene configurations, maximization/restoration, asynchronous minimization, and
-Scene synchronization after a rejected centering request. Invalid resize sizes
-leave state unchanged, while same-size requests retain the centering option.
-The macOS allocation-error case uses the test-only
-[Metal allocation helper](../../Test/MetalTextureAllocationFailure.hpp) to reject
-the first or second texture creation on the renderer device. Both centering
-overloads are checked with and without MSAA,
-including failure of the resolve target after successful MSAA allocation. It
-checks retained resources, configuration, cursor mapping, and executed/pending
-pixels. Recovery is exercised through an explicit retry and preparation of the
-next frame. This is injected allocation failure, not physical GPU exhaustion.
-The Windows case checks below-minimum rejection after maximized restoration.
-Its opt-in `placement_across_monitors` case checks explicit placement and centering against
-attached displays. The `fullscreen_resize_uses_final_geometry` case checks
-native scene-buffer identity and executed/pending pixels across a compound
-fullscreen-exit resize; it uses `[.fullscreen]` and 500 ms transition pauses.
+Monitor tests use attached displays. Mixed-DPI and negative-origin coverage
+requires the corresponding layout. Fullscreen transfer needs two displays and
+uses a three-display route when available; resize restoration selects one
+mixed-DPI pair in both directions, or reports the single-monitor fallback.
+macOS mode-preservation checks compare display modes and monitor origins, not
+work areas, because the Dock may move.
 
-```sh
-./macOS/run-tests.sh '--test-case=~[window-ui]WindowSceneSync.*'
-./macOS/run-tests.sh '--test-case=[window-ui]'
-```
+[WindowSceneTestHelper.hpp](../../Test/WindowSceneTestHelper.hpp) captures state
+without side effects. Each suite chooses its restoration order, size unit, and
+guard lifetimes; sharing helpers does not make these sequences interchangeable.
+`PauseForWindowTransition()` waits 500 ms without advancing a frame;
+`UpdateWithPause()` performs one asserted `System::Update()` before that wait.
+Keep those distinctions and conditional waits when changing restoration code.
+The [fullscreen helper](../../Test/WindowFullscreenTestHelper.hpp) adds its own
+guard and presentation checks.
 
-```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Window*,~[window-ui]Scene*,MonitorInfo.*,~[window-ui]ScreenCoordinates.*'
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
-./WindowsDesktop/run-tests.ps1
-```
-
-The explicit `WindowSceneSync.*` filter includes its opt-in cases. The normal
-suite excludes fullscreen, maximize/minimize, and cross-monitor placement cases. Windows
-regression runs should include a mixed-DPI pair in both directions: immediate
-Scene/cursor updates after placement, compound resize buffer reuse, below-minimum
-rejection after fullscreen/maximized restoration, and API/Alt+Enter transitions.
-These are native runtime checks; macOS compilation does not validate them.
-
-`WindowFullscreen.change_monitor_preserves_window_and_config` selects two
-attached displays, preferring different DPI scales. It checks both directions
-across the six configurations and explicit fullscreen following, repeated/current
-and invalid monitor requests, changes to policy while fullscreen, and exits through
-the API, shortcut, and three Resize functions. MSAA is retained, including after
-changing it while fullscreen. Restoration uses the original window's monitor,
-position, and scale. With three displays, one existing round
-trip enters fullscreen on B, moves to C, and restores the original window on A.
-Immediate and next-frame presentation are checked; macOS also checks that desktop
-modes remain unchanged. Windows injects
-missing-monitor snapshots through the native command path before checking recovery,
-including native style retention. Native client dimensions and DPI are compared
-with the published fullscreen state.
-The case is hidden and skips when fewer than two displays are attached.
-The WindowSceneSync buffer-preservation case also changes fullscreen monitors
-when available before resizing, retaining its executed/pending pixel checks.
-
-[Test_MonitorInfo.cpp](../../Test/Test_MonitorInfo.cpp) controls native identity and
-enumeration inputs to check empty/missing displays and later enumeration growth,
-shrinkage, or reordering. It also supplies snapshots to the production centering
-and fullscreen call paths, checking failure before native style, saved rectangle,
-or fullscreen-state changes, followed by successful placement. Function overrides
-are passed per operation; production has no mutable global override. These tests
-do not unplug a physical monitor. The existing hidden fullscreen round trips add
-recovery, invalid-index fallback with a reordered snapshot, rejected centering,
-and same-size resize checks without adding fullscreen transitions.
-
-[Test_WindowMacOS.cpp](../../Test/Test_WindowMacOS.cpp) checks native minimum-size
-limits, point rounding, and style changes in the default suite. A scoped override
-of the window's reported backing scale checks 1× → 2× → 1× reapplication without
-requiring multiple displays; this is not a physical DPI transition test.
-
-Its opt-in monitor case checks minimum-size limits immediately after placement
-and on the next frame on attached displays. Its fullscreen case invokes the
-native detachment path used by GLFW on monitor disconnection, then checks window
-state, Scene configuration, sizing, cursor conversion, placement, resizing, and a
-subsequent shortcut/API fullscreen round trip. This does not unplug a monitor or
-exercise OS display re-enumeration. These cases retain `[.screen-coordinates]` and
-`[.fullscreen]` respectively, along with `[.window-ui]`, with 500 ms pauses
-after visible transitions. To run the native UI group explicitly:
-
-```sh
-./macOS/run-tests.sh '--test-case=[window-ui]'
-```
-
-Use the [interactive program](../../Test/Manual/SceneHighResolution.md) for
-physical monitor disconnection/reconnection and manual minimum-size checks.
-
-[Test_WindowStateSync.cpp](../../Test/Test_WindowStateSync.cpp) separates controlled
-two-thread handoff checks from real HWND message tests on Windows. The handoff
-test pauses at partial and nested updates, checks complete generations, and retains
-a public reference across publication. Native tests check deferred OS updates,
-nearby explicit policy changes without geometry loss, reentrant command completion,
-same-DPI notification reentry, immediate resizing/placement, and next-frame
-backbuffer/Scene/cursor consistency. Real mixed-DPI placement is checked only when
-the attached monitors provide different scale factors. Every native suite also
-starts and shuts down the actual two-thread engine; the runner bounds execution
-and requires complete XML reports. Passing these tests supplements the ownership
-and lock-scope review; it does not constitute a race-detector result. The combined
-resize/placement case uses `[.screen-coordinates][.window-ui]`; the handoff and
-other native notification cases remain in the default suite.
-
-```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]WindowStateSync.*,~[window-ui]Scene*'
-./WindowsDesktop/run-tests.ps1 -Configuration Debug -TestArguments '--test-case=~[window-ui]WindowStateSync.*'
-```
-
-[Test_ScreenCoordinates.cpp](../../Test/Test_ScreenCoordinates.cpp) checks Windows
-visible-frame placement, repeated position and resize round trips, both centering
-overloads, and style changes against native rectangles. Its monitor round trips
-use `[.screen-coordinates][.window-ui]`, including mixed DPI and negative origins
-when available. Initial placement remains in the normal suite. A same-DPI
-message dispatched through the real HWND thread separately
-checks the native origin contract and reentry; it does not simulate changing the
-OS display scale.
-
-```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[screen-coordinates]'
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.initial_placement'
-```
-
-Run the initial-placement case alone to check `SetPos()` on the initially hidden
-HWND before the first `System::Update()`. The report records whether the window
-was already visible; the same case also runs after earlier cases in the full suite.
-
-On macOS the same file compares public geometry against native Cocoa/Core Graphics
-geometry and checks invalid monitor indices in the default suite. Its placement
-and cursor tests use `[.screen-coordinates][.window-ui]`: they move the real window
-and pointer on attached monitors, pausing for 500 ms after transitions. Opt in explicitly:
-
-```sh
-./macOS/run-tests.sh '--test-case=[screen-coordinates]'
-```
-
-The opt-in cases cover decorated/resizable/frameless placement, both centering
-overloads, position round trips, all three scene-size modes with both resolution
-policies, cursor warping through
-local and camera transforms, hit testing, and raw cursor pixels when the pointer
-is on another monitor. Actual mixed-DPI and negative-origin coverage depends on
-the connected display layout.
-[macOS fullscreen tests](../../Test/Test_WindowFullscreen_macOS.cpp) separately check every
-source/destination monitor pair using public placement APIs. Native display
-mode IDs, point/pixel dimensions, refresh rates, and all monitor origins must
-match the snapshot taken before entering fullscreen, including after
-minimization/restoration and fullscreen resize calls. Work areas are not required
-to remain identical because the Dock may move. Their explicit run
-command is in the [scene guide](../renderer2d/scene-high-resolution.md#validation).
-Use the [interactive program](../../Test/Manual/SceneHighResolution.md) to check
-continuous dragging, drawing, and physical pointer interaction. Automated native
-coordinate checks do not establish those visual results.
-
-The Windows fullscreen resize case selects one attached mixed-DPI pair and checks
-both directions with `CenterWindow::No`. It records monitor/DPI, window and scene
-dimensions, and presentation settings immediately after resizing and after the
-next frame. All three scene-size modes with both resolution policies and explicit
-fullscreen following use actual-size requests and alternating
-`Resize()` / `ResizeVirtual()` requests, avoiding duplicate alias combinations.
-It also checks restored positions, native client pixels, same-size fullscreen
-requests (including rounded virtual sizes), invalid sizes, settings changed in
-fullscreen, and cursor transforms. If no mixed-DPI pair exists, it reports that
-limitation and checks only the current monitor; this is not mixed-DPI validation.
-The KeepSize case uses the same pair selection and all three Resize APIs, checking
-the default configuration and settings changed in fullscreen, including transitions
-between KeepSize and FollowWindow. Below-minimum requests retain coverage of both
-fullscreen sizing policies without extra fullscreen round trips.
+See [Scene validation](../renderer2d/scene-high-resolution.md#validation) for
+rendering tests. The [manual program](../../Test/Manual/SceneHighResolution.md)
+covers continuous dragging, physical input, OS settings, and monitor unplugging.
+Injected monitor lists, reported backing scales, allocation failures, and native
+detachment exercise specific paths without reproducing those physical conditions.
+Record verification according to the [evidence guidance](../development/README.md#validation-evidence);
+remaining conditions belong in [TODO.md](../../TODO.md).

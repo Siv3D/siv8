@@ -116,6 +116,7 @@ paths. Switching does not force a flush or wait for GPU completion.
 | Use | API |
 | --- | --- |
 | Scene layout, centers, and hit testing | `Scene::Size()` and its related getters |
+| Window client pixels, including letterbox margins | `Window::GetState().frameBufferSize` |
 | Default camera drawing area | `Graphics2D::GetDrawingSize()` |
 | Scene pixel dimensions and captured image dimensions | `Scene::RenderResolution()` |
 | Current render target's pixel dimensions | `Graphics2D::GetRenderTargetSize()` |
@@ -174,11 +175,12 @@ The shared state calculates the final scene size and render resolution from the
 complete configuration. Each backend allocates replacement buffers before
 committing the configuration, including its scaling filter. There is no sequence
 of intermediate setter states or intermediate buffer allocations. Resizing does
-not force a flush or discard pending draw commands. Those commands execute against
-the current scene buffer using its resolution scale. Recorded geometry, user
-transforms, physical viewports/scissors, and subdivision counts retain their
-original values. A change to either scene size or render resolution clears pixels from
-already executed draws, including draws submitted by an explicit
+not force a flush or discard pending draw commands: flushing before replacement
+would execute them into a buffer whose pixels are about to be discarded. Pending
+commands execute against the current scene buffer using its resolution scale.
+Recorded geometry, user transforms, physical viewports/scissors, and subdivision
+counts retain their original values. A change to either scene size or render
+resolution clears pixels from already executed draws, including draws submitted by an explicit
 `Graphics2D::Flush()`. Resizing cannot reconstruct those pixels.
 
 For example, drawing an 800 × 600 rectangle and then resizing the scene
@@ -188,128 +190,38 @@ Configure sizes before drawing to avoid mixing layout based on different sizes.
 OS-driven window resizing is applied during preparation of the next frame, after
 the preceding frame has been presented.
 
-Fullscreen covers the selected monitor without changing its OS display mode.
-Windows Alt+Enter and macOS Control+Command+F and the fullscreen menu use the
-same transition as `Window::SetFullscreen()`. They preserve the configuration
-and apply its fullscreen sizing rule. The default is a presentation of the
-existing scene, fitted with letterboxing; it does not expand game coordinates.
-
 The cursor's base transform is refreshed without consuming an input frame.
-Unchanged configurations reuse the buffers and cached transform state.
+Unchanged configurations reuse the buffers and cached transform state. Filter-only
+changes also preserve executed pixels. A scene-size change with the same final
+render resolution reuses the buffers but clears their executed pixels. Allocation
+failure leaves the prior Scene configuration and resources intact; completed
+native window changes follow the separate Window failure contract linked above.
+
+Fullscreen preserves the current configuration and applies its sizing rule.
+The default fits the existing scene with letterboxing. See the
+[Window guide](../window/README.md#fullscreen) for native transitions and restoration.
 
 ## Validation
 
-[Test_SceneMSAA.cpp](../../Test/Test_SceneMSAA.cpp) checks supported sample-count
-transitions, native texture sample counts, resource reuse, pending and executed
-drawing, empty frames, repeated changes, rejected values, and preservation across
-scene configuration changes. Native and scaled presentation are checked at each
-supported sample count. ScreenCapture checks compare dimensions and pixels
-at one-pixel, odd, and display-resolution sizes for each supported sample count,
-and verify partial edge coverage. A backend test rejects a native unsupported
-count separately from public enum validation; unsupported valid enum values are
-also checked when the device exposes one.
+| Tests | Responsibility |
+| --- | --- |
+| [SceneConfig](../../Test/Test_SceneConfig.cpp) | Factories, six common uses, keep/follow policy, configuration copies, size limits and invalid values, reconfiguration while fullscreen/minimized |
+| [SceneHighResolution](../../Test/Test_SceneHighResolution.cpp) | Size/rounding calculations, user transforms and cursor mapping, pixel viewports/scissors, pending/executed draws, target replacement and texture lifetime; image and subdivision comparisons |
+| [ScenePresentation](../../Test/Test_ScenePresentation.cpp) | Actual final composition: Metal into an offscreen target and D3D11 into the swap chain; Nearest/Linear changes, buffer reuse, scaled presentation and direct MSAA resolve |
+| [SceneMSAA](../../Test/Test_SceneMSAA.cpp) | Native sample counts, resource reuse, drawing/capture pixels and dimensions, repeated changes, invalid/unsupported counts |
+| [SceneAllocationFailure](../../Test/Test_SceneAllocationFailure.cpp) | Injected Metal allocation failure during Configure/MSAA changes, retention of configuration/resources/input/drawing, and successful retry |
 
-[Test_SceneAllocationFailure.cpp](../../Test/Test_SceneAllocationFailure.cpp)
-checks Metal allocation failures during configuration and MSAA changes. It
-verifies retained settings, resources, cursor mapping, and executed/pending
-pixels, followed by a successful retry. Disabling MSAA reuses the single-sample
-target without allocating a texture. The test-only
-[allocation helper](../../Test/MetalTextureAllocationFailure.hpp) rejects a
-selected texture allocation on the renderer device; this does not simulate
-physical GPU memory exhaustion.
+The [allocation helper](../../Test/MetalTextureAllocationFailure.hpp) rejects a
+selected texture creation; it does not reproduce physical GPU exhaustion.
+Unsupported valid MSAA values can only be checked on a device that exposes one.
+Use [Window validation](../window/README.md#validation) for native resize,
+fullscreen, and monitor paths. Those tests own Window-to-Scene integration.
 
-[Test_SceneConfig.cpp](../../Test/Test_SceneConfig.cpp) covers the four factories,
-six common uses, fullscreen keep/follow transitions, same-dimension fullscreen
-exits, startup in fullscreen, minimized reconfiguration, configuration copies,
-invalid values, size boundaries, and preservation of executed pixels for
-unchanged and filter-only configurations. Windows cases also check immediate and
-next-frame scene dimensions and cursor transforms after maximizing and restoring
-Fixed + Display, both Window resolution policies, and WindowPixels, including
-restoration from minimization.
-The native maximize/minimize case uses `[.window-ui]`; calculations with synthetic
-fullscreen and minimized window states remain in the default suite.
-[Test_ScenePresentation.cpp](../../Test/Test_ScenePresentation.cpp) exercises
-the actual final composition paths: Metal into an offscreen target and D3D11
-into its swap-chain buffer. It compares Nearest → Linear → Nearest pixels and
-checks scene-buffer reuse across filter changes and combined scene-size/resolution
-changes with unchanged final buffer dimensions. D3D11 checks MSAA resolve followed
-by scaled composition, as well as direct resolve into the swap-chain buffer;
-the latter must match the resolved scene pixels, including partial edge coverage.
-
-[Test_SceneHighResolution.cpp](../../Test/Test_SceneHighResolution.cpp) covers
-size calculation, DPI-only changes, all resize modes, rounding, invalid sizes,
-configuration round trips, immediate cursor mapping, camera defaults, physical
-viewport/scissor coordinates, pending and flushed draws, and window resize APIs.
-They also check repeated target replacement across a vertex batch boundary,
-texture lifetime, and clipping rectangles outside a shrunken target.
-Image comparisons check shapes, patterns, bitmap/MSDF text, projective transforms,
-and a custom vertex shader against explicit scaling at the same resolution.
-Frame metrics compare subdivision and draw counts.
-
-[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) checks default
-fullscreen size preservation and reconfiguration through mixed API/shortcut
-round trips, including another-DPI display when available. Platform-specific
-cases are separate from these shared scenarios.
-[Test_WindowFullscreen_Windows.cpp](../../Test/Test_WindowFullscreen_Windows.cpp)
-exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
-round trips, all size modes with both resolution policies and explicit fullscreen following, policy changes while
-fullscreen, disabled shortcuts (including cancellation before the next frame),
-and fullscreen bounds and restored window dimensions on each attached monitor.
-Fullscreen resize requests additionally check one mixed-DPI monitor pair in both
-directions, restored positions, the six size/resolution combinations with explicit fullscreen following, same-size and invalid requests,
-and immediate/next-frame dimensions and cursor mapping. A separate Windows case
-covers all three Resize APIs with the default KeepSize policy, settings changed
-in fullscreen, and switching between KeepSize and FollowWindow without adding
-another full combination matrix. See the
-[window validation guide](../window/README.md#validation) for pair selection and
-the fallback on systems without mixed-DPI monitors.
-[Test_WindowFullscreen_macOS.cpp](../../Test/Test_WindowFullscreen_macOS.cpp)
-checks API and UI round trips for the six size/resolution combinations with explicit fullscreen following, immediate scene/cursor
-updates, policy changes while fullscreen, monitor bounds, restored window
-position and dimensions for each source/destination monitor pair, native
-minimized state, unchanged native desktop modes and monitor positions, and
-fullscreen resize requests. Local Cocoa events and menu dispatch exercise the
-fullscreen UI routes without injecting global input. The native green button
-and Zoom menu remain maximization operations. Disabled controls,
-pending-request cancellation, shortcut repeats, and fixed/sizable/frameless
-styles are covered. Capture dimensions and transformed cursor hit tests
-are also checked for the six size/resolution combinations with explicit fullscreen following on each monitor. The macOS monitor test
-places the window with
-`Window::CenterToScreen(index)` before exercising the public fullscreen API.
-See [desktop coordinates](../window/README.md) for point-based macOS placement
-and client-pixel input. Mixed-DPI, nonzero and
-negative monitor origins require the corresponding display layout.
-These tests use `[.fullscreen][.window-ui]` and are hidden from the default suite
-because they visibly change the real window. Each transition is followed by a
-500 ms pause.
-
-Run the focused tests and then the full suite on the respective host:
-
-```sh
-./macOS/run-tests.sh '--test-case=~[window-ui]Scene*'
-./macOS/run-tests.sh
-```
-
-```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Scene*'
-./WindowsDesktop/run-tests.ps1
-```
-
-Opt in to the visible window transitions separately on the respective host:
-
-```sh
-./macOS/run-tests.sh '--test-case=[window-ui]'
-```
-
-```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
-```
-
-This group also includes maximize/minimize and cross-monitor placement checks.
-Use `[fullscreen]` to select only fullscreen cases. See the
-[selection guide](../development/README.md#window-ui-tests) for focused filters.
-
-[The interactive check](../../Test/Manual/SceneHighResolution.md) covers OS
-resizing, monitor changes, fullscreen, minimization, and pointer interaction.
-Numerical simulation of DPI changes does not replace these OS checks.
-Pending platform verification and integration work belong in [TODO](../../TODO.md).
+Follow the [development guide](../development/README.md#window-ui-tests) for
+focused selection and the full host suite. Native maximize/minimize and fullscreen
+cases are hidden from the default suite; `[window-ui]` selects them together.
+Simulated policy cases remain in the default suite. The
+[manual program](../../Test/Manual/SceneHighResolution.md) covers drawing and
+physical input during OS changes. Keep pending conditions in
+[TODO.md](../../TODO.md), distinguishing them using the
+[validation evidence guidance](../development/README.md#validation-evidence).

@@ -42,18 +42,34 @@
 
 ## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
 
-- macOS の全画面中に OS 表示倍率・解像度・リフレッシュレートを変更した場合、およびモニターを物理的に切断・再接続した場合の追従を検証する。全画面の native detach を使う自動検査とは区別し、残ったモニターでの表示・操作と再接続後の全画面往復を確認する。
-- macOS の最小サイズを設定したウィンドウを異種 DPI 間で手動移動し、枠をドラッグしたときの下限が backing pixel 指定を維持することを確認する。倍率の制御・native 制限値の自動検査とは区別する。
-- [point 座標](docs/window/README.md)の [手動テスト](Test/Manual/SceneHighResolution.md)で、上下・左右配置における連続ドラッグ・ポインター操作を目視確認する。専用自動テストによる中央配置・カーソル座標の確認とは区別する。
+- 全画面中の OS 表示倍率・解像度・リフレッシュレート変更と、物理的なモニター切断・再接続を検証する。残った画面で表示・操作を続けられ、再接続後も全画面往復と設定維持ができること。native detach の自動検査とは区別する。
+- 最小サイズ設定後に異種 DPI 間を手動移動し、枠ドラッグの下限が backing pixel 指定を維持することを確認する。上下・左右配置の連続ドラッグとポインター座標も目視確認する。手順は [手動テスト](Test/Manual/SceneHighResolution.md) に集約する。
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
-- シーン MSAA の有効な列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` により `Error` と以前の状態の維持を確認する。
-- Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` で、2×2 のシーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。Linear、MSAA resolve、バッファ再利用の検証とは切り分け、D3D11 のテクスチャ座標の固定小数点精度と照合する。境界画素の厳密一致を保証する必要があるか、テストの観測位置を見直すかを決める。
-- [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元の未確認の組み合わせ（特に Fixed / SceneSize と PixelArt）を確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。全画面中の G / Shift+G による複数回の表示先変更後の復帰・描画・ホバー・クリックも目視確認する。
-- macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。Control + Command + F の実キー入力、メニュー・緑ボタンの実クリックも含む。API とローカル Cocoa イベントによる全画面往復・復帰寸法・最小化状態の自動テストとは区別する。
-- GPU バッファ確保失敗時の維持・復帰を、D3D11 の確保段階、および実際に確保が失敗する環境で検証する。Metal の [Configure / MSAA テスト](Test/Test_SceneAllocationFailure.cpp)と [Window → Scene テスト](Test/Test_WindowSceneSync.cpp)の失敗注入検査とは区別する。
+### 描画の境界・失敗時の検証
+
+- 有効な MSAA 列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` による `Error` と以前の状態の維持を確認する。
+- Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` では、2×2 シーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。D3D11 のテクスチャ座標精度と照合し、厳密一致を保証するか、観測位置を見直すか決める。Linear・MSAA resolve・バッファ再利用とは切り分け、許容差を一律に緩めない。
+- GPU 確保失敗後の状態維持と再試行を、D3D11 の確保段階と実際に確保が失敗する環境で検証する。Metal の [Configure / MSAA](Test/Test_SceneAllocationFailure.cpp)・[Window → Scene](Test/Test_WindowSceneSync.cpp) の失敗注入検査とは区別する。
+
+### 残る手動確認
+
+[共通プログラム](Test/Manual/SceneHighResolution.md) を使い、確認した設定・操作・モニター条件だけを完了扱いにする。描画、ホバー・クリック、復帰位置・寸法、SceneConfig の維持を確認する。
+
+| 対象 | 未確認の条件・組み合わせ |
+| --- | --- |
+| Windows / D3D11 | 全 6 設定 × API / Alt+Enter 往復・混在の目視網羅。特に Fixed / SceneSize と PixelArt の異種 DPI 移動、最大化・最小化復元。真上・真下の独立配置、全画面中の複数回モニター移動後の復帰 |
+| macOS / Metal | 異種 DPI 移動、最大化・最小化復元、全画面。実キーの Control+Command+F、メニューと緑ボタンの実クリック（緑ボタンは最大化） |
+| 両方 | OS 倍率変更、横長・縦長・シーンより小さいウィンドウへの連続リサイズ、右ドラッグ中の解像度方針切り替え |
+
+### 次の描画先実装との接続
+
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
+
+## テスト実行基盤
+
+- Windows runner の XML 出力転記修正を Windows で検証する。`python tools/test_windows_runner.py` と通常全テストを実行し、実 Catch2 の `TestCase/OverallResult` 配下の stdout/stderr がコンソールと `.txt` に重複なく残ることを確認する。macOS での XML 構造検査は実 runner の実行確認に代えない。全画面の再実行は不要。
 
 ## Renderer2D / 組み込みシェーダ最適化
 

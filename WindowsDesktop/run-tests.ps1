@@ -137,7 +137,7 @@ try {
     }
     # Catch2's console reporter does not write captured test output to its file.
     # Retain benchmark tables and other stdout/stderr alongside the console summary.
-    foreach ($node in $document.SelectNodes('/Catch2TestRun/TestCase/StdOut | /Catch2TestRun/TestCase/StdErr')) {
+    foreach ($node in $document.SelectNodes('/Catch2TestRun/TestCase/OverallResult/StdOut | /Catch2TestRun/TestCase/OverallResult/StdErr')) {
         $captured = $node.InnerText
         [IO.File]::AppendAllText($report, "`n$captured`n")
         Write-Output $captured

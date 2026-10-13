@@ -72,7 +72,7 @@ when injected key presses are shorter than the engine input sampling interval.
    zoom and move. Toggle **H** during a drag and check that the same point stays
    under the cursor. Press **C** again to return to scene coordinates.
 6. Press **S** to capture a scene frame in memory. On the next frame, the capture
-   dimensions should match the render size at the time of the request. Letterbox
+   dimensions should match the render resolution at the time of the request. Letterbox
    margins are not part of the capture. No output file is created.
 7. In windowed mode, press **B** to center the window on the next monitor. On
    macOS, check that the outer frame is centered in the work area even when the
