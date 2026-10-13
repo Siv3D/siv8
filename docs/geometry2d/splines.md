@@ -18,6 +18,9 @@ const Spline2DMeasure measured{ path };
 const Vec2 position = measured.pointAtDistance(120.0);
 ```
 
+For points already stored in a `LineString`, use `line.toSpline()`. Pass the
+closure and interpolation mode to `toSpline()` when needed.
+
 The default centripetal interpolation accounts for uneven distances between
 knots. Uniform interpolation is also available through
 [CatmullRomParameterization](../../Siv3D/include/Siv3D/CatmullRomParameterization.hpp).

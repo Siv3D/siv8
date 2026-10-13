@@ -12,6 +12,7 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Spline.hpp>
+# include <Siv3D/Spline2D.hpp>
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon/LineStringBuffer.hpp>
@@ -877,6 +878,17 @@ namespace s3d
 	Polygon LineString::computeRoundBufferPolygon(const double distance, const CloseRing closeRing, const QualityFactor& qualityFactor) const
 	{
 		return ComputeRoundBufferPolygon(*this, distance, closeRing, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toSpline
+	//
+	////////////////////////////////////////////////////////////////
+
+	Spline2D LineString::toSpline(const CloseRing closeRing, const CatmullRomParameterization parameterization) const
+	{
+		return Spline2D::FromCatmullRom(m_vertices, closeRing, parameterization);
 	}
 
 	////////////////////////////////////////////////////////////////

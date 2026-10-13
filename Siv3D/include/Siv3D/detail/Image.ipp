@@ -50,6 +50,18 @@ namespace s3d
 	Image::Image(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 		: Image{ std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, format } {}
 
+	template <class Type, class Fty>
+	Image::Image(const Grid<Type>& grid, Fty converter)
+		requires std::is_invocable_r_v<Color, Fty&, const Type&>
+		: Image{ grid.size() }
+	{
+		auto it = grid.begin();
+		for (auto& pixel : m_pixels)
+		{
+			pixel = Color(std::invoke(converter, *it++));
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	operator =

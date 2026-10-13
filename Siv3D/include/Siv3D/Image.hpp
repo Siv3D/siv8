@@ -204,9 +204,19 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(const Grid<ColorF>& grid);
 
-		//template <class Type, class Fty, std::enable_if_t<std::is_invocable_r_v<Color, Fty, Type>>* = nullptr>
-		//[[nodiscard]]
-		//explicit Image(const Grid<Type>& grid, Fty converter);
+		/// @brief 二次元配列の各要素を色に変換して画像データを作成します。
+		/// @tparam Type 二次元配列の要素の型
+		/// @tparam Fty 変換関数の型
+		/// @param grid 二次元配列
+		/// @param converter const Type& を受け取り、Color に暗黙変換できる値を返す関数
+		/// @remark 行優先の順序で各要素を 1 回ずつ変換します。アルファ乗算は適用しません。
+		/// @remark grid が空、または寸法が MaxWidth / MaxHeight を超える場合は空の画像になり、converter は呼ばれません。
+		/// @throws std::bad_alloc メモリ確保に失敗した場合
+		/// @exception ... converter の呼び出しや戻り値の Color への変換が送出した例外を伝播します。
+		template <class Type, class Fty>
+		[[nodiscard]]
+		explicit Image(const Grid<Type>& grid, Fty converter)
+			requires std::is_invocable_r_v<Color, Fty&, const Type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

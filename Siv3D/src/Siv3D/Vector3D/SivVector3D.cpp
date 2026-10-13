@@ -10,11 +10,57 @@
 //-----------------------------------------------
 
 # include <Siv3D/PointVector.hpp>
+# include <Siv3D/Box.hpp>
+# include <Siv3D/Sphere.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	clamped
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <>
+	Vector3D<float> Vector3D<float>::clamped(const Box& box) const noexcept
+	{
+		const Vec3 halfSize = (box.size * 0.5);
+		return{
+			Clamp(x, static_cast<value_type>(box.center.x - halfSize.x), static_cast<value_type>(box.center.x + halfSize.x)),
+			Clamp(y, static_cast<value_type>(box.center.y - halfSize.y), static_cast<value_type>(box.center.y + halfSize.y)),
+			Clamp(z, static_cast<value_type>(box.center.z - halfSize.z), static_cast<value_type>(box.center.z + halfSize.z)) };
+	}
+
+	template <>
+	Vector3D<double> Vector3D<double>::clamped(const Box& box) const noexcept
+	{
+		const Vec3 halfSize = (box.size * 0.5);
+		return{
+			Clamp(x, (box.center.x - halfSize.x), (box.center.x + halfSize.x)),
+			Clamp(y, (box.center.y - halfSize.y), (box.center.y + halfSize.y)),
+			Clamp(z, (box.center.z - halfSize.z), (box.center.z + halfSize.z)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asSphere
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <>
+	Sphere Vector3D<float>::asSphere(const double r) const noexcept
+	{
+		return{ *this, r };
+	}
+
+	template <>
+	Sphere Vector3D<double>::asSphere(const double r) const noexcept
+	{
+		return{ *this, r };
+	}
+
 	template <>
 	void Vector3D<double>::_Formatter(FormatData& formatData, const Vector3D<double>& value)
 	{

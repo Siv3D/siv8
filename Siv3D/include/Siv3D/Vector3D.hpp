@@ -17,6 +17,9 @@
 
 namespace s3d
 {
+	struct Box;
+	struct Sphere;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Vector3D
@@ -516,10 +519,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Vector3D& clamp(const Box& box) noexcept;
+		/// @brief 座標を指定した直方体の境界を含む範囲内にクランプします。
+		/// @param box クランプする直方体。各寸法は 0 以上
+		/// @pre 座標は有限値とし、box.center ± box.size / 2 は value_type の有限値に収まるように指定してください。
+		/// @remark 各軸の上下限を value_type に変換してクランプします。寸法が 0 の軸は中心座標に固定されます。
+		/// @return *this
+		Vector3D& clamp(const Box& box) noexcept;
 
-		//[[nodiscard]]
-		//Vector3D clamped(const Box& box) const noexcept;
+		/// @brief 指定した直方体の範囲内にクランプした座標を返します。
+		/// @param box クランプする直方体
+		/// @return クランプされた座標
+		/// @remark 入力条件と境界の扱いは clamp() と同じです。
+		[[nodiscard]]
+		Vector3D clamped(const Box& box) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -894,11 +906,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 点を中心とした球を作成します。
-		///// @param r 球の半径
-		///// @return 球
-		//[[nodiscard]]
-		//Sphere asSphere(double r) const noexcept;
+		/// @brief この点を中心とする球 Sphere{ *this, r } を作成します。
+		/// @param r 球の半径
+		/// @return 球
+		[[nodiscard]]
+		Sphere asSphere(double r) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

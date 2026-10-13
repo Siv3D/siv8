@@ -19,6 +19,7 @@
 # include "2DShapes.hpp"
 # include "Optional.hpp"
 # include "PredefinedYesNo.hpp"
+# include "CatmullRomParameterization.hpp"
 # include "RangeFormatter.hpp"
 # include "StringView.hpp"
 
@@ -2628,8 +2629,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-//		[[nodiscard]]
-//		Spline2D toSpline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 点列を通過する Catmull-Rom スプラインを作成します。
+		/// @param closeRing 最後の点から最初の点へ曲線をつなぐ場合は Yes
+		/// @param parameterization 点の間隔に応じた曲げ方
+		/// @return 作成した曲線。開いた経路で、連続する同一点を除いた点が 2 個未満なら空です。
+		/// @throws std::invalid_argument 閉じた経路で、重複を整理した通過点が 3 個未満の場合
+		/// @remark 点列の入力条件、重複点と端点の扱いは Spline2D::FromCatmullRom() と同じです。
+		[[nodiscard]]
+		Spline2D toSpline(CloseRing closeRing = CloseRing::No,
+			CatmullRomParameterization parameterization = CatmullRomParameterization::Centripetal) const;
 
 		////////////////////////////////////////////////////////////////
 		//
