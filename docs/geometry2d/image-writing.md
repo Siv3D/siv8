@@ -46,7 +46,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | --- | --- | --- |
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
 | Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
-| Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns; GPU arcs currently treat Square as Flat |
+| Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
@@ -97,11 +97,16 @@ outer radius. Overlapping caps, including on almost-full arcs, composite once.
 Sample intervals include radial, circular, and cap boundaries, subject to
 floating-point boundary ties.
 
-GPU comparisons have additional differences beyond AA. GPU Circle arcs currently
-treat Square as Flat and retain the specified thickness when the inner radius
-passes the center; GPU round caps can also composite overlaps repeatedly. Image
-writing uses the adopted cap geometry and union coverage above. GPU work remains
-tracked in [TODO](../../TODO.md).
+GPU Circle arcs also default to Flat. Square caps share the arc's indexed strip:
+only the Square specialization adds endpoint pairs and extends the gradient over
+the caps. The buffer is reserved once for the whole shape. Zero-angle Square arcs
+form a square; full Square sweeps use the Flat strip without caps. The shared
+vertex builder serves both Metal and D3D11.
+
+GPU comparisons have additional differences beyond AA. GPU Circle arcs retain the
+specified thickness when the inner radius passes the center, and overlapping
+GPU caps may composite repeatedly. Image writing uses the visible radial width
+and union coverage above. GPU Round arcs retain their caps at full sweeps.
 
 ## Circle segments
 
@@ -222,9 +227,13 @@ the Polygon reference, so compare AA and no-AA results separately.
 The Circle arc benchmark covers Flat, Round, and Square ends on short, minor,
 and major arcs, with thin and wide asymmetric radial thicknesses. Compare the
 Flat cases before and after changes to the shared rasterizer to check existing
-callers as well as the new caps.
-Repeated paint converges to an opaque destination; these measurements do not measure fresh
-transparent destinations. Compare Release builds on the same host, configuration,
+callers as well as the new caps. The hidden
+`Renderer2D.benchmark_circle_arc_vertices` benchmark separately measures GPU vertex
+generation into reused storage, across radii, sweep angles, radial/longitudinal
+gradients, and Flat/Square caps. Use its Flat cases to check that cap support does
+not add per-vertex work to the default path; it does not measure GPU execution.
+In the image benchmarks, repeated paint converges to an opaque destination; these
+measurements do not measure fresh transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.
 
 Correctness comes before timing: compare coverage against independent references,

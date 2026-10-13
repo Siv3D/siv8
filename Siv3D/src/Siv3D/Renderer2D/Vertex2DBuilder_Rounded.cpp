@@ -360,13 +360,15 @@ namespace s3d
 			return indexCount;
 		}
 
+		template <bool SquareCaps>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildFlatCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		static Vertex2D::IndexType BuildCircleArcStrip(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const float rOuter = (rInner + thickness);
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
-			const Vertex2D::IndexType VertexCount = (Quality * 2);
-			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 6);
+			const Vertex2D::IndexType Quality = ((SquareCaps && (angle == 0.0f)) ? 1 : CalculateCirclePieQuality((rOuter * scale), Abs(angle)));
+			const Vertex2D::IndexType PairCount = (Quality + (SquareCaps ? 2 : 0));
+			const Vertex2D::IndexType VertexCount = (PairCount * 2);
+			const Vertex2D::IndexType IndexCount = ((PairCount - 1) * 6);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -378,8 +380,8 @@ namespace s3d
 				const float centerX = center.x;
 				const float centerY = center.y;
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
-				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = pVertex;
+				const float radDelta = ((SquareCaps && (Quality == 1)) ? 0.0f : (Abs(angle) / (Quality - 1)));
+				Vertex2D* pDst = (pVertex + (SquareCaps ? 2 : 0));
 
 				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
@@ -390,13 +392,40 @@ namespace s3d
 				}
 			}
 
+			if constexpr (SquareCaps)
+			{
+				// Share the cap/body edges and reserve the whole strip in one allocation.
+				// Rotating the radial half-width gives the endpoint tangent extension.
+				const Float2 startHalfWidth = ((pVertex[3].pos - pVertex[2].pos) * 0.5f);
+				const Float2 endHalfWidth = ((pVertex[VertexCount - 3].pos - pVertex[VertexCount - 4].pos) * 0.5f);
+				const Float2 startExtension{ startHalfWidth.y, -startHalfWidth.x };
+				const Float2 endExtension{ -endHalfWidth.y, endHalfWidth.x };
+				pVertex[0].pos = (pVertex[2].pos + startExtension);
+				pVertex[1].pos = (pVertex[3].pos + startExtension);
+				pVertex[VertexCount - 2].pos = (pVertex[VertexCount - 4].pos + endExtension);
+				pVertex[VertexCount - 1].pos = (pVertex[VertexCount - 3].pos + endExtension);
+			}
+
 			if (colorType == ColorFillDirection::LeftRight)
 			{
-				const Float4 startColor = ((angle < 0.0f) ? color1 : color0);
-				const Float4 endColor = ((angle < 0.0f) ? color0 : color1);
-				const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
+				Float4 startColor = ((angle < 0.0f) ? color1 : color0);
+				Float4 endColor = ((angle < 0.0f) ? color0 : color1);
+				if constexpr (SquareCaps)
+				{
+					pVertex[0].color = pVertex[1].color = startColor;
+					pVertex[VertexCount - 2].color = pVertex[VertexCount - 1].color = endColor;
+					const float halfThickness = (thickness * 0.5f);
+					const float length = ((rInner + halfThickness) * Abs(angle) + thickness);
+					const float offset = ((Quality == 1) ? 0.5f : (halfThickness / length));
+					const Float4 arcStart = startColor.lerp(endColor, offset);
+					endColor = startColor.lerp(endColor, (1.0f - offset));
+					startColor = arcStart;
+					pVertex += 2;
+				}
+				const Float4 colorDelta = ((SquareCaps && (Quality == 1)) ? Float4{ 0, 0, 0, 0 }
+					: ((endColor - startColor) / static_cast<float>(Quality - 1)));
 
-				for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
 					const Float4 color = (startColor + (colorDelta * i));
 					(pVertex++)->color = color;
@@ -412,7 +441,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			for (Vertex2D::IndexType i = 0; i < (PairCount - 1); ++i)
 			{
 				for (Vertex2D::IndexType k = 0; k < 6; ++k)
 				{
@@ -1610,19 +1639,24 @@ namespace s3d
 
 		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			if (lineCap == LineCap::Round)
+			// Keep the default Flat path free of cap geometry and gradient work.
+			if (lineCap != LineCap::Flat)
 			{
-				return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
-			}
-			else
-			{
-				if (angle == 0.0f)
+				if (lineCap == LineCap::Round)
 				{
-					return 0;
+					return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 				}
-
-				return BuildFlatCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
+				if (Abs(angle) < Math::TwoPiF)
+				{
+					return BuildCircleArcStrip<true>(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
+				}
 			}
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+			// A full Square arc has no endpoints to extend.
+			return BuildCircleArcStrip<false>(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 		}
 
 		////////////////////////////////////////////////////////////////

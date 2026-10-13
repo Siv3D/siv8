@@ -12,7 +12,6 @@
 [設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
 
 - `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は独立した線端、join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
-- GPU の `Circle::drawArc(LineCap::Square, ...)` は現在 Flat と同じ形状になる。Square の接線方向への延長を別途実装・検証する。
 - [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の自動テストと Release ベンチマークを実行する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 

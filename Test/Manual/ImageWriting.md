@@ -36,7 +36,8 @@ acceptance criterion.
   Square ends extend along the tangent by half the visible radial width. On short
   and almost-full arcs, overlapping CPU caps must not become darker. Zero-angle
   Round and Square arcs draw the cap alone; full CPU arcs match circle frames.
-  GPU Square arcs currently look Flat. GPU caps may darken overlaps.
+  GPU Square arcs also extend along the tangent, draw a square at zero angle, and
+  omit caps on full sweeps. GPU caps may darken overlaps.
 - The ellipse frame is continuous, including along the long axis. Its pies use
   angles measured from the center in image coordinates: zero points up and
   positive angles turn clockwise. The first ray is 30 degrees clockwise from up.
@@ -76,7 +77,7 @@ void Main()
 	const Array<String> circleModes{ U"fill", U"shallow segment", U"semicircle", U"major segment", U"negative segment", U"full segment", U"arc" };
 	const Array<LineCap> arcCaps{ LineCap::Flat, LineCap::Round, LineCap::Square };
 	const Array<double> arcSweeps{ 0.08, Math::TwoPi - 0.08, -4.5, 0, Math::TwoPi };
-	size_t arcCapIndex = 1, arcSweepIndex = 0;
+	size_t arcCapIndex = 0, arcSweepIndex = 0;
 	bool wideArc = false;
 	const Array<double> heights{ 0, 0.2, 1.0, 1.8 };
 	int32 ellipseMode = 0;

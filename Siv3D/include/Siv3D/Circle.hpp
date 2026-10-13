@@ -1213,7 +1213,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1222,7 +1222,7 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1232,16 +1232,17 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param startColor 弧の開始部分の色
 		/// @param endColor 弧の終了部分の色
-		/// @return 
+		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
+		/// @anchor circle_draw_arc_caps
 		/// @brief 円の弧を描きます。
 		/// @param lineCap 線端のスタイル
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
@@ -1250,6 +1251,9 @@ namespace s3d
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param color 弧の色
 		/// @return *this
+		/// @remark Square は両端を接線方向へ線幅の半分だけ延長します。
+		/// @remark angle が 0 の場合、Square は線端位置に線幅を一辺とする正方形を描きます。
+		/// @remark |angle| が 2π 以上の場合、Square は線端を付けずに描きます。
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の弧を描きます。
@@ -1261,6 +1265,7 @@ namespace s3d
 		/// @param innerColor 内側部分の弧の色
 		/// @param outerColor 外側部分の弧の色
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 円の弧を描きます。
@@ -1272,9 +1277,10 @@ namespace s3d
 		/// @param startColor 弧の開始部分の色
 		/// @param endColor 弧の終了部分の色
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1291,6 +1297,7 @@ namespace s3d
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
