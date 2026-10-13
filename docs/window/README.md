@@ -78,6 +78,13 @@ native restoration, size request, and optional centering before applying Scene;
 a `false` resize result still applies the observed final window state. Shortcut
 requests use the public fullscreen path.
 
+Platform-specific centering is declared in
+[WindowUtility.hpp](../../Siv3D/src/Siv3D/Window/WindowUtility.hpp) and implemented in
+[SivWindow_Windows.cpp](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/SivWindow_Windows.cpp)
+and [SivWindow_macOS.cpp](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/Window/SivWindow_macOS.cpp).
+These helpers perform native placement only, so Resize can reuse them before its
+single Scene update. The Windows file also defines `Platform::Windows::Window::GetHWND()`.
+
 Only the final scene size and render resolution determine whether to clear or
 replace the scene buffers. Native intermediate sizes do not discard executed
 pixels or allocate temporary scene buffers. Pending drawing is retained and no

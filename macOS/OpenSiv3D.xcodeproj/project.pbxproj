@@ -500,6 +500,8 @@
 		F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DA52B9F175E00383E4D /* SivVector3D.cpp */; };
 		F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DA72B9F175E00383E4D /* SivVector4D.cpp */; };
 		F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070DA92B9F175E00383E4D /* IWindow.hpp */; };
+		133CA6A9A42F4A5C956128B6 /* WindowUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B247EBA269684AAAB6699DEF /* WindowUtility.hpp */; };
+		E76853E1622E477EB83BE4FD /* SivWindow_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */; };
 		F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */; };
 		F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9070E032B9F176B00383E4D /* SivFileSystem_macOS.mm */; };
 		F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E052B9F176B00383E4D /* SivTime.cpp */; };
@@ -3888,6 +3890,8 @@
 		F9070DA52B9F175E00383E4D /* SivVector3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector3D.cpp; sourceTree = "<group>"; };
 		F9070DA72B9F175E00383E4D /* SivVector4D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector4D.cpp; sourceTree = "<group>"; };
 		F9070DA92B9F175E00383E4D /* IWindow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IWindow.hpp; sourceTree = "<group>"; };
+		B247EBA269684AAAB6699DEF /* WindowUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowUtility.hpp; sourceTree = "<group>"; };
+		BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivWindow_macOS.cpp; sourceTree = "<group>"; };
 		F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowFactory.cpp; sourceTree = "<group>"; };
 		F9070E032B9F176B00383E4D /* SivFileSystem_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivFileSystem_macOS.mm; sourceTree = "<group>"; };
 		F9070E052B9F176B00383E4D /* SivTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTime.cpp; sourceTree = "<group>"; };
@@ -8835,6 +8839,7 @@
 				F9528A8B2BA0253700222F45 /* SivWindow.cpp */,
 				F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */,
 				F9070DA92B9F175E00383E4D /* IWindow.hpp */,
+				B247EBA269684AAAB6699DEF /* WindowUtility.hpp */,
 			);
 			path = Window;
 			sourceTree = "<group>";
@@ -9297,6 +9302,7 @@
 				F99881862F4829D000C8991D /* DockProgressBar.mm */,
 				F98605892BDBDB37006A4C0F /* WindowMisc.hpp */,
 				F98605882BDBDB37006A4C0F /* WindowMisc.mm */,
+				BB9726AE4C984C4E954D7303 /* SivWindow_macOS.cpp */,
 				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
 				F9528A852BA018CE00222F45 /* WindowTitle.hpp */,
 				F9070E882B9F183100383E4D /* CWindow.cpp */,
@@ -15143,6 +15149,7 @@
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
+				133CA6A9A42F4A5C956128B6 /* WindowUtility.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
 				F98602022BCFBB53006A4C0F /* SkMipmapBuilder.h in Headers */,
@@ -17675,6 +17682,7 @@
 				F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,
 				F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */,
+				E76853E1622E477EB83BE4FD /* SivWindow_macOS.cpp in Sources */,
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9797EBB2F6DA46100518D26 /* MP3Encoder.cpp in Sources */,
 				F9797EBC2F6DA46100518D26 /* AACEncoder.cpp in Sources */,

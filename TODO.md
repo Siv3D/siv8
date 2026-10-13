@@ -42,6 +42,7 @@
 
 ## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
 
+- Windows / D3D11 で `SivWindow_Windows.cpp` 分離後のビルド・リンク（`Platform::Windows::Window::GetHWND()` を含む）、`WindowSceneSync.*` / `WindowStateSync.*` / `ScreenCoordinates.*` / `WindowFullscreen.*` と通常全テストを再検証する。中央配置・異種 DPI・Resize の最終 Scene 反映・例外伝播を維持し、全画面テストは非デフォルトのまま実行する。
 - macOS の全画面中に OS 表示倍率・解像度・リフレッシュレートを変更した場合、およびモニターを物理的に切断・再接続した場合の追従を検証する。全画面の native detach を使う自動検査とは区別し、残ったモニターでの表示・操作と再接続後の全画面往復を確認する。
 - macOS の最小サイズを設定したウィンドウを異種 DPI 間で手動移動し、枠をドラッグしたときの下限が backing pixel 指定を維持することを確認する。倍率の制御・native 制限値の自動検査とは区別する。
 - [point 座標](docs/window/README.md)の [手動テスト](Test/Manual/SceneHighResolution.md)で、上下・左右配置における連続ドラッグ・ポインター操作を目視確認する。専用自動テストによる中央配置・カーソル座標の確認とは区別する。

@@ -11,104 +11,14 @@
 
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
-# include <Siv3D/MonitorInfo.hpp>
-# if SIV3D_PLATFORM(WINDOWS)
-# include <Siv3D/Window/WindowMisc.hpp>
-# endif
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include "WindowUtility.hpp"
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 
 namespace s3d
 {
-	namespace
-	{
-# if !SIV3D_PLATFORM(WINDOWS)
-		static void CenterToMonitor(const MonitorInfo& monitor)
-		{
-			const Rect workArea = monitor.workArea;
-			const Rect windowBounds = SIV3D_ENGINE(Window)->getState().bounds;
-			const Point pos = (workArea.pos + (workArea.size - windowBounds.size) / 2);
-			SIV3D_ENGINE(Window)->setPos(pos);
-		}
-
-# if !SIV3D_PLATFORM(MACOS)
-		static void CenterToOtherMonitor(const MonitorInfo& currentMonitor, const MonitorInfo& nextMonitor)
-		{
-			if (currentMonitor.scaling == nextMonitor.scaling)
-			{
-				CenterToMonitor(nextMonitor);
-			}
-			else
-			{
-				const Rect workArea = nextMonitor.workArea;
-				SIV3D_ENGINE(Window)->setPos(workArea.pos); // 先に bounds を更新してから計算する
-				const Rect windowBounds = SIV3D_ENGINE(Window)->getState().bounds;
-				const Point pos = (workArea.pos + (workArea.size - windowBounds.size) / 2);
-				SIV3D_ENGINE(Window)->setPos(pos);
-			}
-		}
-# endif
-# endif
-		bool CenterWindowOnCurrentScreen()
-		{
-# if SIV3D_PLATFORM(WINDOWS)
-			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), none);
-# else
-			SIV3D_ENGINE(Window)->show();
-			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
-
-			MonitorInfo monitor;
-			try
-			{
-				monitor = System::GetCurrentMonitor();
-			}
-			catch (const Error&)
-			{
-				return false;
-			}
-			CenterToMonitor(monitor);
-			return true;
-# endif
-		}
-
-		bool CenterWindowOnScreen(const size_t monitorIndex)
-		{
-# if SIV3D_PLATFORM(WINDOWS)
-			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), monitorIndex);
-# else
-			SIV3D_ENGINE(Window)->show();
-			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
-
-			const Array<MonitorInfo> monitors = System::EnumerateMonitors();
-
-			if (monitors.size() <= monitorIndex)
-			{
-				return false;
-			}
-
-# if SIV3D_PLATFORM(MACOS)
-			// Outer-frame dimensions stay in points across backing-scale changes.
-			CenterToMonitor(monitors[monitorIndex]);
-# else
-			const size_t currentMonitorIndex = System::GetCurrentMonitorIndex();
-
-			if (currentMonitorIndex == monitorIndex)
-			{
-				CenterToMonitor(monitors[monitorIndex]);
-			}
-			else
-			{
-				CenterToOtherMonitor(monitors[currentMonitorIndex], monitors[monitorIndex]);
-			}
-# endif
-
-			return true;
-# endif
-		}
-	}
-
 	namespace Window
 	{
 		////////////////////////////////////////////////////////////////
@@ -203,14 +113,14 @@ namespace s3d
 
 		bool CenterToScreen()
 		{
-			const bool centered = CenterWindowOnCurrentScreen();
+			const bool centered = WindowMisc::CenterWindowOnCurrentScreen();
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
 			return centered;
 		}
 
 		bool CenterToScreen(const size_t monitorIndex)
 		{
-			const bool centered = CenterWindowOnScreen(monitorIndex);
+			const bool centered = WindowMisc::CenterWindowOnScreen(monitorIndex);
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
 			return centered;
 		}
@@ -284,7 +194,7 @@ namespace s3d
 			const bool resized = SIV3D_ENGINE(Window)->resizeByVirtualSize(size);
 			if (resized && centerWindow)
 			{
-				CenterWindowOnCurrentScreen();
+				WindowMisc::CenterWindowOnCurrentScreen();
 			}
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
 			return resized;
@@ -312,7 +222,7 @@ namespace s3d
 			const bool resized = SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size);
 			if (resized && centerWindow)
 			{
-				CenterWindowOnCurrentScreen();
+				WindowMisc::CenterWindowOnCurrentScreen();
 			}
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
 			return resized;
@@ -380,22 +290,4 @@ namespace s3d
 			SIV3D_ENGINE(Window)->setTaskbarProgressBar(progress0_1);
 		}
 	}
-
-# if SIV3D_PLATFORM(WINDOWS)
-
-	namespace Platform::Windows::Window
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetHWND
-		//
-		////////////////////////////////////////////////////////////////
-
-		void* GetHWND()
-		{
-			return SIV3D_ENGINE(Window)->getHandle();
-		}
-	}
-
-# endif
 }
