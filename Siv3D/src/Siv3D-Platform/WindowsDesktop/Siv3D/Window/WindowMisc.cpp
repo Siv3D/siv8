@@ -342,20 +342,18 @@ namespace s3d::WindowMisc
 	//
 	////////////////////////////////////////////////////////////////
 
-	Size SetFullscreen(const HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, const uint32 baseWindowStyle)
+	bool SetFullscreen(const HWND hWnd, const size_t monitorIndex, RECT& storedWindowRect, const uint32 baseWindowStyle,
+		const WindowsMonitor::Functions& functions)
 	{
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		const Optional<size_t> target = (monitorIndex < monitors.size()) ? Optional<size_t>{ monitorIndex }
+			: WindowsMonitor::FindCurrentMonitorIndex(hWnd, monitors, functions);
+		if (not target) { return false; }
+		const Rect fullscreenRect = monitors[*target].displayRect;
+
+		// Resolve the target before changing either the saved rectangle or native style.
 		::GetWindowRect(hWnd, &storedWindowRect);
 		::SetWindowLongW(hWnd, GWL_STYLE, (baseWindowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME)));
-
-		const Array<MonitorInfo> monitors = System::EnumerateMonitors();
-
-		if (monitors.size() <= monitorIndex)
-		{
-			monitorIndex = System::GetCurrentMonitorIndex();
-		}
-
-		const Rect fullscreenRect = monitors[monitorIndex].displayRect;
-		const Size result = fullscreenRect.size;
 
 		::SetWindowPos(
 			hWnd,
@@ -369,6 +367,26 @@ namespace s3d::WindowMisc
 		::ShowWindow(hWnd, SW_MAXIMIZE);
 		::ValidateRect(hWnd, nullptr);
 
-		return result;
+		return true;
+	}
+
+	bool CenterToScreen(ISiv3DWindow& window, const Optional<size_t> monitorIndex, const WindowsMonitor::Functions& functions)
+	{
+		window.show();
+		if (window.getState().fullscreen) { return false; }
+
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		if (monitorIndex && (monitors.size() <= *monitorIndex)) { return false; }
+		const auto current = WindowsMonitor::FindCurrentMonitorIndex(static_cast<HWND>(window.getHandle()), monitors, functions);
+		if (not current) { return false; }
+		const size_t target = monitorIndex.value_or(*current);
+		const Rect workArea = monitors[target].workArea;
+		if ((*current != target) && (monitors[*current].scaling != monitors[target].scaling))
+		{
+			window.setPos(workArea.pos); // Synchronize the destination DPI and bounds before centering.
+		}
+		const Rect bounds = window.getState().bounds;
+		window.setPos(workArea.pos + (workArea.size - bounds.size) / 2);
+		return true;
 	}
 }

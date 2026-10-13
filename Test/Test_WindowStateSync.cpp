@@ -274,8 +274,19 @@ namespace s3d
 			Window::SetPos(work.pos);
 			CheckNativeGeometry();
 			CHECK(System::GetCurrentMonitorIndex() == i);
+			const auto beforeCenter = Window::GetState();
 			REQUIRE(Window::CenterToScreen(i));
-			CHECK(Window::GetPos() == work.pos + (work.size - Window::GetState().bounds.size) / 2);
+			const auto centered = Window::GetState();
+			CheckNativeGeometry();
+			const Point requestedCenter = work.pos + (work.size - beforeCenter.bounds.size) / 2;
+			// Native non-client placement may adjust the requested coordinate.
+			// Centering must match SetPos with the correct work-area center.
+			Window::SetPos(requestedCenter);
+			CAPTURE(i, work, beforeCenter.bounds, beforeCenter.virtualSize, beforeCenter.frameBufferSize,
+				Window::GetState().bounds, Window::GetState().virtualSize, Window::GetState().frameBufferSize,
+				requestedCenter);
+			CHECK(Window::GetState().bounds == centered.bounds);
+			CHECK(Window::GetState().frameBufferSize == centered.frameBufferSize);
 			CheckNativeGeometry();
 			System::Sleep(500);
 			REQUIRE(System::Update());

@@ -445,13 +445,18 @@ namespace s3d
 
 	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex)
 	{
+		setFullscreen(fullscreen, monitorIndex, {});
+	}
+
+	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex, const WindowsMonitor::Functions& functions)
+	{
 		bool changed = false;
-		invokeOnWindowThread([&] { changed = setFullscreenOnWindowThread(fullscreen, monitorIndex); });
+		invokeOnWindowThread([&] { changed = setFullscreenOnWindowThread(fullscreen, monitorIndex, functions); });
 		// Keep the selected scene policy; Keep also needs the new presentation size.
 		if (changed) { SIV3D_ENGINE(Renderer)->updateSceneSize(); }
 	}
 
-	bool CWindow::setFullscreenOnWindowThread(const bool fullscreen, const size_t monitorIndex)
+	bool CWindow::setFullscreenOnWindowThread(const bool fullscreen, const size_t monitorIndex, const WindowsMonitor::Functions& functions)
 	{
 		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
 
@@ -471,7 +476,10 @@ namespace s3d
 		if (m_osState.fullscreen == false) // 現在ウィンドウモードの場合
 		{
 			// フルスクリーンモードにする
-			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_osState.style));
+			if (not WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_osState.style), functions))
+			{
+				return false;
+			}
 		}
 		else
 		{

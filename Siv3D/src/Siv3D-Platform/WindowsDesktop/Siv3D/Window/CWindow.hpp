@@ -21,6 +21,7 @@
 # include "WindowTitle.hpp"
 # include "WindowStateSync.hpp"
 # include "WindowProc.hpp"
+# include <Siv3D/MonitorInfo/WindowsMonitor.hpp>
 
 namespace s3d
 {
@@ -63,6 +64,8 @@ namespace s3d
 		void setMinimumFrameBufferSize(Size size) override;
 
 		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
+
+		void setFullscreen(bool fullscreen, size_t monitorIndex, const WindowsMonitor::Functions& functions);
 
 		void setToggleFullscreenEnabled(bool enabled) override;
 
@@ -157,7 +160,7 @@ namespace s3d
 
 		bool resizeOnWindowThread(Size size, bool virtualSize);
 
-		bool setFullscreenOnWindowThread(bool fullscreen, size_t monitorIndex);
+		bool setFullscreenOnWindowThread(bool fullscreen, size_t monitorIndex, const WindowsMonitor::Functions& functions);
 
 		bool resize(Size size, bool virtualSize);
 

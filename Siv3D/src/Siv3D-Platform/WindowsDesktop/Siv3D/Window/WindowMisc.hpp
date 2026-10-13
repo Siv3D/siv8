@@ -10,9 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/MonitorInfo/WindowsMonitor.hpp> // Before DLL.hpp defines NOGDI.
 # include <Siv3D/DLL.hpp>
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/WindowState.hpp>
+# include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
 # include <ShObjIdl_core.h> // ITaskbarList3
 
@@ -140,5 +142,10 @@ namespace s3d::WindowMisc
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Size SetFullscreen(HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, uint32 baseWindowStyle);
+	bool SetFullscreen(HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, uint32 baseWindowStyle,
+		const WindowsMonitor::Functions& functions = {});
+
+	// Engine-thread operation: show synchronizes the public state before the fullscreen check.
+	[[nodiscard]]
+	bool CenterToScreen(ISiv3DWindow& window, Optional<size_t> monitorIndex, const WindowsMonitor::Functions& functions = {});
 }

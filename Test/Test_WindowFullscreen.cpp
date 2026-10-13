@@ -17,6 +17,7 @@
 
 # if SIV3D_PLATFORM(WINDOWS)
 # include <Siv3D/Windows/Windows.hpp>
+# include <Siv3D/Window/CWindow.hpp>
 # else
 // Xcode compiles this file as Objective-C++ with NO_S3D_USING.
 # include <Siv3D/GLFW/GLFW.hpp>
@@ -555,15 +556,36 @@ namespace s3d
 		}
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
-		for (size_t i = 0; i < monitors.size(); ++i)
+		auto& window = *static_cast<CWindow*>(SIV3D_ENGINE(Window));
+		WindowsMonitor::Functions functions;
+		functions.enumerateMonitors = [] { return Array<MonitorInfo>{}; };
+		const size_t invalid = std::numeric_limits<size_t>::max();
+		window.setFullscreen(true, invalid, functions);
+		REQUIRE_FALSE(Window::GetState().fullscreen);
+		const size_t firstMonitor = System::GetCurrentMonitorIndex();
+		REQUIRE(firstMonitor < monitors.size());
+		for (size_t step = 0; step < monitors.size(); ++step)
 		{
+			const size_t i = ((firstMonitor + step) % monitors.size());
 			RECT windowedBounds{};
 			REQUIRE(::GetWindowRect(MainWindow(), &windowedBounds));
 			const auto windowed = Window::GetState();
 			const Rect expected = monitors[i].displayRect;
 			INFO(i);
 			INFO(expected);
-			SetFullscreenWithPause(true, i);
+			if (step == 0)
+			{
+				// Recover from failure, falling back by identity in a differently ordered list.
+				functions.enumerateMonitors = []
+				{
+					auto snapshot = System::EnumerateMonitors();
+					if (not snapshot.isEmpty()) { std::rotate(snapshot.begin(), snapshot.begin() + 1, snapshot.end()); }
+					return snapshot;
+				};
+				window.setFullscreen(true, invalid, functions);
+				System::Sleep(FullscreenPauseMillis);
+			}
+			else { SetFullscreenWithPause(true, i); }
 			UpdateWithPause();
 			REQUIRE(Window::GetState().fullscreen);
 			RECT bounds{};
@@ -1171,12 +1193,38 @@ namespace s3d
 			check(config, windowScene);
 			Scene::Configure(Scene::GetConfig());
 			check(config, windowScene);
+			const auto full = Window::GetState();
+			const auto checkUnmoved = [&]
+			{
+				CHECK(Window::GetState().fullscreen);
+				CHECK(Window::GetState().bounds == full.bounds);
+				CHECK(Window::GetState().virtualSize == full.virtualSize);
+				CHECK(Window::GetState().frameBufferSize == full.frameBufferSize);
+				CHECK(Scene::GetConfig() == config);
+			};
+			CHECK_FALSE(Window::CenterToScreen());
+			checkUnmoved();
+			CHECK_FALSE(Window::CenterToScreen((System::GetCurrentMonitorIndex() + 1) % monitors.size()));
+			checkUnmoved();
+			CHECK_FALSE(Window::CenterToScreen(std::numeric_limits<size_t>::max()));
+			checkUnmoved();
+			// Default CenterWindow::Yes must not turn a same-size resize into an exit.
+			CHECK(Window::Resize(full.virtualSize));
+			CHECK(Window::ResizeVirtual(full.virtualSize));
+			CHECK(Window::ResizeActual(full.frameBufferSize));
+			checkUnmoved();
+			check(config, windowScene);
 			if (enterByShortcut) { SetFullscreenWithPause(false); }
 			else { shortcut(); }
 			REQUIRE_FALSE(Window::GetState().fullscreen);
 			check(config, Window::GetState().virtualSize);
 			UpdateWithPause();
 			check(config, Window::GetState().virtualSize);
+			REQUIRE(Window::CenterToScreen());
+			REQUIRE(Window::CenterToScreen(System::GetCurrentMonitorIndex()));
+			CHECK_FALSE(Window::CenterToScreen(std::numeric_limits<size_t>::max()));
+			CHECK_FALSE(Window::GetState().fullscreen);
+			CHECK(Scene::GetConfig() == config);
 		}
 	}
 }

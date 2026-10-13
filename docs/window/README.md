@@ -124,6 +124,23 @@ also needs conversion before adding it to the monitor's point-based origin.
 
 ## Windows state ownership
 
+Windows operations that select the current display from a captured monitor list
+resolve the HWND's native display-device name against that list. They do not use
+an index obtained by a second enumeration to select from an earlier list. The internal
+[WindowsMonitor helpers](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/MonitorInfo/WindowsMonitor.hpp)
+keep the public enumeration order, including its active-child and fallback rules.
+`GetCurrentMonitorIndex()` retains its zero fallback; snapshot resolution instead
+reports an absent result when the current display cannot be matched.
+
+Fullscreen entry resolves a valid requested index, or the current display for an
+invalid index, before changing the native style or saved windowed rectangle.
+An unresolved target leaves fullscreen state unchanged. This protects resolution
+failure, without attempting to make OS topology changes atomic or roll back every
+possible Win32 failure. `GetCurrentMonitor()` throws when its snapshot cannot
+identify the current display. Both centering overloads return false in fullscreen;
+on Windows they first use the existing `show()` synchronization boundary. Normal
+cross-DPI centering retains the intermediate move and synchronized bounds read.
+
 The HWND thread owns native geometry and window policy in
 [CWindow](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Window/CWindow.hpp):
 the OS state, DPI, border metrics, saved windowed rectangle, fullscreen transition,
@@ -174,6 +191,16 @@ boundaries, not in getters or ordinary frame synchronization. This ownership mod
 does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
+
+[Test_MonitorInfo.cpp](../../Test/Test_MonitorInfo.cpp) controls native identity and
+enumeration inputs to check empty/missing displays and later enumeration growth,
+shrinkage, or reordering. It also supplies snapshots to the production centering
+and fullscreen call paths, checking failure before native style, saved rectangle,
+or fullscreen-state changes, followed by successful placement. Function overrides
+are passed per operation; production has no mutable global override. These tests
+do not unplug a physical monitor. The existing hidden fullscreen round trips add
+recovery, invalid-index fallback with a reordered snapshot, rejected centering,
+and same-size resize checks without adding fullscreen transitions.
 
 [Test_WindowMacOS.cpp](../../Test/Test_WindowMacOS.cpp) checks native minimum-size
 limits, point rounding, and style changes in the default suite. A scoped override

@@ -12,6 +12,9 @@
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/MonitorInfo.hpp>
+# if SIV3D_PLATFORM(WINDOWS)
+# include <Siv3D/Window/WindowMisc.hpp>
+# endif
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -21,6 +24,7 @@ namespace s3d
 {
 	namespace
 	{
+# if !SIV3D_PLATFORM(WINDOWS)
 		static void CenterToMonitor(const MonitorInfo& monitor)
 		{
 			const Rect workArea = monitor.workArea;
@@ -45,6 +49,7 @@ namespace s3d
 				SIV3D_ENGINE(Window)->setPos(pos);
 			}
 		}
+# endif
 # endif
 	}
 
@@ -140,7 +145,11 @@ namespace s3d
 
 		bool CenterToScreen()
 		{
+# if SIV3D_PLATFORM(WINDOWS)
+			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), none);
+# else
 			SIV3D_ENGINE(Window)->show();
+			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
 
 			try
 			{
@@ -152,11 +161,16 @@ namespace s3d
 			{
 				return false;
 			}
+# endif
 		}
 
 		bool CenterToScreen(const size_t monitorIndex)
 		{
+# if SIV3D_PLATFORM(WINDOWS)
+			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), monitorIndex);
+# else
 			SIV3D_ENGINE(Window)->show();
+			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
 
 			const Array<MonitorInfo> monitors = System::EnumerateMonitors();
 
@@ -182,6 +196,7 @@ namespace s3d
 # endif
 
 			return true;
+# endif
 		}
 		////////////////////////////////////////////////////////////////
 		//
