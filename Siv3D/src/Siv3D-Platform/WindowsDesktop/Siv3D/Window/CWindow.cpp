@@ -467,7 +467,7 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
 
-		if (fullscreen == m_osState.fullscreen)
+		if ((not fullscreen) && (not m_osState.fullscreen))
 		{
 			return false;
 		}
@@ -480,7 +480,11 @@ namespace s3d
 		m_fullscreenTransition = true;
 		const ScopeExit finishTransition{ [this] { m_fullscreenTransition = false; } };
 
-		if (m_osState.fullscreen == false) // 現在ウィンドウモードの場合
+		if (fullscreen && m_osState.fullscreen)
+		{
+			return WindowMisc::MoveFullscreen(m_hWnd, monitorIndex, functions);
+		}
+		else if (fullscreen)
 		{
 			// フルスクリーンモードにする
 			if (not WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_osState.style), functions))

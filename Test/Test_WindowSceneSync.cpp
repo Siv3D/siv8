@@ -387,9 +387,7 @@ namespace s3d
 		REQUIRE(System::Update());
 		REQUIRE(Window::GetState().fullscreen);
 		const auto fullscreen = Window::GetState();
-		const auto monitors = System::EnumerateMonitors();
-		REQUIRE_FALSE(monitors.isEmpty());
-		Window::SetFullscreen(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size());
+		Window::SetFullscreen(true, System::GetCurrentMonitorIndex());
 		CHECK(Window::GetState().bounds == fullscreen.bounds);
 		CHECK(Window::GetState().frameBufferSize == fullscreen.frameBufferSize);
 		CHECK(Window::GetState().fullscreen);
@@ -414,6 +412,15 @@ namespace s3d
 		Scene::Rect().draw(Palette::Red);
 		Graphics2D::Flush();
 		Rect{ 0, 0, 32, 32 }.draw(Palette::Blue);
+		const auto monitors = System::EnumerateMonitors();
+		if (1 < monitors.size())
+		{
+			Window::SetFullscreen(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size());
+			System::Sleep(500);
+			REQUIRE(Window::GetState().fullscreen);
+			CHECK(Scene::GetConfig() == config);
+			CHECK(Scene::Size() == Size{ 640, 480 });
+		}
 		// Restoring 600 x 400 internally must not replace/clear the 640 x 480 scene.
 		REQUIRE(Window::Resize(640, 480));
 		System::Sleep(500);

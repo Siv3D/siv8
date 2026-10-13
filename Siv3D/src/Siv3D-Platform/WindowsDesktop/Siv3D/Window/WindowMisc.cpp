@@ -370,6 +370,21 @@ namespace s3d::WindowMisc
 		return true;
 	}
 
+	bool MoveFullscreen(const HWND hWnd, const size_t monitorIndex, const WindowsMonitor::Functions& functions)
+	{
+		const Array<MonitorInfo> monitors = functions.enumerateMonitors();
+		const auto current = WindowsMonitor::FindCurrentMonitorIndex(hWnd, monitors, functions);
+		const Optional<size_t> target = (monitorIndex < monitors.size()) ? Optional<size_t>{ monitorIndex } : current;
+		if ((not target) || (target == current)) { return false; }
+		const Rect rect = monitors[*target].displayRect;
+		if (not ::SetWindowPos(hWnd, HWND_TOPMOST, rect.x, rect.y, rect.w, rect.h, SWP_NOACTIVATE))
+		{
+			return false;
+		}
+		::ValidateRect(hWnd, nullptr);
+		return true;
+	}
+
 	bool CenterToScreen(ISiv3DWindow& window, const Optional<size_t> monitorIndex, const WindowsMonitor::Functions& functions)
 	{
 		window.show();

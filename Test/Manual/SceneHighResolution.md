@@ -56,6 +56,11 @@ when injected key presses are shorter than the engine input sampling interval.
    For the mixed-DPI resize check, place the window on monitor A using **B**, then
    press **G** to enter fullscreen on the next monitor B without moving the
    window first (**Shift+G** selects the previous monitor). Press **7/8/9** to return.
+   While fullscreen, **G** / **Shift+G** also move directly to another monitor.
+   Move several times, then leave using **F**, the shortcut, or **7/8/9**. The
+   restoration target must remain the original window on A. Check that KeepSize
+   retains the scene size, FollowWindow follows the destination, and rendering
+   and hover/click coordinates agree immediately after moving.
    The original window position on A must be retained. On Windows, with A at 125%,
    **7/8** must give virtual 800 × 600 and framebuffer
    1000 × 750; **9** must give framebuffer 800 × 600 and virtual 640 × 480.
@@ -206,7 +211,7 @@ void Main()
         if (KeyR.down()) { Window::Restore(); }
         if (KeyN.down()) { Window::Minimize(); }
         if (KeyF.down()) { Window::SetFullscreen(!Window::GetState().fullscreen); }
-        if (KeyG.down() && !Window::GetState().fullscreen)
+        if (KeyG.down())
         {
             const auto monitors = System::EnumerateMonitors();
             if (!monitors.isEmpty())

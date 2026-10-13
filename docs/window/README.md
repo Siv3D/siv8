@@ -100,6 +100,19 @@ user's control. The full display rectangle is used, including the area normally
 occupied by the menu bar and Dock. On macOS, a fullscreen window minimizes
 when it loses focus.
 
+Calling `Window::SetFullscreen(true, monitorIndex)` while fullscreen moves the
+fullscreen window to that display. The original windowed position and size remain
+the restoration target, even after multiple monitor changes. Scene keeps its
+configuration: `KeepSize` retains the scene size, while `FollowWindow` follows
+the destination geometry. Display-resolution rendering uses the destination
+framebuffer. Reapplying the current display does not move the window; an
+out-of-range index falls back to that display.
+
+Native monitor changes do not pass through windowed mode. Windows keeps the
+fullscreen style and uses the existing DPI-transition scope; macOS switches the
+GLFW monitor attachment. Both leave the saved windowed rectangle intact, and the
+shared Window facade applies Scene from the final observed geometry.
+
 If macOS disconnects the fullscreen monitor, GLFW detaches the window from it.
 The next `System::Update()` reads the native fullscreen state along with the new
 geometry. The current `SceneConfig` remains selected; window-following scene sizes
@@ -273,6 +286,18 @@ regression runs should include a mixed-DPI pair in both directions: immediate
 Scene/cursor updates after placement, compound resize buffer reuse, below-minimum
 rejection after fullscreen/maximized restoration, and API/Alt+Enter transitions.
 These are native runtime checks; macOS compilation does not validate them.
+
+`WindowFullscreen.change_monitor_preserves_window_and_config` selects two
+attached displays, preferring different DPI scales. It checks both directions
+across the six configurations and explicit fullscreen following, repeated/current
+and invalid monitor requests, changes to policy while fullscreen, and exits through
+the API, shortcut, and three Resize functions. Restoration uses the original
+window's monitor, position, and scale. Immediate and next-frame presentation are
+checked; macOS also checks that desktop modes remain unchanged. Windows injects
+missing-monitor snapshots through the native command path before checking recovery.
+The case is hidden and skips when fewer than two displays are attached.
+The WindowSceneSync buffer-preservation case also changes fullscreen monitors
+when available before resizing, retaining its executed/pending pixel checks.
 
 [Test_MonitorInfo.cpp](../../Test/Test_MonitorInfo.cpp) controls native identity and
 enumeration inputs to check empty/missing displays and later enumeration growth,

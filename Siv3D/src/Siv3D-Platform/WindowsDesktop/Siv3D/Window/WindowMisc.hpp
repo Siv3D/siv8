@@ -145,6 +145,10 @@ namespace s3d::WindowMisc
 	bool SetFullscreen(HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, uint32 baseWindowStyle,
 		const WindowsMonitor::Functions& functions = {});
 
+	// HWND-thread operation; retains the fullscreen style and saved windowed rectangle.
+	[[nodiscard]]
+	bool MoveFullscreen(HWND hWnd, size_t monitorIndex, const WindowsMonitor::Functions& functions = {});
+
 	// Engine-thread operation: show synchronizes the public state before the fullscreen check.
 	[[nodiscard]]
 	bool CenterToScreen(ISiv3DWindow& window, Optional<size_t> monitorIndex, const WindowsMonitor::Functions& functions = {});

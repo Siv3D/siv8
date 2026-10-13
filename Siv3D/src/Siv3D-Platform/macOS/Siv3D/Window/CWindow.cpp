@@ -363,12 +363,13 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
 
-		if (fullscreen == m_state.fullscreen)
+		updateState();
+		if ((not fullscreen) && (not m_state.fullscreen))
 		{
 			return;
 		}
 		
-		if (m_state.fullscreen == false) // 現在ウィンドウモード
+		if (fullscreen)
 		{
 			int32 numMonitors = 0;
 			GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors);
@@ -379,26 +380,32 @@ namespace s3d
 
 			if (static_cast<size_t>(numMonitors) <= monitorIndex)
 			{
+				// In fullscreen the fallback is the monitor already attached to this window.
+				if (m_state.fullscreen) { return; }
 				monitorIndex = System::GetCurrentMonitorIndex();
 			}
 			if (static_cast<size_t>(numMonitors) <= monitorIndex)
 			{
 				return;
 			}
-			const GLFWvidmode* mode = ::glfwGetVideoMode(monitors[monitorIndex]);
+			GLFWmonitor* target = monitors[monitorIndex];
+			if (target == ::glfwGetWindowMonitor(m_glfwWindow)) { return; }
+			const GLFWvidmode* mode = ::glfwGetVideoMode(target);
 			if (not mode)
 			{
 				return;
 			}
 
-			updateState();
-			// glfwSetWindowMonitor restores a content origin and client size in points.
-			m_storedWindowRect.pos = (m_state.bounds.pos + Point{ 0, m_state.titleBarHeight });
-			m_storedWindowRect.size = m_state.virtualSize;
+			if (not m_state.fullscreen)
+			{
+				// Save only on entry; monitor changes retain the original windowed geometry.
+				m_storedWindowRect.pos = (m_state.bounds.pos + Point{ 0, m_state.titleBarHeight });
+				m_storedWindowRect.size = m_state.virtualSize;
+			}
 			
 			// The Cocoa window policy bypasses video-mode selection, including modes
 			// absent from GLFW's enumeration. These dimensions are desktop points.
-			::glfwSetWindowMonitor(m_glfwWindow, monitors[monitorIndex], 0, 0,
+			::glfwSetWindowMonitor(m_glfwWindow, target, 0, 0,
 				mode->width, mode->height, mode->refreshRate);
 		}
 		else
