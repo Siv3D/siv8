@@ -131,9 +131,18 @@ class RunnerTests(unittest.TestCase):
 
     def test_reserved_options(self):
         for argument in ("--out=elsewhere.txt", "--reporter=xml", "--colour-mode=ansi", "-rxml", "-srxml",
-                         "--list-tests", "--list-tags", "--help", "--libidentify", "--allow-running-no-tests", "--"):
+                         "--list-tests", "--list-tags", "--help", "--libidentify", "--allow-running-no-tests"):
             with self.subTest(argument=argument):
                 self.run_case("-TestArguments", argument, error="is reserved")
+        # -File rejects a bare -- during parameter binding. Pass a literal array
+        # so this case reaches the runner's own reserved-option check.
+        with self.subTest(argument="--"):
+            invocation = "& '{}' -SkipBuild -TestArguments @('--')".format(str(self.runner).replace("'", "''"))
+            result = subprocess.run([self.pwsh, "-NoProfile", "-Command", invocation], cwd=self.temp.name,
+                                    capture_output=True, text=True, encoding="utf-8", timeout=20)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("Catch2 option '--' is reserved", output)
 
     def test_preflight_failure_releases_lock(self):
         project = self.root / "WindowsDesktop/Siv3D-Test.vcxproj"

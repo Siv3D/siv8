@@ -67,10 +67,6 @@
 
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
-## テスト実行基盤
-
-- Windows runner の XML 出力転記修正を Windows で検証する。`python tools/test_windows_runner.py` と通常全テストを実行し、実 Catch2 の `TestCase/OverallResult` 配下の stdout/stderr がコンソールと `.txt` に重複なく残ることを確認する。macOS での XML 構造検査は実 runner の実行確認に代えない。全画面の再実行は不要。
-
 ## Renderer2D / 組み込みシェーダ最適化
 
 - WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。
