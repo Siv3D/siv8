@@ -651,6 +651,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SceneConfig.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneSizeMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneResolution.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FullscreenSceneMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Resource.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FastMath.hpp" />
@@ -1981,7 +1984,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_StraightEdged.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\SceneConfig\SivSceneConfig.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneSizeMode\SivSceneSizeMode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneResolution\SivSceneResolution.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FullscreenSceneMode\SivFullscreenSceneMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerBorderColor\SivSamplerBorderColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerStateBuilder\SivSamplerStateBuilder.cpp" />

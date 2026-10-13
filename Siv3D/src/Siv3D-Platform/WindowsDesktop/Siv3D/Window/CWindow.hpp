@@ -136,7 +136,9 @@ namespace s3d
 		enum class ToggleFullscreenState : uint8
 		{
 			Disabled,
+
 			Enabled,
+
 			Requested,
 		};
 

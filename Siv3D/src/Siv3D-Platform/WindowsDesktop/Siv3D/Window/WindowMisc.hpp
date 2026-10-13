@@ -142,8 +142,7 @@ namespace s3d::WindowMisc
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	bool SetFullscreen(HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, uint32 baseWindowStyle,
-		const WindowsMonitor::Functions& functions = {});
+	bool SetFullscreen(HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, uint32 baseWindowStyle, const WindowsMonitor::Functions& functions = {});
 
 	// HWND-thread operation; retains the fullscreen style and saved windowed rectangle.
 	[[nodiscard]]

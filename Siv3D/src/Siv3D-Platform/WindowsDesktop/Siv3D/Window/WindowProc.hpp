@@ -23,11 +23,17 @@ namespace s3d
 	struct WindowThreadCommand
 	{
 		void (*invoke)(void*);
+
 		void* context;
+
 		std::exception_ptr exception;
+
 		WindowThreadCommand* next = nullptr; // Window thread only.
+
 		std::mutex mutex;
+
 		std::condition_variable ready;
+
 		bool completed = false;
 
 		void execute() noexcept

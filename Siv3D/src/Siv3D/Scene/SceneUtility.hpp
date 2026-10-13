@@ -28,9 +28,13 @@ namespace s3d
 		struct RenderState
 		{
 			Size sceneSize = Scene::DefaultSceneSize;
+
 			Size windowVirtualSize = Scene::DefaultSceneSize;
+
 			Size windowFrameBufferSize = Scene::DefaultSceneSize;
+
 			SceneConfig config;
+
 			bool windowFullscreen = false;
 
 			friend bool operator ==(const RenderState&, const RenderState&) = default;

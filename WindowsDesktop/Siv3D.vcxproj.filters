@@ -673,8 +673,14 @@
     <Filter Include="src\Siv3D\Profiler">
       <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\SceneConfig">
-      <UniqueIdentifier>{e1b912b6-75cc-42af-9275-dcd202afc743}</UniqueIdentifier>
+    <Filter Include="src\Siv3D\SceneSizeMode">
+      <UniqueIdentifier>{0610d680-908c-4524-8ac1-6ee5a2d82a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\SceneResolution">
+      <UniqueIdentifier>{7c8796a1-d64c-4f8f-886c-4fa74a39ffb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FullscreenSceneMode">
+      <UniqueIdentifier>{909d09ed-5b89-4c19-9f61-41c4a9bdaae6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\TextureFilter">
       <UniqueIdentifier>{19bc6a87-791f-4531-a1f5-05c3f972ef6e}</UniqueIdentifier>
@@ -3511,6 +3517,15 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\SceneConfig.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneSizeMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneResolution.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FullscreenSceneMode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp">
@@ -8129,8 +8144,14 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
       <Filter>src\Siv3D\Profiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\SceneConfig\SivSceneConfig.cpp">
-      <Filter>src\Siv3D\SceneConfig</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneSizeMode\SivSceneSizeMode.cpp">
+      <Filter>src\Siv3D\SceneSizeMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneResolution\SivSceneResolution.cpp">
+      <Filter>src\Siv3D\SceneResolution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FullscreenSceneMode\SivFullscreenSceneMode.cpp">
+      <Filter>src\Siv3D\FullscreenSceneMode</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp">
       <Filter>src\Siv3D\TextureFilter</Filter>

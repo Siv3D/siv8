@@ -1197,6 +1197,9 @@
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */; };
+		9071747C53A8405CB00D1DD2 /* SceneSizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */; };
+		D6F4563BCFE04D9687962725 /* SceneResolution.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46D246F808284ABE9240B2A7 /* SceneResolution.hpp */; };
+		FED35CAADFC445CB924FEAB4 /* FullscreenSceneMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */; };
 		F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FB2BEDF2FF000E21DD /* CScene.cpp */; };
 		F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FC2BEDF2FF000E21DD /* CScene.hpp */; };
 		F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FD2BEDF2FF000E21DD /* IScene.hpp */; };
@@ -1204,7 +1207,9 @@
 		F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */; };
 		F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203002BEDF2FF000E21DD /* SceneTime.hpp */; };
 		F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203012BEDF2FF000E21DD /* SivScene.cpp */; };
-		F972030E2BEDF2FF000E21DD /* SivSceneConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */; };
+		18823A171BD94243A0AAFC43 /* SivSceneSizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */; };
+		B70D55149CC64E84A2F9B5DA /* SivSceneResolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */; };
+		388735418473435AA6BF3B44 /* SivFullscreenSceneMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */; };
 		F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */; };
 		F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203102BF09DA3000E21DD /* IRenderer.hpp */; };
 		F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203132BF09DD9000E21DD /* Graphics.hpp */; };
@@ -4656,6 +4661,9 @@
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneConfig.hpp; sourceTree = "<group>"; };
+		17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneSizeMode.hpp; sourceTree = "<group>"; };
+		46D246F808284ABE9240B2A7 /* SceneResolution.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneResolution.hpp; sourceTree = "<group>"; };
+		A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FullscreenSceneMode.hpp; sourceTree = "<group>"; };
 		F97202FB2BEDF2FF000E21DD /* CScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScene.cpp; sourceTree = "<group>"; };
 		F97202FC2BEDF2FF000E21DD /* CScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScene.hpp; sourceTree = "<group>"; };
 		F97202FD2BEDF2FF000E21DD /* IScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScene.hpp; sourceTree = "<group>"; };
@@ -4663,7 +4671,9 @@
 		F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTime.cpp; sourceTree = "<group>"; };
 		F97203002BEDF2FF000E21DD /* SceneTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneTime.hpp; sourceTree = "<group>"; };
 		F97203012BEDF2FF000E21DD /* SivScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScene.cpp; sourceTree = "<group>"; };
-		F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneConfig.cpp; sourceTree = "<group>"; };
+		F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneSizeMode.cpp; sourceTree = "<group>"; };
+		3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSceneResolution.cpp; sourceTree = "<group>"; };
+		B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFullscreenSceneMode.cpp; sourceTree = "<group>"; };
 		F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureFilter.cpp; sourceTree = "<group>"; };
 		F97203102BF09DA3000E21DD /* IRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IRenderer.hpp; sourceTree = "<group>"; };
 		F97203132BF09DD9000E21DD /* Graphics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics.hpp; sourceTree = "<group>"; };
@@ -8246,6 +8256,9 @@
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
 				F97202F72BEDF2D8000E21DD /* SceneConfig.hpp */,
+				17CD6CBA578F4EB19FB2FD38 /* SceneSizeMode.hpp */,
+				46D246F808284ABE9240B2A7 /* SceneResolution.hpp */,
+				A24D6A1D9A5746438DAD54AC /* FullscreenSceneMode.hpp */,
 				F91171282DCBBF67000A22E6 /* ResolvedGlyph.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
@@ -9083,7 +9096,9 @@
 				F98605A22BE4887C006A4C0F /* RegExp */,
 				F97203112BF09DA3000E21DD /* Renderer */,
 				F980C47F2C04B3EA00A86B68 /* Renderer2D */,
-				F97203042BEDF2FF000E21DD /* SceneConfig */,
+				9E7D4741375A4408BB97F4F0 /* SceneSizeMode */,
+				2FC6FC220D1643269643274D /* SceneResolution */,
+				BD3897C41FA04C7FA1803EB8 /* FullscreenSceneMode */,
 				F9D41CF22C9FCDC300290998 /* RoundRect */,
 				F9FD0D132D204FBE00A584CE /* SamplerBorderColor */,
 				F980C4532C00E2AE00A86B68 /* SamplerState */,
@@ -10789,12 +10804,28 @@
 			path = Scene;
 			sourceTree = "<group>";
 		};
-		F97203042BEDF2FF000E21DD /* SceneConfig */ = {
+		9E7D4741375A4408BB97F4F0 /* SceneSizeMode */ = {
 			isa = PBXGroup;
 			children = (
-				F97203032BEDF2FF000E21DD /* SivSceneConfig.cpp */,
+				F55F8D8354114E329C0801D0 /* SivSceneSizeMode.cpp */,
 			);
-			path = SceneConfig;
+			path = SceneSizeMode;
+			sourceTree = "<group>";
+		};
+		2FC6FC220D1643269643274D /* SceneResolution */ = {
+			isa = PBXGroup;
+			children = (
+				3B6922ECA9C14FDAA3F418FF /* SivSceneResolution.cpp */,
+			);
+			path = SceneResolution;
+			sourceTree = "<group>";
+		};
+		BD3897C41FA04C7FA1803EB8 /* FullscreenSceneMode */ = {
+			isa = PBXGroup;
+			children = (
+				B0983A208D6248088EC118D6 /* SivFullscreenSceneMode.cpp */,
+			);
+			path = FullscreenSceneMode;
 			sourceTree = "<group>";
 		};
 		F97203062BEDF2FF000E21DD /* TextureFilter */ = {
@@ -15702,6 +15733,9 @@
 				F933AD302E54A345005624D7 /* GlyphContext.hpp in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
 				F97202FA2BEDF2D9000E21DD /* SceneConfig.hpp in Headers */,
+				9071747C53A8405CB00D1DD2 /* SceneSizeMode.hpp in Headers */,
+				D6F4563BCFE04D9687962725 /* SceneResolution.hpp in Headers */,
+				FED35CAADFC445CB924FEAB4 /* FullscreenSceneMode.hpp in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
@@ -17666,7 +17700,9 @@
 				F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
-				F972030E2BEDF2FF000E21DD /* SivSceneConfig.cpp in Sources */,
+				18823A171BD94243A0AAFC43 /* SivSceneSizeMode.cpp in Sources */,
+				B70D55149CC64E84A2F9B5DA /* SivSceneResolution.cpp in Sources */,
+				388735418473435AA6BF3B44 /* SivFullscreenSceneMode.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F91D2BC8441F006A4C0F /* regerror.c in Sources */,
 				F986F9202BC8441F006A4C0F /* reggnu.c in Sources */,

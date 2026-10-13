@@ -20,8 +20,11 @@ namespace s3d::WindowsMonitor
 	struct Functions
 	{
 		decltype(::EnumDisplayDevicesW)* enumDisplayDevices = ::EnumDisplayDevicesW;
+
 		decltype(::MonitorFromWindow)* monitorFromWindow = ::MonitorFromWindow;
+
 		decltype(::GetMonitorInfoW)* getMonitorInfo = ::GetMonitorInfoW;
+
 		decltype(System::EnumerateMonitors)* enumerateMonitors = System::EnumerateMonitors;
 	};
 

@@ -55,8 +55,11 @@ namespace s3d
 	private:
 
 		uint32 m_depth = 0; // Window thread only; never held as a lock across Win32.
+
 		std::mutex m_mutex;
+
 		WindowState m_committed;
+
 		WindowState m_published; // Stable address, engine thread only.
 	};
 }
