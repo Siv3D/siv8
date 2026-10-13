@@ -361,6 +361,36 @@ namespace
 					if (paint) shape.paintPie(image, 0.3, -4.5, color, aa);
 					else shape.overwritePie(image, 0.3, -4.5, color, aa);
 				} },
+			{ "Circle.arc.round_short", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintArc(image, LineCap::Round, 0.37, 0.03, 2, 3, color, aa);
+					else shape.overwriteArc(image, LineCap::Round, 0.37, 0.03, 2, 3, color, aa);
+				} },
+			{ "Circle.arc.round_major", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintArc(image, LineCap::Round, 0.37, Math::TwoPi - 0.03, 2, 3, color, aa);
+					else shape.overwriteArc(image, LineCap::Round, 0.37, Math::TwoPi - 0.03, 2, 3, color, aa);
+				} },
+			{ "Circle.arc.square_major", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintArc(image, LineCap::Square, 0.37, 4.5, 2, 3, color, aa);
+					else shape.overwriteArc(image, LineCap::Square, 0.37, 4.5, 2, 3, color, aa);
+				} },
+			{ "Circle.arc.square_zero", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintArc(image, LineCap::Square, 0.37, 0.0, 2, 3, color, aa);
+					else shape.overwriteArc(image, LineCap::Square, 0.37, 0.0, 2, 3, color, aa);
+				} },
+			{ "Circle.arc.round_zero", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintArc(image, LineCap::Round, 0.37, 0.0, 2, 3, color, aa);
+					else shape.overwriteArc(image, LineCap::Round, 0.37, 0.0, 2, 3, color, aa);
+				} },
 			{ "Circle.arc", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
 				{
 					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
@@ -1865,5 +1895,221 @@ TEST_CASE("ImageDraw.benchmark_circle_segments", "[.benchmark]")
 								ankerl::nanobench::doNotOptimizeAway(image.data());
 							});
 						}
+			}
+}
+
+TEST_CASE("ImageDraw.benchmark_circle_arcs", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Circle arcs").unit("draw").epochs(7).minEpochIterations(2);
+	for (const int32 size : { 32, 256, 1024 })
+		for (const double sweep : { 0.15, 1.2, 4.5 })
+			for (const double thickness : { 3.5, size * 0.2 })
+			{
+				const Circle circle{ size * 0.5 + 0.25, size * 0.5 + 0.75, size * 0.35 };
+				Image image{ size, Color{ 40, 70, 100, 255 } };
+				for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+					for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+						for (const bool paint : { false, true })
+						{
+							const std::string name = std::to_string(size) + "/sweep=" + std::to_string(sweep)
+								+ (thickness == 3.5 ? "/thin" : "/wide") + (bool(aa) ? "/AA" : "/NoAA")
+								+ (paint ? "/paint" : "/overwrite") + (cap == LineCap::Flat ? "/Flat" : (cap == LineCap::Round ? "/Round" : "/Square"));
+							image.fill(Color{ 40, 70, 100, 255 });
+							bench.run(name, [&]
+							{
+								const Color color{ 211, 83, 147, 113 };
+								if (cap == LineCap::Flat)
+								{
+									if (paint) circle.paintArc(image, 0.37, sweep, thickness * 0.3, thickness * 0.7, color, aa);
+									else circle.overwriteArc(image, 0.37, sweep, thickness * 0.3, thickness * 0.7, color, aa);
+								}
+								else
+								{
+									if (paint) circle.paintArc(image, cap, 0.37, sweep, thickness * 0.3, thickness * 0.7, color, aa);
+									else circle.overwriteArc(image, cap, 0.37, sweep, thickness * 0.3, thickness * 0.7, color, aa);
+								}
+								ankerl::nanobench::doNotOptimizeAway(image.data());
+							});
+							CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }));
+						}
+			}
+}
+
+namespace
+{
+	Image CircleArcReference(const Size size, const Circle& circle, const LineCap cap,
+		const double start, const double sweep, const double inner, const double outer, const EnableAntialiasing aa)
+	{
+		Image expected{ size, Color{ 0, 0 } };
+		const double ri = Max(0.0, circle.r - inner), ro = (circle.r + outer);
+		const double mid = (ri + ro) * 0.5, half = (ro - ri) * 0.5;
+		const double begin = (sweep < 0 ? start + sweep : start), end = (begin + Abs(sweep));
+		const Vec2 directions[]{ { std::sin(begin), -std::cos(begin) }, { std::sin(end), -std::cos(end) } };
+		const int32 samples = aa ? 4 : 1;
+		for (int32 y = 0; y < size.y; ++y)
+			for (int32 x = 0; x < size.x; ++x)
+			{
+				int32 covered = 0;
+				for (int32 sy = 0; sy < samples; ++sy)
+					for (int32 sx = 0; sx < samples; ++sx)
+					{
+						const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
+						double theta = std::fmod(std::atan2(p.x, -p.y) - begin, Math::TwoPi);
+						if (theta < 0) theta += Math::TwoPi;
+						bool inside = ((sweep != 0) && (ri * ri <= p.lengthSq()) && (p.lengthSq() <= ro * ro)
+							&& ((p == Vec2{ 0, 0 }) || (theta <= Abs(sweep))));
+						for (int32 i = 0; i < 2; ++i)
+						{
+							const Vec2 q = (p - directions[i] * mid);
+							if (cap == LineCap::Round) inside |= (q.lengthSq() <= half * half);
+							else if (cap == LineCap::Square)
+							{
+								const Vec2 tangent{ -directions[i].y, directions[i].x };
+								const double along = q.dot(tangent) * (i == 0 ? -1 : 1);
+								inside |= ((0 <= along) && (along <= half) && (Abs(q.dot(directions[i])) <= half));
+							}
+						}
+						covered += inside;
+					}
+				const uint8 coverage = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
+				expected[y][x] = Color{ coverage, coverage };
+			}
+		return expected;
+	}
+}
+
+TEST_CASE("ImageDraw.circle_arc_flat_sampling_reference")
+{
+	for (const Circle circle : { Circle{ 16.31, 14.73, 12.25 }, Circle{ 2.31, -0.27, 12.25 }, Circle{ 16.31, 14.73, 0.3 } })
+		for (const Vec2 thickness : { Vec2{ 0.2, 0.1 }, Vec2{ 2.0, 3.0 }, Vec2{ 18, 1.5 } })
+			for (const double start : { 0.0, Math::HalfPi, 0.37 })
+				for (const double sweep : { 0.001, 1.2, Math::Pi, -4.5, Math::TwoPi - 0.001 })
+					for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					{
+						Image actual{ 35, 31, Color{ 0, 0 } };
+						circle.overwriteArc(actual, start, sweep, thickness.x, thickness.y, Palette::White, aa);
+						CAPTURE(circle, thickness, start, sweep, bool(aa));
+						CHECK((actual == CircleArcReference(actual.size(), circle, LineCap::Flat, start, sweep, thickness.x, thickness.y, aa)));
+					}
+}
+
+TEST_CASE("ImageDraw.circle_arc_caps_sampling_reference")
+{
+	for (const LineCap cap : { LineCap::Round, LineCap::Square })
+		for (const Circle circle : { Circle{ 16.31, 14.73, 12.25 }, Circle{ 2.31, -0.27, 12.25 }, Circle{ 16.31, 14.73, 0.3 } })
+			for (const Vec2 thickness : { Vec2{ 0.2, 0.1 }, Vec2{ 2.0, 3.0 }, Vec2{ 18, 1.5 } })
+				for (const double start : { 0.0, Math::HalfPi, 0.37 })
+					for (const double sweep : { 0.0, 0.03, Math::Pi, -4.5, Math::TwoPi - 0.03 })
+						for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+						{
+							Image actual{ 35, 31, Color{ 0, 0 } }, reversed = actual;
+							circle.overwriteArc(actual, cap, start, sweep, thickness.x, thickness.y, Palette::White, aa);
+							circle.overwriteArc(reversed, cap, start + sweep, -sweep, thickness.x, thickness.y, Palette::White, aa);
+							CAPTURE(cap, circle, thickness, start, sweep, bool(aa));
+							CHECK((actual == CircleArcReference(actual.size(), circle, cap, start, sweep, thickness.x, thickness.y, aa)));
+							CHECK((actual == reversed));
+						}
+}
+
+TEST_CASE("ImageDraw.circle_arc_cap_full_empty_defaults_and_alpha")
+{
+	const Circle circle{ 16.31, 14.73, 12.25 };
+	const Color color{ 211, 83, 147, 113 };
+	const Image background = Background(Size{ 35, 31 });
+	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			for (const bool paint : { false, true })
+			{
+				const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+				for (const double sweep : { Math::TwoPi, -Math::TwoPi, 7.5, -12.0 })
+					for (const double inner : { 2.0, 18.0 })
+					{
+						Image actual = background, expected = background;
+						if (paint) CHECK(&circle.paintArc(actual, cap, 0.31, sweep, inner, 3, color, aa) == &circle);
+						else CHECK(&circle.overwriteArc(actual, cap, 0.31, sweep, inner, 3, color, aa) == &circle);
+						ImageDraw::CircleFrame(expected, circle, inner, 3, color, mode, aa);
+						CHECK((actual == expected));
+					}
+				Image actual = background;
+				for (const Vec2 thickness : { Vec2{ -1, 2 }, Vec2{ 2, -1 }, Vec2{ 0, 0 } })
+					for (const double sweep : { 0.0, 1.2, Math::TwoPi })
+						ImageDraw::CircleArc(actual, circle, cap, 0.3, sweep, thickness.x, thickness.y, color, mode, aa);
+				for (const double radius : { -12.25, 0.0 })
+					ImageDraw::CircleArc(actual, Circle{ circle.center, radius }, cap, 0.3, 1.2, 2, 3, color, mode, aa);
+				CHECK((actual == background));
+				for (const double sweep : { 0.0, 0.03, -4.5, Math::TwoPi - 0.03, Math::TwoPi })
+				{
+					Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
+					ImageDraw::CircleArc(opaque, circle, cap, 0.37, sweep, 2, 3, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+					ImageDraw::CircleArc(general, circle, cap, 0.37, sweep, 2, 3, color, mode, aa);
+					CHECK((opaque == general));
+				}
+				if (cap == LineCap::Flat)
+					for (const double sweep : { 0.0, 1.2, -4.5, Math::TwoPi })
+					{
+						Image explicitCap = background, old = background;
+						ImageDraw::CircleArc(explicitCap, circle, cap, 0.37, sweep, 2, 3, color, mode, aa);
+						if (paint) circle.paintArc(old, 0.37, sweep, 2, 3, color, aa);
+						else circle.overwriteArc(old, 0.37, sweep, 2, 3, color, aa);
+						CHECK((explicitCap == old));
+					}
+			}
+	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const bool paint : { false, true })
+		{
+			Image actual = background, direct = background, explicitAA = background;
+			const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+			if (paint) circle.paintArc(actual, cap, 0.37, -4.5, 2, 3, color);
+			else circle.overwriteArc(actual, cap, 0.37, -4.5, 2, 3, color);
+			ImageDraw::CircleArc(direct, circle, cap, 0.37, -4.5, 2, 3, color, mode);
+			ImageDraw::CircleArc(explicitAA, circle, cap, 0.37, -4.5, 2, 3, color, mode, EnableAntialiasing::Yes);
+			CHECK((actual == direct));
+			CHECK((actual == explicitAA));
+		}
+}
+
+TEST_CASE("ImageDraw.circle_arc_cap_boundary_and_translucent_union")
+{
+	const Circle circle{ 12.5, 12.5, 6 };
+	Image round{ 25, 25, Color{ 0, 0 } }, square = round, flat = round;
+	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+	{
+		Image zero = flat;
+		circle.overwriteArc(zero, cap, 0, Math::HalfPi, 0, 0, Palette::White, EnableAntialiasing::No);
+		CHECK((zero == flat));
+	}
+	circle.overwriteArc(round, LineCap::Round, 0, 0, 2, 2, Palette::White, EnableAntialiasing::No);
+	circle.overwriteArc(square, LineCap::Square, 0, 0, 2, 2, Palette::White, EnableAntialiasing::No);
+	circle.overwriteArc(flat, LineCap::Flat, 0, 0, 2, 2, Palette::White, EnableAntialiasing::No);
+	CHECK(std::all_of(flat.begin(), flat.end(), [](Color c) { return c.a == 0; }));
+	CHECK(round[4][12] == Palette::White);
+	CHECK(round[8][12] == Palette::White);
+	CHECK(round[6][10] == Palette::White);
+	CHECK(round[4][10].a == 0);
+	CHECK(square[4][10] == Palette::White);
+	CHECK(square[8][14] == Palette::White);
+	circle.overwriteArc(flat, 0, Math::HalfPi, 2, 2, Palette::White, EnableAntialiasing::No);
+	CHECK(flat[4][12] == Palette::White); // outer circle tangent
+	CHECK(flat[8][12] == Palette::White); // inner circle tangent
+	CHECK(flat[9][12].a == 0);
+
+	for (const LineCap cap : { LineCap::Round, LineCap::Square })
+		for (const double sweep : { 0.0, 0.03, Math::TwoPi - 0.03 })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			{
+				const Circle shape{ 16.31, 14.73, 8.25 };
+				const Image mask = CircleArcReference(Size{ 35, 31 }, shape, cap, 0.37, sweep, 3, 6, aa);
+				for (const bool paint : { false, true })
+					for (const uint8 alpha : { uint8{ 0 }, uint8{ 113 }, uint8{ 255 } })
+					{
+						Image actual = Background(mask.size()), expected = actual;
+						const Color color{ 211, 83, 147, alpha };
+						for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i) expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+						if (paint) shape.paintArc(actual, cap, 0.37, sweep, 3, 6, color, aa);
+						else shape.overwriteArc(actual, cap, 0.37, sweep, 3, 6, color, aa);
+						CAPTURE(cap, sweep, bool(aa), paint, alpha);
+						CHECK((actual == expected));
+					}
 			}
 }

@@ -46,7 +46,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | --- | --- | --- |
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
 | Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
-| Circle | Fill, frame, pie, arc, segment (height / angles) | Dashed frame, shadow, gradients, patterns; image arc has flat radial cuts and no cap selector |
+| Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns; GPU arcs currently treat Square as Flat |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
@@ -75,6 +75,33 @@ with `.draw()`. Triangle-union rasterization is separate API work; it is not add
 to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
+
+## Circle arc caps
+
+`paintArc()` / `overwriteArc()` accept `LineCap` after the destination image.
+The overloads without a cap retain Flat ends. Partial arcs use one analytic
+span rasterizer: it clips disk/annulus cross-sections to the angular sector,
+then unions their sample-index intervals with both caps before compositing.
+Round caps use disks; Square caps use rectangles oriented along the endpoint
+tangents. Fixed storage holds at most six intervals per sample row. No Polygon
+or sampled LineString is constructed. AA uses a reusable 4x4 sample-count row,
+converting, writing, and clearing only the merged pixel intervals touched by
+those samples. This skips the empty interior of thin arcs. No-AA writes merged
+pixel-center spans directly.
+
+Zero-angle Round and Square arcs draw the cap alone, as zero-length lines do;
+Flat draws nothing. Full sweeps keep the existing Circle frame path, including
+its distance AA and integer fill when the inner hole disappears. Cap width uses
+the visible radial band: once the inner radius reaches zero, that width is the
+outer radius. Overlapping caps, including on almost-full arcs, composite once.
+Sample intervals include radial, circular, and cap boundaries, subject to
+floating-point boundary ties.
+
+GPU comparisons have additional differences beyond AA. GPU Circle arcs currently
+treat Square as Flat and retain the specified thickness when the inner radius
+passes the center; GPU round caps can also composite overlaps repeatedly. Image
+writing uses the adopted cap geometry and union coverage above. GPU work remains
+tracked in [TODO](../../TODO.md).
 
 ## Circle segments
 
@@ -192,6 +219,10 @@ segments across shallow and major caps, axis-aligned and oblique chords, AA
 modes, and image sizes. Polygon construction is excluded; tessellated contours
 have a different approximation error. Large no-AA overwrite cases can favor
 the Polygon reference, so compare AA and no-AA results separately.
+The Circle arc benchmark covers Flat, Round, and Square ends on short, minor,
+and major arcs, with thin and wide asymmetric radial thicknesses. Compare the
+Flat cases before and after changes to the shared rasterizer to check existing
+callers as well as the new caps.
 Repeated paint converges to an opaque destination; these measurements do not measure fresh
 transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.

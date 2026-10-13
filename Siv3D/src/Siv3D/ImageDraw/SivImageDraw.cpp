@@ -192,11 +192,11 @@ namespace s3d
 			}
 		}
 
-		void SortAndMergeSpans(std::vector<SpanI>& spans)
+		std::span<SpanI> SortAndMergeSpans(const std::span<SpanI> spans)
 		{
 			if (spans.empty())
 			{
-				return;
+				return spans;
 			}
 
 			std::sort(spans.begin(), spans.end(), [](const SpanI& a, const SpanI& b)
@@ -222,7 +222,12 @@ namespace s3d
 				}
 			}
 
-			spans.resize(writeIndex + 1);
+			return spans.first(writeIndex + 1);
+		}
+
+		void SortAndMergeSpans(std::vector<SpanI>& spans)
+		{
+			spans.resize(SortAndMergeSpans(std::span<SpanI>{ spans }).size());
 		}
 
 		void WriteMergedSpans(
@@ -1446,35 +1451,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool GetCircleArcCoverageBounds(
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32& x0,
-			int32& y0,
-			int32& x1,
-			int32& y1,
-			int32 width,
-			int32 height) noexcept
-		{
-			BoundsD bounds;
-			IncludeCircleSectorOuterBounds(bounds, circle, sector, outerRadius);
-
-			if (0.0 < innerRadius)
-			{
-				IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
-				IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
-			}
-			else
-			{
-				bounds.include(Vec2{ circle.x, circle.y });
-			}
-
-			return ClipBoundsToImage(bounds, x0, y0, x1, y1, width, height);
-		}
-
-		[[nodiscard]]
 		double DistanceSqToSegment(
 			double px,
 			double py,
@@ -1558,32 +1534,6 @@ namespace s3d
 			return VectorInSector(Vec2{ dx, dy }, sector);
 		}
 
-		[[nodiscard]]
-		bool PointInCircleArc(
-			double px,
-			double py,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius) noexcept
-		{
-			const double dx = px - circle.x;
-			const double dy = py - circle.y;
-			const double d2 = dx * dx + dy * dy;
-
-			if ((outerRadius * outerRadius) < d2)
-			{
-				return false;
-			}
-
-			if ((0.0 < innerRadius) && (d2 < (innerRadius * innerRadius)))
-			{
-				return false;
-			}
-
-			return VectorInSector(Vec2{ dx, dy }, sector);
-		}
-
 		uint8 CirclePieCoverageBySupersampling(
 			int32 x,
 			int32 y,
@@ -1604,34 +1554,6 @@ namespace s3d
 					const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
 
 					covered += PointInCirclePie(px, py, circle, sector);
-				}
-			}
-
-			return static_cast<uint8>((covered * 255 + (total / 2)) / total);
-		}
-
-		uint8 CircleArcCoverageBySupersampling(
-			int32 x,
-			int32 y,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32 sampleCount) noexcept
-		{
-			uint32 covered = 0;
-			const uint32 total = static_cast<uint32>(sampleCount * sampleCount);
-			const double invSamples = (1.0 / static_cast<double>(sampleCount));
-
-			for (int32 sy = 0; sy < sampleCount; ++sy)
-			{
-				const double py = static_cast<double>(y) + (static_cast<double>(sy) + 0.5) * invSamples;
-
-				for (int32 sx = 0; sx < sampleCount; ++sx)
-				{
-					const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
-
-					covered += PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius);
 				}
 			}
 
@@ -1670,56 +1592,6 @@ namespace s3d
 			}
 
 			return CirclePieCoverageBySupersampling(x, y, circle, sector, sampleCount);
-		}
-
-		uint8 CircleArcCoverageAt(
-			int32 x,
-			int32 y,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32 sampleCount) noexcept
-		{
-			const double px = static_cast<double>(x) + 0.5;
-			const double py = static_cast<double>(y) + 0.5;
-			const double dx = px - circle.x;
-			const double dy = py - circle.y;
-			const double d2 = dx * dx + dy * dy;
-
-			constexpr double PixelHalfDiagonal = 0.70710678118654752440;
-
-			const double outerSafeR = outerRadius + PixelHalfDiagonal;
-
-			if ((outerSafeR * outerSafeR) < d2)
-			{
-				return 0;
-			}
-
-			if (PixelHalfDiagonal < innerRadius)
-			{
-				const double innerEmptyR = innerRadius - PixelHalfDiagonal;
-
-				if (d2 < (innerEmptyR * innerEmptyR))
-				{
-					return 0;
-				}
-			}
-
-			const double outerFullR = Max(0.0, outerRadius - PixelHalfDiagonal);
-			const double innerMinR = Max(0.0, innerRadius - PixelHalfDiagonal);
-			const double innerMaxR = innerRadius + PixelHalfDiagonal;
-
-			const bool nearOuterCircle = ((outerFullR * outerFullR) <= d2);
-			const bool nearInnerCircle = ((0.0 < innerRadius) && ((innerMinR * innerMinR) <= d2) && (d2 <= (innerMaxR * innerMaxR)));
-			const bool nearRadialCut = NearRadialCut(px, py, circle, sector, innerRadius, outerRadius, PixelHalfDiagonal);
-
-			if ((sampleCount <= 1) || (!nearOuterCircle && !nearInnerCircle && !nearRadialCut))
-			{
-				return PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius) ? 255 : 0;
-			}
-
-			return CircleArcCoverageBySupersampling(x, y, circle, sector, innerRadius, outerRadius, sampleCount);
 		}
 
 		void FillCirclePieByCoverage(
@@ -1767,72 +1639,6 @@ namespace s3d
 						y,
 						circle,
 						sector,
-						sampleCount
-					);
-				}
-
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
-				WriteCoverageRow(writer, row, x0, coverage);
-			}
-		}
-
-		void FillCircleArcByCoverage(
-			ImageView view,
-			const Circle& circle,
-			double startAngle,
-			double angle,
-			double innerThickness,
-			double outerThickness,
-			ImagePixel::BlendMode blendMode,
-			ImageDraw::DstAlpha dstAlpha,
-			Color color,
-			int32 sampleCount)
-		{
-			if (!(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness) || !HasNonZeroSweep(angle))
-			{
-				return;
-			}
-
-			const double outerRadius = circle.r + outerThickness;
-
-			if (!(0.0 < outerRadius))
-			{
-				return;
-			}
-
-			const double innerRadius = circle.r - innerThickness;
-			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
-
-			int32 x0 = 0;
-			int32 y0 = 0;
-			int32 x1 = 0;
-			int32 y1 = 0;
-
-			if (!GetCircleArcCoverageBounds(circle, sector, innerRadius, outerRadius, x0, y0, x1, y1, view.width, view.height))
-			{
-				return;
-			}
-
-			ImagePixel::detail::SolidColorWriter writer{
-				blendMode,
-				color,
-				ToDstAlphaMode(dstAlpha)
-			};
-
-			const size_t rowLength = static_cast<size_t>(x1 - x0);
-			std::vector<uint8> coverage(rowLength);
-
-			for (int32 y = y0; y < y1; ++y)
-			{
-				for (size_t i = 0; i < rowLength; ++i)
-				{
-					coverage[i] = CircleArcCoverageAt(
-						x0 + static_cast<int32>(i),
-						y,
-						circle,
-						sector,
-						innerRadius,
-						outerRadius,
 						sampleCount
 					);
 				}
@@ -4269,6 +4075,161 @@ namespace s3d
 			return (left <= right);
 		}
 
+		// Intersect a horizontal interval with |axis.dot(p)| <= halfExtent.
+		[[nodiscard]]
+		bool ClipSlabSpan(double& left, double& right, const Vec2 axis, const double y, const double halfExtent) noexcept
+		{
+			if (axis.x == 0.0)
+			{
+				return (Abs(axis.y * y) <= halfExtent);
+			}
+			const double a = ((-halfExtent - axis.y * y) / axis.x);
+			const double b = ((halfExtent - axis.y * y) / axis.x);
+			left = Max(left, Min(a, b));
+			right = Min(right, Max(a, b));
+			return (left <= right);
+		}
+
+		template <bool Antialias>
+		void FillCircleArcBySpans(
+			const ImageView view, const Circle& circle, const CircleSectorData& sector,
+			const double innerRadius, const double outerRadius, const LineCap lineCap,
+			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
+		{
+			const bool hasBody = (0.0 < sector.sweep);
+			const bool major = (Math::Pi < sector.sweep);
+			const double half = ((outerRadius - innerRadius) * 0.5);
+			const double mid = ((outerRadius + innerRadius) * 0.5);
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const Vec2 directions[]{ sector.startDir, sector.endDir };
+			const Vec2 outward[]{ -startNormal, -endNormal };
+			const int32 capCount = (lineCap == LineCap::Flat ? 0 : 2);
+			OrientedRectBasis caps[2];
+			BoundsD bounds;
+			if (hasBody)
+			{
+				IncludeCircleSectorOuterBounds(bounds, circle, sector, outerRadius);
+				IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
+				IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
+			}
+			for (int32 i = 0; i < capCount; ++i)
+			{
+				const Vec2 center = (circle.center + directions[i] * mid);
+				caps[i] = { center, outward[i], directions[i], half * 0.5, half };
+				if (lineCap == LineCap::Round)
+				{
+					bounds.includeCircle(center, half);
+				}
+				else
+				{
+					caps[i].center += (outward[i] * half * 0.5);
+					IncludeOrientedRectBounds(bounds, caps[i], 0.0, 0.0);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			const double innerSq = (innerRadius * innerRadius), outerSq = (outerRadius * outerRadius);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				// Four sample rows can touch up to six intervals each; skip the empty interior.
+				SpanI pixelSpans[24];
+				size_t pixelSpanCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double py = (y + (sy + 0.5) / samples), dy = (py - circle.y);
+					// Two ring intervals, each clipped to at most two sector intervals, plus two caps.
+					SpanI spans[6];
+					size_t count = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const double l = Clamp(left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+						if (begin < end) spans[count++] = { begin, end };
+					};
+					const auto addSector = [&](double left, double right)
+					{
+						double left2 = left, right2 = right;
+						const bool valid = ClipSectorSpan(left, right, startNormal, dy);
+						if (!major)
+						{
+							if (valid && ClipSectorSpan(left, right, endNormal, dy)) add(circle.x + left, circle.x + right);
+						}
+						else
+						{
+							if (valid) add(circle.x + left, circle.x + right);
+							if (ClipSectorSpan(left2, right2, endNormal, dy)) add(circle.x + left2, circle.x + right2);
+						}
+					};
+					const double dySq = (dy * dy);
+					if (hasBody && (dySq <= outerSq))
+					{
+						const double outerDx = std::sqrt(outerSq - dySq);
+						if (dySq < innerSq)
+						{
+							const double innerDx = std::sqrt(innerSq - dySq);
+							addSector(-outerDx, -innerDx);
+							addSector(innerDx, outerDx);
+						}
+						else addSector(-outerDx, outerDx);
+					}
+					for (int32 i = 0; i < capCount; ++i)
+					{
+						const OrientedRectBasis& cap = caps[i];
+						const double cy = (py - cap.center.y);
+						if (lineCap == LineCap::Round)
+						{
+							const double dxSq = (half * half - cy * cy);
+							if (0.0 <= dxSq)
+							{
+								const double dx = std::sqrt(dxSq);
+								add(cap.center.x - dx, cap.center.x + dx);
+							}
+						}
+						else
+						{
+							double left = (x0 - cap.center.x), right = (x1 - cap.center.x);
+							if (ClipSlabSpan(left, right, cap.dir, cy, cap.halfLength)
+								&& ClipSlabSpan(left, right, cap.normal, cy, cap.halfThickness))
+							{
+								add(cap.center.x + left, cap.center.x + right);
+							}
+						}
+					}
+					for (const SpanI& merged : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
+					{
+						if constexpr (Antialias)
+						{
+							AddSubpixelSamples4(coverage, merged.x0 - x0 * 4, merged.x1 - x0 * 4);
+							pixelSpans[pixelSpanCount++] = { merged.x0 / 4, (merged.x1 + 3) / 4 };
+						}
+						else writer.write(row + merged.x0, static_cast<size_t>(merged.x1 - merged.x0));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ pixelSpans, pixelSpanCount }))
+					{
+						uint8* values = (coverage.data() + span.x0 - x0);
+						const size_t length = static_cast<size_t>(span.x1 - span.x0);
+						for (size_t i = 0; i < length; ++i) values[i] = static_cast<uint8>((values[i] * 255 + 8) / 16);
+						WriteCoverageSpan(writer, row + span.x0, values, length);
+						std::fill_n(values, length, uint8{ 0 });
+					}
+				}
+			}
+		}
+
 		template <bool Antialias>
 		void FillCircleSegmentBySpans(
 			const ImageView view, const Circle& circle, const double arcMidpointAngle, const double height,
@@ -4870,52 +4831,40 @@ namespace s3d
 		}
 
 		void CircleArc(
-			Image& image,
-			const Circle& circle,
-			const double startAngle,
-			const double angle,
-			const double innerThickness,
-			const double outerThickness,
-			const Color color,
-			const ImagePixel::BlendMode blendMode,
-			const EnableAntialiasing enableAntialiasing,
-			const DstAlpha dstAlpha)
+			Image& image, const Circle& circle, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			CircleArc(image, circle, LineCap::Flat, startAngle, angle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
+		}
 
-			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !HasNonZeroSweep(angle))
+		void CircleArc(
+			Image& image, const Circle& circle, const LineCap lineCap, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((lineCap == LineCap::Flat) && !HasNonZeroSweep(angle)))
 			{
 				return;
 			}
-
 			if (IsFullCircleSweep(angle))
 			{
-				if (enableAntialiasing == EnableAntialiasing::Yes)
-				{
-					FillCircleFrameAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
-				}
-				else
-				{
-					FillCircleFrameNoAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
-				}
-
+				CircleFrame(image, circle, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
 				return;
 			}
-
-			const int32 sampleCount = (enableAntialiasing == EnableAntialiasing::Yes) ? 4 : 1;
-
-			FillCircleArcByCoverage(
-				view,
-				circle,
-				startAngle,
-				angle,
-				innerThickness,
-				outerThickness,
-				blendMode,
-				dstAlpha,
-				color,
-				sampleCount
-			);
+			const double innerRadius = Max(0.0, circle.r - innerThickness), outerRadius = (circle.r + outerThickness);
+			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCircleArcBySpans<true>(MakeImageView(image), circle, sector, innerRadius, outerRadius, lineCap, color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, lineCap, color, blendMode, dstAlpha);
+			}
 		}
 
 		void CircleSegment(

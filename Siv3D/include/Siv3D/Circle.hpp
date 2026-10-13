@@ -947,7 +947,22 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark 線端は LineCap::Flat です。
+		/// @see @ref image_draw_circle_arc
 		const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線端を指定して円弧を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 線端の形状
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& paintArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -964,7 +979,22 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark 線端は LineCap::Flat です。
+		/// @see @ref image_draw_circle_arc
 		const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線端を指定して円弧を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param lineCap 線端の形状
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& overwriteArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

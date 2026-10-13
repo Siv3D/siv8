@@ -177,26 +177,51 @@ namespace s3d
 		/// @brief 円弧の枠を描画します。
 		/// @param image 描画先画像
 		/// @param circle 基準となる円
-		/// @param startAngle 開始角度（ラジアン）
-		/// @param angle 描画する角度（ラジアン）
-		/// @param innerThickness circle の内側に描画する太さ
-		/// @param outerThickness circle の外側に描画する太さ
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
 		/// @param color 描画色
 		/// @param blendMode 合成方式
 		/// @param enableAntialiasing アンチエイリアス設定
 		/// @param dstAlpha 描画先 alpha の扱い
-		/// @remark startAngle は 12 時方向を 0 とし、時計回りに増加します。
-		/// @remark angle が正の場合は時計回り、負の場合は反時計回りに描画します。
-		/// @remark 描画領域は、半径方向では circle.r - innerThickness から circle.r + outerThickness まで、角度方向では Siv3D の画像座標系で startAngle から startAngle + angle までの領域です。
-		/// @remark 内側半径が 0 以下になる場合は、中心までを含む扇形状として描画します。
-		/// @remark 円弧の両端は半径方向の直線で切り落とします。
-		/// @remark |angle| が 2π 以上の場合は CircleFrame() と同じ領域を描画します。
-		/// @remark 外側円弧、内側円弧、両端の半径境界を含む最終 coverage を作り、1 回だけ合成します。
-		/// @remark 画像の範囲外はクリップされます。
-		/// @remark circle.r が正でない場合、innerThickness または outerThickness が負の場合、または angle が 0 の場合、この関数は何もしません。
+		/// @remark 線端は LineCap::Flat です。
+		/// @see @ref image_draw_circle_arc
 		void CircleArc(
 			Image& image,
 			const Circle& circle,
+			double startAngle,
+			double angle,
+			double innerThickness,
+			double outerThickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @anchor image_draw_circle_arc
+		/// @brief 円弧の枠を描画します。
+		/// @param image 描画先画像
+		/// @param circle 基準となる円
+		/// @param lineCap 線端の形状
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark Flat は半径方向に切り落とし、Square は接線方向へ線幅の半分だけ延長し、Round は半円の線端を付けます。
+		/// @remark 内側が中心に達する場合、線端の幅は中心から外周までの幅になります。
+		/// @remark angle が 0 の場合、Flat は何も描かず、Round は線端の円、Square は接線方向に沿った正方形を描きます。
+		/// @remark |angle| が 2π 以上の場合は、線端を付けずに CircleFrame() と同じ領域を描画します。
+		/// @remark 円弧と線端が重なる部分も一度だけ描き込みます。画像の範囲外はクリップされます。
+		/// @remark circle.r が正でない場合、太さのいずれかが負の場合、または両方の太さが 0 の場合は何もしません。
+		void CircleArc(
+			Image& image,
+			const Circle& circle,
+			LineCap lineCap,
 			double startAngle,
 			double angle,
 			double innerThickness,
