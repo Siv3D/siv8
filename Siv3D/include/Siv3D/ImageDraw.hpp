@@ -224,6 +224,25 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @anchor image_draw_superellipse
+		/// @brief スーパー楕円を描画します。
+		/// @param image 描画先画像
+		/// @param superEllipse 描画するスーパー楕円
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark 半径は絶対値を使用します。半径のいずれかが 0、または n が 0 以下の場合は何もしません。
+		/// @remark n が 2 の場合は Ellipse と同じ被覆率を使用します。それ以外では AA ありは 4×4 サンプリング、AA なしは画素中心の内外判定を使用します。
+		/// @remark n が 2 以外の走査区間は左端を含み、右端を含みません。画像の範囲外はクリップされます。
+		void Fill(
+			Image& image,
+			const SuperEllipse& superEllipse,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 楕円の枠を描画します。
 		/// @param image 描画先画像
 		/// @param ellipse 基準となる楕円

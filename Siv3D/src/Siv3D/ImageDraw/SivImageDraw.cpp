@@ -15,6 +15,7 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineString.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
+# include "../Geometry2D/EllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -801,16 +802,6 @@ namespace s3d
 					writeSpan(y12, x11, x12);
 				}
 
-				if (dx != dy)
-				{
-					writeSpan(y21, x21, x22);
-
-					if (y22 != y21)
-					{
-						writeSpan(y22, x21, x22);
-					}
-				}
-
 				++dy;
 				err += plus;
 				plus += 2;
@@ -820,6 +811,17 @@ namespace s3d
 				err -= minus & mask;
 				dx += mask;
 				minus -= mask & 2;
+
+				// Emit the outer rows only when their widest span is known.
+				if ((mask != 0) && (y21 != y11))
+				{
+					writeSpan(y21, x21, x22);
+
+					if (y22 != y21)
+					{
+						writeSpan(y22, x21, x22);
+					}
+				}
 			}
 		}
 
@@ -895,72 +897,11 @@ namespace s3d
 			double radiusX,
 			double radiusY) noexcept
 		{
-			if (!(0.0 < radiusX) || !(0.0 < radiusY))
-			{
-				return 1.0;
-			}
-
-			const double x = std::abs(pixelCenterX - centerX);
-			const double y = std::abs(pixelCenterY - centerY);
-
-			if ((x == 0.0) && (y == 0.0))
-			{
-				return -Min(radiusX, radiusY);
-			}
-
-			constexpr double HalfPi = 1.57079632679489661923;
-
-			double t = std::atan2(y * radiusX, x * radiusY);
-			t = Min(HalfPi, Max(0.0, t));
-
-			for (int32 i = 0; i < 8; ++i)
-			{
-				const double cosT = std::cos(t);
-				const double sinT = std::sin(t);
-
-				const double ex = radiusX * cosT;
-				const double ey = radiusY * sinT;
-
-				const double qx = ex - x;
-				const double qy = ey - y;
-
-				const double dex = -radiusX * sinT;
-				const double dey = radiusY * cosT;
-				const double ddex = -radiusX * cosT;
-				const double ddey = -radiusY * sinT;
-
-				const double f = qx * dex + qy * dey;
-				const double df = dex * dex + qx * ddex + dey * dey + qy * ddey;
-
-				if (std::abs(df) <= 1.0e-12)
-				{
-					break;
-				}
-
-				const double nextT = t - (f / df);
-				const double clampedT = Min(HalfPi, Max(0.0, nextT));
-
-				if (std::abs(clampedT - t) <= 1.0e-12)
-				{
-					t = clampedT;
-					break;
-				}
-
-				t = clampedT;
-			}
-
-			const double closestX = radiusX * std::cos(t);
-			const double closestY = radiusY * std::sin(t);
-
-			const double dx = x - closestX;
-			const double dy = y - closestY;
-			const double distance = std::sqrt(dx * dx + dy * dy);
-
-			const double nx = x / radiusX;
-			const double ny = y / radiusY;
-			const double implicit = nx * nx + ny * ny - 1.0;
-
-			return (implicit <= 0.0) ? -distance : distance;
+			const Vec2 query{ Abs(pixelCenterX - centerX), Abs(pixelCenterY - centerY) };
+			const Vec2 axes{ radiusX, radiusY };
+			const Vec2 closest = detail::ClosestPointOnEllipseBoundaryInFirstQuadrant(query, axes);
+			const double distance = (query - closest).length();
+			return ((query / axes).lengthSq() <= 1.0) ? -distance : distance;
 		}
 
 		[[nodiscard]]
@@ -1995,38 +1936,34 @@ namespace s3d
 				ToDstAlphaMode(dstAlpha)
 			};
 
-			std::vector<uint8> coverage;
+			const int32 x0 = ClampInt(FloorToInt(ellipse.x - ellipse.a - 1.0), 0, view.width);
+			const int32 x1 = ClampInt(CeilToInt(ellipse.x + ellipse.a + 1.0), 0, view.width);
+			if (x0 >= x1)
+			{
+				return;
+			}
 
+			// The normalized radius is 1/min(a,b)-Lipschitz. Beyond these
+			// thresholds the distance coverage is provably zero or full.
+			const double band = 0.5 / Min(ellipse.a, ellipse.b);
+			const double inner = Max(0.0, 1.0 - band);
+			const double innerSq = inner * inner;
+			const double outerSq = (1.0 + band) * (1.0 + band);
+			const size_t count = static_cast<size_t>(x1 - x0);
+			std::vector<uint8> coverage(count);
 			for (int32 y = y0; y < y1; ++y)
 			{
-				int32 x0 = FloorToInt(ellipse.x - ellipse.a - 1.0);
-				int32 x1 = CeilToInt(ellipse.x + ellipse.a + 1.0);
-
-				x0 = ClampInt(x0, 0, view.width);
-				x1 = ClampInt(x1, 0, view.width);
-
-				if (x0 >= x1)
-				{
-					continue;
-				}
-
-				const size_t count = static_cast<size_t>(x1 - x0);
-				coverage.assign(count, 0);
-
 				const double py = static_cast<double>(y) + 0.5;
-
+				const double ny = (py - ellipse.y) / ellipse.b;
+				const double nySq = ny * ny;
 				for (size_t i = 0; i < count; ++i)
 				{
 					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-
-					coverage[i] = EllipseCoverageAt(
-						px,
-						py,
-						ellipse.x,
-						ellipse.y,
-						ellipse.a,
-						ellipse.b
-					);
+					const double nx = (px - ellipse.x) / ellipse.a;
+					const double normalizedSq = nx * nx + nySq;
+					coverage[i] = (normalizedSq < innerSq) ? 255
+						: (outerSq < normalizedSq) ? 0
+						: EllipseCoverageAt(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
 				}
 
 				Color* row = view.data + static_cast<size_t>(y) * view.stride;
@@ -2196,9 +2133,15 @@ namespace s3d
 			int32& outX0,
 			int32& outX1) noexcept
 		{
+			const double dy = std::abs(py - params.centerY);
+			if (params.halfH + signedDistanceLimit < dy)
+			{
+				return false;
+			}
+
 			const double innerHalfW = params.halfW - params.radius;
 			const double innerHalfH = params.halfH - params.radius;
-			const double qy = std::abs(py - params.centerY) - innerHalfH;
+			const double qy = dy - innerHalfH;
 
 			double halfX = 0.0;
 
@@ -2546,6 +2489,10 @@ namespace s3d
 					{
 						fullX0 = ClampInt(fullX0, supportX0, supportX1);
 						fullX1 = ClampInt(fullX1, supportX0, supportX1);
+					}
+					else
+					{
+						fullX0 = fullX1 = supportX1;
 					}
 
 					Color* row = view.data + static_cast<size_t>(y) * view.stride;
@@ -4253,69 +4200,20 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]]
-		bool IsPointInPolygonEvenOdd(
-			const Vec2& p,
-			const PolygonContourView* contours,
-			const size_t contourCount,
-			const Vec2& offset) noexcept
+		// Add one horizontal subpixel row to a 4x4 sample-count row.
+		// Each interval owns its left boundary and excludes its right boundary.
+		void AddSubpixelSpan4(
+			std::vector<uint8>& samples, const int32 x0, const int32 x1,
+			const double left, const double right)
 		{
-			bool inside = false;
-
-			for (size_t c = 0; c < contourCount; ++c)
+			const int32 begin = CeilToInt(4.0 * Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
+			const int32 end = CeilToInt(4.0 * Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
+			for (int32 sample = begin; sample < end;)
 			{
-				const PolygonContourView& contour = contours[c];
-
-				if ((contour.points == nullptr) || (contour.count < 3))
-				{
-					continue;
-				}
-
-				for (size_t i = 0, j = contour.count - 1; i < contour.count; j = i++)
-				{
-					const Vec2 pi = AddOffset(contour.points[i], offset);
-					const Vec2 pj = AddOffset(contour.points[j], offset);
-
-					const bool intersect =
-						((pi.y > p.y) != (pj.y > p.y))
-						&& (p.x < (pj.x - pi.x) * (p.y - pi.y) / (pj.y - pi.y) + pi.x);
-
-					if (intersect)
-					{
-						inside = !inside;
-					}
-				}
+				const int32 next = Min(end, (sample / 4 + 1) * 4);
+				samples[static_cast<size_t>(sample / 4)] += static_cast<uint8>(next - sample);
+				sample = next;
 			}
-
-			return inside;
-		}
-
-		[[nodiscard]]
-		uint8 PolygonCoverage4x4(
-			const int32 x,
-			const int32 y,
-			const PolygonContourView* contours,
-			const size_t contourCount,
-			const Vec2& offset) noexcept
-		{
-			int32 covered = 0;
-
-			for (int32 sy = 0; sy < 4; ++sy)
-			{
-				const double py = static_cast<double>(y) + (static_cast<double>(sy) * 2.0 + 1.0) * 0.125;
-
-				for (int32 sx = 0; sx < 4; ++sx)
-				{
-					const double px = static_cast<double>(x) + (static_cast<double>(sx) * 2.0 + 1.0) * 0.125;
-
-					if (IsPointInPolygonEvenOdd(Vec2{ px, py }, contours, contourCount, offset))
-					{
-						++covered;
-					}
-				}
-			}
-
-			return static_cast<uint8>((covered * 255 + 8) / 16);
 		}
 
 		void FillPolygonAA4x4InBounds(
@@ -4353,17 +4251,50 @@ namespace s3d
 
 			const size_t rowLength = static_cast<size_t>(x1 - x0);
 			std::vector<uint8> coverage(rowLength);
+			std::vector<double> intersections;
+			size_t edgeCount = 0;
+			for (size_t c = 0; c < contourCount; ++c)
+			{
+				edgeCount += contours[c].count;
+			}
+			intersections.reserve(edgeCount);
 
 			for (int32 y = y0; y < y1; ++y)
 			{
-				for (size_t i = 0; i < rowLength; ++i)
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < 4; ++sy)
 				{
-					const int32 x = x0 + static_cast<int32>(i);
-					coverage[i] = PolygonCoverage4x4(x, y, contours, contourCount, offset);
+					const double py = y + (sy * 2.0 + 1.0) * 0.125;
+					intersections.clear();
+					for (size_t c = 0; c < contourCount; ++c)
+					{
+						const auto& contour = contours[c];
+						if ((contour.points == nullptr) || (contour.count < 3))
+						{
+							continue;
+						}
+						for (size_t i = 0, j = contour.count - 1; i < contour.count; j = i++)
+						{
+							const Vec2 pi = AddOffset(contour.points[i], offset);
+							const Vec2 pj = AddOffset(contour.points[j], offset);
+							if ((pi.y > py) != (pj.y > py))
+							{
+								// Keep the point-sampling expression's rounding at boundary ties.
+								intersections.push_back((pj.x - pi.x) * (py - pi.y) / (pj.y - pi.y) + pi.x);
+							}
+						}
+					}
+					std::sort(intersections.begin(), intersections.end());
+					for (size_t i = 0; i + 1 < intersections.size(); i += 2)
+					{
+						AddSubpixelSpan4(coverage, x0, x1, intersections[i], intersections[i + 1]);
+					}
 				}
-
+				for (auto& value : coverage)
+				{
+					value = static_cast<uint8>((value * 255 + 8) / 16);
+				}
 				Color* row = view.data + static_cast<size_t>(y) * view.stride + static_cast<size_t>(x0);
-
 				WriteCoverageSpan(writer, row, coverage.data(), rowLength);
 			}
 		}
@@ -4721,6 +4652,71 @@ namespace s3d
 			}
 		}
 
+		void Fill(
+			Image& image,
+			const SuperEllipse& superEllipse,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const double a = Abs(superEllipse.a), b = Abs(superEllipse.b);
+			if ((a == 0.0) || (b == 0.0) || (superEllipse.n <= 0.0) || image.isEmpty())
+			{
+				return;
+			}
+			if (superEllipse.n == 2.0)
+			{
+				Fill(image, Ellipse{ superEllipse.center, a, b }, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+
+			const ImageView view = MakeImageView(image);
+			int32 x0 = FloorToInt(superEllipse.x - a), x1 = CeilToInt(superEllipse.x + a);
+			int32 y0 = FloorToInt(superEllipse.y - b), y1 = CeilToInt(superEllipse.y + b);
+			if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const int32 sampleRows = aa ? 4 : 1;
+			const double inverseN = (1.0 / superEllipse.n);
+			std::vector<uint8> coverage(aa ? static_cast<size_t>(x1 - x0) : 0);
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < sampleRows; ++sy)
+				{
+					const double py = y + (sy + 0.5) / sampleRows;
+					const double ny = Abs(py - superEllipse.y) / b;
+					if (1.0 <= ny)
+					{
+						continue;
+					}
+					const double halfWidth = a * std::pow(1.0 - std::pow(ny, superEllipse.n), inverseN);
+					const double left = superEllipse.x - halfWidth, right = superEllipse.x + halfWidth;
+					if (aa)
+					{
+						AddSubpixelSpan4(coverage, x0, x1, left, right);
+					}
+					else
+					{
+						WriteSpanHalfOpenClipped(writer, view, y, CeilToInt(left - 0.5), CeilToInt(right - 0.5));
+					}
+				}
+				if (aa)
+				{
+					for (auto& value : coverage)
+					{
+						value = static_cast<uint8>((value * 255 + 8) / 16);
+					}
+					WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
+				}
+			}
+		}
+
 		void EllipseFrame(
 			Image& image,
 			const Ellipse& ellipse,
@@ -4857,7 +4853,7 @@ namespace s3d
 			const Vec2 points[4]{ quad.p0, quad.p1, quad.p2, quad.p3 };
 			const PolygonContourView contour{ points, 4 };
 
-			if (enableAntialiasing == EnableAntialiasing::No)
+			if ((enableAntialiasing == EnableAntialiasing::No) && quad.isConvex())
 			{
 				ImagePixel::detail::SolidColorWriter writer{
 					blendMode,

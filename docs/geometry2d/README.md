@@ -5,6 +5,11 @@ API contracts live in the public headers, including
 [distance queries](../../Siv3D/include/Siv3D/Geometry2D/Distance.hpp), and
 [boundary distance queries](../../Siv3D/include/Siv3D/Geometry2D/SignedDistance.hpp).
 
+## Image writing
+
+[Writing 2D shapes to Image](image-writing.md) covers compositing, the CPU/GPU
+API inventory, validation, and reproducible performance measurements.
+
 ## Spline paths
 
 [Spline paths](splines.md) explains reusable curves, distance-based movement,
