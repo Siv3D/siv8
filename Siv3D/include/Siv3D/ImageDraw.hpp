@@ -115,8 +115,7 @@ namespace s3d
 		/// @param blendMode 合成方式
 		/// @param enableAntialiasing アンチエイリアス設定
 		/// @param dstAlpha 描画先 alpha の扱い
-		/// @remark アンチエイリアスありでは距離ベースの coverage を使用します。
-		/// @remark 実行時性能を優先した近似です。
+		/// @remark アンチエイリアスを無効にすると、中心座標と半径を整数に丸めて描画します。
 		/// @remark 画像の範囲外はクリップされます。
 		void Fill(
 			Image& image,
@@ -233,8 +232,7 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアス設定
 		/// @param dstAlpha 描画先 alpha の扱い
 		/// @remark 半径は絶対値を使用します。半径のいずれかが 0、または n が 0 以下の場合は何もしません。
-		/// @remark n が 2 の場合は Ellipse と同じ被覆率を使用します。それ以外では AA ありは 4×4 サンプリング、AA なしは画素中心の内外判定を使用します。
-		/// @remark n が 2 以外の走査区間は左端を含み、右端を含みません。画像の範囲外はクリップされます。
+		/// @remark 画像の範囲外はクリップされます。
 		void Fill(
 			Image& image,
 			const SuperEllipse& superEllipse,
@@ -403,6 +401,124 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief Shape2D の輪郭の内側を塗りつぶします。
+		/// @anchor image_draw_shape2d
+		/// @param image 描画先画像
+		/// @param shape 描画する Shape2D
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark vertices() の頂点を順に結んだ輪郭を描きます。三角形インデックス indices() は使いません。
+		/// @remark 輪郭が交差する場合は、辺を横切るたびに塗る領域と塗らない領域が切り替わります（偶奇規則）。
+		/// @remark 頂点数が 3 未満の場合は何もしません。画像の範囲外はクリップされます。
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief Shape2D の輪郭の内側を、指定した位置に移動して塗りつぶします。
+		/// @param image 描画先画像
+		/// @param shape 描画する Shape2D
+		/// @param offset 全頂点に加算する平行移動量
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see @ref image_draw_shape2d "Shape2D の塗りつぶし"
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief Shape2D の枠を描画します。
+		/// @anchor image_draw_shape2d_frame
+		/// @param image 描画先画像
+		/// @param shape 描画する Shape2D
+		/// @param thickness 輪郭を中心とした枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark vertices() の頂点を順に結んだ輪郭を描きます。三角形インデックス indices() は使いません。
+		/// @remark 枠の角は丸くなります。線が重なる部分も一度だけ描き込みます。
+		/// @remark 頂点数が 3 未満、または thickness が正でない場合は何もしません。画像の範囲外はクリップされます。
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief Shape2D の枠をオフセット付きで描画します。
+		/// @param image 描画先画像
+		/// @param shape 描画する Shape2D
+		/// @param offset 全頂点に加算する平行移動量
+		/// @param thickness 輪郭を中心とした枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see @ref image_draw_shape2d_frame "Shape2D の枠の描画"
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief Polygon の枠を描画します。
+		/// @anchor image_draw_polygon_frame
+		/// @param image 描画先画像
+		/// @param polygon 描画する Polygon
+		/// @param thickness 輪郭を中心とした枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark 外周と穴の枠を、角を丸めて描画します。枠が重なる部分も一度だけ描き込みます。
+		/// @remark polygon が空、または thickness が正でない場合は何もしません。画像の範囲外はクリップされます。
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief Polygon の枠をオフセット付きで描画します。
+		/// @param image 描画先画像
+		/// @param polygon 描画する Polygon
+		/// @param offset 全頂点に加算する平行移動量
+		/// @param thickness 輪郭を中心とした枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see @ref image_draw_polygon_frame "Polygon の枠の描画"
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			const Vec2& offset,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		//-------------------------------------------------------------------------
 		//
 		//  Lines
@@ -419,9 +535,8 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアス設定
 		/// @param lineCap 線端の形状
 		/// @param dstAlpha 描画先 alpha の扱い
-		/// @remark 非 AA では span ベースで描画します。
-		/// @remark AA ありでは距離ベースの coverage を使用します。
-		/// @remark Round cap では本体と cap の coverage を統合してから 1 回だけ合成します。
+		/// @remark 線と丸い線端が重なる部分も一度だけ描き込みます。
+		/// @remark 始点と終点が同じ場合、Round は直径 thickness の円、Square は一辺 thickness の正方形を描きます。Flat では何も描きません。
 		/// @remark 画像の範囲外はクリップされます。
 		void Line(
 			Image& image,

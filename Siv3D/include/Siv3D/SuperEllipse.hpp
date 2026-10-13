@@ -774,12 +774,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief スーパー楕円を Image に Source Over 合成します。
+		/// @brief スーパー楕円を Image に描き込みます。
 		/// @param dst 描き込み先の画像
-		/// @param color 色（straight alpha）
+		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
-		/// @remark 半径・指数・被覆率・クリッピングの扱いは @ref image_draw_superellipse を参照。
+		/// @see @ref image_draw_superellipse "スーパー楕円の描画"
 		const SuperEllipse& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -793,8 +793,8 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
-		/// @remark 部分的に覆われる画素では、RGBA 各成分を被覆率で補間します。
-		/// @remark 半径と n の扱い、被覆率、クリッピングは paint() と同じです。
+		/// @remark アンチエイリアスが有効な場合、縁の色と透明度を描き込み先になじませます。
+		/// @see @ref image_draw_superellipse "スーパー楕円の描画"
 		const SuperEllipse& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////

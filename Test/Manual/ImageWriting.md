@@ -22,6 +22,9 @@ acceptance criterion.
   from these shape operations. RectF has no AA toggle and is not in this gallery.
 - Translucent circle fills and thin rounded rectangles have no darker bands.
 - The ellipse frame is continuous, including along the long axis.
+- The last column has a Polygon with a hole and overlapping wide frames. The CPU
+  combines the frames before applying color; the overlap must not become darker.
+  The GPU may composite the contours separately.
 - SuperEllipse changes from concave to diamond to ellipse to a rounded box.
   Its image path at exponent 2 matches Ellipse. Other exponents use 4x4 samples,
   so very small features can disappear between sample positions.
@@ -39,7 +42,7 @@ acceptance criterion.
 
 void Main()
 {
-	Window::Resize(1000, 840);
+	Window::Resize(1200, 840);
 	Scene::SetBackground(ColorF{ 0.16 });
 	const Font font{ 18 };
 	const Color ink{ 220, 60, 130, 113 };
@@ -48,6 +51,8 @@ void Main()
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
+	const Polygon holed{ RectF{ 20.25, 16.75, 152, 96 }.outer(),
+		{ RectF{ 31.25, 27.75, 130, 74 }.outer().reversed() } };
 
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
@@ -70,11 +75,16 @@ void Main()
 			if (paint) shape.paint(image, ink, antialiasing);
 			else shape.overwrite(image, ink, antialiasing);
 		}
-		else
+		else if (kind == 3)
 		{
 			const SuperEllipse shape{ 96.25, 64.75, 76, 49, exponents[exponentIndex] };
 			if (paint) shape.paint(image, ink, antialiasing);
 			else shape.overwrite(image, ink, antialiasing);
+		}
+		else
+		{
+			if (paint) holed.paintFrame(image, 24.5, ink, antialiasing);
+			else holed.overwriteFrame(image, 24.5, ink, antialiasing);
 		}
 	};
 
@@ -86,7 +96,7 @@ void Main()
 		{
 			textures.clear();
 			for (int32 row = 0; row < 4; ++row)
-				for (int32 kind = 0; kind < 4; ++kind)
+				for (int32 kind = 0; kind < 5; ++kind)
 				{
 					Image image{ 192, 128, Color{ 40, 100, 160, 40 } };
 					cpu(image, kind, (row % 2) == 0);
@@ -101,15 +111,16 @@ void Main()
 		for (int32 row = 0; row < 5; ++row)
 		{
 			font(labels[row]).draw(10, 80 + row * 148);
-			for (int32 kind = 0; kind < 4; ++kind)
+			for (int32 kind = 0; kind < 5; ++kind)
 			{
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
-				if (row < 4) textures[row * 4 + kind].draw(pos);
+				if (row < 4) textures[row * 5 + kind].draw(pos);
 				else if (kind == 0) Circle{ pos + Vec2{ 96.25, 64.75 }, 49.5 }.draw(ink);
 				else if (kind == 1) Ellipse{ pos + Vec2{ 96.5, 64.5 }, 79, 11 }.drawFrame(3.25, ink);
 				else if (kind == 2) RoundRect{ pos.x + 20.25, pos.y + 62.7, 152, 0.6, 0.1 }.draw(ink);
-				else SuperEllipse{ pos + Vec2{ 96.25, 64.75 }, 76, 49, exponents[exponentIndex] }.draw(ink);
+				else if (kind == 3) SuperEllipse{ pos + Vec2{ 96.25, 64.75 }, 76, 49, exponents[exponentIndex] }.draw(ink);
+				else holed.drawFrame(pos, 24.5, ink);
 			}
 		}
 	}

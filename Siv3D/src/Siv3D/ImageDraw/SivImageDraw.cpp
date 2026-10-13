@@ -13,6 +13,7 @@
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Shape2D.hpp>
 # include <Siv3D/LineString.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
 # include "../Geometry2D/EllipseGeometry.hpp"
@@ -44,9 +45,10 @@ namespace s3d
 			double dx = 0.0;
 		};
 
+		template <class PointType>
 		struct PolygonContourView
 		{
-			const Vec2* points = nullptr;
+			const PointType* points = nullptr;
 			size_t count = 0;
 		};
 
@@ -873,6 +875,27 @@ namespace s3d
 			outX1 = FloorToInt(center.x + dx - 0.5) + 1;
 
 			return (outX0 < outX1);
+		}
+
+		void FillRoundDiskNoAA(
+			ImageView view,
+			const Circle& circle,
+			ImagePixel::BlendMode blendMode,
+			ImageDraw::DstAlpha dstAlpha,
+			Color color)
+		{
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			const int32 y0 = ClampInt(CeilToInt(circle.y - circle.r - 0.5), 0, view.height);
+			const int32 y1 = ClampInt(FloorToInt(circle.y + circle.r - 0.5) + 1, 0, view.height);
+			for (int32 y = y0; y < y1; ++y)
+			{
+				int32 x0 = 0;
+				int32 x1 = 0;
+				if (GetCircleSpanAtY(circle.center, circle.r, y, x0, x1))
+				{
+					WriteSpanHalfOpenClipped(writer, view, y, x0, x1);
+				}
+			}
 		}
 
 		[[nodiscard]]
@@ -3027,7 +3050,7 @@ namespace s3d
 				if (lineCap == LineCap::Round)
 				{
 					const Circle circle{ from.x, from.y, half };
-					FillCircleNoAAFast(view, circle, blendMode, dstAlpha, color);
+					FillRoundDiskNoAA(view, circle, blendMode, dstAlpha, color);
 				}
 				else if (lineCap == LineCap::Square)
 				{
@@ -3373,6 +3396,12 @@ namespace s3d
 			bool enter = true;
 		};
 
+		struct StrokeRowSpan
+		{
+			SpanI span;
+			size_t primitiveIndex = 0;
+		};
+
 		[[nodiscard]]
 		bool IsSamePoint(const Vec2& a, const Vec2& b) noexcept
 		{
@@ -3607,53 +3636,21 @@ namespace s3d
 			return false;
 		}
 
-		void AddStrokePrimitiveCoverageToRange(
+		void AddStrokePrimitiveCoverageToSpan(
 			const StrokePrimitive& primitive,
 			const int32 y,
-			const int32 rangeX0,
-			std::vector<uint8>& coverage)
+			const SpanI& span,
+			uint8* coverage)
 		{
-			int32 x0 = 0;
-			int32 x1 = 0;
-
-			if (!GetStrokePrimitiveSpanAtY(primitive, true, y, x0, x1))
-			{
-				return;
-			}
-
-			const int32 rangeX1 = rangeX0 + static_cast<int32>(coverage.size());
-			x0 = Max(x0, rangeX0);
-			x1 = Min(x1, rangeX1);
-
-			if (x0 >= x1)
-			{
-				return;
-			}
-
-			const size_t offset = static_cast<size_t>(x0 - rangeX0);
-			const size_t count = static_cast<size_t>(x1 - x0);
-
+			const size_t count = static_cast<size_t>(span.x1 - span.x0);
 			switch (primitive.type)
 			{
 			case StrokePrimitiveType::BodyRect:
-				AddOrientedRectCoverageToRange(
-					primitive.rect,
-					y,
-					x0,
-					coverage.data() + offset,
-					count
-				);
+				AddOrientedRectCoverageToRange(primitive.rect, y, span.x0, coverage, count);
 				return;
 
 			case StrokePrimitiveType::RoundDisk:
-				AddCircleCoverageToRange(
-					primitive.center,
-					primitive.radius,
-					y,
-					x0,
-					coverage.data() + offset,
-					count
-				);
+				AddCircleCoverageToRange(primitive.center, primitive.radius, y, span.x0, coverage, count);
 				return;
 			}
 		}
@@ -3739,7 +3736,7 @@ namespace s3d
 			std::vector<size_t> active;
 			active.reserve(primitives.size());
 
-			std::vector<SpanI> supportSpans;
+			std::vector<StrokeRowSpan> supportSpans;
 			supportSpans.reserve(primitives.size());
 
 			std::vector<uint8> coverage;
@@ -3764,7 +3761,11 @@ namespace s3d
 
 					if (GetStrokePrimitiveSpanAtY(primitives[primitiveIndex], true, y, x0, x1))
 					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
+						ClipSpanToWidth(x0, x1, view.width);
+						if (x0 < x1)
+						{
+							supportSpans.push_back(StrokeRowSpan{ SpanI{ x0, x1 }, primitiveIndex });
+						}
 					}
 				}
 
@@ -3773,26 +3774,36 @@ namespace s3d
 					continue;
 				}
 
-				SortAndMergeSpans(supportSpans);
+				std::sort(supportSpans.begin(), supportSpans.end(), [](const StrokeRowSpan& a, const StrokeRowSpan& b)
+				{
+					return (a.span.x0 < b.span.x0) || ((a.span.x0 == b.span.x0) && (a.span.x1 < b.span.x1));
+				});
 
 				Color* row = view.data + static_cast<size_t>(y) * view.stride;
 
-				for (const SpanI& span : supportSpans)
+				// Each primitive contributes to exactly one merged interval. Keep its computed
+				// span so disjoint contours never re-scan one another's geometry.
+				for (size_t begin = 0; begin < supportSpans.size();)
 				{
-					const size_t count = static_cast<size_t>(span.x1 - span.x0);
-					coverage.assign(count, 0);
-
-					for (const size_t primitiveIndex : active)
+					const int32 x0 = supportSpans[begin].span.x0;
+					int32 x1 = supportSpans[begin].span.x1;
+					size_t end = begin + 1;
+					while ((end < supportSpans.size()) && (supportSpans[end].span.x0 <= x1))
 					{
-						AddStrokePrimitiveCoverageToRange(
-							primitives[primitiveIndex],
-							y,
-							span.x0,
-							coverage
-						);
+						x1 = Max(x1, supportSpans[end].span.x1);
+						++end;
 					}
 
-					WriteCoverageRow(writer, row, span.x0, coverage);
+					coverage.assign(static_cast<size_t>(x1 - x0), 0);
+					for (size_t i = begin; i < end; ++i)
+					{
+						const StrokeRowSpan& item = supportSpans[i];
+						AddStrokePrimitiveCoverageToSpan(primitives[item.primitiveIndex], y, item.span,
+							coverage.data() + static_cast<size_t>(item.span.x0 - x0));
+					}
+
+					WriteCoverageRow(writer, row, x0, coverage);
+					begin = end;
 				}
 			}
 		}
@@ -3930,23 +3941,23 @@ namespace s3d
 			}
 		}
 
-		void BuildClosedStrokePrimitives(
+		template <class PointType>
+		void AppendClosedStrokePrimitives(
 			ImageView view,
-			const Vec2* points,
+			const PointType* points,
 			const size_t count,
 			const Vec2& offset,
 			const double thickness,
 			const StrokeJoinStyle joinStyle,
-			std::vector<StrokePrimitive>& primitives)
+			std::vector<StrokePrimitive>& primitives,
+			std::vector<Vec2>& effectivePoints)
 		{
-			primitives.clear();
-
 			if ((points == nullptr) || (count < 3) || !(0.0 < thickness))
 			{
 				return;
 			}
 
-			std::vector<Vec2> effectivePoints;
+			effectivePoints.clear();
 			effectivePoints.reserve(count);
 			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
 
@@ -3973,7 +3984,7 @@ namespace s3d
 			const double half = thickness * 0.5;
 			const size_t segmentCount = effectivePoints.size();
 
-			primitives.reserve(segmentCount * 2);
+			primitives.reserve(primitives.size() + segmentCount * 2);
 
 			for (size_t i = 0; i < segmentCount; ++i)
 			{
@@ -4003,9 +4014,10 @@ namespace s3d
 			return Vec2{ p.x + offset.x, p.y + offset.y };
 		}
 
+		template <class PointType>
 		[[nodiscard]]
 		bool GetPolygonBounds(
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			BoundsD& bounds) noexcept
@@ -4014,7 +4026,7 @@ namespace s3d
 
 			for (size_t c = 0; c < contourCount; ++c)
 			{
-				const PolygonContourView& contour = contours[c];
+				const auto& contour = contours[c];
 
 				if ((contour.points == nullptr) || (contour.count == 0))
 				{
@@ -4031,8 +4043,9 @@ namespace s3d
 			return found && bounds.valid();
 		}
 
+		template <class PointType>
 		void CollectPolygonEdges(
-			const Vec2* points,
+			const PointType* points,
 			const size_t count,
 			const Vec2& offset,
 			std::vector<PolygonEdge>& edges)
@@ -4073,8 +4086,9 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void CollectPolygonEdges(
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			std::vector<PolygonEdge>& edges)
@@ -4085,9 +4099,10 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void FillPolygonNoAA(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const ImagePixel::detail::SolidColorWriter& writer)
@@ -4216,9 +4231,10 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void FillPolygonAA4x4InBounds(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const RectF& boundingRect,
@@ -4299,9 +4315,10 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void FillPolygonAA4x4(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const ImagePixel::detail::SolidColorWriter& writer)
@@ -4323,9 +4340,10 @@ namespace s3d
 			);
 		}
 
+		template <class PointType>
 		void FillPolygonInternal(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const RectF* boundingRect,
@@ -4368,21 +4386,21 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		std::vector<PolygonContourView> MakePolygonContourViews(const Polygon& polygon)
+		std::vector<PolygonContourView<Vec2>> MakePolygonContourViews(const Polygon& polygon)
 		{
-			std::vector<PolygonContourView> contours;
+			std::vector<PolygonContourView<Vec2>> contours;
 
 			const auto& outer = polygon.outer();
 			if (outer.size() >= 3)
 			{
-				contours.push_back(PolygonContourView{ outer.data(), outer.size() });
+				contours.push_back(PolygonContourView<Vec2>{ outer.data(), outer.size() });
 			}
 
 			for (const auto& inner : polygon.inners())
 			{
 				if (inner.size() >= 3)
 				{
-					contours.push_back(PolygonContourView{ inner.data(), inner.size() });
+					contours.push_back(PolygonContourView<Vec2>{ inner.data(), inner.size() });
 				}
 			}
 
@@ -4818,7 +4836,7 @@ namespace s3d
 			}
 
 			const Vec2 points[3]{ triangle.p0, triangle.p1, triangle.p2 };
-			const PolygonContourView contour{ points, 3 };
+			const PolygonContourView<Vec2> contour{ points, 3 };
 
 			if (enableAntialiasing == EnableAntialiasing::No)
 			{
@@ -4851,7 +4869,7 @@ namespace s3d
 			}
 
 			const Vec2 points[4]{ quad.p0, quad.p1, quad.p2, quad.p3 };
-			const PolygonContourView contour{ points, 4 };
+			const PolygonContourView<Vec2> contour{ points, 4 };
 
 			if ((enableAntialiasing == EnableAntialiasing::No) && quad.isConvex())
 			{
@@ -4883,7 +4901,7 @@ namespace s3d
 				return;
 			}
 
-			const PolygonContourView contour{ points.data(), points.size() };
+			const PolygonContourView<Vec2> contour{ points.data(), points.size() };
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
 		}
 
@@ -4919,7 +4937,7 @@ namespace s3d
 				return;
 			}
 
-			std::vector<PolygonContourView> contours = MakePolygonContourViews(polygon);
+			std::vector<PolygonContourView<Vec2>> contours = MakePolygonContourViews(polygon);
 
 			if (contours.empty())
 			{
@@ -4935,6 +4953,122 @@ namespace s3d
 			};
 
 			FillPolygonInternal(view, contours.data(), contours.size(), offset, &offsetRect, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			Fill(image, shape, Vec2{ 0, 0 }, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			const auto& points = shape.vertices();
+			if ((view.data == nullptr) || (points.size() < 3))
+			{
+				return;
+			}
+
+			const PolygonContourView<Float2> contour{ points.data(), points.size() };
+			FillPolygonInternal(view, &contour, 1, offset, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			Shape2DFrame(image, shape, Vec2{ 0, 0 }, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			const auto& points = shape.vertices();
+			if ((view.data == nullptr) || (points.size() < 3) || !(0.0 < thickness))
+			{
+				return;
+			}
+
+			std::vector<StrokePrimitive> primitives;
+			std::vector<Vec2> effectivePoints;
+			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness,
+				StrokeJoinStyle::Round, primitives, effectivePoints);
+			DrawStrokePrimitives(view, primitives, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			PolygonFrame(image, polygon, Vec2{ 0, 0 }, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			if ((view.data == nullptr) || polygon.isEmpty() || !(0.0 < thickness))
+			{
+				return;
+			}
+
+			size_t pointCount = polygon.outer().size();
+			for (const auto& hole : polygon.inners())
+			{
+				pointCount += hole.size();
+			}
+			std::vector<StrokePrimitive> primitives;
+			primitives.reserve(pointCount * 2);
+			std::vector<Vec2> effectivePoints;
+			const auto append = [&](const Array<Vec2>& contour)
+			{
+				AppendClosedStrokePrimitives(view, contour.data(), contour.size(), offset, thickness,
+					StrokeJoinStyle::Round, primitives, effectivePoints);
+			};
+			append(polygon.outer());
+			for (const auto& hole : polygon.inners())
+			{
+				append(hole);
+			}
+			DrawStrokePrimitives(view, primitives, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Line(
@@ -5058,7 +5192,8 @@ namespace s3d
 			}
 
 			std::vector<StrokePrimitive> primitives;
-			BuildClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, StrokeJoinStyle::Round, primitives);
+			std::vector<Vec2> effectivePoints;
+			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, StrokeJoinStyle::Round, primitives, effectivePoints);
 
 			DrawStrokePrimitives(
 				view,

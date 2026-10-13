@@ -839,6 +839,7 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark アンチエイリアスを無効にすると、中心座標と半径を整数に丸めて描画します。
 		const Circle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -852,6 +853,7 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark アンチエイリアスを無効にすると、中心座標と半径を整数に丸めて描画します。
 		const Circle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////

@@ -11,10 +11,7 @@
 
 [設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
 
-- 非 AA の Circle fill は整数丸め、内側の穴が残る frame / 部分 sweep / LineString の round cap は画素中心を使う。既存輪郭を保つか統一するか、互換性と小数移動の用途から決める。ゼロ長 Line の round cap も含める。
-- Polygon の外周・穴の太い枠が重なる際に、輪郭ごとの逐次合成を維持するか、図形全体の coverage を統合するか決める。MultiPolygon の要素ごとの逐次描画とは分ける。
-- Shape2D の独自頂点・index に対する CPU の単一輪郭と GPU の三角形集合の差を整理し、Image 塗りつぶしの契約を決める。
-- `.draw()` との差は対応表を起点に優先順位を決める。SuperEllipse の枠、Ellipse の pie、Circle の segment / arc cap、独立した線端、join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影を一括追加しない。
+- `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は SuperEllipse の枠、Ellipse の pie、Circle の segment / arc cap、独立した線端、join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
 - [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の自動テストと Release ベンチマークを実行する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 

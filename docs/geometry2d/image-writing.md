@@ -20,10 +20,18 @@ which can affect adjacent pixels. `RectF` always uses fractional edge coverage.
 Other shape methods expose an AA switch. The non-AA Circle fill retains its
 integer raster: center and radius are rounded to the nearest integer, with ties
 toward positive infinity. Circle frames with an inner hole and partial sweeps
-use pixel centers; a frame whose inner circle disappears reuses the fill path. Distance coverage and sample-based
-coverage are different approximations; Triangle and Quad image fills use even-odd contour coverage, including concave
-and crossed Quads. CPU output and GPU `.draw()` output are
-not required to be pixel-identical.
+use pixel centers; a frame whose inner circle disappears reuses the fill path.
+A full pie or arc also reuses the corresponding fill or frame. Round line caps
+use pixel centers even for zero-length lines. The integer fill path is retained
+for its lower cost on small non-AA circles; coordinate uniformity alone does not
+justify replacing it with per-row square roots.
+
+Distance coverage and sample-based coverage are different approximations.
+Triangle and Quad image fills use even-odd contour coverage, including concave
+and crossed Quads. CPU output and GPU `.draw()` output are not required to be
+pixel-identical. Image-writing throughput takes priority over
+matching GPU tessellation, sampling, or blending details. Use the GPU comparison
+to find missing operations and visible defects, not to require identical pixels.
 
 `ImageDraw::DstAlpha::AssumeOpaque` is an explicit optimization for images whose
 alpha is already 255. Shape methods use the general destination-alpha path.
@@ -47,13 +55,26 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | LineString | Open / closed stroke | Independent end caps, vertex colors, gradients, patterns, vertex markers |
 | Bezier2, Bezier3 | Adaptive stroke | Independent end caps and explicit subdivision / adaptive quality controls |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
-| Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour, GPU fill uses triangle indices |
+| Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
 | Spline2D | No direct methods | Open / closed strokes; reuse its sampled LineString for Image |
 
 MultiPolygon draws members in order, so overlapping members compose repeatedly.
-Polygon frames currently draw the outer contour and each hole separately; wide
-frames can overlap. Shape2D's vertex-contour interpretation needs care for custom
-indexed meshes that do not describe a single polygon boundary.
+Polygon frames combine the outer contour and all holes using maximum stroke
+coverage, then composite once. This uses the same round-join approximation as
+LineString. Contour construction reuses scratch storage across holes. AA strokes
+calculate each primitive's span once per row and retain its association with that primitive.
+Only primitives in the same merged interval contribute to its coverage buffer;
+disjoint contours do not repeatedly scan one another's bounds.
+
+Shape2D image methods interpret vertices in order as a closed contour and do not
+use triangle indices. The same vertex contour is used by its frame and
+`mouseOver()`. Fills use the same 4x4 samples with AA and pixel-center samples
+without AA as the polygon contour path. Arbitrary indexed meshes can therefore
+draw a different region
+with `.draw()`. Triangle-union rasterization is separate API work; it is not added
+to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
+to the common rasterizer directly; offset application does not require a mapped
+Vec2 array. Internal stroke construction still owns reusable working storage.
 
 ## SuperEllipse
 
@@ -61,6 +82,8 @@ The fill uses analytic horizontal cross-sections, including concave exponents.
 It evaluates powers per sample row and reuses one coverage row, without creating
 a Polygon or evaluating powers at every pixel. Exponent 2 delegates to Ellipse;
 other exponents use 4x4 samples with AA and pixel-center samples without AA.
+For these cross-sections, sample intervals include the left boundary and exclude
+the right boundary.
 
 ## Validation and measurement
 
@@ -74,7 +97,7 @@ Run from the repository root on macOS, outside the sandbox:
 
 ```sh
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImageDraw.*'
-CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
 ./macOS/run-tests.sh
 ```
 
@@ -87,13 +110,18 @@ choices avoid per-pixel edge traversal and interior distance solving.
 
 Benchmarks reuse allocated destination images and prebuilt geometry. They include
 public API rasterization, compositing, and internal temporary allocations, but
-exclude image allocation, geometry construction, and validation. Repeated paint
-converges to an opaque destination; these measurements do not measure fresh
+exclude image allocation, geometry construction, and validation. The smaller
+circle benchmark separates inside-image and clipped calls. Polygon frame cases
+include single contours and overlapping outer/hole frames. A separate hole-count
+benchmark covers thin and wide frames with 1, 16, and 64 holes; its sequential
+contour calls are a cost reference and intentionally composite overlaps more than
+once. Use both sparse and overlapping contours when checking stroke changes.
+Repeated paint converges to an opaque destination; these measurements do not measure fresh
 transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.
 
 Correctness comes before timing: compare coverage against independent references,
-exercise fractional coordinates and clipping, and keep existing compositing
-semantics. Do not make speed assertions in automated tests. Exceptional-input
+exercise fractional coordinates and clipping, and preserve ImagePixel
+compositing rules. Do not make speed assertions in automated tests. Exceptional-input
 validation and reusable rasterization storage require separate cost and contract
 decisions before adding overhead or a public context type.

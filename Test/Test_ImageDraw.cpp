@@ -480,7 +480,11 @@ TEST_CASE("ImageDraw.benchmark", "[.benchmark]")
 		Image image{ size, Color{ 40, 70, 100, 255 } };
 		const double r = size * 0.4;
 		const Vec2 center{ size * 0.5, size * 0.5 };
-		const Polygon polygon = Shape2D::Star(r, center).toPolygon();
+		const Shape2D shape = Shape2D::Star(r, center);
+		const Polygon polygon = shape.toPolygon();
+		const Polygon holed{ RectF{ center - Vec2{ r, r }, r * 2, r * 2 }.outer(),
+			{ RectF{ center - Vec2{ r * 0.8, r * 0.8 }, r * 1.6, r * 1.6 }.outer().reversed() } };
+		REQUIRE(holed);
 		const Ellipse ellipse{ center, r, r * 0.6 };
 		const Circle circle{ center, r };
 		const SuperEllipse superEllipse{ center, r, r * 0.6, 4 };
@@ -492,10 +496,16 @@ TEST_CASE("ImageDraw.benchmark", "[.benchmark]")
 				const std::string suffix = "/" + std::to_string(size) + (aa ? "/AA" : "/NoAA") + (paint ? "/paint" : "/overwrite");
 				const auto run = [&](const char* name, auto&& draw)
 				{
+					image.fill(Color{ 40, 70, 100, 255 });
 					bench.run(name + suffix, [&] { draw(); doNotOptimizeAway(image.data()); });
 					CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }));
 				};
 				run("Polygon", [&] { if (paint) polygon.paint(image, color, EnableAntialiasing{ aa }); else polygon.overwrite(image, color, EnableAntialiasing{ aa }); });
+				run("Shape2D", [&] { if (paint) shape.paint(image, color, EnableAntialiasing{ aa }); else shape.overwrite(image, color, EnableAntialiasing{ aa }); });
+				run("Shape2DFrame", [&] { if (paint) shape.paintFrame(image, 3.5, color, EnableAntialiasing{ aa }); else shape.overwriteFrame(image, 3.5, color, EnableAntialiasing{ aa }); });
+				run("Shape2DOffset", [&] { if (paint) shape.paint(image, Vec2{ 0.25, 0.75 }, color, EnableAntialiasing{ aa }); else shape.overwrite(image, Vec2{ 0.25, 0.75 }, color, EnableAntialiasing{ aa }); });
+				run("PolygonFrame", [&] { if (paint) polygon.paintFrame(image, 3.5, color, EnableAntialiasing{ aa }); else polygon.overwriteFrame(image, 3.5, color, EnableAntialiasing{ aa }); });
+				run("PolygonFrameHoles", [&] { if (paint) holed.paintFrame(image, r * 0.3, color, EnableAntialiasing{ aa }); else holed.overwriteFrame(image, r * 0.3, color, EnableAntialiasing{ aa }); });
 				run("SuperEllipse", [&] { if (paint) superEllipse.paint(image, color, EnableAntialiasing{ aa }); else superEllipse.overwrite(image, color, EnableAntialiasing{ aa }); });
 				run("Ellipse", [&] { if (paint) ellipse.paint(image, color, EnableAntialiasing{ aa }); else ellipse.overwrite(image, color, EnableAntialiasing{ aa }); });
 				run("Circle", [&] { if (paint) circle.paint(image, color, EnableAntialiasing{ aa }); else circle.overwrite(image, color, EnableAntialiasing{ aa }); });
@@ -846,4 +856,385 @@ TEST_CASE("ImageDraw.pixel_compositing_bulk_tails_and_opaque_destination")
 			shape.paint(expected, color, aa);
 			CHECK((actual == expected));
 		}
+}
+
+TEST_CASE("ImageDraw.benchmark_small_circles", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Small non-AA circles").unit("draw").epochs(11).minEpochIterations(100);
+	Image image{ 64, 64, Color{ 40, 70, 100, 255 } };
+	for (const double radius : { 0.5, 1.0, 2.75, 5.0, 12.0, 24.0 })
+		for (const bool clipped : { false, true })
+			for (const bool paint : { false, true })
+			{
+				const Circle circle{ clipped ? Vec2{ 0.25, -0.25 } : Vec2{ 32.25, 31.75 }, radius };
+				const std::string name = std::to_string(radius) + (clipped ? "/clipped" : "/inside") + (paint ? "/paint" : "/overwrite");
+				bench.run(name, [&]
+				{
+					if (paint) circle.paint(image, Color{ 210, 60, 120, 113 }, EnableAntialiasing::No);
+					else circle.overwrite(image, Color{ 210, 60, 120, 113 }, EnableAntialiasing::No);
+					ankerl::nanobench::doNotOptimizeAway(image.data());
+				});
+			}
+}
+
+TEST_CASE("ImageDraw.zero_length_line_matches_repeated_line_string")
+{
+	for (const Vec2 point : { Vec2{ 12, 13 }, Vec2{ 12.25, 13.75 }, Vec2{ 12.5, 13.5 }, Vec2{ -0.25, 0.75 } })
+		for (const double thickness : { 0.4, 1.0, 2.0, 5.5, 12.0 })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const LineCap cap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+					for (const bool paint : { false, true })
+					{
+						Image actual = Background(Size{ 27, 29 }), expected = actual;
+						const Color color{ 211, 83, 147, 113 };
+						const Line line{ point, point };
+						const LineString repeated{ point, point, point };
+						if (paint)
+						{
+							line.paint(actual, cap, thickness, color, aa);
+							repeated.paint(expected, cap, thickness, color, aa);
+						}
+						else
+						{
+							line.overwrite(actual, cap, thickness, color, aa);
+							repeated.overwrite(expected, cap, thickness, color, aa);
+						}
+						CAPTURE(point, thickness, bool(aa), cap, paint);
+						CHECK((actual == expected));
+					}
+}
+
+TEST_CASE("ImageDraw.circle_full_sweep_and_collapsed_frame_reuse_fill")
+{
+	for (const Vec2 center : { Vec2{ 12.25, 13.75 }, Vec2{ -0.25, 0.75 } })
+		for (const double radius : { 0.2, 0.5, 1.0, 5.5, 12.0 })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			{
+				const Circle circle{ center, radius };
+				const Color color{ 211, 83, 147, 113 };
+				Image fill = Background(Size{ 27, 29 }), frame = fill, pie = fill, arc = fill;
+				circle.paint(fill, color, aa);
+				Circle{ center, radius * 0.5 }.paintFrame(frame, radius, radius * 0.5, color, aa);
+				circle.paintPie(pie, 1.2, Math::TwoPi, color, aa);
+				circle.paintArc(arc, -0.7, -Math::TwoPi, radius, 0, color, aa);
+				CAPTURE(center, radius, bool(aa));
+				CHECK((fill == frame));
+				CHECK((fill == pie));
+				CHECK((fill == arc));
+			}
+}
+
+TEST_CASE("ImageDraw.polygon_frame_contours_compose_once")
+{
+	const Array<Vec2> outer = RectF{ 2.25, 3.75, 31, 27 }.outer();
+	const Array<Vec2> hole1 = RectF{ 5.25, 6.75, 10, 19 }.outer().reversed();
+	const Array<Vec2> hole2 = RectF{ 18.25, 6.75, 11, 19 }.outer().reversed();
+	const Polygon polygon{ outer, { hole1, hole2 } };
+	REQUIRE(polygon);
+	const Size size{ 37, 35 };
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ -8.5, -10.25 } })
+		for (const double thickness : { 0.5, 1.0, 6.5, 15.0 })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			{
+				// Combine masks before color compositing, including partially covered overlaps.
+				Image coverage{ size, Color{ 0, 0 } };
+				for (const auto& contour : { outer, hole1, hole2 })
+				{
+					Image part{ size, Color{ 0, 0 } };
+					ImageDraw::ClosedLineString(part, contour, offset, thickness, Palette::White, ImagePixel::BlendMode::Overwrite, aa);
+					for (size_t i = 0; i < part.size_bytes() / sizeof(Color); ++i)
+						coverage.data()[i].a = Max(coverage.data()[i].a, part.data()[i].a);
+				}
+				for (const bool paint : { false, true })
+					for (const uint8 alpha : { uint8{ 0 }, uint8{ 113 }, uint8{ 255 } })
+					{
+						const Color color{ 211, 83, 147, alpha };
+						Image actual = Background(size), expected = actual;
+						if (paint) polygon.paintFrame(actual, offset, thickness, color, aa);
+						else polygon.overwriteFrame(actual, offset, thickness, color, aa);
+						for (size_t i = 0; i < actual.size_bytes() / sizeof(Color); ++i)
+							expected.data()[i] = Composite(color, expected.data()[i], coverage.data()[i].a, paint);
+						CAPTURE(offset, thickness, bool(aa), paint, alpha);
+						CHECK((actual == expected));
+					}
+				Image actual{ size, Color{ 0, 0 } }, expected = actual;
+				if (offset == Vec2{ 0, 0 }) polygon.paintFrame(actual, thickness, Color{ 255, 113 }, aa);
+				else polygon.paintFrame(actual, offset, thickness, Color{ 255, 113 }, aa);
+				polygon.movedBy(offset).paintFrame(expected, thickness, Color{ 255, 113 }, aa);
+				CHECK((actual == expected));
+			}
+}
+
+TEST_CASE("ImageDraw.polygon_frame_defaults_empty_and_single_contour")
+{
+	const Polygon polygon = Shape2D::Star(12, Vec2{ 17.25, 15.75 }).toPolygon();
+	REQUIRE(polygon);
+	const Vec2 offset{ -3.25, 4.75 };
+	const Color color{ 211, 83, 147, 113 };
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		for (const bool paint : { false, true })
+		{
+			Image actual = Background(Size{ 37, 35 }), expected = actual;
+			if (paint) polygon.paintFrame(actual, color, aa);
+			else polygon.overwriteFrame(actual, color, aa);
+			ImageDraw::ClosedLineString(expected, polygon.outer(), 1.0, color,
+				paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite, aa);
+			CHECK((actual == expected));
+			actual = Background(actual.size()); expected = actual;
+			if (paint) polygon.paintFrame(actual, offset, color, aa);
+			else polygon.overwriteFrame(actual, offset, color, aa);
+			ImageDraw::ClosedLineString(expected, polygon.outer(), offset, 1.0, color,
+				paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite, aa);
+			CHECK((actual == expected));
+			actual = Background(actual.size()); expected = actual;
+			polygon.paintFrame(actual, 0.0, color, aa);
+			polygon.overwriteFrame(actual, offset, -1.0, color, aa);
+			Polygon{}.paintFrame(actual, offset, 6.5, color, aa);
+			Polygon{}.overwriteFrame(actual, 6.5, color, aa);
+			CHECK((actual == expected));
+			Image empty;
+			polygon.paintFrame(empty, 6.5, color, aa);
+			polygon.overwriteFrame(empty, offset, 6.5, color, aa);
+			CHECK(empty.isEmpty());
+		}
+}
+
+TEST_CASE("ImageDraw.multipolygon_preserves_member_compositing")
+{
+	const Polygon polygon{ RectF{ 3.25, 4.75, 25, 19 }.outer(),
+		{ RectF{ 6.25, 7.75, 19, 13 }.outer().reversed() } };
+	REQUIRE(polygon);
+	const MultiPolygon multi{ polygon, polygon };
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		for (const bool paint : { false, true })
+			for (const bool frame : { false, true })
+				for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ -3.25, 4.75 } })
+				{
+					Image actual = Background(Size{ 37, 35 }), expected = actual;
+					const Color color{ 211, 83, 147, 113 };
+					const auto draw = [&](const auto& shape, Image& image)
+					{
+						if (frame)
+						{
+							if (paint) shape.paintFrame(image, offset, 6.5, color, aa);
+							else shape.overwriteFrame(image, offset, 6.5, color, aa);
+						}
+						else
+						{
+							if (paint) shape.paint(image, offset, color, aa);
+							else shape.overwrite(image, offset, color, aa);
+						}
+					};
+					draw(multi, actual);
+					draw(polygon, expected);
+					draw(polygon, expected);
+					CHECK((actual == expected));
+				}
+}
+
+TEST_CASE("ImageDraw.shape2d_uses_vertex_contour_independently_of_indices")
+{
+	const Array<Float2> vertices{ { 3.25f, 4.75f }, { 29.5f, 4.75f }, { 29.5f, 25.25f }, { 3.25f, 25.25f } };
+	const Array<Array<TriangleIndex>> indexSets{ {}, { { 0, 1, 2 } }, { { 2, 1, 0 } }, { { 0, 1, 2 }, { 0, 2, 3 } } };
+	for (const auto& indices : indexSets)
+	{
+		const Shape2D shape{ vertices, indices };
+		for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ -7.125, 2.0625 } })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					const Size size{ 35, 31 };
+					const auto points = vertices.map([&](Float2 p) { return Vec2{ p } + offset; });
+					const Image mask = PolygonMask(size, { points }, bool(aa));
+					Image actual = Background(size), expected = actual;
+					const Color color{ 211, 83, 147, 113 };
+					if (offset == Vec2{ 0, 0 })
+					{
+						if (paint) CHECK(&shape.paint(actual, color, aa) == &shape);
+						else CHECK(&shape.overwrite(actual, color, aa) == &shape);
+					}
+					else
+					{
+						if (paint) CHECK(&shape.paint(actual, offset, color, aa) == &shape);
+						else CHECK(&shape.overwrite(actual, offset, color, aa) == &shape);
+					}
+					for (size_t i = 0; i < actual.size_bytes() / sizeof(Color); ++i)
+						expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+					CHECK((actual == expected));
+				}
+	}
+}
+
+TEST_CASE("ImageDraw.shape2d_float_vertices_and_offsets_match_contour_path")
+{
+	const Vec2 center{ 17.25, 15.75 };
+	const Array<Shape2D> shapes{
+		Shape2D::Star(12, center), Shape2D::Cross(12, 5, center, 0.3),
+		Shape2D::Ngon(60, 12, center, 0.2), Shape2D::NStar(16, 12, 4, center, 0.1),
+		Shape2D::Heart(12, center, 0.3, QualityFactor{ 1.0 }),
+		Shape2D::Squircle(12, center, 24), Shape2D::Astroid(center, 12, 8, 0.2, QualityFactor{ 1.0 }),
+		Shape2D{ { { 2.25f, 3.75f }, { 31.5f, 27.25f }, { 2.25f, 27.25f }, { 31.5f, 3.75f } }, {} },
+		Shape2D{ { { 2, 3 }, { 2, 3 }, { 31, 3 }, { 31, 27 }, { 2, 27 }, { 2, 3 } }, {} },
+		Shape2D{}, Shape2D{ { { 2, 3 } }, {} }, Shape2D{ { { 2, 3 }, { 31, 27 } }, {} }
+	};
+	for (const auto& shape : shapes)
+		for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ -7.125, 2.0625 }, Vec2{ 50, -50 } })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+					for (const bool frame : { false, true })
+					{
+						Image actual = Background(Size{ 35, 31 }), expected = actual;
+						const Color color{ 211, 83, 147, 113 };
+						const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+						const auto points = shape.vertices().map([&](Float2 p) { return Vec2{ p } + offset; });
+						if (frame)
+						{
+							if (offset == Vec2{ 0, 0 })
+							{
+								if (paint) shape.paintFrame(actual, 5.5, color, aa);
+								else shape.overwriteFrame(actual, 5.5, color, aa);
+							}
+							else
+							{
+								if (paint) shape.paintFrame(actual, offset, 5.5, color, aa);
+								else shape.overwriteFrame(actual, offset, 5.5, color, aa);
+							}
+							ImageDraw::ClosedLineString(expected, points, 5.5, color, mode, aa);
+						}
+						else
+						{
+							if (paint) shape.paint(actual, offset, color, aa);
+							else shape.overwrite(actual, offset, color, aa);
+							ImageDraw::FillPolygon(expected, points, color, mode, aa);
+						}
+						CAPTURE(offset, bool(aa), paint, frame, points.size());
+						CHECK((actual == expected));
+					}
+}
+
+TEST_CASE("ImageDraw.new_contour_paths_destination_alpha_and_empty_images")
+{
+	const Polygon polygon{ RectF{ 3.25, 4.75, 25, 19 }.outer(),
+		{ RectF{ 6.25, 7.75, 19, 13 }.outer().reversed() } };
+	REQUIRE(polygon);
+	const Shape2D shape = Shape2D::Star(12, Vec2{ 17.25, 15.75 });
+	for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ -7.125, 2.0625 } })
+			{
+				const Color color{ 211, 83, 147, 113 };
+				for (int32 kind = 0; kind < 3; ++kind)
+				{
+					const auto draw = [&](Image& image, ImageDraw::DstAlpha alpha)
+					{
+						if (kind == 0) ImageDraw::Fill(image, shape, offset, color, mode, aa, alpha);
+						else if (kind == 1) ImageDraw::Shape2DFrame(image, shape, offset, 6.5, color, mode, aa, alpha);
+						else ImageDraw::PolygonFrame(image, polygon, offset, 6.5, color, mode, aa, alpha);
+					};
+					Image actual{ 37, 35, Color{ 40, 70, 100, 255 } }, expected = actual;
+					draw(actual, ImageDraw::DstAlpha::AssumeOpaque);
+					draw(expected, ImageDraw::DstAlpha::Preserve);
+					CHECK((actual == expected));
+					Image empty;
+					draw(empty, ImageDraw::DstAlpha::Preserve);
+					CHECK(empty.isEmpty());
+				}
+				Image actual = Background(Size{ 37, 35 }), expected = actual;
+				shape.paintFrame(actual, offset, 0.0, color, aa);
+				shape.overwriteFrame(actual, -1.0, color, aa);
+				CHECK((actual == expected));
+			}
+}
+
+TEST_CASE("ImageDraw.benchmark_polygon_frames", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Polygon frames by hole count").unit("draw").epochs(7).minEpochIterations(2);
+	for (const int32 size : { 256, 1024 })
+		for (const int32 grid : { 1, 4, 8 })
+		{
+			const double step = size * 0.8 / grid;
+			Array<Array<Vec2>> holes;
+			for (int32 y = 0; y < grid; ++y)
+				for (int32 x = 0; x < grid; ++x)
+					holes.push_back(RectF{ size * 0.1 + (x + 0.25) * step, size * 0.1 + (y + 0.25) * step,
+						step * 0.5, step * 0.5 }.outer().reversed());
+			const Polygon polygon{ RectF{ size * 0.05, size * 0.05, size * 0.9, size * 0.9 }.outer(), holes };
+			REQUIRE(polygon);
+			Image image{ size, Color{ 40, 70, 100, 255 } };
+			for (const double thickness : { 1.5, step * 0.6 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool combined : { false, true })
+					{
+						const std::string name = std::to_string(size) + "/holes=" + std::to_string(grid * grid)
+							+ (thickness == 1.5 ? "/thin" : "/wide") + (bool(aa) ? "/AA" : "/NoAA")
+							+ (combined ? "/combined" : "/sequential");
+						image.fill(Color{ 40, 70, 100, 255 });
+						bench.run(name, [&]
+						{
+							const Color color{ 211, 83, 147, 113 };
+							if (combined) polygon.paintFrame(image, thickness, color, aa);
+							else
+							{
+								// Cost reference: separate calls repeat compositing where contours overlap.
+								ImageDraw::ClosedLineString(image, polygon.outer(), thickness, color, ImagePixel::BlendMode::SourceOver, aa);
+								for (const auto& hole : polygon.inners())
+									ImageDraw::ClosedLineString(image, hole, thickness, color, ImagePixel::BlendMode::SourceOver, aa);
+							}
+							ankerl::nanobench::doNotOptimizeAway(image.data());
+						});
+						CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }));
+					}
+		}
+}
+
+TEST_CASE("ImageDraw.round_strokes_match_distance_union")
+{
+	const Array<LineString> paths{
+		{ Vec2{ 3.25, 4.75 }, Vec2{ 31.25, 4.75 }, Vec2{ 31.25, 29.75 }, Vec2{ 3.25, 29.75 } },
+		{ Vec2{ -5.25, 2.75 }, Vec2{ 32.5, 27.25 }, Vec2{ 3.25, 28.75 }, Vec2{ 31.75, -4.25 } },
+		{ Vec2{ 18.25, 1.75 }, Vec2{ 2.25, 27.25 }, Vec2{ 30.75, 12.25 }, Vec2{ 3.5, 9.25 }, Vec2{ 28.25, 29.75 } },
+		{ Vec2{ 13.25, 12.75 }, Vec2{ 13.25, 12.75 }, Vec2{ 13.25, 12.75 } }
+	};
+	for (size_t pathIndex = 0; pathIndex < paths.size(); ++pathIndex)
+		for (const double thickness : { 0.5, 3.25, 11.5 })
+			for (const bool closed : { false, true })
+			{
+				const auto& points = paths[pathIndex];
+				Image actual{ 37, 35, Color{ 0, 0 } };
+				if (closed) points.overwriteClosed(actual, thickness, Palette::White);
+				else points.overwrite(actual, LineCap::Round, thickness, Palette::White);
+				// Closed strokes with fewer than three distinct consecutive vertices are empty.
+				if (closed && (pathIndex == 3))
+				{
+					CHECK((actual == Image{ actual.size(), Color{ 0, 0 } }));
+					continue;
+				}
+				int32 largestError = 0;
+				for (int32 y = 0; y < actual.height(); ++y)
+					for (int32 x = 0; x < actual.width(); ++x)
+					{
+						const Vec2 p{ x + 0.5, y + 0.5 };
+						double distance = Math::Inf;
+						for (const Vec2 vertex : points)
+							distance = Min(distance, p.distanceFrom(vertex) - thickness * 0.5);
+						for (size_t i = 0, count = points.size() - (closed ? 0 : 1); i < count; ++i)
+						{
+							const Vec2 from = points[i], to = points[(i + 1) % points.size()];
+							const double length = from.distanceFrom(to);
+							if (length == 0) continue;
+							const Vec2 direction = (to - from) / length;
+							const Vec2 local = p - (from + to) * 0.5;
+							const double qx = Abs(local.dot(direction)) - length * 0.5;
+							const double qy = Abs(local.cross(direction)) - thickness * 0.5;
+							const double body = Vec2{ Max(qx, 0.0), Max(qy, 0.0) }.length() + Min(Max(qx, qy), 0.0);
+							distance = Min(distance, body);
+						}
+						const int32 coverage = int32(Clamp(0.5 - distance, 0.0, 1.0) * 255 + 0.5);
+						largestError = Max(largestError, Abs(int32(actual[y][x].a) - coverage));
+					}
+				CAPTURE(pathIndex, thickness, closed);
+				CHECK(largestError <= 1); // Independent distance arithmetic can round at a coverage tie.
+			}
 }

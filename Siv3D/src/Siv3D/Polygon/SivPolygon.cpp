@@ -1070,12 +1070,7 @@ namespace s3d
 
 	const Polygon& Polygon::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, outline(), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
-
-		for (const auto& hole : inners())
-		{
-			ImageDraw::ClosedLineString(dst, hole, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
-		}
+		ImageDraw::PolygonFrame(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 
 		return *this;
 	}
@@ -1087,12 +1082,7 @@ namespace s3d
 
 	void Polygon::paintFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, outline(), offset, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
-	
-		for (const auto& hole : inners())
-		{
-			ImageDraw::ClosedLineString(dst, hole, offset, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
-		}
+		ImageDraw::PolygonFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1108,12 +1098,7 @@ namespace s3d
 
 	const Polygon& Polygon::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, outline(), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
-		
-		for (const auto& hole : inners())
-		{
-			ImageDraw::ClosedLineString(dst, hole, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
-		}
+		ImageDraw::PolygonFrame(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 	
 		return *this;
 	}
@@ -1125,12 +1110,7 @@ namespace s3d
 
 	void Polygon::overwriteFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, outline(), offset, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
-		
-		for (const auto& hole : inners())
-		{
-			ImageDraw::ClosedLineString(dst, hole, offset, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
-		}
+		ImageDraw::PolygonFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 	}
 
 	////////////////////////////////////////////////////////////////
