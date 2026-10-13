@@ -116,8 +116,8 @@ namespace s3d
 
 		/// @brief 2D カメラの状態を更新します。
 		/// @param deltaTime 前回のフレームからの経過時間（秒）
-		/// @param sceneSize カメラの表示領域の論理サイズ
-		void update(double deltaTime = Scene::DeltaTime(), SizeF sceneSize = Graphics2D::GetDrawingSize());
+		/// @param drawingSize カメラの表示領域の幅と高さ。シーン描画時の既定値は Scene::Size()
+		void update(double deltaTime = Scene::DeltaTime(), SizeF drawingSize = Graphics2D::GetDrawingSize());
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -145,7 +145,7 @@ namespace s3d
 
 		Camera2DControl m_cameraControl = Camera2DControl::Default;
 
-		void updateWheel(const SizeF& sceneSize);
+		void updateWheel(const SizeF& drawingSize);
 
 		void updateControls(const double deltaTime);
 

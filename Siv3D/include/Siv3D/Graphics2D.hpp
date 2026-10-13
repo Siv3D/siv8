@@ -210,8 +210,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在の描画先の論理サイズを返します。
-		/// @return シーンへの描画ではシーンの論理サイズ
+		/// @brief 描画座標で表した、現在の描画先の幅と高さを返します。
+		/// @return シーンへの描画では Scene::Size()
 		/// @remark Local / Camera / QuadWarp の変換やビューポート設定は含みません。
 		[[nodiscard]]
 		Size GetDrawingSize() noexcept;

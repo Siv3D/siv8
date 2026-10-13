@@ -121,6 +121,12 @@ paths. Switching does not force a flush or wait for GPU completion.
 | Scene pixel dimensions and captured image dimensions | `Scene::RenderResolution()` |
 | Current render target's pixel dimensions | `Graphics2D::GetRenderTargetSize()` |
 
+For an 800 × 600 scene rendered at 1600 × 1200 pixels,
+`Graphics2D::GetDrawingSize()` returns the scene size, 800 × 600, while
+`Graphics2D::GetRenderTargetSize()` returns the render resolution, 1600 × 1200.
+The camera's `drawingSize` argument defaults to the former, so increasing render
+resolution does not change the camera's view.
+
 When migrating code that scales rendering and cursor coordinates manually,
 remove both high-resolution adjustments together. Keep transforms used for world
 coordinates, object placement, and camera movement.
