@@ -73,7 +73,15 @@ namespace s3d
 			CHECK(Scene::Size() == scene);
 			CHECK(Scene::RenderResolution() == resolution);
 			CHECK(Scene::ClientToScene(window.frameBufferSize * 0.5).epsilonEquals(scene * 0.5, 1e-5));
-			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(offset));
+			const auto transform = Cursor::GetBaseWindowTransform();
+			const auto expected = Mat3x2::Scale(scale).translated(offset);
+			CHECK(transform._11 == expected._11);
+			CHECK(transform._12 == expected._12);
+			CHECK(transform._21 == expected._21);
+			CHECK(transform._22 == expected._22);
+			// Independent centering arithmetic can leave cancellation residue on the
+			// fitted axis. Allow less than one millionth of a pixel in translation.
+			CHECK(Vec2{ transform._31, transform._32 }.epsilonEquals(Vec2{ expected._31, expected._32 }, 1e-6));
 			const auto all = Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform();
 			CHECK(Cursor::PosF().epsilonEquals(all.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
 		}
@@ -342,19 +350,27 @@ namespace s3d
 			SceneConfig::Window(SceneResolution::Display), SceneConfig::WindowPixels() })
 		{
 			Scene::Configure(config);
-			for (size_t i = 0; i < monitors.size(); ++i)
+			for (const bool center : { false, true })
 			{
-				CAPTURE(i, monitors[i].name, monitors[i].displayRect, config.sizeMode);
-				Window::SetPos(monitors[i].workArea.pos + Point{ 40, 40 });
-				CheckPresentation(config);
-				System::Sleep(500);
-				REQUIRE(System::Update());
-				CheckPresentation(config);
-				REQUIRE(Window::CenterToScreen((i + 1) % monitors.size()));
-				CheckPresentation(config);
-				System::Sleep(500);
-				REQUIRE(System::Update());
-				CheckPresentation(config);
+				// Close each route so both APIs cross DPI boundaries in both directions,
+				// including when only two monitors are attached.
+				const size_t moves = (monitors.size() + (monitors.size() > 1));
+				for (size_t step = 0; step < moves; ++step)
+				{
+					const size_t i = (step % monitors.size());
+					const double sourceScaling = Window::GetState().scaling;
+					CAPTURE(center, i, monitors[i].name, monitors[i].displayRect, config.sizeMode);
+					if (center) { REQUIRE(Window::CenterToScreen(i)); }
+					else { Window::SetPos(monitors[i].workArea.pos + Point{ 40, 40 }); }
+					CHECK(System::GetCurrentMonitorIndex() == i);
+					Catch::cout() << (center ? "CenterToScreen" : "SetPos") << " monitor[" << i
+						<< "] scaling " << sourceScaling << " -> " << Window::GetState().scaling
+						<< " mode=" << static_cast<int32>(config.sizeMode) << '\n';
+					CheckPresentation(config);
+					System::Sleep(500);
+					REQUIRE(System::Update());
+					CheckPresentation(config);
+				}
 			}
 		}
 	}

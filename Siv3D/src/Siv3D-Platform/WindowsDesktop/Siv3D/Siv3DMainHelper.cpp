@@ -13,7 +13,8 @@
 # include <Siv3D/Error.hpp>
 # include <Siv3D/UserInfo.hpp>
 # include <Siv3D/FileSystem.hpp>
-# include <Siv3D/Window.hpp>
+# include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
@@ -81,7 +82,8 @@ namespace s3d
 
 			LOG_ERROR(fmt::format("🛑 Application terminated due to an exception `{}`", message));
 
-			Window::Minimize();
+			// Error reporting must not retry Scene resource updates.
+			SIV3D_ENGINE(Window)->minimize();
 
 			FreestandingMessageBox::ShowError(fmt::format("Application terminated due to an exception `{}`", message));
 
@@ -166,7 +168,8 @@ namespace s3d
 			if (not errorMessage.empty())
 			{
 				// メッセージボックスを表示するためにフルスクリーンモードを解除する
-				static_cast<void>(Window::SetFullscreen(false));
+				// Only native cleanup is needed; Scene allocation may have caused the error.
+				SIV3D_ENGINE(Window)->setFullscreen(false, 0);
 
 				FreestandingMessageBox::ShowError(errorMessage);
 			}

@@ -89,6 +89,8 @@ a below-minimum resize. Scene follows that restored state when the call returns
 `false`. Resource-update exceptions propagate; already completed native changes
 are not undone. Centering catches failure to resolve the current monitor, but
 not errors from the subsequent move or Scene update.
+Windows error-reporting cleanup calls native window operations directly, so
+preparing an error dialog does not retry Scene resource allocation.
 
 ## Fullscreen
 
