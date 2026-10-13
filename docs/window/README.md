@@ -268,14 +268,26 @@ does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
 
+[WindowSceneTestHelper.hpp](../../Test/WindowSceneTestHelper.hpp) shares passive
+Window/Scene snapshots, placement restoration, and transition pauses. Each test
+keeps its restoration sequence and additional guards locally. Placement calls
+specify the size unit and position/size order explicitly. `PauseForWindowTransition()`
+waits 500 ms without advancing a frame; `UpdateWithPause()` performs one asserted
+`System::Update()` before that wait. Keep unconditional and conditional waits,
+guard lifetimes, and the order of Scene, MSAA, style, and window restoration when
+reusing these helpers.
+
 [Test_WindowSceneSync.cpp](../../Test/Test_WindowSceneSync.cpp) checks public
 operation boundaries: immediate and next-frame presentation for the six common
 scene configurations, maximization/restoration, asynchronous minimization, and
 Scene synchronization after a rejected centering request. Invalid resize sizes
 leave state unchanged, while same-size requests retain the centering option.
-The macOS allocation-error case temporarily rejects texture creation on the
-renderer device, checks both centering overloads, and verifies retained resources
-and recovery. This is injected allocation failure, not physical GPU exhaustion.
+The macOS allocation-error case rejects the first or second texture creation on
+the renderer device. Both centering overloads are checked with and without MSAA,
+including failure of the resolve target after successful MSAA allocation. It
+checks retained resources, configuration, cursor mapping, and executed/pending
+pixels. Recovery is exercised through an explicit retry and preparation of the
+next frame. This is injected allocation failure, not physical GPU exhaustion.
 The Windows case checks below-minimum rejection after maximized restoration.
 Its opt-in `placement_across_monitors` case checks explicit placement and centering against
 attached displays. The `fullscreen_resize_uses_final_geometry` case checks

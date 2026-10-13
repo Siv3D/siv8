@@ -523,6 +523,9 @@
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Test\WindowSceneTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp">
       <Filter>Test</Filter>
     </ClInclude>

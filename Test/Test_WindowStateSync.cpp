@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS)
 # include <atomic>
@@ -37,20 +38,16 @@ namespace s3d
 			if (command.exception) { std::rethrow_exception(command.exception); }
 		}
 
-		struct RestoreWindow
+		struct RestoreWindow : Test::WindowSceneSnapshot
 		{
-			const WindowState state = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
-
 			~RestoreWindow()
 			{
 				Window::Restore();
-				Window::SetMinimumFrameBufferSize(state.minFrameBufferSize);
-				Window::SetStyle(state.style);
-				Window::SetPos(state.bounds.pos);
-				Window::ResizeActual(state.frameBufferSize, CenterWindow::No);
-				if (state.maximized) { Window::Maximize(); }
-				if (state.minimized) { Window::Minimize(); }
+				Window::SetMinimumFrameBufferSize(window.minFrameBufferSize);
+				Window::SetStyle(window.style);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::FrameBuffer, Test::PlacementOrder::PositionThenSize);
+				if (window.maximized) { Window::Maximize(); }
+				if (window.minimized) { Window::Minimize(); }
 				Scene::Configure(config);
 			}
 		};
@@ -225,7 +222,7 @@ namespace s3d
 		});
 		CHECK_FALSE(ranInsideOuter);
 		CHECK(nestedRan);
-		Window::SetMinimumFrameBufferSize(restore.state.minFrameBufferSize);
+		Window::SetMinimumFrameBufferSize(restore.window.minFrameBufferSize);
 		CheckNativeGeometry();
 		CHECK(Window::GetState().frameBufferSize == Size{ 620, 420 });
 		// Exceptions stay on the initiating thread and do not poison later operations.
@@ -287,7 +284,7 @@ namespace s3d
 			CHECK(Window::GetState().bounds == centered.bounds);
 			CHECK(Window::GetState().frameBufferSize == centered.frameBufferSize);
 			CheckNativeGeometry();
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 			REQUIRE(System::Update());
 			CheckNativeGeometry();
 			REQUIRE(Window::CenterToScreen());

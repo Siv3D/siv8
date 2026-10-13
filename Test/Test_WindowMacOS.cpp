@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 
 # if SIV3D_PLATFORM(MACOS)
 
@@ -26,29 +27,19 @@ namespace s3d
 			return static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		}
 
-		void UpdateWithPause()
+		struct RestoreWindowAndScene : Test::WindowSceneSnapshot
 		{
-			REQUIRE(System::Update());
-			System::Sleep(500);
-		}
-
-		struct RestoreWindowAndScene
-		{
-			const WindowState window = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
 			const bool toggleEnabled = Window::IsToggleFullscreenEnabled();
 
 			~RestoreWindowAndScene()
 			{
 				if (Window::GetState().fullscreen)
 				{
-					Window::SetFullscreen(false);
-					System::Sleep(500);
+					Test::SetFullscreenWithPause(false);
 				}
 				Window::SetMinimumFrameBufferSize(window.minFrameBufferSize);
 				Window::SetStyle(window.style);
-				Window::SetPos(window.bounds.pos);
-				Window::Resize(window.virtualSize, CenterWindow::No);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::Virtual, Test::PlacementOrder::PositionThenSize);
 				if (window.maximized) { Window::Maximize(); }
 				if (window.minimized) { Window::Minimize(); }
 				Window::SetToggleFullscreenEnabled(toggleEnabled);
@@ -176,7 +167,7 @@ namespace s3d
 			REQUIRE(Window::CenterToScreen(i));
 			CHECK(Window::GetState().scaling == monitors[i].scaling.value_or(1.0));
 			CheckMinimum({ 321, 241 }, Window::GetState().scaling);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CheckMinimum({ 321, 241 }, Window::GetState().scaling);
 			mixedDPI |= (monitors[i].scaling != monitors.front().scaling);
 		}
@@ -195,7 +186,7 @@ namespace s3d
 		auto config = SceneConfig::Window(SceneResolution::Display);
 		Scene::Configure(config);
 		Window::SetFullscreen(true);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(Window::GetState().fullscreen);
 		REQUIRE(::glfwGetWindowMonitor(MainWindow()) != nullptr);
 		CHECK(Scene::Size() == Size{ 384, 256 });
@@ -210,7 +201,7 @@ namespace s3d
 		::glfwSetWindowMonitor(MainWindow(), nullptr, 0, 0, width, height, 0);
 		::glfwGetWindowFrameSize(MainWindow(), &xoff, &yoff, nullptr, nullptr);
 		::glfwSetWindowPos(MainWindow(), xoff, yoff);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(::glfwGetWindowMonitor(MainWindow()) == nullptr);
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -234,11 +225,11 @@ namespace s3d
 			windowNumber:native.windowNumber context:nil characters:@"f"
 			charactersIgnoringModifiers:@"f" isARepeat:NO keyCode:0x03];
 		REQUIRE([native performKeyEquivalent:event]);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		REQUIRE(Window::GetState().fullscreen);
 		CHECK(Scene::Size() == windowed.virtualSize);
 		Window::SetFullscreen(false);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		CHECK(Window::GetState().bounds.pos == windowed.bounds.pos);
 		CHECK(Window::GetState().virtualSize == windowed.virtualSize);

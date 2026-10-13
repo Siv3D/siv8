@@ -211,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />

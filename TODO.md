@@ -42,6 +42,7 @@
 
 ## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
 
+- テスト復元ヘルパー共通化後の Windows / D3D11 ビルドと回帰検証を行う。`WindowFullscreen.*`、`WindowStateSync.*`、`WindowSceneSync.*`、`ScreenCoordinates.*`、`SceneConfig.*` と通常全テストで、異種 DPI を含む復元順序・寸法・Scene 設定を確認する。全画面テストの非デフォルト指定と 500 ms 待機を維持する。
 - macOS の全画面中に OS 表示倍率・解像度・リフレッシュレートを変更した場合、およびモニターを物理的に切断・再接続した場合の追従を検証する。全画面の native detach を使う自動検査とは区別し、残ったモニターでの表示・操作と再接続後の全画面往復を確認する。
 - macOS の最小サイズを設定したウィンドウを異種 DPI 間で手動移動し、枠をドラッグしたときの下限が backing pixel 指定を維持することを確認する。倍率の制御・native 制限値の自動検査とは区別する。
 - [point 座標](docs/window/README.md)の [手動テスト](Test/Manual/SceneHighResolution.md)で、上下・左右配置における連続ドラッグ・ポインター操作を目視確認する。専用自動テストによる中央配置・カーソル座標の確認とは区別する。
@@ -52,7 +53,7 @@
 - Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` で、2×2 のシーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。Linear、MSAA resolve、バッファ再利用の検証とは切り分け、D3D11 のテクスチャ座標の固定小数点精度と照合する。境界画素の厳密一致を保証する必要があるか、テストの観測位置を見直すかを決める。
 - [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元の未確認の組み合わせ（特に Fixed / SceneSize と PixelArt）を確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。全画面中の G / Shift+G による複数回の表示先変更後の復帰・描画・ホバー・クリックも目視確認する。
 - macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。Control + Command + F の実キー入力、メニュー・緑ボタンの実クリックも含む。API とローカル Cocoa イベントによる全画面往復・復帰寸法・最小化状態の自動テストとは区別する。
-- GPU バッファ確保失敗時の維持・復帰を、D3D11 と Metal の残る確保段階、および実際に確保が失敗する環境で検証する。Metal の中央配置時の最初の確保失敗は、[専用テスト](Test/Test_WindowSceneSync.cpp)の注入検査と区別する。
+- GPU バッファ確保失敗時の維持・復帰を、D3D11 の確保段階、Metal の `Scene::Configure()` / MSAA 変更、および実際に確保が失敗する環境で検証する。Metal の Window → Scene 更新に対する[専用テスト](Test/Test_WindowSceneSync.cpp)の失敗注入検査とは区別する。
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
 ## Renderer2D / 組み込みシェーダ最適化

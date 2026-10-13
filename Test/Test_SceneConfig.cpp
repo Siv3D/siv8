@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 # include "../Siv3D/src/Siv3D/Scene/SceneUtility.hpp"
 
 namespace
@@ -277,11 +278,10 @@ TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
 	{
 		Window::Restore();
 		Window::SetStyle(previous.style);
-		Window::SetPos(previous.bounds.pos);
-		Window::Resize(previous.virtualSize, CenterWindow::No);
+		Test::RestorePlacement(previous, Test::WindowSizeUnit::Virtual, Test::PlacementOrder::PositionThenSize);
 		if (previous.maximized) { Window::Maximize(); }
 		if (previous.minimized) { Window::Minimize(); }
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 	} };
 	const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
@@ -322,7 +322,7 @@ TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
 		CHECK(Window::GetState().maximized);
 		check("maximize immediate");
 		CHECK(Scene::RenderResolution() != initialRender);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(System::Update());
 		check("maximize next frame");
 		Window::Restore();
@@ -330,14 +330,14 @@ TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
 		check("restore immediate");
 		CHECK(Window::GetState().virtualSize == windowed.virtualSize);
 		CHECK(Window::GetState().frameBufferSize == windowed.frameBufferSize);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(System::Update());
 		check("restore next frame");
 		CHECK(Scene::RenderResolution() == initialRender);
 
 		const Size sceneBeforeMinimize = Scene::Size();
 		Window::Minimize();
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		CHECK(Window::GetState().minimized);
 		REQUIRE(System::Update());
 		CHECK(Scene::GetConfig() == config);
@@ -346,7 +346,7 @@ TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
 		Window::Restore();
 		CHECK_FALSE(Window::GetState().minimized);
 		check("unminimize immediate");
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(System::Update());
 		check("unminimize next frame");
 	}

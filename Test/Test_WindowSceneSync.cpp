@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # if SIV3D_PLATFORM(WINDOWS)
@@ -22,24 +23,20 @@ namespace s3d
 {
 	namespace
 	{
-		struct RestoreWindowAndScene
+		struct RestoreWindowAndScene : Test::WindowSceneSnapshot
 		{
-			const WindowState window = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
 			const ColorF background = Scene::GetBackground();
 
 			~RestoreWindowAndScene()
 			{
 				if (Window::GetState().fullscreen)
 				{
-					Window::SetFullscreen(false);
-					System::Sleep(500);
+					Test::SetFullscreenWithPause(false);
 				}
 				Window::Restore();
 				Window::SetMinimumFrameBufferSize(window.minFrameBufferSize);
 				Window::SetStyle(window.style);
-				Window::SetPos(window.bounds.pos);
-				Window::Resize(window.virtualSize, CenterWindow::No);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::Virtual, Test::PlacementOrder::PositionThenSize);
 				Scene::Configure(config);
 				Scene::SetBackground(background);
 				if (window.maximized) { Window::Maximize(); }
@@ -51,7 +48,7 @@ namespace s3d
 		{
 			for (int32 attempt = 0; attempt < 6; ++attempt)
 			{
-				System::Sleep(500);
+				Test::PauseForWindowTransition();
 				REQUIRE(System::Update());
 				if (Window::GetState().minimized == minimized) { return; }
 			}
@@ -132,12 +129,12 @@ namespace s3d
 			Scene::Configure(config);
 			Window::Maximize();
 			CheckPresentation(config);
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 			REQUIRE(System::Update());
 			CheckPresentation(config);
 			Window::Restore();
 			CheckPresentation(config);
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 			REQUIRE(System::Update());
 			CheckPresentation(config);
 		}
@@ -239,7 +236,7 @@ namespace s3d
 		Scene::Configure(config);
 		const auto windowed = Window::GetState();
 		Window::Maximize();
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(Window::GetState().maximized);
 		CHECK_FALSE(Window::Resize(1, 1));
 		CHECK_FALSE(Window::GetState().maximized);
@@ -262,8 +259,9 @@ namespace s3d
 		public:
 
 			std::atomic<int32> attempts = 0;
+			std::atomic<int32> successes = 0;
 
-			explicit TextureAllocationFailure(MTL::Device* device)
+			TextureAllocationFailure(MTL::Device* device, const int32 failOnAttempt)
 			{
 				id target = (__bridge id)device;
 				m_method = class_getInstanceMethod(object_getClass(target), @selector(newTextureWithDescriptor:));
@@ -272,14 +270,16 @@ namespace s3d
 				typedef id<MTLTexture> (*NewTexture)(id, SEL, MTLTextureDescriptor*) NS_RETURNS_RETAINED;
 				const auto original = reinterpret_cast<NewTexture>(m_original);
 				auto* count = &attempts;
+				auto* succeeded = &successes;
 				m_replacement = imp_implementationWithBlock(^id<MTLTexture>(id receiver, MTLTextureDescriptor* descriptor)
 				{
-					if (receiver == target)
+					if ((receiver == target) && (++(*count) == failOnAttempt))
 					{
-						++(*count);
 						return nil;
 					}
-					return original(receiver, @selector(newTextureWithDescriptor:), descriptor);
+					id<MTLTexture> texture = original(receiver, @selector(newTextureWithDescriptor:), descriptor);
+					if ((receiver == target) && texture) { ++(*succeeded); }
+					return texture;
 				});
 				REQUIRE(m_replacement);
 				method_setImplementation(m_method, m_replacement);
@@ -304,34 +304,70 @@ namespace s3d
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
+		const auto originalSamples = Scene::GetMSAASampleCount();
+		const ScopeExit restoreSamples{ [=] { Scene::SetMSAASampleCount(originalSamples); } };
+		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
+		const ScopedViewport2D viewport{ none };
+		const ScopedScissorRect2D scissor{ none };
 		Window::Restore();
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		const auto config = SceneConfig::Window();
-		for (const bool indexed : { false, true })
+		Scene::SetBackground(Palette::Black);
+		for (const auto samples : { MSAASampleCount::NoMSAA, Scene::DefaultMSAASampleCount })
 		{
-			CAPTURE(indexed);
-			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
-			Scene::Configure(config);
-			const auto scene = renderer->getSceneTextureMSAA();
-			const auto resolved = renderer->getSceneTextureNonMSAA();
-			REQUIRE(SIV3D_ENGINE(Window)->resizeByVirtualSize({ 620, 420 }));
-			const auto nativeSize = Window::GetState().virtualSize;
+			Scene::SetMSAASampleCount(samples);
+			const int32 allocationCount = ((samples == MSAASampleCount::NoMSAA) ? 1 : 2);
+			for (int32 failOnAttempt = 1; failOnAttempt <= allocationCount; ++failOnAttempt)
 			{
-				TextureAllocationFailure failure{ renderer->getDevice() };
-				if (indexed) { CHECK_THROWS_AS(Window::CenterToScreen(System::GetCurrentMonitorIndex()), Error); }
-				else { CHECK_THROWS_AS(Window::CenterToScreen(), Error); }
-				CHECK(failure.attempts.load() == 1);
+				for (const bool indexed : { false, true })
+				{
+					CAPTURE(samples, failOnAttempt, indexed);
+					REQUIRE(Window::Resize(600, 400, CenterWindow::No));
+					Scene::Configure(config);
+					const auto scene = renderer->getSceneTextureMSAA();
+					const auto resolved = renderer->getSceneTextureNonMSAA();
+					const auto cursor = Cursor::GetBaseWindowTransform();
+					Scene::Rect().draw(Palette::Red);
+					Graphics2D::Flush();
+					Rect{ 0, 0, 32, 32 }.draw(Palette::Blue);
+					REQUIRE(SIV3D_ENGINE(Window)->resizeByVirtualSize({ 620, 420 }));
+					const auto nativeSize = Window::GetState().virtualSize;
+					{
+						TextureAllocationFailure failure{ renderer->getDevice(), failOnAttempt };
+						if (indexed) { CHECK_THROWS_AS(Window::CenterToScreen(System::GetCurrentMonitorIndex()), Error); }
+						else { CHECK_THROWS_AS(Window::CenterToScreen(), Error); }
+						CHECK(failure.attempts.load() == failOnAttempt);
+						CHECK(failure.successes.load() == (failOnAttempt - 1));
+					}
+					CHECK(Window::GetState().virtualSize == nativeSize);
+					CHECK(Scene::GetConfig() == config);
+					CHECK(Scene::GetMSAASampleCount() == samples);
+					CHECK(Scene::Size() == Size{ 600, 400 });
+					CHECK(Scene::RenderResolution() == Size{ 600, 400 });
+					CHECK(Cursor::GetBaseWindowTransform() == cursor);
+					CHECK(renderer->getSceneTextureMSAA().getTexture() == scene.getTexture());
+					CHECK(renderer->getSceneTextureNonMSAA().getTexture() == resolved.getTexture());
+					if (not indexed)
+					{
+						// Explicit retry applies the new geometry and clears the executed red draw.
+						REQUIRE(Window::CenterToScreen());
+						CheckPresentation(config);
+					}
+					// Without an explicit retry, the retained frame is captured before
+					// beginFrame applies the new window geometry. Pending blue survives both paths.
+					ScreenCapture::RequestCurrentFrame();
+					REQUIRE(System::Update());
+					REQUIRE(ScreenCapture::HasNewFrame());
+					const auto& image = ScreenCapture::GetFrame();
+					REQUIRE(image.size() == (indexed ? Size{ 600, 400 } : Size{ 620, 420 }));
+					CHECK(image[240][320] == (indexed ? Palette::Red : Palette::Black));
+					CHECK(image[16][16] == Palette::Blue);
+					CheckPresentation(config);
+					CHECK(Scene::GetMSAASampleCount() == samples);
+				}
 			}
-			CHECK(Window::GetState().virtualSize == nativeSize);
-			CHECK(Scene::GetConfig() == config);
-			CHECK(Scene::Size() == Size{ 600, 400 });
-			CHECK(renderer->getSceneTextureMSAA().getTexture() == scene.getTexture());
-			CHECK(renderer->getSceneTextureNonMSAA().getTexture() == resolved.getTexture());
-			// A subsequent operation can apply the new geometry after allocation recovers.
-			REQUIRE(Window::CenterToScreen());
-			CheckPresentation(config);
-			REQUIRE(System::Update());
-			CheckPresentation(config);
 		}
 	}
 
@@ -367,7 +403,7 @@ namespace s3d
 						<< "] scaling " << sourceScaling << " -> " << Window::GetState().scaling
 						<< " mode=" << static_cast<int32>(config.sizeMode) << '\n';
 					CheckPresentation(config);
-					System::Sleep(500);
+					Test::PauseForWindowTransition();
 					REQUIRE(System::Update());
 					CheckPresentation(config);
 				}
@@ -383,7 +419,7 @@ namespace s3d
 		Window::Restore();
 		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 		Window::SetFullscreen(true);
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE(System::Update());
 		REQUIRE(Window::GetState().fullscreen);
 		const auto fullscreen = Window::GetState();
@@ -416,14 +452,14 @@ namespace s3d
 		if (1 < monitors.size())
 		{
 			Window::SetFullscreen(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size());
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 			REQUIRE(Window::GetState().fullscreen);
 			CHECK(Scene::GetConfig() == config);
 			CHECK(Scene::Size() == Size{ 640, 480 });
 		}
 		// Restoring 600 x 400 internally must not replace/clear the 640 x 480 scene.
 		REQUIRE(Window::Resize(640, 480));
-		System::Sleep(500);
+		Test::PauseForWindowTransition();
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		CheckPresentation(config);
 # if SIV3D_PLATFORM(WINDOWS)

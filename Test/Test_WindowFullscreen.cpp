@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
@@ -27,33 +28,14 @@ namespace s3d
 {
 	namespace
 	{
-		// Keep real-window transitions visible instead of rapidly flashing the desktop.
-		constexpr int32 FullscreenPauseMillis = 500;
-
-		void SetFullscreenWithPause(const bool fullscreen, const size_t monitorIndex = System::GetCurrentMonitorIndex())
+		struct RestoreWindowAndScene : Test::WindowSceneSnapshot
 		{
-			Window::SetFullscreen(fullscreen, monitorIndex);
-			System::Sleep(FullscreenPauseMillis);
-		}
-
-		void UpdateWithPause()
-		{
-			REQUIRE(System::Update());
-			// Sleep does not consume another frame, preserving deferred-request tests.
-			System::Sleep(FullscreenPauseMillis);
-		}
-
-		struct RestoreWindowAndScene
-		{
-			const WindowState window = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
 			const bool toggleEnabled = Window::IsToggleFullscreenEnabled();
 
 			~RestoreWindowAndScene()
 			{
-				SetFullscreenWithPause(false);
-				Window::SetPos(window.bounds.pos);
-				Window::Resize(window.virtualSize, CenterWindow::No);
+				Test::SetFullscreenWithPause(false);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::Virtual, Test::PlacementOrder::PositionThenSize);
 				if (window.maximized) { Window::Maximize(); }
 				Scene::Configure(config);
 				Window::SetToggleFullscreenEnabled(toggleEnabled);
@@ -70,7 +52,7 @@ namespace s3d
 		{
 			// Exercise the real window message route without synthesizing global keyboard input.
 			::SendMessageW(MainWindow(), WM_SYSKEYDOWN, VK_RETURN, (LPARAM{ 1 } << 29));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 		}
 
 		void ReportWindow(const char* phase)
@@ -163,7 +145,7 @@ namespace s3d
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 		{
 			for (const bool enabled : { false, true })
@@ -184,16 +166,16 @@ namespace s3d
 				REQUIRE(Window::GetState().fullscreen);
 				CheckPresentation(mode, enabled, TextureFilter::Nearest);
 				// Reapplying the current window mode must leave the scene settings intact.
-				SetFullscreenWithPause(true);
+				Test::SetFullscreenWithPause(true);
 				CheckPresentation(mode, enabled, TextureFilter::Nearest);
-				SetFullscreenWithPause(false);
+				Test::SetFullscreenWithPause(false);
 				REQUIRE_FALSE(Window::GetState().fullscreen);
 				CheckPresentation(mode, enabled, TextureFilter::Nearest);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				CheckPresentation(mode, enabled, TextureFilter::Nearest);
 
 				// Also enter via the API and leave via the shortcut.
-				SetFullscreenWithPause(true);
+				Test::SetFullscreenWithPause(true);
 				CheckPresentation(mode, enabled, TextureFilter::Nearest);
 				AltEnter();
 				REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -204,11 +186,11 @@ namespace s3d
 				{
 					INFO(shortcut);
 					if (shortcut) { AltEnter(); }
-					else { SetFullscreenWithPause(true); }
+					else { Test::SetFullscreenWithPause(true); }
 					REQUIRE(Window::GetState().fullscreen);
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
 					if (shortcut) { AltEnter(); }
-					else { SetFullscreenWithPause(false); }
+					else { Test::SetFullscreenWithPause(false); }
 					REQUIRE_FALSE(Window::GetState().fullscreen);
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
 				}
@@ -221,7 +203,7 @@ namespace s3d
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		for (const bool exitByShortcut : { false, true })
 		{
 			INFO(exitByShortcut);
@@ -246,10 +228,10 @@ namespace s3d
 				Scene::Configure(config);
 			}
 			if (exitByShortcut) { AltEnter(); }
-			else { SetFullscreenWithPause(false); }
+			else { Test::SetFullscreenWithPause(false); }
 			REQUIRE_FALSE(Window::GetState().fullscreen);
 			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 		}
 
@@ -257,13 +239,13 @@ namespace s3d
 		Window::SetToggleFullscreenEnabled(false);
 		AltEnter();
 		CHECK_FALSE(Window::GetState().fullscreen);
-		SetFullscreenWithPause(true);
+		Test::SetFullscreenWithPause(true);
 		REQUIRE(Window::GetState().fullscreen);
 		CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
-		SetFullscreenWithPause(false);
+		Test::SetFullscreenWithPause(false);
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK_FALSE(Window::GetState().fullscreen);
 		CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 
@@ -271,31 +253,31 @@ namespace s3d
 		Window::SetToggleFullscreenEnabled(false);
 		::SendMessageW(MainWindow(), WM_SYSKEYDOWN, VK_RETURN, (LPARAM{ 1 } << 29));
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK_FALSE(Window::GetState().fullscreen);
-		SetFullscreenWithPause(false);
+		Test::SetFullscreenWithPause(false);
 
 		// Disabling also cancels an accepted request that has not executed yet.
 		::SendMessageW(MainWindow(), WM_SYSKEYDOWN, VK_RETURN, (LPARAM{ 1 } << 29));
 		Window::SetToggleFullscreenEnabled(false);
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK_FALSE(Window::GetState().fullscreen);
-		SetFullscreenWithPause(false);
+		Test::SetFullscreenWithPause(false);
 
 		// Reapplying enabled without disabling must preserve a valid request.
 		::SendMessageW(MainWindow(), WM_SYSKEYDOWN, VK_RETURN, (LPARAM{ 1 } << 29));
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK(Window::GetState().fullscreen);
-		SetFullscreenWithPause(false);
+		Test::SetFullscreenWithPause(false);
 	}
 
 	TEST_CASE("WindowFullscreen.resize_restores_monitor", "[.fullscreen]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const auto monitors = System::EnumerateMonitors();
 		const auto routes = MixedDPIRoutes(monitors);
 		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
@@ -304,7 +286,7 @@ namespace s3d
 		{
 			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 			REQUIRE(Window::CenterToScreen(source));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			REQUIRE(System::GetCurrentMonitorIndex() == source);
 			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
@@ -329,7 +311,7 @@ namespace s3d
 							Scene::Configure(config);
 						}
 						ReportWindow("windowed");
-						SetFullscreenWithPause(true, target);
+						Test::SetFullscreenWithPause(true, target);
 						REQUIRE(Window::GetState().fullscreen);
 						// All three settings changed in fullscreen must survive the resize exit.
 						{
@@ -359,7 +341,7 @@ namespace s3d
 						{
 							CHECK_THROWS_AS(ResizeFunctions[api](invalid, CenterWindow::No), Error);
 						}
-						UpdateWithPause();
+						Test::UpdateWithPause();
 						CHECK(Window::GetState().fullscreen);
 						CHECK(Window::GetState().virtualSize == full.virtualSize);
 						CHECK(Window::GetState().frameBufferSize == full.frameBufferSize);
@@ -394,9 +376,9 @@ namespace s3d
 							CHECK(Cursor::PosF().epsilonEquals(all.inverse().transformPoint(Cursor::PosRaw()), 1e-3));
 						};
 						check("resize immediate");
-						System::Sleep(FullscreenPauseMillis);
+						Test::PauseForWindowTransition();
 						REQUIRE(resized);
-						UpdateWithPause();
+						Test::UpdateWithPause();
 						check("resize next frame");
 					}
 				}
@@ -408,7 +390,7 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const auto routes = MixedDPIRoutes(System::EnumerateMonitors());
 		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 		const Transformer2D camera{ Mat3x2::Scale(1.5), TransformCursor::Yes, Transformer2D::Target::SetCamera };
@@ -416,7 +398,7 @@ namespace s3d
 		{
 			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 			REQUIRE(Window::CenterToScreen(source));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			REQUIRE(System::GetCurrentMonitorIndex() == source);
 			for (int32 api = 0; api < 3; ++api)
 			{
@@ -427,11 +409,11 @@ namespace s3d
 				const auto windowed = Window::GetState();
 				RECT nativeWindowed{};
 				REQUIRE(::GetWindowRect(MainWindow(), &nativeWindowed));
-				SetFullscreenWithPause(true, target);
+				Test::SetFullscreenWithPause(true, target);
 				REQUIRE(Window::GetState().fullscreen);
 				CHECK(System::GetCurrentMonitorIndex() == target);
 				CheckSelectedConfig(SceneConfig{}, windowed.virtualSize);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				CheckSelectedConfig(SceneConfig{}, windowed.virtualSize);
 				auto config = Scene::GetConfig();
 				Size heldSize = Scene::Size();
@@ -460,7 +442,7 @@ namespace s3d
 				CHECK(Window::GetState().fullscreen);
 				CHECK(Window::GetState().bounds == full.bounds);
 				CheckSelectedConfig(config, heldSize);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				CHECK(Window::GetState().fullscreen);
 				CheckSelectedConfig(config, heldSize);
 				ReportWindow("KeepSize fullscreen");
@@ -490,9 +472,9 @@ namespace s3d
 					CheckSelectedConfig(config, points);
 				};
 				check("KeepSize resize immediate");
-				System::Sleep(FullscreenPauseMillis);
+				Test::PauseForWindowTransition();
 				REQUIRE(resized);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				check("KeepSize resize next frame");
 			}
 		}
@@ -503,7 +485,7 @@ namespace s3d
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		const ScopeExit restoreMinimum{ [&] { Window::SetMinimumFrameBufferSize(restore.window.minFrameBufferSize); } };
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 		Window::SetMinimumFrameBufferSize({ 200, 200 });
 		{
@@ -521,7 +503,7 @@ namespace s3d
 			auto config = Scene::GetConfig();
 			config.fullscreen = (api == 0) ? FullscreenSceneMode::FollowWindow : FullscreenSceneMode::KeepSize;
 			Scene::Configure(config);
-			SetFullscreenWithPause(true);
+			Test::SetFullscreenWithPause(true);
 			REQUIRE(Window::GetState().fullscreen);
 			// In-range requests below the minimum return false after restoring the window.
 			CHECK_FALSE(ResizeFunctions[api]({ 1, 1 }, CenterWindow::No));
@@ -535,8 +517,8 @@ namespace s3d
 				CheckPresentation(SceneSizeMode::Window, true, TextureFilter::Linear);
 			};
 			check();
-			System::Sleep(FullscreenPauseMillis);
-			UpdateWithPause();
+			Test::PauseForWindowTransition();
+			Test::UpdateWithPause();
 			check();
 		}
 	}
@@ -545,7 +527,7 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		{
 			auto config = Scene::GetConfig();
 			config.sizeMode = SceneSizeMode::WindowPixels;
@@ -583,18 +565,18 @@ namespace s3d
 					return snapshot;
 				};
 				window.setFullscreen(true, invalid, functions);
-				System::Sleep(FullscreenPauseMillis);
+				Test::PauseForWindowTransition();
 			}
-			else { SetFullscreenWithPause(true, i); }
-			UpdateWithPause();
+			else { Test::SetFullscreenWithPause(true, i); }
+			Test::UpdateWithPause();
 			REQUIRE(Window::GetState().fullscreen);
 			RECT bounds{};
 			REQUIRE(::GetWindowRect(MainWindow(), &bounds));
 			CHECK(Rect{ bounds.left, bounds.top, (bounds.right - bounds.left), (bounds.bottom - bounds.top) } == expected);
 			CHECK(Window::GetState().frameBufferSize == expected.size);
 			CheckPresentation(SceneSizeMode::WindowPixels, false, TextureFilter::Linear);
-			SetFullscreenWithPause(false);
-			UpdateWithPause();
+			Test::SetFullscreenWithPause(false);
+			Test::UpdateWithPause();
 			REQUIRE(::GetWindowRect(MainWindow(), &bounds));
 			CHECK(bounds.left == windowedBounds.left);
 			CHECK(bounds.top == windowedBounds.top);
@@ -647,7 +629,7 @@ namespace s3d
 			NSWindow* native = glfwGetCocoaWindow(MainWindow());
 			if (route == FullscreenRoute::API)
 			{
-				SetFullscreenWithPause(not Window::GetState().fullscreen);
+				Test::SetFullscreenWithPause(not Window::GetState().fullscreen);
 				return;
 			}
 			const bool previous = Window::GetState().fullscreen;
@@ -662,7 +644,7 @@ namespace s3d
 				[item.menu performActionForItemAtIndex:[item.menu indexOfItem:item]];
 			}
 			CHECK(Window::GetState().fullscreen == previous);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 		}
 
 		struct NativeDisplay
@@ -736,9 +718,9 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		const ScopeExit restoreStyle{ [&] { SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
+		const ScopeExit restoreStyle{ [&] { Test::SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const DesktopSnapshot desktop;
 		NSWindow* native = glfwGetCocoaWindow(MainWindow());
 		NSMenuItem* menu = FullscreenMenuItem(NSApp.mainMenu);
@@ -748,7 +730,7 @@ namespace s3d
 		for (size_t monitor = 0; monitor < desktop.monitors.size(); ++monitor)
 		{
 			REQUIRE(Window::CenterToScreen(monitor));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool highResolution : { false, true })
@@ -798,7 +780,7 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		const ScopeExit restoreStyle{ [&] { SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
+		const ScopeExit restoreStyle{ [&] { Test::SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
 		NSWindow* native = glfwGetCocoaWindow(MainWindow());
 		NSMenuItem* menu = FullscreenMenuItem(NSApp.mainMenu);
 		REQUIRE(menu != nil);
@@ -822,22 +804,22 @@ namespace s3d
 			[native toggleFullScreen:menu];
 			FullscreenShortcut();
 			Window::SetToggleFullscreenEnabled(true);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK_FALSE(Window::GetState().fullscreen);
 			FullscreenShortcut();
 			Window::SetToggleFullscreenEnabled(false);
 			Window::SetToggleFullscreenEnabled(true);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK_FALSE(Window::GetState().fullscreen);
 
 			FullscreenShortcut();
 			FullscreenShortcut(true);
 			[native toggleFullScreen:menu]; // Two requests before a frame coalesce.
 			Window::SetToggleFullscreenEnabled(true);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			REQUIRE(Window::GetState().fullscreen);
 			FullscreenShortcut(true);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK(Window::GetState().fullscreen);
 			// Settings changed while fullscreen survive an exit through the shortcut.
 			{
@@ -853,12 +835,12 @@ namespace s3d
 			REQUIRE_FALSE(Window::GetState().fullscreen);
 			CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
 			Window::SetToggleFullscreenEnabled(false);
-			SetFullscreenWithPause(true);
+			Test::SetFullscreenWithPause(true);
 			REQUIRE(Window::GetState().fullscreen);
 			FullscreenShortcut();
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK(Window::GetState().fullscreen);
-			SetFullscreenWithPause(false);
+			Test::SetFullscreenWithPause(false);
 			REQUIRE_FALSE(Window::GetState().fullscreen);
 			CHECK(Window::GetStyle() == style);
 			desktop.check();
@@ -869,13 +851,13 @@ namespace s3d
 		Window::SetStyle(WindowStyle::Sizable);
 		Window::SetToggleFullscreenEnabled(true);
 		[NSApp postEvent:FullscreenKeyEvent(false) atStart:YES];
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		REQUIRE(Window::GetState().fullscreen);
 		[NSApp postEvent:FullscreenKeyEvent(true) atStart:YES];
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK(Window::GetState().fullscreen);
 		[NSApp postEvent:FullscreenKeyEvent(false) atStart:YES];
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 
 		// Fullscreen enablement must not affect native maximization controls.
@@ -887,21 +869,21 @@ namespace s3d
 			REQUIRE(green.enabled);
 			CHECK_FALSE(green.hidden);
 			[green performClick:nil];
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK_FALSE(Window::GetState().fullscreen);
 			CHECK(Window::GetState().maximized);
 			Window::Restore();
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK_FALSE(Window::GetState().maximized);
 		}
 		NSMenuItem* zoom = [[NSMenuItem alloc] initWithTitle:@"Zoom" action:@selector(performZoom:) keyEquivalent:@""];
 		CHECK([native validateMenuItem:zoom]);
 		[native performZoom:zoom];
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK_FALSE(Window::GetState().fullscreen);
 		CHECK(Window::GetState().maximized);
 		Window::Restore();
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		CHECK_FALSE(Window::GetState().maximized);
 		desktop.check();
 	}
@@ -910,7 +892,7 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const DesktopSnapshot desktop;
 		const Point previousCursor = Cursor::ScreenPos();
 		const ScopeExit restoreCursor{ [=] { ::CGWarpMouseCursorPosition(CGPointMake(previousCursor.x, previousCursor.y)); } };
@@ -918,7 +900,7 @@ namespace s3d
 		{
 			CAPTURE(monitor);
 			REQUIRE(Window::CenterToScreen(monitor));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
 				for (const bool enabled : { false, true })
@@ -933,11 +915,11 @@ namespace s3d
 						config.scalingFilter = TextureFilter::Nearest;
 						Scene::Configure(config);
 					}
-					SetFullscreenWithPause(true);
+					Test::SetFullscreenWithPause(true);
 					REQUIRE(Window::GetState().fullscreen);
 					desktop.check();
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
-					UpdateWithPause();
+					Test::UpdateWithPause();
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
 					{
 						const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
@@ -947,7 +929,7 @@ namespace s3d
 						Cursor::SetPos(logical);
 						Circle{ logical, 12 }.draw(Palette::Red);
 						ScreenCapture::RequestCurrentFrame();
-						UpdateWithPause();
+						Test::UpdateWithPause();
 						CHECK(Cursor::PosF().epsilonEquals(logical, 1.0));
 						CHECK(Vec2{ Cursor::PosRaw() }.epsilonEquals(all.transformPoint(logical), 1.0));
 						CHECK(Circle{ logical, 3 }.mouseOver());
@@ -956,13 +938,13 @@ namespace s3d
 						CHECK(ScreenCapture::GetFrame().size() == Scene::RenderResolution());
 					}
 					// Reapplying fullscreen must not change the selected policy.
-					SetFullscreenWithPause(true);
+					Test::SetFullscreenWithPause(true);
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
-					SetFullscreenWithPause(false);
+					Test::SetFullscreenWithPause(false);
 					REQUIRE_FALSE(Window::GetState().fullscreen);
 					desktop.check();
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
-					UpdateWithPause();
+					Test::UpdateWithPause();
 					CheckPresentation(mode, enabled, TextureFilter::Nearest);
 				}
 			}
@@ -973,7 +955,7 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const DesktopSnapshot desktop;
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
@@ -981,7 +963,7 @@ namespace s3d
 		{
 			CAPTURE(source);
 			REQUIRE(Window::CenterToScreen(source));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			REQUIRE(System::GetCurrentMonitorIndex() == source);
 			for (size_t i = 0; i < monitors.size(); ++i)
 			{
@@ -996,10 +978,10 @@ namespace s3d
 					config.scalingFilter = TextureFilter::Linear;
 					Scene::Configure(config);
 				}
-				SetFullscreenWithPause(true, i);
+				Test::SetFullscreenWithPause(true, i);
 				REQUIRE(Window::GetState().fullscreen);
 				CheckPresentation(SceneSizeMode::Window, false, TextureFilter::Linear);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				desktop.check();
 				// Compare to the desktop before entering fullscreen, not the new mode.
 				const auto& fullscreenMonitor = monitors[i];
@@ -1019,10 +1001,10 @@ namespace s3d
 					config.scalingFilter = TextureFilter::Nearest;
 					Scene::Configure(config);
 				}
-				SetFullscreenWithPause(false);
+				Test::SetFullscreenWithPause(false);
 				REQUIRE_FALSE(Window::GetState().fullscreen);
 				CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest, Size{ 320, 240 });
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				desktop.check();
 				CHECK(Window::GetState().bounds == windowed.bounds);
 				CHECK(Window::GetState().virtualSize == windowed.virtualSize);
@@ -1036,8 +1018,8 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		const ScopeExit restoreStyle{ [&] { SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
-		UpdateWithPause();
+		const ScopeExit restoreStyle{ [&] { Test::SetFullscreenWithPause(false); Window::SetStyle(restore.window.style); } };
+		Test::UpdateWithPause();
 		const DesktopSnapshot desktop;
 		REQUIRE_FALSE(desktop.monitors.isEmpty());
 		{
@@ -1061,9 +1043,9 @@ namespace s3d
 					Window::SetStyle(style);
 					REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 					REQUIRE(Window::CenterToScreen(source));
-					UpdateWithPause();
+					Test::UpdateWithPause();
 					const auto windowed = Window::GetState();
-					SetFullscreenWithPause(true, target);
+					Test::SetFullscreenWithPause(true, target);
 					REQUIRE(Window::GetState().fullscreen);
 					const auto full = Window::GetState();
 					CHECK(Window::Resize(full.virtualSize, CenterWindow::No));
@@ -1079,7 +1061,7 @@ namespace s3d
 					if (api == 0) { REQUIRE(Window::Resize(requested, CenterWindow::No)); }
 					else if (api == 1) { REQUIRE(Window::ResizeVirtual(requested, CenterWindow::No)); }
 					else { REQUIRE(Window::ResizeActual(requested, CenterWindow::No)); }
-					System::Sleep(FullscreenPauseMillis);
+					Test::PauseForWindowTransition();
 					REQUIRE_FALSE(Window::GetState().fullscreen);
 					CHECK(Window::GetStyle() == style);
 					CHECK(System::GetCurrentMonitorIndex() == source);
@@ -1088,7 +1070,7 @@ namespace s3d
 					if (api == 2) { CHECK(Window::GetState().frameBufferSize == requested); }
 					else { CHECK(Window::GetState().virtualSize == requested); }
 					CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest);
-					UpdateWithPause();
+					Test::UpdateWithPause();
 					desktop.check();
 					CheckPresentation(SceneSizeMode::Fixed, true, TextureFilter::Nearest);
 				}
@@ -1100,14 +1082,14 @@ namespace s3d
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
-		const ScopeExit restoreVisibility{ [] { Window::Restore(); System::Sleep(FullscreenPauseMillis); } };
+		const ScopeExit restoreVisibility{ [] { Window::Restore(); Test::PauseForWindowTransition(); } };
 		auto* window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		const auto waitForIconified = [window](const bool iconified)
 		{
 			// Cocoa may finish its animation over several event-loop iterations.
 			for (int32 attempt = 0; attempt < 6; ++attempt)
 			{
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				if ((::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_TRUE) == iconified) { return; }
 			}
 			FAIL("The native window did not complete the minimize/restore transition");
@@ -1117,15 +1099,15 @@ namespace s3d
 		{
 			const bool fullscreen = (mode != 0);
 			CAPTURE(mode, fullscreen);
-			if (fullscreen) { SetFullscreenWithPause(true, (mode - 1)); }
+			if (fullscreen) { Test::SetFullscreenWithPause(true, (mode - 1)); }
 			Window::Minimize();
-			System::Sleep(FullscreenPauseMillis);
+			Test::PauseForWindowTransition();
 			waitForIconified(true);
 			REQUIRE(::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_TRUE);
 			CHECK(Window::GetState().minimized);
 			desktop.check();
 			Window::Restore();
-			System::Sleep(FullscreenPauseMillis);
+			Test::PauseForWindowTransition();
 			waitForIconified(false);
 			REQUIRE(::glfwGetWindowAttrib(window, GLFW_ICONIFIED) == GLFW_FALSE);
 			CHECK_FALSE(Window::GetState().minimized);
@@ -1133,7 +1115,7 @@ namespace s3d
 			CHECK(Window::GetState().fullscreen == fullscreen);
 			CHECK(Scene::Size().x > 0);
 			CHECK(Scene::Size().y > 0);
-			if (fullscreen) { SetFullscreenWithPause(false); }
+			if (fullscreen) { Test::SetFullscreenWithPause(false); }
 			desktop.check();
 		}
 	}
@@ -1234,12 +1216,12 @@ namespace s3d
 				CheckSelectedConfig(config, expected);
 				CHECK(Scene::GetMSAASampleCount() == expectedSamples);
 			};
-			SetFullscreenWithPause(true, entry);
+			Test::SetFullscreenWithPause(true, entry);
 			checkTarget(entry);
 			check();
 			REQUIRE(System::Update());
 			check();
-			SetFullscreenWithPause(true, target);
+			Test::SetFullscreenWithPause(true, target);
 			checkTarget(target);
 			check();
 			REQUIRE(System::Update());
@@ -1295,7 +1277,7 @@ namespace s3d
 				Scene::Configure(config);
 				expectedSamples = MSAASampleCount::NoMSAA;
 				Scene::SetMSAASampleCount(expectedSamples);
-				SetFullscreenWithPause(true, source);
+				Test::SetFullscreenWithPause(true, source);
 				checkTarget(source);
 				check();
 				REQUIRE(System::Update());
@@ -1315,7 +1297,7 @@ namespace s3d
 				if (step == 2) { REQUIRE(Window::Resize(requested, CenterWindow::No)); }
 				else if (step == 3) { REQUIRE(Window::ResizeVirtual(requested, CenterWindow::No)); }
 				else { REQUIRE(Window::ResizeActual(requested, CenterWindow::No)); }
-				System::Sleep(FullscreenPauseMillis);
+				Test::PauseForWindowTransition();
 				if (step != 4) { CHECK(Window::GetState().virtualSize == requested); }
 # if SIV3D_PLATFORM(WINDOWS)
 				else { CHECK(Window::GetState().frameBufferSize == requested); }
@@ -1323,7 +1305,7 @@ namespace s3d
 				else { CHECK(Window::GetState().virtualSize == Math::Round(requested / windowed.scaling).asPoint()); }
 # endif
 			}
-			else { SetFullscreenWithPause(false, target); }
+			else { Test::SetFullscreenWithPause(false, target); }
 			const auto checkRestored = [&]
 			{
 				REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -1362,7 +1344,7 @@ namespace s3d
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		Window::SetToggleFullscreenEnabled(true);
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE(not monitors.isEmpty());
 		for (const auto& monitor : monitors)
@@ -1399,10 +1381,10 @@ namespace s3d
 			Scene::Configure(SceneConfig{});
 			const Size windowScene = Scene::Size();
 			if (enterByShortcut) { shortcut(); }
-			else { SetFullscreenWithPause(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size()); }
+			else { Test::SetFullscreenWithPause(true, (System::GetCurrentMonitorIndex() + 1) % monitors.size()); }
 			REQUIRE(Window::GetState().fullscreen);
 			check(SceneConfig{}, windowScene);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			check(SceneConfig{}, windowScene);
 			auto config = SceneConfig::Window(SceneResolution::Display);
 			config.scalingFilter = TextureFilter::Nearest;
@@ -1431,11 +1413,11 @@ namespace s3d
 			CHECK(Window::ResizeActual(full.frameBufferSize));
 			checkUnmoved();
 			check(config, windowScene);
-			if (enterByShortcut) { SetFullscreenWithPause(false); }
+			if (enterByShortcut) { Test::SetFullscreenWithPause(false); }
 			else { shortcut(); }
 			REQUIRE_FALSE(Window::GetState().fullscreen);
 			check(config, Window::GetState().virtualSize);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			check(config, Window::GetState().virtualSize);
 			REQUIRE(Window::CenterToScreen());
 			REQUIRE(Window::CenterToScreen(System::GetCurrentMonitorIndex()));

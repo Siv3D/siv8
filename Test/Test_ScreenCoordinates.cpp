@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "WindowSceneTestHelper.hpp"
 
 # if SIV3D_PLATFORM(MACOS)
 
@@ -25,25 +26,15 @@ namespace s3d
 			return static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		}
 
-		void UpdateWithPause()
+		struct RestoreWindowAndScene : Test::WindowSceneSnapshot
 		{
-			REQUIRE(System::Update());
-			System::Sleep(500);
-		}
-
-		struct RestoreWindowAndScene
-		{
-			const WindowState window = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
-
 			~RestoreWindowAndScene()
 			{
 				Window::SetStyle(window.style);
-				Window::Resize(window.virtualSize, CenterWindow::No);
-				Window::SetPos(window.bounds.pos);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::Virtual, Test::PlacementOrder::SizeThenPosition);
 				if (window.maximized) { Window::Maximize(); }
 				Scene::Configure(config);
-				System::Sleep(500);
+				Test::PauseForWindowTransition();
 			}
 		};
 
@@ -139,7 +130,7 @@ namespace s3d
 		for (const WindowStyle style : { WindowStyle::Fixed, WindowStyle::Sizable, WindowStyle::Frameless })
 		{
 			Window::SetStyle(style);
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 			for (size_t i = 0; i < monitors.size(); ++i)
 			{
 				CAPTURE(style, i, monitors[i].displayRect, monitors[i].scaling);
@@ -152,23 +143,23 @@ namespace s3d
 				CHECK(bounds.pos == (workArea.pos + (workArea.size - bounds.size) / 2));
 				CheckNativeWindow();
 				CheckPresentation(SceneSizeMode::Fixed, true);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				CHECK(System::GetCurrentMonitorIndex() == i);
 				CHECK(Window::GetState().virtualSize == before);
 				CHECK(Window::GetState().bounds == bounds);
 				const Point shifted = (bounds.pos + Point{ -37, 19 });
 				Window::SetPos(shifted);
 				CHECK(Window::GetPos() == shifted);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				CheckNativeWindow();
 				CHECK(System::GetCurrentMonitorIndex() == i);
 				Window::SetPos(bounds.pos);
 				CHECK(Window::GetState().bounds == bounds);
-				UpdateWithPause();
+				Test::UpdateWithPause();
 				const Rect currentWorkArea = System::GetCurrentMonitor().workArea;
 				REQUIRE(Window::CenterToScreen());
 				CHECK(Window::GetPos() == (currentWorkArea.pos + (currentWorkArea.size - bounds.size) / 2));
-				UpdateWithPause();
+				Test::UpdateWithPause();
 			}
 		}
 	}
@@ -186,7 +177,7 @@ namespace s3d
 		Window::SetStyle(WindowStyle::Fixed);
 		REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 		::glfwFocusWindow(EngineWindow());
-		UpdateWithPause();
+		Test::UpdateWithPause();
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
 		const Transformer2D local{ Mat3x2::Translate(20, 10), TransformCursor::Yes, Transformer2D::Target::SetLocal };
@@ -194,7 +185,7 @@ namespace s3d
 		for (size_t i = 0; i < monitors.size(); ++i)
 		{
 			REQUIRE(Window::CenterToScreen(i));
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK(System::GetCurrentMonitorIndex() == i);
 			for (const SceneSizeMode mode : { SceneSizeMode::Fixed, SceneSizeMode::Window, SceneSizeMode::WindowPixels })
 			{
@@ -214,7 +205,7 @@ namespace s3d
 					const Mat3x2 all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());
 					const Vec2 expectedRaw = all.transformPoint(logical);
 					Cursor::SetPos(logical);
-					UpdateWithPause();
+					Test::UpdateWithPause();
 					CHECK(Cursor::PosF().epsilonEquals(logical, 1.0));
 					CHECK(Vec2{ Cursor::PosRaw() }.epsilonEquals(expectedRaw, 1.0));
 					CHECK(Circle{ logical, 3 }.mouseOver());
@@ -232,7 +223,7 @@ namespace s3d
 			const Point target = monitors[other].workArea.center().asPoint();
 			const Point previous = Cursor::ScreenPos();
 			REQUIRE(::CGWarpMouseCursorPosition(CGPointMake(target.x, target.y)) == kCGErrorSuccess);
-			UpdateWithPause();
+			Test::UpdateWithPause();
 			CHECK(Cursor::ScreenPos() == target);
 			CHECK(Cursor::ScreenPreviousPos() == previous);
 			CHECK(Cursor::ScreenDelta() == (target - previous));
@@ -278,18 +269,14 @@ namespace s3d
 			CHECK(Window::GetState().bounds == visible);
 		}
 
-		struct RestoreWindowAndScene
+		struct RestoreWindowAndScene : Test::WindowSceneSnapshot
 		{
-			const WindowState window = Window::GetState();
-			const SceneConfig config = Scene::GetConfig();
-
 			~RestoreWindowAndScene()
 			{
 				Window::Restore();
 				Window::SetMinimumFrameBufferSize(window.minFrameBufferSize);
 				Window::SetStyle(window.style);
-				Window::ResizeActual(window.frameBufferSize, CenterWindow::No);
-				Window::SetPos(window.bounds.pos);
+				Test::RestorePlacement(window, Test::WindowSizeUnit::FrameBuffer, Test::PlacementOrder::SizeThenPosition);
 				if (window.maximized) { Window::Maximize(); }
 				if (window.minimized) { Window::Minimize(); }
 				Scene::Configure(config);
@@ -353,7 +340,7 @@ namespace s3d
 					CheckVisibleFrame(centered);
 				}
 				const auto immediate = Window::GetState();
-				System::Sleep(500);
+				Test::PauseForWindowTransition();
 				REQUIRE(System::Update());
 				CHECK(Window::GetState().bounds == immediate.bounds);
 				CheckVisibleFrame(immediate.bounds.pos);
@@ -393,7 +380,7 @@ namespace s3d
 						CheckVisibleFrame(visible);
 					}
 				}
-				System::Sleep(500);
+				Test::PauseForWindowTransition();
 				REQUIRE(System::Update());
 				CHECK(NativeWindowRect().pos == native);
 				CheckVisibleFrame(visible);
@@ -429,7 +416,7 @@ namespace s3d
 				CHECK(NativeWindowRect().pos == native.pos);
 				CheckVisibleFrame(visible);
 			}
-			System::Sleep(500);
+			Test::PauseForWindowTransition();
 		}
 	}
 }
