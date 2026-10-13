@@ -150,7 +150,7 @@ namespace s3d
 		CheckMinimum({ 321, 241 }, Window::GetState().scaling);
 	}
 
-	TEST_CASE("WindowMacOS.minimum_size_tracks_attached_monitors", "[.screen-coordinates]")
+	TEST_CASE("WindowMacOS.minimum_size_tracks_attached_monitors", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -174,7 +174,7 @@ namespace s3d
 		if (not mixedDPI) { Catch::cout() << "No attached mixed-DPI pair; physical scale transition not exercised.\n"; }
 	}
 
-	TEST_CASE("WindowMacOS.native_fullscreen_detach_updates_state", "[.fullscreen]")
+	TEST_CASE("WindowMacOS.native_fullscreen_detach_updates_state", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);

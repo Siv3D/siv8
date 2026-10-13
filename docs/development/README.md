@@ -85,30 +85,56 @@ Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.0/d
 `Array*`, `*Mesh3D*`, exact names, and tags are supported. This alias does not
 emulate the former framework's full filter syntax. The `[.benchmark]` tag hides
 the opt-in TextFileReader benchmark from the default suite. An explicit matching
-name, wildcard, or tag runs it; there is no `--no-skip` option. Use
-`~[.benchmark]` alongside a broad positive filter to exclude it.
+name, wildcard, or tag runs it; there is no `--no-skip` option. Put
+`~[benchmark]` before a name pattern to exclude benchmark cases.
 
-The `WindowFullscreen.*` tests on Windows and macOS use `[.fullscreen]` and are
-also excluded from the default suite. They visibly change the real window,
-including fullscreen transitions on attached monitors, with a 500 ms pause after
-each transition. Run them explicitly when those visible transitions are acceptable:
+### Window UI tests
+
+Tests that enter fullscreen, maximize/minimize, move between monitors, or warp
+the desktop pointer use `[.window-ui]`. They are excluded when no filter is
+specified. Pure scene-policy calculations, rendering, and local window resize
+checks remain in the default suite; the default suite still opens a test window.
+Keep the existing test bodies, restoration order, and 500 ms transition pauses
+when assigning this tag. Do not skip individual assertions based on the run mode.
+
+Use the shared tag to run these native UI checks across all test files:
 
 ```sh
-./macOS/run-tests.sh '--test-case=WindowFullscreen.*'
+./macOS/run-tests.sh '--test-case=[window-ui]'
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
 ```
 
-As with other hidden tests, a matching name, wildcard, or tag selects them;
-use `~[.fullscreen]` alongside a broad positive filter to exclude them.
+The existing `[.fullscreen]` and `[.screen-coordinates]` tags remain available:
+select `[fullscreen]` for fullscreen transitions across all suites, or
+`[screen-coordinates]` for monitor placement and pointer checks. Selecting
+`WindowFullscreen.*` only runs cases in that suite, not fullscreen cases in
+`WindowSceneSync` or `WindowMacOS`.
 
-The macOS `ScreenCoordinates.*` placement and pointer cases use
-`[.screen-coordinates]` for the same reason. They move the real window and cursor
-with 500 ms pauses. See [desktop coordinate validation](../window/README.md#validation)
-for the explicit command and coverage; read-only geometry checks remain in the
-default suite.
+A matching name or wildcard also selects hidden tests. For focused runs without
+the UI group, put its exclusion before each name pattern:
+
+```sh
+./macOS/run-tests.sh '--test-case=~[window-ui]Scene*,~[window-ui]WindowSceneSync.*'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Scene*,~[window-ui]WindowSceneSync.*'
+```
+
+Commas separate alternative filters. Repeat the exclusion in each alternative;
+a standalone comma-separated exclusion is not a global exclusion. An explicit
+`*` also includes other hidden groups such as benchmarks. Prefer no filter for
+the normal full suite. To inspect selection without executing UI tests, launch
+the built executable with `--test-only --list-tests` and the intended filter;
+the Windows wrapper reserves listing options for direct executable use.
+
+See [window validation](../window/README.md#validation) for native coverage and
+required monitor conditions.
+
+### Catch2
 
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
 and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the

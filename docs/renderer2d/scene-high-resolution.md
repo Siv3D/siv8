@@ -226,6 +226,8 @@ unchanged and filter-only configurations. Windows cases also check immediate and
 next-frame scene dimensions and cursor transforms after maximizing and restoring
 Fixed + Display, both Window resolution policies, and WindowPixels, including
 restoration from minimization.
+The native maximize/minimize case uses `[.window-ui]`; calculations with synthetic
+fullscreen and minimized window states remain in the default suite.
 [Test_ScenePresentation.cpp](../../Test/Test_ScenePresentation.cpp) exercises
 the actual final composition paths: Metal into an offscreen target and D3D11
 into its swap-chain buffer. It compares Nearest → Linear → Nearest pixels and
@@ -277,30 +279,35 @@ places the window with
 See [desktop coordinates](../window/README.md) for point-based macOS placement
 and client-pixel input. Mixed-DPI, nonzero and
 negative monitor origins require the corresponding display layout.
-These tests are hidden from the default suite with `[.fullscreen]` because they
-visibly change the real window. Each transition is followed by a 500 ms pause.
+These tests use `[.fullscreen][.window-ui]` and are hidden from the default suite
+because they visibly change the real window. Each transition is followed by a
+500 ms pause.
 
 Run the focused tests and then the full suite on the respective host:
 
 ```sh
-./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*,SceneAllocationFailure.*'
+./macOS/run-tests.sh '--test-case=~[window-ui]Scene*'
 ./macOS/run-tests.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Scene*'
 ./WindowsDesktop/run-tests.ps1
 ```
 
 Opt in to the visible window transitions separately on the respective host:
 
 ```sh
-./macOS/run-tests.sh '--test-case=WindowFullscreen.*'
+./macOS/run-tests.sh '--test-case=[window-ui]'
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
 ```
+
+This group also includes maximize/minimize and cross-monitor placement checks.
+Use `[fullscreen]` to select only fullscreen cases. See the
+[selection guide](../development/README.md#window-ui-tests) for focused filters.
 
 [The interactive check](../../Test/Manual/SceneHighResolution.md) covers OS
 resizing, monitor changes, fullscreen, minimization, and pointer interaction.

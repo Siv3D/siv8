@@ -16,7 +16,7 @@ namespace s3d
 {
 	using namespace Test::Fullscreen;
 
-	TEST_CASE("WindowFullscreen.api_and_shortcut_preserve_presentation", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.api_and_shortcut_preserve_presentation", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -74,7 +74,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.changed_policy_is_not_restored_on_exit", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.changed_policy_is_not_restored_on_exit", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -149,7 +149,7 @@ namespace s3d
 		Test::SetFullscreenWithPause(false);
 	}
 
-	TEST_CASE("WindowFullscreen.resize_restores_monitor", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.resize_restores_monitor", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -262,7 +262,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.keep_size_resize_restores_monitor", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.keep_size_resize_restores_monitor", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -356,7 +356,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.below_minimum_resize_restores_window", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.below_minimum_resize_restores_window", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -399,7 +399,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.bounds_match_selected_monitor", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.bounds_match_selected_monitor", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;

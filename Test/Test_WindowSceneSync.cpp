@@ -115,7 +115,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowSceneSync.maximize_restore_and_minimize")
+	TEST_CASE("WindowSceneSync.maximize_restore_and_minimize", "[.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -222,7 +222,7 @@ namespace s3d
 
 # if SIV3D_PLATFORM(WINDOWS)
 
-	TEST_CASE("WindowSceneSync.below_minimum_resize_keeps_restoration")
+	TEST_CASE("WindowSceneSync.below_minimum_resize_keeps_restoration", "[.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -323,7 +323,7 @@ namespace s3d
 
 # endif
 
-	TEST_CASE("WindowSceneSync.placement_across_monitors", "[.screen-coordinates]")
+	TEST_CASE("WindowSceneSync.placement_across_monitors", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -361,7 +361,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowSceneSync.fullscreen_resize_uses_final_geometry", "[.fullscreen]")
+	TEST_CASE("WindowSceneSync.fullscreen_resize_uses_final_geometry", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);

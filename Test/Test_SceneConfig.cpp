@@ -269,7 +269,7 @@ TEST_CASE("SceneConfig.unchanged_and_filter_only_preserve_executed_pixels")
 
 # if SIV3D_PLATFORM(WINDOWS)
 
-TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
+TEST_CASE("SceneConfig.Windows.maximize_minimize_restore", "[.window-ui]")
 {
 	REQUIRE_FALSE(Window::GetState().fullscreen);
 	const RestoreSceneConfig restoreScene;

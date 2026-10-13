@@ -231,7 +231,7 @@ namespace s3d
 		CheckNativeGeometry();
 	}
 
-	TEST_CASE("WindowStateSync.resize_and_placement_are_immediate")
+	TEST_CASE("WindowStateSync.resize_and_placement_are_immediate", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);

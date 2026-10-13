@@ -111,7 +111,7 @@ namespace s3d
 		CHECK(Window::GetPos() == before);
 	}
 
-	TEST_CASE("ScreenCoordinates.macOS.placement_round_trips", "[.screen-coordinates]")
+	TEST_CASE("ScreenCoordinates.macOS.placement_round_trips", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -164,7 +164,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("ScreenCoordinates.macOS.cursor_pixels_and_scene_transforms", "[.screen-coordinates]")
+	TEST_CASE("ScreenCoordinates.macOS.cursor_pixels_and_scene_transforms", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		CGEventRef savedEvent = ::CGEventCreate(nullptr);
@@ -299,7 +299,7 @@ namespace s3d
 		CheckVisibleFrame(requested);
 	}
 
-	TEST_CASE("ScreenCoordinates.Windows.placement_round_trips")
+	TEST_CASE("ScreenCoordinates.Windows.placement_round_trips", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -348,7 +348,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("ScreenCoordinates.Windows.resize_preserves_position")
+	TEST_CASE("ScreenCoordinates.Windows.resize_preserves_position", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -388,7 +388,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("ScreenCoordinates.Windows.dpi_notification_uses_native_origin")
+	TEST_CASE("ScreenCoordinates.Windows.dpi_notification_uses_native_origin", "[.screen-coordinates][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);

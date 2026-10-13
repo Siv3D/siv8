@@ -268,6 +268,13 @@ does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
 
+Native fullscreen, maximize/minimize, cross-monitor placement, and desktop
+pointer tests share `[.window-ui]`. Run `[window-ui]` explicitly, or use
+`[fullscreen]` / `[screen-coordinates]` for those subsets. The default suite
+retains geometry calculations, native state checks, and local window resizing.
+The [test selection guide](../development/README.md#window-ui-tests) explains
+how to exclude UI cases when using name filters.
+
 [WindowSceneTestHelper.hpp](../../Test/WindowSceneTestHelper.hpp) shares passive
 Window/Scene snapshots, placement restoration, and transition pauses. Each test
 keeps its restoration sequence and additional guards locally. Placement calls
@@ -305,17 +312,18 @@ native scene-buffer identity and executed/pending pixels across a compound
 fullscreen-exit resize; it uses `[.fullscreen]` and 500 ms transition pauses.
 
 ```sh
-./macOS/run-tests.sh '--test-case=WindowSceneSync.*'
+./macOS/run-tests.sh '--test-case=~[window-ui]WindowSceneSync.*'
+./macOS/run-tests.sh '--test-case=[window-ui]'
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowSceneSync.*,WindowStateSync.*,MonitorInfo.*,ScreenCoordinates.*,SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Window*,~[window-ui]Scene*,MonitorInfo.*,~[window-ui]ScreenCoordinates.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
 ./WindowsDesktop/run-tests.ps1
 ```
 
 The explicit `WindowSceneSync.*` filter includes its opt-in cases. The normal
-suite excludes both fullscreen and cross-monitor placement cases. Windows
+suite excludes fullscreen, maximize/minimize, and cross-monitor placement cases. Windows
 regression runs should include a mixed-DPI pair in both directions: immediate
 Scene/cursor updates after placement, compound resize buffer reuse, below-minimum
 rejection after fullscreen/maximized restoration, and API/Alt+Enter transitions.
@@ -359,10 +367,11 @@ native detachment path used by GLFW on monitor disconnection, then checks window
 state, Scene configuration, sizing, cursor conversion, placement, resizing, and a
 subsequent shortcut/API fullscreen round trip. This does not unplug a monitor or
 exercise OS display re-enumeration. These cases retain `[.screen-coordinates]` and
-`[.fullscreen]` respectively, with 500 ms pauses after visible transitions:
+`[.fullscreen]` respectively, along with `[.window-ui]`, with 500 ms pauses
+after visible transitions. To run the native UI group explicitly:
 
 ```sh
-./macOS/run-tests.sh '--test-case=WindowMacOS.*'
+./macOS/run-tests.sh '--test-case=[window-ui]'
 ```
 
 Use the [interactive program](../../Test/Manual/SceneHighResolution.md) for
@@ -378,23 +387,26 @@ backbuffer/Scene/cursor consistency. Real mixed-DPI placement is checked only wh
 the attached monitors provide different scale factors. Every native suite also
 starts and shuts down the actual two-thread engine; the runner bounds execution
 and requires complete XML reports. Passing these tests supplements the ownership
-and lock-scope review; it does not constitute a race-detector result.
+and lock-scope review; it does not constitute a race-detector result. The combined
+resize/placement case uses `[.screen-coordinates][.window-ui]`; the handoff and
+other native notification cases remain in the default suite.
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowStateSync.*,SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
-./WindowsDesktop/run-tests.ps1 -Configuration Debug -TestArguments '--test-case=WindowStateSync.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]WindowStateSync.*,~[window-ui]Scene*'
+./WindowsDesktop/run-tests.ps1 -Configuration Debug -TestArguments '--test-case=~[window-ui]WindowStateSync.*'
 ```
 
 [Test_ScreenCoordinates.cpp](../../Test/Test_ScreenCoordinates.cpp) checks Windows
 visible-frame placement, repeated position and resize round trips, both centering
-overloads, and style changes against native rectangles. These cases run in the
-normal suite on attached displays, including mixed DPI and negative origins when
-available. A same-DPI message dispatched through the real HWND thread separately
+overloads, and style changes against native rectangles. Its monitor round trips
+use `[.screen-coordinates][.window-ui]`, including mixed DPI and negative origins
+when available. Initial placement remains in the normal suite. A same-DPI
+message dispatched through the real HWND thread separately
 checks the native origin contract and reentry; it does not simulate changing the
 OS display scale.
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.*,WindowStateSync.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[screen-coordinates]'
 ./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.initial_placement'
 ```
 
@@ -404,11 +416,11 @@ was already visible; the same case also runs after earlier cases in the full sui
 
 On macOS the same file compares public geometry against native Cocoa/Core Graphics
 geometry and checks invalid monitor indices in the default suite. Its placement
-and cursor tests are hidden with `[.screen-coordinates]`: they move the real window
+and cursor tests use `[.screen-coordinates][.window-ui]`: they move the real window
 and pointer on attached monitors, pausing for 500 ms after transitions. Opt in explicitly:
 
 ```sh
-./macOS/run-tests.sh '--test-case=ScreenCoordinates.*'
+./macOS/run-tests.sh '--test-case=[screen-coordinates]'
 ```
 
 The opt-in cases cover decorated/resizable/frameless placement, both centering

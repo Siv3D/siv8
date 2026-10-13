@@ -21,7 +21,7 @@ namespace s3d
 {
 	using namespace Test::Fullscreen;
 
-	TEST_CASE("WindowFullscreen.change_monitor_preserves_window_and_config", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.change_monitor_preserves_window_and_config", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
@@ -238,7 +238,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.scene_config_default_and_reconfigure", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.scene_config_default_and_reconfigure", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;

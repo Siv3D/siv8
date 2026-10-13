@@ -16,7 +16,7 @@ namespace s3d
 {
 	using namespace Test::Fullscreen;
 
-	TEST_CASE("WindowFullscreen.macOS.ui_and_api_preserve_presentation", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.ui_and_api_preserve_presentation", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -78,7 +78,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.macOS.disabled_pending_repeat_and_styles", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.disabled_pending_repeat_and_styles", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -190,7 +190,7 @@ namespace s3d
 		desktop.check();
 	}
 
-	TEST_CASE("WindowFullscreen.macOS.api_preserves_presentation", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.api_preserves_presentation", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -253,7 +253,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.macOS.monitor_round_trip_and_changed_policy", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.monitor_round_trip_and_changed_policy", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -316,7 +316,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.macOS.resize_exits_fullscreen", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.resize_exits_fullscreen", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
@@ -380,7 +380,7 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("WindowFullscreen.macOS.minimized_state_matches_native_window", "[.fullscreen]")
+	TEST_CASE("WindowFullscreen.macOS.minimized_state_matches_native_window", "[.fullscreen][.window-ui]")
 	{
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
