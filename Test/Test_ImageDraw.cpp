@@ -115,6 +115,36 @@ namespace
 					if (paint) shape.paint(image, color, aa);
 					else shape.overwrite(image, color, aa);
 				} },
+			{ "SuperEllipse.frame.n=0.5", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const SuperEllipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 9, 0.5 };
+					if (paint) shape.paintFrame(image, 5.25, color, aa);
+					else shape.overwriteFrame(image, 5.25, color, aa);
+				} },
+			{ "SuperEllipse.frame.n=1.0", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const SuperEllipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 9, 1.0 };
+					if (paint) shape.paintFrame(image, 5.25, color, aa);
+					else shape.overwriteFrame(image, 5.25, color, aa);
+				} },
+			{ "SuperEllipse.frame.n=2.0", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const SuperEllipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 9, 2.0 };
+					if (paint) shape.paintFrame(image, 5.25, color, aa);
+					else shape.overwriteFrame(image, 5.25, color, aa);
+				} },
+			{ "SuperEllipse.frame.n=4.0", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const SuperEllipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 9, 4.0 };
+					if (paint) shape.paintFrame(image, 5.25, color, aa);
+					else shape.overwriteFrame(image, 5.25, color, aa);
+				} },
+			{ "SuperEllipse.frame.n=16.0", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const SuperEllipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 9, 16.0 };
+					if (paint) shape.paintFrame(image, 5.25, color, aa);
+					else shape.overwriteFrame(image, 5.25, color, aa);
+				} },
 			{ "Ellipse.frame", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
 				{
 					const auto shape = Ellipse{ 17.25, 15.75, 13, 7 }.movedBy(offset);
@@ -1237,4 +1267,164 @@ TEST_CASE("ImageDraw.round_strokes_match_distance_union")
 				CAPTURE(pathIndex, thickness, closed);
 				CHECK(largestError <= 1); // Independent distance arithmetic can round at a coverage tie.
 			}
+}
+
+TEST_CASE("ImageDraw.superellipse_frame_boundary_approximation")
+{
+	for (const double n : { 0.25, 0.5, 0.98, 1.0, 1.02, 1.5, 2.0, 4.0, 16.0, 32.0 })
+		for (const Vec2 axes : { Vec2{ 15, 10 }, Vec2{ 17, 1.25 }, Vec2{ 0.2, 0.35 } })
+		{
+			const SuperEllipse shape{ Vec2{ 18.25, 16.75 }, axes, n };
+			Grid<double> distances{ 39, 35 };
+			for (int32 y = 0; y < 35; ++y)
+				for (int32 x = 0; x < 39; ++x)
+					distances[y][x] = Abs(Geometry2D::SignedDistance(shape, Vec2{ x + 0.5, y + 0.5 }));
+			for (const double thickness : { 1.5, 5.25, 18.5 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				{
+					Image actual{ 39, 35, Color{ 0, 0 } };
+					shape.overwriteFrame(actual, thickness, Palette::White, aa);
+					int32 largestExcess = 0, largestDeficit = 0, wrongInterior = 0;
+					for (int32 y = 0; y < 35; ++y)
+						for (int32 x = 0; x < 39; ++x)
+						{
+							const double distance = (distances[y][x] - thickness * 0.5);
+							const int32 expected = int32(Clamp(0.5 - distance, 0.0, 1.0) * 255 + 0.5);
+							largestExcess = Max(largestExcess, int32(actual[y][x].a) - expected);
+							largestDeficit = Max(largestDeficit, expected - int32(actual[y][x].a));
+							// Binary coverage may differ only within the contour approximation band.
+							if (0.126 < Abs(distance)) wrongInterior += ((actual[y][x].a != 0) != (distance < 0));
+						}
+					CAPTURE(n, axes, thickness, bool(aa));
+					if (aa)
+					{
+						CHECK(largestExcess <= 33); // 1/8 pixel chord error plus byte rounding.
+						// A round stroke uses max(rectangle, disk) coverage at each join.
+						// Compared with an exact capsule SDF, this can lose up to
+						// 0.25 / thickness coverage in the one-pixel AA band (thickness >= 1).
+						CHECK(largestDeficit <= (33 + int32(std::ceil(255.0 * 0.25 / thickness))));
+					}
+					else CHECK(wrongInterior == 0);
+				}
+		}
+}
+
+TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
+{
+	const Color color{ 213, 47, 112, 117 };
+	const Image background = Background(Size{ 33, 29 });
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	{
+		Image actual = background, expected = background;
+		const SuperEllipse diamond{ 16, 14, 12, 8, 1 };
+		CHECK(&diamond.paintFrame(actual, 3.5, color, aa) == &diamond);
+		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.paintFrame(expected, 3.5, color, aa);
+		CHECK((actual == expected));
+		CHECK(&diamond.overwriteFrame(actual, 3.5, color, aa) == &diamond);
+		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.overwriteFrame(expected, 3.5, color, aa);
+		CHECK((actual == expected));
+		for (const auto invalid : { SuperEllipse{ 16, 14, 0, 8, 4 }, SuperEllipse{ 16, 14, 12, 0, 4 },
+			SuperEllipse{ 16, 14, 12, 8, 0 }, SuperEllipse{ 16, 14, 12, 8, -1 } })
+		{
+			invalid.paintFrame(actual, 5, color, aa);
+			invalid.overwriteFrame(actual, 5, color, aa);
+		}
+		diamond.paintFrame(actual, 0, color, aa);
+		diamond.overwriteFrame(actual, -1, color, aa);
+		CHECK((actual == expected));
+		Image empty;
+		diamond.paintFrame(empty, 5, color, aa);
+		diamond.overwriteFrame(empty, 5, color, aa);
+		CHECK(empty.isEmpty());
+		for (const double n : { 0.5, 1.0, 2.0, 4.0, 16.0 })
+		{
+			const SuperEllipse shape{ 16, 14, 12, 8, n };
+			actual = background;
+			shape.paintFrame(actual, 7.5, color, aa);
+			for (const Vec2 signs : { Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				expected = background;
+				SuperEllipse{ shape.center, shape.axes * signs, n }.paintFrame(expected, 7.5, color, aa);
+				CHECK((actual == expected));
+			}
+			for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
+			{
+				actual = expected = Image{ 33, 29, Color{ 40, 100, 160, 255 } };
+				ImageDraw::SuperEllipseFrame(actual, shape, 7.5, color, mode, aa);
+				ImageDraw::SuperEllipseFrame(expected, shape, 7.5, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				CHECK((actual == expected));
+			}
+		}
+	}
+	Image explicitAA = background, defaultAA = background, direct = background;
+	const SuperEllipse shape{ 15.25, 13.75, 12, 8, 0.5 };
+	shape.paintFrame(explicitAA, 5, color, EnableAntialiasing::Yes);
+	shape.paintFrame(defaultAA, 5, color);
+	ImageDraw::SuperEllipseFrame(direct, shape, 5, color);
+	CHECK((explicitAA == defaultAA));
+	CHECK((direct == defaultAA));
+	explicitAA = defaultAA = background;
+	shape.overwriteFrame(explicitAA, 5, color, EnableAntialiasing::Yes);
+	shape.overwriteFrame(defaultAA, 5, color);
+	CHECK((explicitAA == defaultAA));
+}
+
+TEST_CASE("ImageDraw.superellipse_frame_symmetry_and_clipping")
+{
+	for (const double n : { 0.5, 1.0, 1.5, 2.0, 4.0, 16.0, 32.0 })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		{
+			const SuperEllipse shape{ 24, 24, 19, 13, n };
+			Image full{ 48, 48, Color{ 0, 0 } };
+			shape.overwriteFrame(full, 3.25, Palette::White, aa);
+			int32 symmetryError = 0;
+			for (int32 y = 0; y < 48; ++y)
+				for (int32 x = 0; x < 48; ++x)
+				{
+					symmetryError = Max(symmetryError, Abs(int32(full[y][x].a) - full[y][47 - x].a));
+					symmetryError = Max(symmetryError, Abs(int32(full[y][x].a) - full[47 - y][x].a));
+				}
+			CHECK(symmetryError <= 1);
+			for (const Point offset : { Point{ 0, 0 }, Point{ 20, 20 }, Point{ 47, 47 }, Point{ 80, 80 } })
+			{
+				Image clipped{ 21, 19, Color{ 0, 0 } }, expected = clipped;
+				shape.movedBy(-offset).overwriteFrame(clipped, 3.25, Palette::White, aa);
+				for (int32 y = 0; y < 19; ++y)
+					for (int32 x = 0; x < 21; ++x)
+						if ((x + offset.x < 48) && (y + offset.y < 48)) expected[y][x] = full[y + offset.y][x + offset.x];
+				CAPTURE(n, bool(aa), offset);
+				CHECK((clipped == expected));
+			}
+		}
+}
+
+TEST_CASE("ImageDraw.benchmark_superellipse_frames", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("SuperEllipse frame contours").unit("draw").epochs(7).minEpochIterations(2);
+	for (const int32 size : { 32, 256, 1024 })
+		for (const double n : { 0.5, 1.0, 2.0, 4.0, 16.0 })
+		{
+			const SuperEllipse shape{ Vec2{ size * 0.5 + 0.25, size * 0.5 + 0.75 }, size * 0.4, size * 0.24, n };
+			Image image{ size, Color{ 40, 70, 100, 255 } };
+			for (const double thickness : { 3.5, size * 0.15 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool paint : { false, true })
+						for (const bool adaptive : { false, true })
+						{
+							const std::string name = std::to_string(size) + "/n=" + std::to_string(n)
+								+ (thickness == 3.5 ? "/thin" : "/wide") + (bool(aa) ? "/AA" : "/NoAA")
+								+ (paint ? "/paint" : "/overwrite") + (adaptive ? "/adaptive" : "/outer");
+							image.fill(Color{ 40, 70, 100, 255 });
+							bench.run(name, [&]
+							{
+								const Color color{ 211, 83, 147, 113 };
+								const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+								if (adaptive) ImageDraw::SuperEllipseFrame(image, shape, thickness, color, mode, aa);
+								else ImageDraw::ClosedLineString(image, shape.outer(QualityFactor{ 1.0 }), thickness, color, mode, aa);
+								ankerl::nanobench::doNotOptimizeAway(image.data());
+							});
+							CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }));
+						}
+		}
 }

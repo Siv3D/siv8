@@ -48,7 +48,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
 | Circle | Fill, frame, pie, arc | Dashed frame, segment, shadow, gradients, patterns; image arc has flat radial cuts and no cap selector |
 | Ellipse | Fill, frame | Pie, dashed frame, gradients, patterns |
-| SuperEllipse | Fill | Frame, gradients, patterns |
+| SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke, arrow, double-headed arrow | Independent end caps, gradients and line styles |
@@ -85,6 +85,18 @@ other exponents use 4x4 samples with AA and pixel-center samples without AA.
 For these cross-sections, sample intervals include the left boundary and exclude
 the right boundary.
 
+Frames approximate the boundary with a closed round-join stroke. They combine
+coverage before compositing, including overlapping parts of concave or thick
+frames. The implementation subdivides a quadrant at the point of maximum chord
+deviation (a 1/8-pixel target, bounded to 16 levels), then reflects the points
+across both axes. This keeps cardinal points exact and avoids repeated powers
+in the other quadrants. Exponent 1 produces the four diamond vertices directly.
+The existing ClosedLineString path owns clipping, AA, and color compositing.
+Its AA combines rectangle/disk coverage at joins; the chord-error target alone
+is not a bound on alpha error relative to exact boundary-distance coverage.
+Unlike the fill, exponent 2 uses this stroke approximation too; it does not
+invoke the more expensive per-pixel Ellipse boundary-distance solver.
+
 ## Validation and measurement
 
 [Test_ImageDraw.cpp](../../Test/Test_ImageDraw.cpp) owns the automated shape
@@ -116,6 +128,11 @@ include single contours and overlapping outer/hole frames. A separate hole-count
 benchmark covers thin and wide frames with 1, 16, and 64 holes; its sequential
 contour calls are a cost reference and intentionally composite overlaps more than
 once. Use both sparse and overlapping contours when checking stroke changes.
+The SuperEllipse frame benchmark includes contour generation inside each timed
+call. It compares adaptive quadrants with `outer(QualityFactor{ 1.0 })` followed
+by the same stroke path, across exponents, thin/wide strokes, AA modes, and image
+sizes. These contours have different approximation errors; compare correctness
+as well as elapsed time.
 Repeated paint converges to an opaque destination; these measurements do not measure fresh
 transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.

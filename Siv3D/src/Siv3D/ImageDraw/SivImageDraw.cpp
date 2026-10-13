@@ -4385,6 +4385,58 @@ namespace s3d
 			}
 		}
 
+		// Approximate one quadrant in local coordinates, then reflect it exactly.
+		// On a convex or concave quadrant the largest chord deviation occurs where
+		// its normal is parallel to the boundary normal. Split at that point.
+		[[nodiscard]]
+		Array<Vec2> MakeSuperEllipseFrameContour(const double a, const double b, const double n)
+		{
+			if (n == 1.0)
+			{
+				return { Vec2{ 0, -b }, Vec2{ a, 0 }, Vec2{ 0, b }, Vec2{ -a, 0 } };
+			}
+
+			Array<Vec2> points;
+			points.reserve(64);
+			points.push_back(Vec2{ 0, b });
+			const double inverseN = (1.0 / n);
+			const double normalExponent = (n / Abs(n - 1.0));
+			const auto append = [&](auto&& self, const Vec2 from, const Vec2 to, const int32 depth) -> void
+			{
+				const Vec2 chord = (to - from);
+				const double nx = (a * Abs(chord.y)), ny = (b * Abs(chord.x));
+				const double ratio = std::pow((Min(nx, ny) / Max(nx, ny)), normalExponent);
+				const double large = std::pow((1.0 / (1.0 + ratio)), inverseN);
+				const double small = std::pow((ratio / (1.0 + ratio)), inverseN);
+				const bool smallX = ((nx < ny) == (1.0 < n));
+				const Vec2 middle{ (a * (smallX ? small : large)), (b * (smallX ? large : small)) };
+				const double cross = chord.cross(middle - from);
+				constexpr double MaxError = 0.125;
+				if ((depth < 16) && ((MaxError * MaxError * chord.lengthSq()) < (cross * cross)))
+				{
+					self(self, from, middle, (depth + 1));
+					self(self, middle, to, (depth + 1));
+				}
+				else
+				{
+					points.push_back(to);
+				}
+			};
+			append(append, Vec2{ 0, b }, Vec2{ a, 0 }, 0);
+
+			const size_t quarter = (points.size() - 1);
+			points.resize(quarter * 4);
+			for (size_t i = 0; i <= quarter; ++i)
+			{
+				const Vec2 p = points[i];
+				points[i] = Vec2{ p.x, -p.y };
+				if (i < quarter) points[quarter * 2 - i] = p;
+				if (i > 0) points[quarter * 4 - i] = Vec2{ -p.x, -p.y };
+				if ((0 < i) && (i < quarter)) points[quarter * 2 + i] = Vec2{ -p.x, p.y };
+			}
+			return points;
+		}
+
 		[[nodiscard]]
 		std::vector<PolygonContourView<Vec2>> MakePolygonContourViews(const Polygon& polygon)
 		{
@@ -4733,6 +4785,30 @@ namespace s3d
 					WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
 				}
 			}
+		}
+
+		void SuperEllipseFrame(
+			Image& image,
+			const SuperEllipse& superEllipse,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const double a = Abs(superEllipse.a), b = Abs(superEllipse.b);
+			if (image.isEmpty() || (a == 0.0) || (b == 0.0) || (superEllipse.n <= 0.0) || (thickness <= 0.0))
+			{
+				return;
+			}
+			const double margin = (thickness * 0.5 + 0.5);
+			if (((superEllipse.x + a + margin) <= 0.0) || (image.width() <= (superEllipse.x - a - margin))
+				|| ((superEllipse.y + b + margin) <= 0.0) || (image.height() <= (superEllipse.y - b - margin)))
+			{
+				return;
+			}
+			const Array<Vec2> points = MakeSuperEllipseFrameContour(a, b, superEllipse.n);
+			ClosedLineString(image, points, superEllipse.center, thickness, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void EllipseFrame(

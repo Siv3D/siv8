@@ -10,10 +10,11 @@ acceptance criterion.
 
 1. Use the complete program below in a separate Siv3D application.
 2. Press **A** to toggle CPU antialiasing. Press **Space** to cycle the
-   SuperEllipse exponent through 0.5, 1, 2, 4, and 16.
+   SuperEllipse exponent through 0.5, 1, 2, 4, and 16. Press **F** to cycle its
+   fill, thin frame, and wide frame.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
-4. Record the platform, exponent, AA setting, and observed result. The program
+4. Record the platform, exponent, fill/frame mode, AA setting, and observed result. The program
    writes no files and does not replace the repository test application's Main.
 
 ## Expected results
@@ -26,8 +27,10 @@ acceptance criterion.
   combines the frames before applying color; the overlap must not become darker.
   The GPU may composite the contours separately.
 - SuperEllipse changes from concave to diamond to ellipse to a rounded box.
-  Its image path at exponent 2 matches Ellipse. Other exponents use 4x4 samples,
-  so very small features can disappear between sample positions.
+  Its image fill at exponent 2 matches Ellipse. Other fills use 4x4 samples,
+  so very small features can disappear between sample positions. Frames are
+  centered on an approximation of the boundary and have rounded corners. Check
+  horizontal/vertical symmetry and that wide concave frames have no darker overlaps.
 - Paint raises background alpha. Overwrite replaces alpha in fully covered
   pixels. Both preserve pixels outside the shape. The grayscale views distinguish
   these effects from ordinary display blending.
@@ -48,6 +51,8 @@ void Main()
 	const Color ink{ 220, 60, 130, 113 };
 	const Array<double> exponents{ 0.5, 1, 2, 4, 16 };
 	size_t exponentIndex = 3;
+	int32 superEllipseMode = 0;
+	const Array<String> modes{ U"fill", U"thin frame", U"wide frame" };
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -78,8 +83,17 @@ void Main()
 		else if (kind == 3)
 		{
 			const SuperEllipse shape{ 96.25, 64.75, 76, 49, exponents[exponentIndex] };
-			if (paint) shape.paint(image, ink, antialiasing);
-			else shape.overwrite(image, ink, antialiasing);
+			if (superEllipseMode == 0)
+			{
+				if (paint) shape.paint(image, ink, antialiasing);
+				else shape.overwrite(image, ink, antialiasing);
+			}
+			else
+			{
+				const double thickness = (superEllipseMode == 1 ? 3.5 : 24.5);
+				if (paint) shape.paintFrame(image, thickness, ink, antialiasing);
+				else shape.overwriteFrame(image, thickness, ink, antialiasing);
+			}
 		}
 		else
 		{
@@ -92,6 +106,7 @@ void Main()
 	{
 		if (KeyA.down()) { aa = !aa; dirty = true; }
 		if (KeySpace.down()) { exponentIndex = (exponentIndex + 1) % exponents.size(); dirty = true; }
+		if (KeyF.down()) { superEllipseMode = (superEllipseMode + 1) % 3; dirty = true; }
 		if (dirty)
 		{
 			textures.clear();
@@ -106,7 +121,7 @@ void Main()
 				}
 			dirty = false;
 		}
-		font(U"A: AA = {}   Space: exponent = {}"_fmt(aa, exponents[exponentIndex])).draw(20, 12);
+		font(U"A: AA = {}   Space: exponent = {}   F: {}"_fmt(aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
 		for (int32 row = 0; row < 5; ++row)
 		{
@@ -119,7 +134,12 @@ void Main()
 				else if (kind == 0) Circle{ pos + Vec2{ 96.25, 64.75 }, 49.5 }.draw(ink);
 				else if (kind == 1) Ellipse{ pos + Vec2{ 96.5, 64.5 }, 79, 11 }.drawFrame(3.25, ink);
 				else if (kind == 2) RoundRect{ pos.x + 20.25, pos.y + 62.7, 152, 0.6, 0.1 }.draw(ink);
-				else if (kind == 3) SuperEllipse{ pos + Vec2{ 96.25, 64.75 }, 76, 49, exponents[exponentIndex] }.draw(ink);
+				else if (kind == 3)
+				{
+					const SuperEllipse shape{ pos + Vec2{ 96.25, 64.75 }, 76, 49, exponents[exponentIndex] };
+					if (superEllipseMode == 0) shape.draw(ink);
+					else shape.drawFrame((superEllipseMode == 1 ? 3.5 : 24.5), ink);
+				}
 				else holed.drawFrame(pos, 24.5, ink);
 			}
 		}
