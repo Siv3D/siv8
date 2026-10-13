@@ -101,6 +101,7 @@
 		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
+		D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */; };
 		C94BD36A8015474EA6324EE1 /* Halftone.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C94BD36A8015474EA6324EE2 /* Halftone.hpp */; };
 		CB18F53A72B24D0B9103E402 /* Test_TestEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */; };
 		CB2DC0DE0000000000000002 /* ScopedConstantBuffer2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CB2DC0DE0000000000000001 /* ScopedConstantBuffer2D.hpp */; };
@@ -3494,6 +3495,7 @@
 		BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Transformer2D.cpp; sourceTree = "<group>"; };
 		C224C34DFA94D88428B6C2F2 /* SivScopedQuadWarp2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedQuadWarp2D.cpp; sourceTree = "<group>"; };
 		C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleDashedFrame.cpp; sourceTree = "<group>"; };
+		D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEllipsePie.cpp; sourceTree = "<group>"; };
 		C94BD36A8015474EA6324EE2 /* Halftone.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Halftone.hpp; sourceTree = "<group>"; };
 		C983F9CE786B5AC23850C05D /* catch_amalgamated.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = catch_amalgamated.cpp; sourceTree = "<group>"; };
 		CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TestEnvironment.cpp; sourceTree = "<group>"; };
@@ -7283,6 +7285,7 @@
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
 				42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */,
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
+				D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */,
 				D17C8F3E20984E4B83160002 /* Test_Renderer2DPipelineState.cpp */,
 				CB2DCAFE0000000000000012 /* Test_ConstantBuffer.cpp */,
 				AFF94ACA4F194DF6A0EF1CA6 /* Test_LineStringIndexCount.cpp */,
@@ -16947,6 +16950,7 @@
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
 				1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */,
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,
+				D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */,
 				D17C8F3E20984E4B83160001 /* Test_Renderer2DPipelineState.cpp in Sources */,
 				CB2DCAFE0000000000000011 /* Test_ConstantBuffer.cpp in Sources */,
 				5E416ED3BF56463B99B4622C /* Test_LineStringIndexCount.cpp in Sources */,

@@ -21,7 +21,7 @@ Other shape methods expose an AA switch. The non-AA Circle fill retains its
 integer raster: center and radius are rounded to the nearest integer, with ties
 toward positive infinity. Circle frames with an inner hole and partial sweeps
 use pixel centers; a frame whose inner circle disappears reuses the fill path.
-A full pie or arc also reuses the corresponding fill or frame. Round line caps
+A full pie, segment, or arc also reuses the corresponding fill or frame. Round line caps
 use pixel centers even for zero-length lines. The integer fill path is retained
 for its lower cost on small non-AA circles; coordinate uniformity alone does not
 justify replacing it with per-row square roots.
@@ -46,7 +46,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | --- | --- | --- |
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
 | Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
-| Circle | Fill, frame, pie, arc | Dashed frame, segment, shadow, gradients, patterns; image arc has flat radial cuts and no cap selector |
+| Circle | Fill, frame, pie, arc, segment (height / angles) | Dashed frame, shadow, gradients, patterns; image arc has flat radial cuts and no cap selector |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
@@ -75,6 +75,29 @@ with `.draw()`. Triangle-union rasterization is separate API work; it is not add
 to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
+
+## Circle segments
+
+`paintSegment()` / `overwriteSegment()` specify a circular segment by its arc
+midpoint direction and height from the chord to the arc. Their `FromAngles`
+forms specify the arc endpoints through a start angle and signed sweep. Both
+forms use the same rasterizer. Angle conversion uses a squared sine for height
+to avoid cancellation in small segments. Full segments delegate to the existing
+Circle fill, retaining its integer no-AA raster and distance-based AA.
+
+Partial segments intersect analytic disk cross-sections with the chord's
+half-plane. The bounds include chord endpoints and the retained cardinal
+extrema. They use pixel centers without AA and 4x4 samples with AA, including
+boundary samples, and reuse one sample-count row. Geometry is resolved before
+compositing, so a translucent segment writes each covered pixel once. No-AA
+writes spans directly without allocating a coverage row. The AA switch selects
+a specialization before the scan loop, removing sample-count arithmetic and AA
+branches from the no-AA path. Floating-point ties
+can differ at boundaries; partial and full shapes use different AA approximations.
+
+Both Image forms require a positive radius, consistent with Image Circle pies.
+GPU `drawSegmentFromAngles()` uses the radius magnitude, while GPU height-based
+`drawSegment()` also requires a positive radius.
 
 ## Ellipse pies
 
@@ -123,6 +146,10 @@ matrix, independent compositing and sampling references, and opt-in benchmarks.
 The [manual gallery](../../Test/Manual/ImageWriting.md) compares CPU and GPU
 appearance and exposes alpha as grayscale. Automated coverage comparisons do not
 replace this visual check.
+[GPU Ellipse pie tests](../../Test/Test_Renderer2DEllipsePie.cpp) capture full
+sweeps in both directions, including multiple revolutions and several start
+angles, for solid, radial-gradient, and pattern drawing. Full sweeps reuse
+regular Ellipse drawing before converting partial-pie endpoint directions.
 
 Run from the repository root on macOS, outside the sandbox:
 
@@ -137,7 +164,8 @@ with the same test filters; do not infer Windows performance from macOS timings.
 The implementation shares scanline intersections across each AA sample row for
 polygons. Their shared sample accumulator handles partial endpoint pixels
 separately from the contiguous interior, allowing the latter to be vectorized.
-Ellipse pies and SuperEllipse fills use the same accumulator. Ellipse fill classifies pixels with a bound on normalized radius before
+Ellipse pies, Circle segments, and SuperEllipse fills use the same accumulator.
+Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
 
@@ -159,6 +187,11 @@ Polygon pies using geometric ray angles. Polygon construction is excluded and
 its approximation is not pixel-identical to the analytic region. It covers
 narrow and major sectors and both moderate and thin aspect ratios; the smallest
 narrow pies may miss all pixel-center or AA samples.
+The Circle segment benchmark compares the analytic path with prebuilt Polygon
+segments across shallow and major caps, axis-aligned and oblique chords, AA
+modes, and image sizes. Polygon construction is excluded; tessellated contours
+have a different approximation error. Large no-AA overwrite cases can favor
+the Polygon reference, so compare AA and no-AA results separately.
 Repeated paint converges to an opaque destination; these measurements do not measure fresh
 transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.

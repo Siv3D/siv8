@@ -528,6 +528,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintSegment(Image& dst, const double arcMidpointAngle, const double height, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegment(dst, *this, arcMidpointAngle, height, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteSegment(Image& dst, const double arcMidpointAngle, const double height, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegment(dst, *this, arcMidpointAngle, height, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintSegmentFromAngles
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintSegmentFromAngles(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegmentFromAngles(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteSegmentFromAngles
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteSegmentFromAngles(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegmentFromAngles(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

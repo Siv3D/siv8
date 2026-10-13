@@ -537,6 +537,11 @@ namespace s3d
 			return *this;
 		}
 
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(color);
+		}
+
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
 		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
@@ -561,6 +566,11 @@ namespace s3d
 			return *this;
 		}
 
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(innerColor, outerColor);
+		}
+
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
 		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
@@ -582,6 +592,11 @@ namespace s3d
 		if ((axes.x == 0.0) || (axes.y == 0.0) || (angle == 0.0))
 		{
 			return *this;
+		}
+
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(pattern);
 		}
 
 		const float rx = Abs(static_cast<float>(a));

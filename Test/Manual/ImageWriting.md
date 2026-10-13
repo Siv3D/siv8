@@ -12,7 +12,9 @@ acceptance criterion.
 2. Press **A** to toggle CPU antialiasing. Press **Space** to cycle the
    SuperEllipse exponent through 0.5, 1, 2, 4, and 16. Press **F** to cycle its
    fill, thin frame, and wide frame. Press **P** to switch the Ellipse column
-   between its frame, minor pie, major pie, negative pie, and full pie.
+   between its frame, minor pie, major pie, negative pie, and full pie. Press **C**
+   to switch Circle between fill, shallow segment, semicircle, major segment,
+   negative-angle segment, and full segment.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -23,11 +25,16 @@ acceptance criterion.
 - AA edges have intermediate coverage; disabling AA removes intermediate coverage
   from these shape operations. RectF has no AA toggle and is not in this gallery.
 - Translucent circle fills and thin rounded rectangles have no darker bands.
+  Circle segments have a straight chord and a circular arc. Shallow segments
+  exclude the center; major segments include it. Height-based segments point
+  30 degrees clockwise from up. The negative-angle segment follows a -4.5-radian
+  arc from that direction. Full segments match ordinary circle fills. Check
+  chord/arc intersections for missing pixels or repeated compositing.
 - The ellipse frame is continuous, including along the long axis. Its pies use
   angles measured from the center in image coordinates: zero points up and
   positive angles turn clockwise. The first ray is 30 degrees clockwise from up.
   Negative sweeps turn counterclockwise. Major pies have no darker band where
-  their regions meet; full CPU pies match regular ellipse fills.
+  their regions meet; full CPU and GPU pies each match their regular ellipse fills.
 - The last column has a Polygon with a hole and overlapping wide frames. The CPU
   combines the frames before applying color; the overlap must not become darker.
   The GPU may composite the contours separately.
@@ -58,6 +65,9 @@ void Main()
 	size_t exponentIndex = 3;
 	int32 superEllipseMode = 0;
 	const Array<String> modes{ U"fill", U"thin frame", U"wide frame" };
+	int32 circleMode = 0;
+	const Array<String> circleModes{ U"fill", U"shallow segment", U"semicircle", U"major segment", U"negative segment", U"full segment" };
+	const Array<double> heights{ 0, 0.2, 1.0, 1.8 };
 	int32 ellipseMode = 0;
 	const Array<String> ellipseModes{ U"frame", U"minor pie", U"major pie", U"negative pie", U"full pie" };
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
@@ -74,8 +84,22 @@ void Main()
 		if (kind == 0)
 		{
 			const Circle shape{ 96.25, 64.75, 49.5 };
-			if (paint) shape.paint(image, ink, antialiasing);
-			else shape.overwrite(image, ink, antialiasing);
+			if (circleMode == 0)
+			{
+				if (paint) shape.paint(image, ink, antialiasing);
+				else shape.overwrite(image, ink, antialiasing);
+			}
+			else if (circleMode < 4)
+			{
+				if (paint) shape.paintSegment(image, PieStart, shape.r * heights[circleMode], ink, antialiasing);
+				else shape.overwriteSegment(image, PieStart, shape.r * heights[circleMode], ink, antialiasing);
+			}
+			else
+			{
+				const double sweep = (circleMode == 4 ? -4.5 : -Math::TwoPi);
+				if (paint) shape.paintSegmentFromAngles(image, PieStart, sweep, ink, antialiasing);
+				else shape.overwriteSegmentFromAngles(image, PieStart, sweep, ink, antialiasing);
+			}
 		}
 		else if (kind == 1)
 		{
@@ -124,6 +148,7 @@ void Main()
 		if (KeyA.down()) { aa = !aa; dirty = true; }
 		if (KeySpace.down()) { exponentIndex = (exponentIndex + 1) % exponents.size(); dirty = true; }
 		if (KeyF.down()) { superEllipseMode = (superEllipseMode + 1) % 3; dirty = true; }
+		if (KeyC.down()) { circleMode = (circleMode + 1) % 6; dirty = true; }
 		if (KeyP.down()) { ellipseMode = (ellipseMode + 1) % 5; dirty = true; }
 		if (dirty)
 		{
@@ -140,7 +165,7 @@ void Main()
 			dirty = false;
 		}
 		font(U"A: AA = {}   Space: exponent = {}   F: {}"_fmt(aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		font(U"P: Ellipse = {}"_fmt(ellipseModes[ellipseMode])).draw(20, 32);
+		font(U"C: Circle = {}   P: Ellipse = {}"_fmt(circleModes[circleMode], ellipseModes[ellipseMode])).draw(20, 32);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
 		for (int32 row = 0; row < 5; ++row)
 		{
@@ -150,7 +175,13 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
-				else if (kind == 0) Circle{ pos + Vec2{ 96.25, 64.75 }, 49.5 }.draw(ink);
+				else if (kind == 0)
+				{
+					const Circle shape{ pos + Vec2{ 96.25, 64.75 }, 49.5 };
+					if (circleMode == 0) shape.draw(ink);
+					else if (circleMode < 4) shape.drawSegment(PieStart, shape.r * heights[circleMode], ink);
+					else shape.drawSegmentFromAngles(PieStart, (circleMode == 4 ? -4.5 : -Math::TwoPi), ink);
+				}
 				else if (kind == 1)
 				{
 					const Ellipse shape{ pos + Vec2{ 96.5, 64.5 }, 79, (ellipseMode == 0 ? 11 : 35) };

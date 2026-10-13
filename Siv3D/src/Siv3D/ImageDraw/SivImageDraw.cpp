@@ -4269,6 +4269,93 @@ namespace s3d
 			return (left <= right);
 		}
 
+		template <bool Antialias>
+		void FillCircleSegmentBySpans(
+			const ImageView view, const Circle& circle, const double arcMidpointAngle, const double height,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			const Vec2 normal = DirectionFromSiv3DAngle(arcMidpointAngle);
+			const double offset = (circle.r - height);
+			const double chordHalfWidth = std::sqrt(height * (2.0 * circle.r - height));
+			const Vec2 chordCenter = (circle.center + normal * offset);
+			const Vec2 tangent{ -normal.y, normal.x };
+			BoundsD bounds;
+			bounds.include(chordCenter + tangent * chordHalfWidth);
+			bounds.include(chordCenter - tangent * chordHalfWidth);
+			for (const Vec2 direction : { Vec2{ 0, -1 }, Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ -1, 0 } })
+			{
+				if (offset <= normal.dot(direction) * circle.r)
+				{
+					bounds.include(circle.center + direction * circle.r);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			const double radiusSq = (circle.r * circle.r);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double dy = (y + (sy + 0.5) / samples - circle.y);
+					const double widthSq = (radiusSq - dy * dy);
+					if (widthSq < 0.0)
+					{
+						continue;
+					}
+					const double halfWidth = std::sqrt(widthSq);
+					double left = -halfWidth, right = halfWidth;
+					// Intersect the disk span with normal.dot(p - center) >= radius - height.
+					if (normal.x > 0.0)
+					{
+						left = Max(left, ((offset - normal.y * dy) / normal.x));
+					}
+					else if (normal.x < 0.0)
+					{
+						right = Min(right, ((offset - normal.y * dy) / normal.x));
+					}
+					else if ((normal.y * dy) < offset)
+					{
+						continue;
+					}
+					if (right < left)
+					{
+						continue;
+					}
+					const double l = Clamp(circle.x + left, static_cast<double>(x0), static_cast<double>(x1));
+					const double r = Clamp(circle.x + right, static_cast<double>(x0), static_cast<double>(x1));
+					const int32 begin = CeilToInt(l * samples - 0.5);
+					const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+					if constexpr (Antialias)
+					{
+						AddSubpixelSamples4(coverage, begin - x0 * 4, end - x0 * 4);
+					}
+					else if (begin < end)
+					{
+						Color* row = view.data + static_cast<size_t>(y) * view.stride;
+						writer.write(row + begin, static_cast<size_t>(end - begin));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					for (auto& value : coverage)
+					{
+						value = static_cast<uint8>((value * 255 + 8) / 16);
+					}
+					Color* row = view.data + static_cast<size_t>(y) * view.stride;
+					WriteCoverageRow(writer, row, x0, coverage);
+				}
+			}
+		}
+
 		void FillEllipsePieBySpans(
 			const ImageView view, const Ellipse& ellipse, const CircleSectorData& sector,
 			const Color color, const ImagePixel::BlendMode blendMode,
@@ -4829,6 +4916,50 @@ namespace s3d
 				color,
 				sampleCount
 			);
+		}
+
+		void CircleSegment(
+			Image& image, const Circle& circle, const double arcMidpointAngle, const double height,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 < height))
+			{
+				return;
+			}
+			if ((2.0 * circle.r) <= height)
+			{
+				Fill(image, circle, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCircleSegmentBySpans<true>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCircleSegmentBySpans<false>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+			}
+		}
+
+		void CircleSegmentFromAngles(
+			Image& image, const Circle& circle, const double startAngle, const double angle,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !HasNonZeroSweep(angle))
+			{
+				return;
+			}
+			if (IsFullCircleSweep(angle))
+			{
+				Fill(image, circle, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			// 1 - cos(angle / 2) loses the height of small segments through cancellation.
+			const double s = std::sin(angle * 0.25);
+			CircleSegment(image, circle, (startAngle + angle * 0.5), (2.0 * circle.r * s * s),
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Fill(

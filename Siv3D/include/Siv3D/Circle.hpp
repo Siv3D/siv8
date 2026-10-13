@@ -968,6 +968,70 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param arcMidpointAngle 弧の中央の方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param height 弦から弧の中央までの高さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment
+		const Circle& paintSegment(Image& dst, double arcMidpointAngle, double height, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param arcMidpointAngle 弧の中央の方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param height 弦から弧の中央までの高さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment
+		const Circle& overwriteSegment(Image& dst, double arcMidpointAngle, double height, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintSegmentFromAngles
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 弧の開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment_angles
+		const Circle& paintSegmentFromAngles(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteSegmentFromAngles
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 弧の開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment_angles
+		const Circle& overwriteSegmentFromAngles(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////

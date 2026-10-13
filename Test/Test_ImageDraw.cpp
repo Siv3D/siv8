@@ -73,6 +73,30 @@ namespace
 					if (paint) shape.paint(image, color, aa);
 					else shape.overwrite(image, color, aa);
 				} },
+			{ "Circle.segment.minor", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintSegment(image, 0.37, 4.5, color, aa);
+					else shape.overwriteSegment(image, 0.37, 4.5, color, aa);
+				} },
+			{ "Circle.segment.major", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintSegment(image, 0.37, 18.5, color, aa);
+					else shape.overwriteSegment(image, 0.37, 18.5, color, aa);
+				} },
+			{ "Circle.segment.angle", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintSegmentFromAngles(image, 0.37, 1.2, color, aa);
+					else shape.overwriteSegmentFromAngles(image, 0.37, 1.2, color, aa);
+				} },
+			{ "Circle.segment.negative", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
+					if (paint) shape.paintSegmentFromAngles(image, 0.37, -4.5, color, aa);
+					else shape.overwriteSegmentFromAngles(image, 0.37, -4.5, color, aa);
+				} },
 			{ "Circle.frame", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
 				{
 					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
@@ -1616,6 +1640,222 @@ TEST_CASE("ImageDraw.benchmark_ellipse_pies", "[.benchmark]")
 								{
 									if (paint) ellipse.paintPie(image, Start, sweep, color, aa);
 									else ellipse.overwritePie(image, Start, sweep, color, aa);
+								}
+								else
+								{
+									if (paint) polygon.paint(image, color, aa);
+									else polygon.overwrite(image, color, aa);
+								}
+								ankerl::nanobench::doNotOptimizeAway(image.data());
+							});
+						}
+			}
+}
+
+TEST_CASE("ImageDraw.circle_segment_matches_implicit_samples")
+{
+	for (const Circle circle : { Circle{ 16.31, 14.73, 12.25 }, Circle{ 2.31, -0.27, 12.25 },
+		Circle{ 16.31, 14.73, 0.3 }, Circle{ 16.31, 14.73, 1.2 }, Circle{ -30, 14.73, 12.25 } })
+		for (const double midpoint : { 0.0, Math::HalfPi, Math::Pi, 0.37, -7.25 })
+			for (const double ratio : { 0.001, 0.05, 0.5, 1.0, 1.5, 1.999 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				{
+					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual;
+					const double height = (circle.r * ratio);
+					circle.overwriteSegment(actual, midpoint, height, Palette::White, aa);
+					const int32 samples = aa ? 4 : 1;
+					// Independent point tests: implicit disk and projection onto the arc midpoint.
+					for (int32 y = 0; y < 31; ++y)
+						for (int32 x = 0; x < 35; ++x)
+						{
+							int32 covered = 0;
+							for (int32 sy = 0; sy < samples; ++sy)
+								for (int32 sx = 0; sx < samples; ++sx)
+								{
+									const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
+									covered += ((p.lengthSq() <= circle.r * circle.r)
+										&& (circle.r - height <= p.x * std::sin(midpoint) - p.y * std::cos(midpoint)));
+								}
+							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
+							expected[y][x] = Color{ c, c };
+						}
+					CAPTURE(circle, midpoint, ratio, bool(aa));
+					CHECK((actual == expected));
+				}
+}
+
+TEST_CASE("ImageDraw.circle_segment_angle_samples_and_direction")
+{
+	for (const Circle circle : { Circle{ 16.31, 14.73, 12.25 }, Circle{ 2.31, -0.27, 12.25 }, Circle{ 16.31, 14.73, 0.3 } })
+		for (const double start : { 0.0, Math::HalfPi, 0.37, -7.25 })
+			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, -1.2, -4.5, Math::TwoPi - 0.001 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				{
+					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual, reversed = actual;
+					circle.overwriteSegmentFromAngles(actual, start, sweep, Palette::White, aa);
+					circle.overwriteSegmentFromAngles(reversed, start + sweep, -sweep, Palette::White, aa);
+					const int32 samples = aa ? 4 : 1;
+					// Construct the directed chord from the arc endpoints, independently of height conversion.
+					const double clockwiseStart = (sweep < 0 ? start + sweep : start);
+					const Vec2 a = circle.getPointByAngle(clockwiseStart);
+					const Vec2 b = circle.getPointByAngle(clockwiseStart + Abs(sweep));
+					for (int32 y = 0; y < 31; ++y)
+						for (int32 x = 0; x < 35; ++x)
+						{
+							int32 covered = 0;
+							for (int32 sy = 0; sy < samples; ++sy)
+								for (int32 sx = 0; sx < samples; ++sx)
+								{
+									const Vec2 p{ x + (sx + 0.5) / samples, y + (sy + 0.5) / samples };
+									covered += (((p - circle.center).lengthSq() <= circle.r * circle.r) && ((b - a).cross(p - a) <= 0));
+								}
+							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
+							expected[y][x] = Color{ c, c };
+						}
+					CAPTURE(circle, start, sweep, bool(aa));
+					CHECK((actual == expected));
+					CHECK((actual == reversed));
+				}
+}
+
+TEST_CASE("ImageDraw.circle_segment_full_empty_defaults_and_alpha")
+{
+	const Circle circle{ 16.31, 14.73, 12.25 };
+	const Color color{ 211, 83, 147, 113 };
+	const Image background = Background(Size{ 35, 31 });
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		for (const bool paint : { false, true })
+		{
+			const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+			for (const double height : { 2 * circle.r, 3 * circle.r })
+			{
+				Image actual = background, expected = background;
+				if (paint) CHECK(&circle.paintSegment(actual, 0.31, height, color, aa) == &circle);
+				else CHECK(&circle.overwriteSegment(actual, 0.31, height, color, aa) == &circle);
+				ImageDraw::Fill(expected, circle, color, mode, aa);
+				CHECK((actual == expected));
+			}
+			for (const double sweep : { Math::TwoPi, -Math::TwoPi, 7.5, -12.0 })
+			{
+				Image actual = background, expected = background;
+				if (paint) CHECK(&circle.paintSegmentFromAngles(actual, 0.31, sweep, color, aa) == &circle);
+				else CHECK(&circle.overwriteSegmentFromAngles(actual, 0.31, sweep, color, aa) == &circle);
+				ImageDraw::Fill(expected, circle, color, mode, aa);
+				CHECK((actual == expected));
+			}
+			Image actual = background;
+			for (const double radius : { -12.25, 0.0 })
+				for (const double height : { 3.0, 30.0 })
+				{
+					const Circle invalid{ circle.center, radius };
+					ImageDraw::CircleSegment(actual, invalid, 0.3, height, color, mode, aa);
+					ImageDraw::CircleSegmentFromAngles(actual, invalid, 0.3, height, color, mode, aa);
+				}
+			for (const double height : { -1.0, 0.0 }) ImageDraw::CircleSegment(actual, circle, 0.3, height, color, mode, aa);
+			ImageDraw::CircleSegmentFromAngles(actual, circle, 0.3, 0, color, mode, aa);
+			CHECK((actual == background));
+			for (const double height : { 2.0, 12.25, 22.0, 30.0 })
+			{
+				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
+				ImageDraw::CircleSegment(opaque, circle, 0.37, height, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				ImageDraw::CircleSegment(general, circle, 0.37, height, color, mode, aa);
+				CHECK((opaque == general));
+			}
+			for (const double sweep : { 1.2, -4.5, Math::TwoPi })
+			{
+				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
+				ImageDraw::CircleSegmentFromAngles(opaque, circle, 0.37, sweep, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				ImageDraw::CircleSegmentFromAngles(general, circle, 0.37, sweep, color, mode, aa);
+				CHECK((opaque == general));
+			}
+		}
+	for (const bool angles : { false, true })
+		for (const bool paint : { false, true })
+		{
+			Image actual = background, direct = background, explicitAA = background;
+			const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+			if (angles)
+			{
+				if (paint) circle.paintSegmentFromAngles(actual, 0.37, -4.5, color);
+				else circle.overwriteSegmentFromAngles(actual, 0.37, -4.5, color);
+				ImageDraw::CircleSegmentFromAngles(direct, circle, 0.37, -4.5, color, mode);
+				ImageDraw::CircleSegmentFromAngles(explicitAA, circle, 0.37, -4.5, color, mode, EnableAntialiasing::Yes);
+			}
+			else
+			{
+				if (paint) circle.paintSegment(actual, 0.37, 18.5, color);
+				else circle.overwriteSegment(actual, 0.37, 18.5, color);
+				ImageDraw::CircleSegment(direct, circle, 0.37, 18.5, color, mode);
+				ImageDraw::CircleSegment(explicitAA, circle, 0.37, 18.5, color, mode, EnableAntialiasing::Yes);
+			}
+			CHECK((actual == direct));
+			CHECK((actual == explicitAA));
+		}
+}
+
+TEST_CASE("ImageDraw.circle_segment_chord_boundary_and_half_circle")
+{
+	const Circle circle{ 12.5, 12.5, 6 };
+	Image image{ 25, 25, Color{ 0, 0 } };
+	circle.overwriteSegment(image, 0, 4, Palette::White, EnableAntialiasing::No);
+	CHECK(image[6][12] == Palette::White);
+	CHECK(image[10][12] == Palette::White);
+	CHECK(image[11][12].a == 0);
+	CHECK(image[5][12].a == 0);
+	CHECK(image[10][18].a == 0);
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	{
+		Image actual{ 25, 25, Color{ 0, 0 } }, expected = actual;
+		circle.overwriteSegment(actual, 0, circle.r, Palette::White, aa);
+		// An upward semicircle, including its diameter and the left/right circle tangents.
+		for (int32 y = 0; y < 25; ++y)
+			for (int32 x = 0; x < 25; ++x)
+			{
+				const int32 samples = aa ? 4 : 1;
+				int32 covered = 0;
+				for (int32 sy = 0; sy < samples; ++sy)
+					for (int32 sx = 0; sx < samples; ++sx)
+					{
+						const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
+						covered += ((p.y <= 0) && (p.lengthSq() <= 36));
+					}
+				const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
+				expected[y][x] = Color{ c, c };
+			}
+		CHECK((actual == expected));
+	}
+}
+
+TEST_CASE("ImageDraw.benchmark_circle_segments", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Circle segments: analytic spans and prebuilt polygons").unit("draw").epochs(7).minEpochIterations(2);
+	for (const int32 size : { 32, 256, 1024 })
+		for (const double ratio : { 0.05, 0.5, 1.8 })
+			for (const double midpoint : { 0.0, 0.61 })
+			{
+				const Circle circle{ Vec2{ size * 0.5 + 0.25, size * 0.5 + 0.75 }, size * 0.4 };
+				const double halfAngle = std::acos(1.0 - ratio);
+				const int32 segments = Max(2, int32(std::ceil(QualityFactor{ 2.0 }.toPointsPerCircle(circle.r).value() * halfAngle / Math::Pi)));
+				Array<Vec2> points;
+				for (int32 i = 0; i <= segments; ++i) points.push_back(circle.getPointByAngle(midpoint - halfAngle + 2 * halfAngle * i / segments));
+				const Polygon polygon{ points };
+				REQUIRE(polygon);
+				Image image{ size, Color{ 40, 70, 100, 255 } };
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool paint : { false, true })
+						for (const bool analytic : { false, true })
+						{
+							const std::string name = std::to_string(size) + "/height=" + std::to_string(ratio) + "/angle=" + std::to_string(midpoint)
+								+ (bool(aa) ? "/AA" : "/NoAA") + (paint ? "/paint" : "/overwrite") + (analytic ? "/spans" : "/polygon");
+							image.fill(Color{ 40, 70, 100, 255 });
+							bench.run(name, [&]
+							{
+								const Color color{ 211, 83, 147, 113 };
+								if (analytic)
+								{
+									if (paint) circle.paintSegment(image, midpoint, circle.r * ratio, color, aa);
+									else circle.overwriteSegment(image, midpoint, circle.r * ratio, color, aa);
 								}
 								else
 								{

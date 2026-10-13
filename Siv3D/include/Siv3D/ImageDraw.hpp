@@ -206,6 +206,52 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @anchor image_draw_circle_segment
+		/// @brief 円の弓形を描画します。
+		/// @param image 描画先画像
+		/// @param circle 基準となる円
+		/// @param arcMidpointAngle 弧の中央の方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param height 弦から弧の中央までの高さ（ピクセル）
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark height が直径以上の場合は円全体を描画します。
+		/// @remark circle.r または height が正でない場合は何もしません。
+		/// @remark 画像の範囲外はクリップされます。
+		void CircleSegment(
+			Image& image,
+			const Circle& circle,
+			double arcMidpointAngle,
+			double height,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @anchor image_draw_circle_segment_angles
+		/// @brief 円の弓形を描画します。
+		/// @param image 描画先画像
+		/// @param circle 基準となる円
+		/// @param startAngle 弧の開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark |angle| が 2π 以上の場合は円全体を描画します。
+		/// @remark circle.r が正でない場合、または angle が 0 の場合は何もしません。
+		/// @remark 画像の範囲外はクリップされます。
+		void CircleSegmentFromAngles(
+			Image& image,
+			const Circle& circle,
+			double startAngle,
+			double angle,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 楕円を描画します。
 		/// @param image 描画先画像
 		/// @param ellipse 描画する楕円

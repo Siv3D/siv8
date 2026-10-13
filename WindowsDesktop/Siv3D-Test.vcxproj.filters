@@ -283,6 +283,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp">
       <Filter>Test</Filter>
     </ClCompile>
