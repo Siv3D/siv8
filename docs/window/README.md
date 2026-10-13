@@ -291,10 +291,15 @@ These are native runtime checks; macOS compilation does not validate them.
 attached displays, preferring different DPI scales. It checks both directions
 across the six configurations and explicit fullscreen following, repeated/current
 and invalid monitor requests, changes to policy while fullscreen, and exits through
-the API, shortcut, and three Resize functions. Restoration uses the original
-window's monitor, position, and scale. Immediate and next-frame presentation are
-checked; macOS also checks that desktop modes remain unchanged. Windows injects
-missing-monitor snapshots through the native command path before checking recovery.
+the API, shortcut, and three Resize functions. MSAA is retained, including after
+changing it while fullscreen. Restoration uses the original window's monitor,
+position, and scale. With three displays, one existing round
+trip enters fullscreen on B, moves to C, and restores the original window on A.
+Immediate and next-frame presentation are checked; macOS also checks that desktop
+modes remain unchanged. Windows injects
+missing-monitor snapshots through the native command path before checking recovery,
+including native style retention. Native client dimensions and DPI are compared
+with the published fullscreen state.
 The case is hidden and skips when fewer than two displays are attached.
 The WindowSceneSync buffer-preservation case also changes fullscreen monitors
 when available before resizing, retaining its executed/pending pixel checks.

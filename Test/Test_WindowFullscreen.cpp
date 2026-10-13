@@ -1145,6 +1145,9 @@ namespace s3d
 		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
+		const auto originalSamples = Scene::GetMSAASampleCount();
+		const ScopeExit restoreSamples{ [=] { Scene::SetMSAASampleCount(originalSamples); } };
+		auto expectedSamples = originalSamples;
 		const auto monitors = System::EnumerateMonitors();
 		REQUIRE_FALSE(monitors.isEmpty());
 		if (monitors.size() < 2)
@@ -1184,7 +1187,12 @@ namespace s3d
 			RECT native{};
 			REQUIRE(::GetWindowRect(MainWindow(), &native));
 			CHECK(Rect{ native.left, native.top, native.right - native.left, native.bottom - native.top } == monitors[target].displayRect);
+			RECT client{};
+			REQUIRE(::GetClientRect(MainWindow(), &client));
+			CHECK(Size{ client.right - client.left, client.bottom - client.top } == state.frameBufferSize);
 			CHECK(state.frameBufferSize == monitors[target].displayRect.size);
+			CHECK(state.scaling == (::GetDpiForWindow(MainWindow()) / 96.0));
+			CHECK(state.virtualSize == Math::Round(state.frameBufferSize / state.scaling).asPoint());
 # else
 			CHECK(state.virtualSize == monitors[target].displayRect.size);
 			CHECK(state.frameBufferSize == monitors[target].fullscreenResolution);
@@ -1199,7 +1207,18 @@ namespace s3d
 			SceneConfig::WindowPixels(), following })
 		{
 			const size_t source = ((step % 2) ? second : first), target = ((step % 2) ? first : second);
+			size_t entry = source;
+			if ((step == 0) && (2 < monitors.size()))
+			{
+				// Reuse this round trip for window A -> fullscreen B -> fullscreen C -> A.
+				for (size_t i = 0; i < monitors.size(); ++i)
+				{
+					if ((i != source) && (i != target)) { entry = i; break; }
+				}
+			}
 			CAPTURE(step, source, target, config.sizeMode, config.resolution, config.fullscreen);
+			Catch::cout() << "transfer step=" << step << " window=" << source
+				<< " fullscreen=" << entry << " -> " << target << '\n';
 			REQUIRE(Window::CenterToScreen(source));
 			REQUIRE(Window::Resize(600, 400, CenterWindow::No));
 			const auto windowed = Window::GetState();
@@ -1213,9 +1232,10 @@ namespace s3d
 					expected = ((config.sizeMode == SceneSizeMode::Window) ? Window::GetState().virtualSize : Window::GetState().frameBufferSize);
 				}
 				CheckSelectedConfig(config, expected);
+				CHECK(Scene::GetMSAASampleCount() == expectedSamples);
 			};
-			SetFullscreenWithPause(true, source);
-			checkTarget(source);
+			SetFullscreenWithPause(true, entry);
+			checkTarget(entry);
 			check();
 			REQUIRE(System::Update());
 			check();
@@ -1226,11 +1246,21 @@ namespace s3d
 			checkTarget(target);
 			check();
 			const auto full = Window::GetState();
+# if SIV3D_PLATFORM(WINDOWS)
+			const auto style = ::GetWindowLongPtrW(MainWindow(), GWL_STYLE);
+			const auto extendedStyle = ::GetWindowLongPtrW(MainWindow(), GWL_EXSTYLE);
+# endif
 			const auto checkUnmoved = [&]
 			{
 				CHECK(Window::GetState().bounds == full.bounds);
 				CHECK(Window::GetState().frameBufferSize == full.frameBufferSize);
+				CHECK(Window::GetState().virtualSize == full.virtualSize);
+				CHECK(Window::GetState().scaling == full.scaling);
 				CHECK(Window::GetState().fullscreen);
+# if SIV3D_PLATFORM(WINDOWS)
+				CHECK(::GetWindowLongPtrW(MainWindow(), GWL_STYLE) == style);
+				CHECK(::GetWindowLongPtrW(MainWindow(), GWL_EXSTYLE) == extendedStyle);
+# endif
 				check();
 			};
 			Window::SetFullscreen(true, target);
@@ -1263,6 +1293,8 @@ namespace s3d
 				config.fullscreen = FullscreenSceneMode::KeepSize;
 				config.scalingFilter = TextureFilter::Nearest;
 				Scene::Configure(config);
+				expectedSamples = MSAASampleCount::NoMSAA;
+				Scene::SetMSAASampleCount(expectedSamples);
 				SetFullscreenWithPause(true, source);
 				checkTarget(source);
 				check();
