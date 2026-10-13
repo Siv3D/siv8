@@ -18,7 +18,7 @@ void Main()
 
 	const Texture texture{ U"example/windmill.png" };
 	const Texture emoji{ U"🔥"_emoji, 200 };
-	const Font font{ 40, Typeface::Bold };
+	const Font font{ FontMethod::MSDF, 40, Typeface::Bold };
 	font.addFallback(Font{ 40, Typeface::ColorEmoji });
 
 	Print << U"Hello, Siv3D! 🐥";
