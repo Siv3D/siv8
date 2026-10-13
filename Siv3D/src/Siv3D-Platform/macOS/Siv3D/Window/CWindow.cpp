@@ -13,7 +13,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
-# include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Window.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -107,7 +107,7 @@ namespace s3d
 
 		if (::glfwTakeFullscreenToggleRequest_Siv3D(m_glfwWindow))
 		{
-			setFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
+			Window::SetFullscreen(not m_state.fullscreen, System::GetCurrentMonitorIndex());
 		}
 		
 		if (::glfwWindowShouldClose(m_glfwWindow))
@@ -224,9 +224,6 @@ namespace s3d
 		WindowMisc::SetPos(m_glfwWindow, pos);
 		
 		updateState();
-
-		// Moving between screens can change the backing scale without a resize.
-		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -411,9 +408,6 @@ namespace s3d
 		}
 		
 		updateState();
-
-		// Keep also needs the new framebuffer geometry for rendering and input.
-		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////

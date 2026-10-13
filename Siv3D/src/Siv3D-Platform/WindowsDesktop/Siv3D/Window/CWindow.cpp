@@ -17,7 +17,7 @@
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
-# include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Window.hpp>
 # include <Siv3D/Console/IConsole.hpp>
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -143,7 +143,7 @@ namespace s3d
 			auto expected = ToggleFullscreenState::Requested;
 			if (m_toggleFullscreenState.compare_exchange_strong(expected, ToggleFullscreenState::Enabled))
 			{
-				setFullscreen(not getState().fullscreen, System::GetCurrentMonitorIndex());
+				Window::SetFullscreen(not getState().fullscreen, System::GetCurrentMonitorIndex());
 			}
 		}
 		if constexpr (SIV3D_BUILD(DEBUG))
@@ -325,7 +325,6 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::maximize()");
 
-		bool maximized = false;
 		invokeOnWindowThread([&]
 		{
 			if (m_osState.style == WindowStyle::Fixed)
@@ -334,9 +333,7 @@ namespace s3d
 				return;
 			}
 			::ShowWindow(m_hWnd, SW_MAXIMIZE);
-			maximized = true;
 		});
-		if (maximized) { SIV3D_ENGINE(Renderer)->updateSceneSize(); }
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -349,8 +346,6 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::restore()");
 		invokeOnWindowThread([&] { ::ShowWindow(m_hWnd, SW_RESTORE); });
-
-		SIV3D_ENGINE(Renderer)->updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -393,8 +388,8 @@ namespace s3d
 
 	bool CWindow::resize(const Size size, const bool virtualSize)
 	{
-		// These boundaries preserve the existing intermediate Scene updates on
-		// leaving fullscreen/restoring maximization, including rejected sizes.
+		// Read the latest native state before testing the size. Fullscreen exit
+		// and restoration must publish the destination DPI before resizing.
 		invokeOnWindowThread([] {});
 		if ((virtualSize ? getState().virtualSize : getState().frameBufferSize) == size)
 		{
@@ -465,10 +460,7 @@ namespace s3d
 
 	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex, const WindowsMonitor::Functions& functions)
 	{
-		bool changed = false;
-		invokeOnWindowThread([&] { changed = setFullscreenOnWindowThread(fullscreen, monitorIndex, functions); });
-		// Keep the selected scene policy; Keep also needs the new presentation size.
-		if (changed) { SIV3D_ENGINE(Renderer)->updateSceneSize(); }
+		invokeOnWindowThread([&] { setFullscreenOnWindowThread(fullscreen, monitorIndex, functions); });
 	}
 
 	bool CWindow::setFullscreenOnWindowThread(const bool fullscreen, const size_t monitorIndex, const WindowsMonitor::Functions& functions)

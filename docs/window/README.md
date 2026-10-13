@@ -60,6 +60,36 @@ stays unchanged when the window moves between monitors. The point limit is
 recomputed when the backing scale changes, and applied when the window becomes
 resizable if it was set while using Fixed or Frameless style.
 
+## Applying window changes to Scene
+
+Geometry operations in the public `Window::` API apply the observed window state
+to Scene before returning. For example, `SetPos()` across displays updates the
+render resolution and cursor transform for the observed destination scale.
+Native animations may produce more changes later; frame preparation consumes
+those notifications before rendering and input updates. Minimization retains the
+last usable scene geometry. See [Window.hpp](../../Siv3D/include/Siv3D/Window.hpp)
+for the return-value and failure contracts.
+
+The shared [Window facade](../../Siv3D/src/Siv3D/Window/SivWindow.cpp) owns the Scene
+update at the end of each public geometry operation. Native backends publish
+`WindowState` without applying Scene. Their intermediate state remains available
+for restored-monitor DPI conversion and cross-DPI centering. Resize completes its
+native restoration, size request, and optional centering before applying Scene;
+a `false` resize result still applies the observed final window state. Shortcut
+requests use the public fullscreen path.
+
+Only the final scene size and render resolution determine whether to clear or
+replace the scene buffers. Native intermediate sizes do not discard executed
+pixels or allocate temporary scene buffers. Pending drawing is retained and no
+flush is forced. Separate public calls each apply their own result.
+
+A native operation and its Scene update are not a rollback transaction. In
+particular, Windows can restore a fullscreen or maximized window before rejecting
+a below-minimum resize. Scene follows that restored state when the call returns
+`false`. Resource-update exceptions propagate; already completed native changes
+are not undone. Centering catches failure to resolve the current monitor, but
+not errors from the subsequent move or Scene update.
+
 ## Fullscreen
 
 `Window::SetFullscreen()` covers the selected display without changing its OS
@@ -183,11 +213,11 @@ command. Completion includes publication to the slot; the engine consumes it
 before returning from the API or updating Scene. This also supplies the intermediate
 geometry read by cross-DPI `CenterToScreen()`. Commands edit the current OS state;
 they never write an engine snapshot back to it. Fullscreen exit and maximized
-restore retain their existing intermediate Scene updates during resize, including
-below-minimum requests. GPU work, Scene updates, and cursor transforms stay on the
-engine thread, with no forced flush and no change to the existing immediate versus
-next-frame Scene update sites. Alt+Enter retains its atomic request/cancellation
-state and uses the same engine-side fullscreen operation.
+restore publish their intermediate Window state for destination-DPI calculations;
+Scene is applied by the shared facade after the whole operation, including a
+below-minimum rejection. GPU work, Scene updates, and cursor transforms stay on
+the engine thread. Alt+Enter retains its atomic request/cancellation state and
+uses the public fullscreen operation.
 
 State-notification scopes nest without locking. Only the outermost completion
 copies to the shared slot, so `WM_SIZE` publishes bounds, flags and both dimensions
@@ -210,6 +240,37 @@ boundaries, not in getters or ordinary frame synchronization. This ownership mod
 does not make arbitrary concurrent public Window API calls supported.
 
 ## Validation
+
+[Test_WindowSceneSync.cpp](../../Test/Test_WindowSceneSync.cpp) checks public
+operation boundaries: immediate and next-frame presentation for the six common
+scene configurations, maximization/restoration, asynchronous minimization, and
+Scene synchronization after a rejected centering request. Invalid resize sizes
+leave state unchanged, while same-size requests retain the centering option.
+The macOS allocation-error case temporarily rejects texture creation on the
+renderer device, checks both centering overloads, and verifies retained resources
+and recovery. This is injected allocation failure, not physical GPU exhaustion.
+The Windows case checks below-minimum rejection after maximized restoration.
+Its opt-in `placement_across_monitors` case checks explicit placement and centering against
+attached displays. The `fullscreen_resize_uses_final_geometry` case checks
+native scene-buffer identity and executed/pending pixels across a compound
+fullscreen-exit resize; it uses `[.fullscreen]` and 500 ms transition pauses.
+
+```sh
+./macOS/run-tests.sh '--test-case=WindowSceneSync.*'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowSceneSync.*,WindowStateSync.*,MonitorInfo.*,ScreenCoordinates.*,SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=WindowFullscreen.*'
+./WindowsDesktop/run-tests.ps1
+```
+
+The explicit `WindowSceneSync.*` filter includes its opt-in cases. The normal
+suite excludes both fullscreen and cross-monitor placement cases. Windows
+regression runs should include a mixed-DPI pair in both directions: immediate
+Scene/cursor updates after placement, compound resize buffer reuse, below-minimum
+rejection after fullscreen/maximized restoration, and API/Alt+Enter transitions.
+These are native runtime checks; macOS compilation does not validate them.
 
 [Test_MonitorInfo.cpp](../../Test/Test_MonitorInfo.cpp) controls native identity and
 enumeration inputs to check empty/missing displays and later enumeration growth,

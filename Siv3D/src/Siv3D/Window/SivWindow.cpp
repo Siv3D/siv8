@@ -51,6 +51,62 @@ namespace s3d
 		}
 # endif
 # endif
+		bool CenterWindowOnCurrentScreen()
+		{
+# if SIV3D_PLATFORM(WINDOWS)
+			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), none);
+# else
+			SIV3D_ENGINE(Window)->show();
+			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
+
+			MonitorInfo monitor;
+			try
+			{
+				monitor = System::GetCurrentMonitor();
+			}
+			catch (const Error&)
+			{
+				return false;
+			}
+			CenterToMonitor(monitor);
+			return true;
+# endif
+		}
+
+		bool CenterWindowOnScreen(const size_t monitorIndex)
+		{
+# if SIV3D_PLATFORM(WINDOWS)
+			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), monitorIndex);
+# else
+			SIV3D_ENGINE(Window)->show();
+			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
+
+			const Array<MonitorInfo> monitors = System::EnumerateMonitors();
+
+			if (monitors.size() <= monitorIndex)
+			{
+				return false;
+			}
+
+# if SIV3D_PLATFORM(MACOS)
+			// Outer-frame dimensions stay in points across backing-scale changes.
+			CenterToMonitor(monitors[monitorIndex]);
+# else
+			const size_t currentMonitorIndex = System::GetCurrentMonitorIndex();
+
+			if (currentMonitorIndex == monitorIndex)
+			{
+				CenterToMonitor(monitors[monitorIndex]);
+			}
+			else
+			{
+				CenterToOtherMonitor(monitors[currentMonitorIndex], monitors[monitorIndex]);
+			}
+# endif
+
+			return true;
+# endif
+		}
 	}
 
 	namespace Window
@@ -97,6 +153,7 @@ namespace s3d
 		void SetStyle(const WindowStyle style)
 		{
 			SIV3D_ENGINE(Window)->setStyle(style);
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -119,6 +176,7 @@ namespace s3d
 		void SetPos(const Point screenPos)
 		{
 			SIV3D_ENGINE(Window)->setPos(screenPos);
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		void SetPos(const int32 screenX, const int32 screenY)
@@ -145,59 +203,18 @@ namespace s3d
 
 		bool CenterToScreen()
 		{
-# if SIV3D_PLATFORM(WINDOWS)
-			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), none);
-# else
-			SIV3D_ENGINE(Window)->show();
-			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
-
-			try
-			{
-				CenterToMonitor(System::GetCurrentMonitor());
-
-				return true;
-			}
-			catch (const Error&)
-			{
-				return false;
-			}
-# endif
+			const bool centered = CenterWindowOnCurrentScreen();
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+			return centered;
 		}
 
 		bool CenterToScreen(const size_t monitorIndex)
 		{
-# if SIV3D_PLATFORM(WINDOWS)
-			return WindowMisc::CenterToScreen(*SIV3D_ENGINE(Window), monitorIndex);
-# else
-			SIV3D_ENGINE(Window)->show();
-			if (SIV3D_ENGINE(Window)->getState().fullscreen) { return false; }
-
-			const Array<MonitorInfo> monitors = System::EnumerateMonitors();
-
-			if (monitors.size() <= monitorIndex)
-			{
-				return false;
-			}
-
-# if SIV3D_PLATFORM(MACOS)
-			// Outer-frame dimensions stay in points across backing-scale changes.
-			CenterToMonitor(monitors[monitorIndex]);
-# else
-			const size_t currentMonitorIndex = System::GetCurrentMonitorIndex();
-
-			if (currentMonitorIndex == monitorIndex)
-			{
-				CenterToMonitor(monitors[monitorIndex]);
-			}
-			else
-			{
-				CenterToOtherMonitor(monitors[currentMonitorIndex], monitors[monitorIndex]);
-			}
-# endif
-
-			return true;
-# endif
+			const bool centered = CenterWindowOnScreen(monitorIndex);
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+			return centered;
 		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Maximize
@@ -207,6 +224,7 @@ namespace s3d
 		void Maximize()
 		{
 			SIV3D_ENGINE(Window)->maximize();
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -218,6 +236,7 @@ namespace s3d
 		void Restore()
 		{
 			SIV3D_ENGINE(Window)->restore();
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -229,6 +248,7 @@ namespace s3d
 		void Minimize()
 		{
 			SIV3D_ENGINE(Window)->minimize();
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -261,19 +281,13 @@ namespace s3d
 				throw Error{ "Window::ResizeVirtual(): width and height must be in the range [1, 8192]" };
 			}
 
-			if (not SIV3D_ENGINE(Window)->resizeByVirtualSize(size))
+			const bool resized = SIV3D_ENGINE(Window)->resizeByVirtualSize(size);
+			if (resized && centerWindow)
 			{
-				return false;
+				CenterWindowOnCurrentScreen();
 			}
-
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
-
-			if (centerWindow)
-			{
-				CenterToScreen();
-			}
-
-			return true;
+			return resized;
 		}
 
 		bool ResizeVirtual(const int32 width, const int32 height, const CenterWindow centerWindow)
@@ -295,19 +309,13 @@ namespace s3d
 				throw Error{ "Window::ResizeActual(): width and height must be in the range [1, 8192]" };
 			}
 
-			if (not SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size))
+			const bool resized = SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size);
+			if (resized && centerWindow)
 			{
-				return false;
+				CenterWindowOnCurrentScreen();
 			}
-
 			SIV3D_ENGINE(Renderer)->updateSceneSize();
-
-			if (centerWindow)
-			{
-				CenterToScreen();
-			}
-
-			return true;
+			return resized;
 		}
 
 		bool ResizeActual(const int32 width, const int32 height, const CenterWindow centerWindow)
@@ -324,6 +332,7 @@ namespace s3d
 		void SetMinimumFrameBufferSize(const Size size)
 		{
 			SIV3D_ENGINE(Window)->setMinimumFrameBufferSize(size);
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -335,6 +344,7 @@ namespace s3d
 		void SetFullscreen(const bool fullscreen, const size_t monitorIndex)
 		{
 			SIV3D_ENGINE(Window)->setFullscreen(fullscreen, monitorIndex);
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////

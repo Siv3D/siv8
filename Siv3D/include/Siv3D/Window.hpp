@@ -23,6 +23,12 @@ namespace s3d
 	enum class WindowStyle : uint8;
 	struct Point;
 
+	/// @brief ウィンドウの操作
+	/// @details 位置・寸法・表示状態の操作は、関数が返る時点で取得できたウィンドウの状態をシーンサイズ・描画解像度・カーソルの座標変換に反映します。
+	/// OS のアニメーションなどで後から生じる変更は System::Update() で反映します。最小化中は最後の有効なシーン寸法を維持します。
+	/// シーン寸法の変更に伴う描画内容の扱いは Scene::Configure() と同じです。
+	/// カーソルの新しい入力サンプルは System::Update() で取得します。
+	/// 描画資源の更新で例外が発生した場合、完了済みのウィンドウ操作は取り消されません。
 	namespace Window
 	{
 		////////////////////////////////////////////////////////////////
@@ -77,6 +83,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウスタイルを変更します。
+		/// @remark フルスクリーン中は変更しません。
 		/// @param style 新しいウィンドウスタイル
 		void SetStyle(WindowStyle style);
 
@@ -98,11 +105,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウ外枠の左上を指定したスクリーン座標に移動させます。
+		/// @remark フルスクリーン中は移動しません。
 		/// @remark 主モニターの左上が原点で、右が X の正方向、下が Y の正方向です。単位は Windows ではピクセル、macOS では point です。
 		/// @param screenPos 移動先のスクリーン座標
 		void SetPos(Point screenPos);
 
 		/// @brief ウィンドウ外枠の左上を指定したスクリーン座標に移動させます。
+		/// @remark フルスクリーン中は移動しません。
 		/// @remark 主モニターの左上が原点で、右が X の正方向、下が Y の正方向です。単位は Windows ではピクセル、macOS では point です。
 		/// @param screenX 移動先のスクリーン X 座標
 		/// @param screenY 移動先のスクリーン Y 座標
@@ -126,12 +135,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在のモニターのワークエリアの中央にウィンドウを移動させます。
-		/// @return 移動に成功した場合 true, それ以外の場合は false
+		/// @return 移動に成功した場合 true。フルスクリーン中、または対象モニターを取得できない場合は false。
 		bool CenterToScreen();
 
 		/// @brief 指定したモニターのワークエリアの中央にウィンドウを移動させます。
 		/// @param monitorIndex モニターのインデックス
-		/// @return 移動に成功した場合 true, それ以外の場合は false
+		/// @return 移動に成功した場合 true。フルスクリーン中、または対象モニターを取得できない場合は false。
 		bool CenterToScreen(size_t monitorIndex);
 
 		////////////////////////////////////////////////////////////////
@@ -141,6 +150,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウを最大化します。
+		/// @remark WindowStyle::Fixed の場合は最大化しません。
 		void Maximize();
 
 		////////////////////////////////////////////////////////////////
@@ -170,16 +180,16 @@ namespace s3d
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param size 新しいサイズ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `ResizeVirtual(size, centerWindow)` と同じです。
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
+		/// @remark サイズ指定・失敗時の扱いは `ResizeVirtual(size, centerWindow)` と同じです。
 		bool Resize(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `ResizeVirtual(width, height, centerWindow)` と同じです。
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
+		/// @remark サイズ指定・失敗時の扱いは `ResizeVirtual(width, height, centerWindow)` と同じです。
 		bool Resize(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
@@ -191,16 +201,18 @@ namespace s3d
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param size 新しいサイズ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(size, centerWindow)` と同じです。サイズを変更する場合はフルスクリーンを解除します。
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
+		/// @remark サイズを変更する場合はフルスクリーンを解除します。現在と同じサイズならフルスクリーンを維持します。
+		/// @remark Windows ではサイズ変更時に最小サイズの制限を適用し、下回る場合 false を返します。この判定の前に行った全画面・最大化からの復帰は取り消されません。
+		/// @throws Error 幅または高さが [1, 8192] の範囲外の場合。ウィンドウは変更されません。
 		bool ResizeVirtual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(width, height, centerWindow)` と同じです。サイズを変更する場合はフルスクリーンを解除します。
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
+		/// @remark サイズ指定・失敗時の扱いは `ResizeVirtual(Size{ width, height }, centerWindow)` と同じです。
 		bool ResizeVirtual(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
@@ -210,18 +222,18 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
-		/// @remark サイズを変更する場合はフルスクリーンを解除します。macOS では復帰先のモニターの倍率で point 単位に丸めます。
+		/// @remark 全画面の解除、サイズの範囲、Windows の最小サイズ未満の扱いは ResizeVirtual() と同じです。macOS では復帰先のモニターの倍率で point 単位に丸めます。
 		/// @param size 新しいサイズ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
 		bool ResizeActual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
-		/// @remark サイズを変更する場合はフルスクリーンを解除します。macOS では復帰先のモニターの倍率で point 単位に丸めます。
+		/// @remark 全画面の解除、サイズの範囲、Windows の最小サイズ未満の扱いは ResizeVirtual() と同じです。macOS では復帰先のモニターの倍率で point 単位に丸めます。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
 		/// @param centerWindow ウィンドウを画面中央へ移動させるか
-		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @return サイズ変更に成功した場合、または現在と同じサイズの場合 true。それ以外の場合は false。中央配置の成否は含みません。
 		bool ResizeActual(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
@@ -231,6 +243,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウを手動でリサイズするときの最小サイズを実サイズ基準で設定します。
+		/// @remark Windows では Resize()、ResizeVirtual()、ResizeActual() にも適用されます。
 		/// @param size 設定するサイズ（ピクセル）
 		/// @remark macOS では、指定したピクセル数を下回らないよう point 単位に切り上げます。
 		void SetMinimumFrameBufferSize(Size size);
@@ -244,8 +257,9 @@ namespace s3d
 		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
 		/// @remark ディスプレイの表示モードを変更せず、指定したモニター全体に表示します。
 		/// @remark Scene::GetConfig() が返す表示設定を維持します。
+		/// @remark 既に指定したモードの場合は何もしません。対象モニターを取得できない場合は切り替えません。
 		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
-		/// @param monitorIndex 表示するモニタのインデックス
+		/// @param monitorIndex 全画面へ入る際のモニターのインデックス。範囲外の場合は現在のモニターを使用します。
 		void SetFullscreen(bool fullscreen, size_t monitorIndex = System::GetCurrentMonitorIndex());
 
 		////////////////////////////////////////////////////////////////

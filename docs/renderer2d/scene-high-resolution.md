@@ -163,7 +163,9 @@ against the current target. Internal curve subdivision uses the raster scale
 at draw recording time; public `GetRMSScaling()` retains its Local/Camera meaning.
 Explicitly constructed CPU geometry retains its requested quality.
 
-Window events and explicit resize APIs share the same size calculation. In
+Window events and explicit geometry APIs share the same size calculation.
+Public Window operations apply Scene from their final observed geometry; see
+[window operation boundaries](../window/README.md#applying-window-changes-to-scene). In
 particular, `ResizeActual()` with `SceneSizeMode::Window` uses the observed virtual size, not
 the physical-size argument. DPI is derived from the actual framebuffer geometry
 rather than multiplying a nominal OS scale again.

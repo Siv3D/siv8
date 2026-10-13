@@ -44,6 +44,7 @@
 		D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */; };
 		32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D40DB715FB894747959F2B98 /* Test_WindowMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		E450BA1048C14C68926AE6A1 /* Test_WindowSceneSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		69BE70F1E9AA49D2A2E15E03 /* Test_MemoryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1E0B8510EEB4E829EA47A55 /* Test_MemoryReader.cpp */; };
@@ -3504,6 +3505,7 @@
 		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
 		95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowFullscreen.cpp; sourceTree = "<group>"; };
 		5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowMacOS.cpp; sourceTree = "<group>"; };
+		E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_WindowSceneSync.cpp; sourceTree = "<group>"; };
 		ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = Test_WindowStateSync.cpp; sourceTree = "<group>"; };
 		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		E928752BE27A427C911BFA02 /* Ripple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ripple.hpp; sourceTree = "<group>"; };
@@ -7239,6 +7241,7 @@
 				49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */,
 				95FCF25232CB422CB99D95C4 /* Test_WindowFullscreen.cpp */,
 				5367824C80784359BE8A50C4 /* Test_WindowMacOS.cpp */,
+				E450BA1048C14C68926AE6A2 /* Test_WindowSceneSync.cpp */,
 				ADB35F6511EE4BCCAA931322 /* Test_WindowStateSync.cpp */,
 				BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */,
 				AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */,
@@ -16864,6 +16867,7 @@
 				D6AFD069CC0B4508BAB1F21E /* Test_SceneConfig.cpp in Sources */,
 				32CCD8BC07FD4717B9D184FE /* Test_WindowFullscreen.cpp in Sources */,
 				D40DB715FB894747959F2B98 /* Test_WindowMacOS.cpp in Sources */,
+				E450BA1048C14C68926AE6A1 /* Test_WindowSceneSync.cpp in Sources */,
 				ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */,
 				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,
 				B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */,

@@ -229,6 +229,9 @@
     <ClCompile Include="..\Test\Test_WindowMacOS.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_WindowStateSync.cpp">
       <Filter>Test</Filter>
     </ClCompile>
