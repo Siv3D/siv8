@@ -11,7 +11,8 @@
 
 [設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
 
-- `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は Ellipse の pie、Circle の segment / arc cap、独立した線端、join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
+- `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は Circle の segment / arc cap、独立した線端、join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
+- GPU の `Ellipse::drawPie()` の1周以上の扱いを修正する。`AdjustEllipsePieAngles()` は端点方向から角度を再構成するため周回が失われ、開始角度 0・角度 2π は角度 0 になって描画されない。正負の1周・複数周と開始角度を変えたケースを確認する。
 - [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の自動テストと Release ベンチマークを実行する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 

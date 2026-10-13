@@ -4215,6 +4215,29 @@ namespace s3d
 			}
 		}
 
+		void AddSubpixelSamples4(std::vector<uint8>& samples, const int32 begin, const int32 end)
+		{
+			if (begin >= end)
+			{
+				return;
+			}
+			const size_t first = static_cast<size_t>(begin / 4);
+			const size_t last = static_cast<size_t>((end - 1) / 4);
+			if (first == last)
+			{
+				samples[first] += static_cast<uint8>(end - begin);
+				return;
+			}
+			samples[first] += static_cast<uint8>(4 - begin % 4);
+			// Interior pixels each receive four samples; keep this loop contiguous
+			// so it can be vectorized independently of the partial endpoint pixels.
+			for (size_t i = (first + 1); i < last; ++i)
+			{
+				samples[i] += 4;
+			}
+			samples[last] += static_cast<uint8>((end - 1) % 4 + 1);
+		}
+
 		// Add one horizontal subpixel row to a 4x4 sample-count row.
 		// Each interval owns its left boundary and excludes its right boundary.
 		void AddSubpixelSpan4(
@@ -4223,11 +4246,122 @@ namespace s3d
 		{
 			const int32 begin = CeilToInt(4.0 * Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
 			const int32 end = CeilToInt(4.0 * Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
-			for (int32 sample = begin; sample < end;)
+			AddSubpixelSamples4(samples, begin, end);
+		}
+
+		// Clip a horizontal interval to normal.x * x + normal.y * y >= 0.
+		// Coordinates are relative to the sector center; equality belongs to the sector.
+		[[nodiscard]]
+		bool ClipSectorSpan(double& left, double& right, const Vec2 normal, const double y) noexcept
+		{
+			if (normal.x > 0.0)
 			{
-				const int32 next = Min(end, (sample / 4 + 1) * 4);
-				samples[static_cast<size_t>(sample / 4)] += static_cast<uint8>(next - sample);
-				sample = next;
+				left = Max(left, (-normal.y / normal.x * y));
+			}
+			else if (normal.x < 0.0)
+			{
+				right = Min(right, (-normal.y / normal.x * y));
+			}
+			else if ((normal.y * y) < 0.0)
+			{
+				return false;
+			}
+			return (left <= right);
+		}
+
+		void FillEllipsePieBySpans(
+			const ImageView view, const Ellipse& ellipse, const CircleSectorData& sector,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
+		{
+			BoundsD bounds;
+			bounds.include(ellipse.center);
+			for (const Vec2 direction : { sector.startDir, sector.endDir })
+			{
+				const Vec2 normalized = (direction / ellipse.axes);
+				bounds.include(ellipse.center + direction / normalized.length());
+			}
+			for (const Vec2 direction : { Vec2{ 0, -1 }, Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ -1, 0 } })
+			{
+				if (VectorInSector(direction, sector))
+				{
+					bounds.include(ellipse.center + direction * ellipse.axes);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const bool major = (Math::Pi < sector.sweep);
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const int32 samples = (aa ? 4 : 1);
+			std::vector<uint8> coverage(aa ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double dy = (y + (sy + 0.5) / samples - ellipse.y);
+					const double ny = (dy / ellipse.b);
+					if (1.0 < (ny * ny))
+					{
+						continue;
+					}
+					const double halfWidth = (ellipse.a * std::sqrt(1.0 - ny * ny));
+					const auto write = [&](const double left, const double right)
+					{
+						// Convert closed intervals to half-open sample-index ranges after clipping.
+						const double l = Clamp(ellipse.x + left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(ellipse.x + right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+						if (aa)
+						{
+							AddSubpixelSamples4(coverage, begin - x0 * 4, end - x0 * 4);
+						}
+						else
+						{
+							WriteSpanHalfOpenClipped(writer, view, y, begin, end);
+						}
+					};
+					double left = -halfWidth, right = halfWidth;
+					const bool startValid = ClipSectorSpan(left, right, startNormal, dy);
+					if (!major)
+					{
+						if (startValid && ClipSectorSpan(left, right, endNormal, dy))
+						{
+							write(left, right);
+						}
+					}
+					else
+					{
+						double left2 = -halfWidth, right2 = halfWidth;
+						const bool endValid = ClipSectorSpan(left2, right2, endNormal, dy);
+						if (startValid && endValid && (Max(left, left2) <= Min(right, right2)))
+						{
+							write(Min(left, left2), Max(right, right2));
+						}
+						else
+						{
+							if (startValid) write(left, right);
+							if (endValid) write(left2, right2);
+						}
+					}
+				}
+				if (aa)
+				{
+					for (auto& value : coverage)
+					{
+						value = static_cast<uint8>((value * 255 + 8) / 16);
+					}
+					Color* row = view.data + static_cast<size_t>(y) * view.stride;
+					WriteCoverageRow(writer, row, x0, coverage);
+				}
 			}
 		}
 
@@ -4720,6 +4854,29 @@ namespace s3d
 			{
 				FillEllipseNoAA(view, ellipse, blendMode, dstAlpha, color);
 			}
+		}
+
+		void EllipsePie(
+			Image& image,
+			const Ellipse& ellipse,
+			const double startAngle,
+			const double angle,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < ellipse.a) || !(0.0 < ellipse.b) || !HasNonZeroSweep(angle))
+			{
+				return;
+			}
+			if (IsFullCircleSweep(angle))
+			{
+				Fill(image, ellipse, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			FillEllipsePieBySpans(MakeImageView(image), ellipse, MakeCircleSectorData(startAngle, angle),
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Fill(

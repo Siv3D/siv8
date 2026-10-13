@@ -268,6 +268,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintPie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipsePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwritePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwritePie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipsePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

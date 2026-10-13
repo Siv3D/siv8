@@ -11,10 +11,11 @@ acceptance criterion.
 1. Use the complete program below in a separate Siv3D application.
 2. Press **A** to toggle CPU antialiasing. Press **Space** to cycle the
    SuperEllipse exponent through 0.5, 1, 2, 4, and 16. Press **F** to cycle its
-   fill, thin frame, and wide frame.
+   fill, thin frame, and wide frame. Press **P** to switch the Ellipse column
+   between its frame, minor pie, major pie, negative pie, and full pie.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
-4. Record the platform, exponent, fill/frame mode, AA setting, and observed result. The program
+4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
    writes no files and does not replace the repository test application's Main.
 
 ## Expected results
@@ -22,7 +23,11 @@ acceptance criterion.
 - AA edges have intermediate coverage; disabling AA removes intermediate coverage
   from these shape operations. RectF has no AA toggle and is not in this gallery.
 - Translucent circle fills and thin rounded rectangles have no darker bands.
-- The ellipse frame is continuous, including along the long axis.
+- The ellipse frame is continuous, including along the long axis. Its pies use
+  angles measured from the center in image coordinates: zero points up and
+  positive angles turn clockwise. The first ray is 30 degrees clockwise from up.
+  Negative sweeps turn counterclockwise. Major pies have no darker band where
+  their regions meet; full CPU pies match regular ellipse fills.
 - The last column has a Polygon with a hole and overlapping wide frames. The CPU
   combines the frames before applying color; the overlap must not become darker.
   The GPU may composite the contours separately.
@@ -53,6 +58,10 @@ void Main()
 	size_t exponentIndex = 3;
 	int32 superEllipseMode = 0;
 	const Array<String> modes{ U"fill", U"thin frame", U"wide frame" };
+	int32 ellipseMode = 0;
+	const Array<String> ellipseModes{ U"frame", U"minor pie", U"major pie", U"negative pie", U"full pie" };
+	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
+	constexpr double PieStart = Math::Pi / 6;
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -70,9 +79,17 @@ void Main()
 		}
 		else if (kind == 1)
 		{
-			const Ellipse shape{ 96.5, 64.5, 79, 11 };
-			if (paint) shape.paintFrame(image, 3.25, ink, antialiasing);
-			else shape.overwriteFrame(image, 3.25, ink, antialiasing);
+			const Ellipse shape{ 96.5, 64.5, 79, (ellipseMode == 0 ? 11 : 35) };
+			if (ellipseMode == 0)
+			{
+				if (paint) shape.paintFrame(image, 3.25, ink, antialiasing);
+				else shape.overwriteFrame(image, 3.25, ink, antialiasing);
+			}
+			else
+			{
+				if (paint) shape.paintPie(image, PieStart, sweeps[ellipseMode], ink, antialiasing);
+				else shape.overwritePie(image, PieStart, sweeps[ellipseMode], ink, antialiasing);
+			}
 		}
 		else if (kind == 2)
 		{
@@ -107,6 +124,7 @@ void Main()
 		if (KeyA.down()) { aa = !aa; dirty = true; }
 		if (KeySpace.down()) { exponentIndex = (exponentIndex + 1) % exponents.size(); dirty = true; }
 		if (KeyF.down()) { superEllipseMode = (superEllipseMode + 1) % 3; dirty = true; }
+		if (KeyP.down()) { ellipseMode = (ellipseMode + 1) % 5; dirty = true; }
 		if (dirty)
 		{
 			textures.clear();
@@ -122,6 +140,7 @@ void Main()
 			dirty = false;
 		}
 		font(U"A: AA = {}   Space: exponent = {}   F: {}"_fmt(aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
+		font(U"P: Ellipse = {}"_fmt(ellipseModes[ellipseMode])).draw(20, 32);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
 		for (int32 row = 0; row < 5; ++row)
 		{
@@ -132,7 +151,12 @@ void Main()
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
 				else if (kind == 0) Circle{ pos + Vec2{ 96.25, 64.75 }, 49.5 }.draw(ink);
-				else if (kind == 1) Ellipse{ pos + Vec2{ 96.5, 64.5 }, 79, 11 }.drawFrame(3.25, ink);
+				else if (kind == 1)
+				{
+					const Ellipse shape{ pos + Vec2{ 96.5, 64.5 }, 79, (ellipseMode == 0 ? 11 : 35) };
+					if (ellipseMode == 0) shape.drawFrame(3.25, ink);
+					else shape.drawPie(PieStart, sweeps[ellipseMode], ink);
+				}
 				else if (kind == 2) RoundRect{ pos.x + 20.25, pos.y + 62.7, 152, 0.6, 0.1 }.draw(ink);
 				else if (kind == 3)
 				{

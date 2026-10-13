@@ -47,7 +47,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
 | Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
 | Circle | Fill, frame, pie, arc | Dashed frame, segment, shadow, gradients, patterns; image arc has flat radial cuts and no cap selector |
-| Ellipse | Fill, frame | Pie, dashed frame, gradients, patterns |
+| Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
@@ -75,6 +75,25 @@ with `.draw()`. Triangle-union rasterization is separate API work; it is not add
 to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
+
+## Ellipse pies
+
+`paintPie()` and `overwritePie()` use the direction of rays from the center,
+with zero upward and positive angles clockwise. These are geometric angles,
+not the parameter of `Ellipse::getPointByAngle()`. Negative sweeps reverse the
+direction. As with existing Ellipse image fills, both radii must be positive;
+`drawPie()` instead uses their magnitudes. A sweep of at least one revolution
+reuses the regular Image fill, including its AA and compositing behavior.
+
+Partial pies intersect each analytic ellipse cross-section with the two radial
+half-planes. Minor sectors intersect the cuts; major sectors union their spans
+before writing, so overlapping regions never repeat color compositing. No-AA
+uses pixel centers, and AA uses 4x4 sample counts with one reusable row. The
+sampled region includes the ellipse and radial boundaries. Boundary ties can
+still differ through floating-point rounding. Full sweeps retain the regular
+fill's distance AA, so partial and full sweeps use different edge approximations,
+as Circle pies already do. No Polygon is built and no ellipse distance is
+solved per pixel for partial sweeps.
 
 ## SuperEllipse
 
@@ -116,7 +135,9 @@ CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
 On Windows, use the [documented Windows runner](../development/README.md#build-and-test)
 with the same test filters; do not infer Windows performance from macOS timings.
 The implementation shares scanline intersections across each AA sample row for
-polygons. Ellipse fill classifies pixels with a bound on normalized radius before
+polygons. Their shared sample accumulator handles partial endpoint pixels
+separately from the contiguous interior, allowing the latter to be vectorized.
+Ellipse pies and SuperEllipse fills use the same accumulator. Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
 
@@ -133,6 +154,11 @@ call. It compares adaptive quadrants with `outer(QualityFactor{ 1.0 })` followed
 by the same stroke path, across exponents, thin/wide strokes, AA modes, and image
 sizes. These contours have different approximation errors; compare correctness
 as well as elapsed time.
+The Ellipse pie benchmark compares analytic spans with prebuilt, tessellated
+Polygon pies using geometric ray angles. Polygon construction is excluded and
+its approximation is not pixel-identical to the analytic region. It covers
+narrow and major sectors and both moderate and thin aspect ratios; the smallest
+narrow pies may miss all pixel-center or AA samples.
 Repeated paint converges to an opaque destination; these measurements do not measure fresh
 transparent destinations. Compare Release builds on the same host, configuration,
 and workload, and rerun a candidate before adopting an optimization.

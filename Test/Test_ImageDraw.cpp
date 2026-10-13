@@ -319,6 +319,24 @@ namespace
 					if (paint) shape.paintPie(image, 0.3, 4.5, color, aa);
 					else shape.overwritePie(image, 0.3, 4.5, color, aa);
 				} },
+			{ "Ellipse.pie.minor", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const Ellipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 7 };
+					if (paint) shape.paintPie(image, 0.3, 1.2, color, aa);
+					else shape.overwritePie(image, 0.3, 1.2, color, aa);
+				} },
+			{ "Ellipse.pie.major", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const Ellipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 7 };
+					if (paint) shape.paintPie(image, 0.3, 4.5, color, aa);
+					else shape.overwritePie(image, 0.3, 4.5, color, aa);
+				} },
+			{ "Ellipse.pie.negative", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const Ellipse shape{ Vec2{ 17.25, 15.75 } + offset, 13, 7 };
+					if (paint) shape.paintPie(image, 0.3, -4.5, color, aa);
+					else shape.overwritePie(image, 0.3, -4.5, color, aa);
+				} },
 			{ "Circle.arc", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
 				{
 					const auto shape = Circle{ 17.25, 15.75, 11.5 }.movedBy(offset);
@@ -1427,4 +1445,185 @@ TEST_CASE("ImageDraw.benchmark_superellipse_frames", "[.benchmark]")
 							CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }));
 						}
 		}
+}
+
+TEST_CASE("ImageDraw.ellipse_pie_matches_polar_samples")
+{
+	// Independent per-point polar-angle and implicit-ellipse reference. It does
+	// not construct horizontal intervals or use the rasterizer's half-plane tests.
+	for (const Ellipse ellipse : { Ellipse{ 16.31, 14.73, 13.4, 8.2 }, Ellipse{ 2.31, -0.27, 13.4, 8.2 },
+		Ellipse{ 16.31, 14.73, 14, 0.35 }, Ellipse{ 16.31, 14.73, 0.35, 14 }, Ellipse{ 16.31, 14.73, 0.3, 0.2 } })
+		for (const double start : { 0.0, Math::HalfPi, -Math::Pi, 0.37, -7.25 })
+			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, -1.2, -4.5, Math::TwoPi - 0.001 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				{
+					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual;
+					ellipse.overwritePie(actual, start, sweep, Palette::White, aa);
+					const int32 samples = aa ? 4 : 1;
+					const double clockwiseStart = (sweep > 0 ? start : start + sweep);
+					for (int32 y = 0; y < 31; ++y)
+						for (int32 x = 0; x < 35; ++x)
+						{
+							int32 covered = 0;
+							for (int32 sy = 0; sy < samples; ++sy)
+								for (int32 sx = 0; sx < samples; ++sx)
+								{
+									const Vec2 delta{ x + (sx + 0.5) / samples - ellipse.x, y + (sy + 0.5) / samples - ellipse.y };
+									const Vec2 unit = delta / ellipse.axes;
+									double angle = std::fmod(std::atan2(delta.x, -delta.y) - clockwiseStart, Math::TwoPi);
+									if (angle < 0) angle += Math::TwoPi;
+									covered += ((unit.lengthSq() <= 1.0) && (angle <= Abs(sweep)));
+								}
+							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
+							expected[y][x] = Color{ c, c };
+						}
+					CAPTURE(ellipse, start, sweep, bool(aa));
+					CHECK((actual == expected));
+				}
+}
+
+TEST_CASE("ImageDraw.ellipse_pie_direction_full_sweeps_and_empty_inputs")
+{
+	const Color color{ 211, 83, 147, 113 };
+	const Ellipse ellipse{ 16.31, 14.73, 13.4, 8.2 };
+	const Image background = Background(Size{ 35, 31 });
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		for (const bool paint : { false, true })
+		{
+			for (const double sweep : { Math::TwoPi, -Math::TwoPi, 7.5, -12.0 })
+			{
+				Image actual = background, expected = background;
+				if (paint)
+				{
+					CHECK(&ellipse.paintPie(actual, 0.31, sweep, color, aa) == &ellipse);
+					ellipse.paint(expected, color, aa);
+				}
+				else
+				{
+					CHECK(&ellipse.overwritePie(actual, 0.31, sweep, color, aa) == &ellipse);
+					ellipse.overwrite(expected, color, aa);
+				}
+				CHECK((actual == expected));
+			}
+			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, Math::TwoPi - 0.001 })
+			{
+				Image actual = background, reversed = background, rotated = background;
+				const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+				ImageDraw::EllipsePie(actual, ellipse, 0.25, sweep, color, mode, aa);
+				ImageDraw::EllipsePie(reversed, ellipse, 0.25 + sweep, -sweep, color, mode, aa);
+				ImageDraw::EllipsePie(rotated, ellipse, 0.25 + Math::TwoPi * 3, sweep, color, mode, aa);
+				CHECK((actual == reversed));
+				CHECK((actual == rotated));
+				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
+				ImageDraw::EllipsePie(opaque, ellipse, 0.25, sweep, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				ImageDraw::EllipsePie(general, ellipse, 0.25, sweep, color, mode, aa);
+				CHECK((opaque == general));
+			}
+			Image actual = background;
+			for (const Ellipse invalid : { Ellipse{ 16, 14, 0, 8 }, Ellipse{ 16, 14, 13, 0 },
+				Ellipse{ 16, 14, -13, 8 }, Ellipse{ 16, 14, 13, -8 } })
+				for (const double sweep : { 1.2, -4.5, Math::TwoPi })
+				{
+					if (paint) invalid.paintPie(actual, 0.3, sweep, color, aa);
+					else invalid.overwritePie(actual, 0.3, sweep, color, aa);
+				}
+			if (paint) ellipse.paintPie(actual, 0.3, 0, color, aa);
+			else ellipse.overwritePie(actual, 0.3, 0, color, aa);
+			CHECK((actual == background));
+			Image empty;
+			if (paint) ellipse.paintPie(empty, 0.3, 1.2, color, aa);
+			else ellipse.overwritePie(empty, 0.3, 1.2, color, aa);
+			CHECK(empty.isEmpty());
+		}
+	Image actual = background, explicitAA = background, direct = background;
+	ellipse.paintPie(actual, 0.3, 4.5, color);
+	ellipse.paintPie(explicitAA, 0.3, 4.5, color, EnableAntialiasing::Yes);
+	ImageDraw::EllipsePie(direct, ellipse, 0.3, 4.5, color);
+	CHECK((actual == explicitAA));
+	CHECK((actual == direct));
+	actual = explicitAA = background;
+	ellipse.overwritePie(actual, 0.3, 4.5, color);
+	ellipse.overwritePie(explicitAA, 0.3, 4.5, color, EnableAntialiasing::Yes);
+	CHECK((actual == explicitAA));
+}
+
+TEST_CASE("ImageDraw.ellipse_pie_cardinal_bounds_and_circle_reduction")
+{
+	const Color color{ 211, 83, 147, 113 };
+	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	{
+		for (const double start : { 0.0, Math::HalfPi, Math::Pi, Math::Pi * 1.5 })
+			for (const double sweep : { 0.001, 1.2, Math::HalfPi, Math::Pi, 4.5, -4.5 })
+			{
+				Image actual = Background(Size{ 35, 31 }), expected = actual;
+				Ellipse{ 16.31, 14.73, 12.25, 12.25 }.paintPie(actual, start, sweep, color, aa);
+				Circle{ 16.31, 14.73, 12.25 }.paintPie(expected, start, sweep, color, aa);
+				CAPTURE(start, sweep, bool(aa));
+				CHECK((actual == expected));
+			}
+	}
+	// The center belongs to every nonempty pie. The start ray at zero degrees
+	// contains a pixel-center column, including the ellipse's upper tangent.
+	Image image{ 25, 25, Color{ 0, 0 } };
+	const Ellipse ellipse{ 12.5, 12.5, 10, 6 };
+	ellipse.overwritePie(image, 0, 0.001, Palette::White, EnableAntialiasing::No);
+	CHECK(image[6][12] == Palette::White);
+	CHECK(image[12][12] == Palette::White);
+	CHECK(image[13][12].a == 0);
+	CHECK(image[10][11].a == 0);
+	CHECK(image[10][13].a == 0);
+}
+
+TEST_CASE("ImageDraw.benchmark_ellipse_pies", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Ellipse pies: analytic spans and prebuilt polygons").unit("draw").epochs(7).minEpochIterations(2);
+	for (const int32 size : { 32, 256, 1024 })
+		for (const double aspect : { 0.6, 0.05 })
+			for (const double sweep : { 0.15, 1.2, 4.5 })
+			{
+				const Ellipse ellipse{ Vec2{ size * 0.5 + 0.25, size * 0.5 + 0.75 }, size * 0.4, size * 0.4 * aspect };
+				constexpr double Start = 0.37;
+				// Convert geometric ray angles to ellipse parameters, then sample the arc
+				// uniformly in that parameter so thin ellipses also have a useful reference.
+				const auto parameter = [&](double angle)
+				{
+					return std::atan2(ellipse.b * std::sin(angle), ellipse.a * std::cos(angle));
+				};
+				const double startParameter = parameter(Start);
+				double parameterSweep = (parameter(Start + sweep) - startParameter);
+				if (parameterSweep < 0) parameterSweep += Math::TwoPi;
+				const int32 segments = Max(2, int32(std::ceil(QualityFactor{ 2.0 }.toPointsPerCircle(ellipse.a).value() * parameterSweep / Math::TwoPi)));
+				Array<Vec2> points{ ellipse.center };
+				for (int32 i = 0; i <= segments; ++i)
+				{
+					points.push_back(ellipse.getPointByAngle(startParameter + parameterSweep * i / segments));
+				}
+				const Polygon polygon{ points };
+				REQUIRE(polygon);
+				Image image{ size, Color{ 40, 70, 100, 255 } };
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool paint : { false, true })
+						for (const bool analytic : { false, true })
+						{
+							const std::string name = std::to_string(size) + "/aspect=" + std::to_string(aspect) + "/sweep=" + std::to_string(sweep)
+								+ (bool(aa) ? "/AA" : "/NoAA") + (paint ? "/paint" : "/overwrite") + (analytic ? "/spans" : "/polygon");
+							image.fill(Color{ 40, 70, 100, 255 });
+							bench.run(name, [&]
+							{
+								const Color color{ 211, 83, 147, 113 };
+								if (analytic)
+								{
+									if (paint) ellipse.paintPie(image, Start, sweep, color, aa);
+									else ellipse.overwritePie(image, Start, sweep, color, aa);
+								}
+								else
+								{
+									if (paint) polygon.paint(image, color, aa);
+									else polygon.overwrite(image, color, aa);
+								}
+								ankerl::nanobench::doNotOptimizeAway(image.data());
+							});
+						}
+			}
 }

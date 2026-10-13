@@ -881,6 +881,38 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintPie
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の扇形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 中心から見た開始方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_ellipse_pie "楕円の扇形の描画"
+		const Ellipse& paintPie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwritePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の扇形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 中心から見た開始方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_ellipse_pie "楕円の扇形の描画"
+		const Ellipse& overwritePie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////
