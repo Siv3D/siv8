@@ -59,12 +59,12 @@ TEST_CASE("SceneHighResolution.size_and_presentation")
 		INFO(c.logical);
 		INFO(c.framebuffer);
 		SceneMisc::RenderState state;
-		state.size = c.logical;
-		state.frameBufferSize = c.framebuffer;
+		state.sceneSize = c.logical;
+		state.windowFrameBufferSize = c.framebuffer;
 		const auto [scale, rect] = state.composition();
-		CHECK(state.renderSize() == c.logical);
+		CHECK(state.renderResolution() == c.logical);
 		state.config.resolution = SceneResolution::Display;
-		CHECK(state.renderSize() == c.render);
+		CHECK(state.renderResolution() == c.render);
 		CHECK(state.composition() == std::pair{ scale, rect });
 		CHECK(rect.center().epsilonEquals(c.framebuffer * 0.5, 1e-9));
 		CHECK((rect.center() - rect.pos).epsilonEquals(c.logical * (scale * 0.5), 1e-9));
@@ -87,12 +87,12 @@ TEST_CASE("SceneHighResolution.window_modes_and_transitions")
 			state.updateWindow(window);
 			const Size expected = (mode == SceneSizeMode::Fixed) ? Size{ 800, 600 }
 				: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
-			CHECK(state.size == expected);
-			CHECK(state.renderSize() == (enabled ? window.frameBufferSize : expected));
+			CHECK(state.sceneSize == expected);
+			CHECK(state.renderResolution() == (enabled ? window.frameBufferSize : expected));
 			// A DPI-only change keeps virtual dimensions and the fixed scene intact.
 			window.frameBufferSize = { 2000, 1500 };
 			state.updateWindow(window);
-			CHECK(state.size == ((mode == SceneSizeMode::WindowPixels) ? window.frameBufferSize : expected));
+			CHECK(state.sceneSize == ((mode == SceneSizeMode::WindowPixels) ? window.frameBufferSize : expected));
 			const auto valid = state;
 			window.minimized = true;
 			window.frameBufferSize = { 0, 0 };
@@ -103,16 +103,16 @@ TEST_CASE("SceneHighResolution.window_modes_and_transitions")
 			CHECK(state == valid);
 			window.frameBufferSize = { 1000, 750 };
 			state.updateWindow(window);
-			CHECK(state.frameBufferSize == window.frameBufferSize);
+			CHECK(state.windowFrameBufferSize == window.frameBufferSize);
 		}
 	}
 	SceneMisc::RenderState state;
 	WindowState window;
 	state.configure(SceneConfig::Fixed({ 320, 240 }), window);
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 320, 240 });
+	CHECK(state.sceneSize == Size{ 320, 240 });
 	state.configure(SceneConfig::Window(), window);
-	CHECK(state.size == window.virtualSize);
+	CHECK(state.sceneSize == window.virtualSize);
 }
 
 TEST_CASE("SceneHighResolution.validation_and_api_round_trip")
@@ -541,10 +541,10 @@ TEST_CASE("SceneHighResolution.window_resize_immediate_and_next_frame")
 						: ((mode == SceneSizeMode::Window) ? window.virtualSize : window.frameBufferSize);
 					CHECK(Scene::Size() == expected);
 					SceneMisc::RenderState reference;
-					reference.size = expected;
-					reference.frameBufferSize = window.frameBufferSize;
+					reference.sceneSize = expected;
+					reference.windowFrameBufferSize = window.frameBufferSize;
 					reference.config.resolution = (enabled ? SceneResolution::Display : SceneResolution::SceneSize);
-					CHECK(Scene::RenderResolution() == reference.renderSize());
+					CHECK(Scene::RenderResolution() == reference.renderResolution());
 					CHECK(Scene::ClientToScene(window.frameBufferSize * 0.5).epsilonEquals(expected * 0.5, 1e-6));
 					const auto [scale, area] = reference.composition();
 					const Mat3x2 base = Mat3x2::Scale(scale).translated(area.pos);

@@ -58,20 +58,20 @@ TEST_CASE("SceneConfig.factories_and_six_uses")
 		window.frameBufferSize = { 1600, 1200 };
 		SceneMisc::RenderState state;
 		state.configure(c.config, window);
-		CHECK(state.size == c.scene);
-		CHECK(state.renderSize() == c.render);
+		CHECK(state.sceneSize == c.scene);
+		CHECK(state.renderResolution() == c.render);
 		window.fullscreen = true;
 		window.virtualSize = window.frameBufferSize = { 1920, 1080 };
 		state.updateWindow(window);
-		CHECK(state.size == c.fullscreenScene);
-		CHECK(state.renderSize() == c.fullscreenRender);
+		CHECK(state.sceneSize == c.fullscreenScene);
+		CHECK(state.renderResolution() == c.fullscreenRender);
 		CHECK(state.config == c.config);
 		window.fullscreen = false;
 		window.virtualSize = { 800, 600 };
 		window.frameBufferSize = { 1600, 1200 };
 		state.updateWindow(window);
-		CHECK(state.size == c.scene);
-		CHECK(state.renderSize() == c.render);
+		CHECK(state.sceneSize == c.scene);
+		CHECK(state.renderResolution() == c.render);
 		CHECK(state.config == c.config);
 	}
 	CHECK(Format(SceneSizeMode::WindowPixels) == U"WindowPixels");
@@ -89,8 +89,8 @@ TEST_CASE("SceneConfig.fullscreen_policy_changes_and_same_geometry_exit")
 	window.fullscreen = true;
 	window.virtualSize = window.frameBufferSize = { 1920, 1080 };
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 800, 600 });
-	CHECK(state.renderSize() == Size{ 1440, 1080 });
+	CHECK(state.sceneSize == Size{ 800, 600 });
+	CHECK(state.renderResolution() == Size{ 1440, 1080 });
 	CHECK(state.composition().second.pos.epsilonEquals(Vec2{ 240, 0 }, 1e-9));
 	CHECK(state.composition().second.size.epsilonEquals(Vec2{ 1440, 1080 }, 1e-9));
 
@@ -98,31 +98,31 @@ TEST_CASE("SceneConfig.fullscreen_policy_changes_and_same_geometry_exit")
 	auto config = state.config;
 	config.resolution = SceneResolution::SceneSize;
 	state.configure(config, window);
-	CHECK(state.size == Size{ 800, 600 });
-	CHECK(state.renderSize() == state.size);
+	CHECK(state.sceneSize == Size{ 800, 600 });
+	CHECK(state.renderResolution() == state.sceneSize);
 	config.fullscreen = FullscreenSceneMode::FollowWindow;
 	state.configure(config, window);
-	CHECK(state.size == Size{ 1920, 1080 });
+	CHECK(state.sceneSize == Size{ 1920, 1080 });
 	config.fullscreen = FullscreenSceneMode::KeepSize;
 	state.configure(config, window);
 	window.virtualSize = window.frameBufferSize = { 1280, 720 };
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 1920, 1080 });
+	CHECK(state.sceneSize == Size{ 1920, 1080 });
 
 	// Exit without changing either cached dimension: tracking fullscreen matters.
 	window.fullscreen = false;
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 1280, 720 });
+	CHECK(state.sceneSize == Size{ 1280, 720 });
 	CHECK(state.config == config);
 
 	// A fixed configuration selected while fullscreen also survives the exit.
 	window.fullscreen = true;
 	state.updateWindow(window);
 	state.configure(SceneConfig::PixelArt({ 200, 150 }), window);
-	CHECK(state.size == Size{ 200, 150 });
+	CHECK(state.sceneSize == Size{ 200, 150 });
 	window.fullscreen = false;
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 200, 150 });
+	CHECK(state.sceneSize == Size{ 200, 150 });
 	CHECK(state.config == SceneConfig::PixelArt({ 200, 150 }));
 }
 
@@ -136,14 +136,14 @@ TEST_CASE("SceneConfig.dpi_minimized_and_configuration_values")
 	config.fixedSceneSize = { 0, -1 }; // Unused values remain part of the configuration.
 	state.configure(config, window);
 	CHECK(state.config == config);
-	CHECK(state.size == Size{ 800, 600 });
+	CHECK(state.sceneSize == Size{ 800, 600 });
 	window.frameBufferSize = { 800, 600 };
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 800, 600 });
-	CHECK(state.renderSize() == Size{ 800, 600 });
+	CHECK(state.sceneSize == Size{ 800, 600 });
+	CHECK(state.renderResolution() == Size{ 800, 600 });
 	window.virtualSize = window.frameBufferSize = { 320, 240 };
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 320, 240 });
+	CHECK(state.sceneSize == Size{ 320, 240 });
 
 	const auto beforeMinimize = state;
 	window.minimized = true;
@@ -151,23 +151,23 @@ TEST_CASE("SceneConfig.dpi_minimized_and_configuration_values")
 	state.updateWindow(window);
 	CHECK(state == beforeMinimize);
 	state.configure(SceneConfig::Fixed({ 640, 480 }, SceneResolution::Display), window);
-	CHECK(state.size == Size{ 640, 480 });
-	CHECK(state.renderSize() == Size{ 640, 480 });
+	CHECK(state.sceneSize == Size{ 640, 480 });
+	CHECK(state.renderResolution() == Size{ 640, 480 });
 	window.minimized = false;
 	state.updateWindow(window);
-	CHECK(state.size == Size{ 640, 480 });
+	CHECK(state.sceneSize == Size{ 640, 480 });
 	window.virtualSize = { 800, 600 };
 	window.frameBufferSize = { 1600, 1200 };
 	state.updateWindow(window);
-	CHECK(state.renderSize() == Size{ 1600, 1200 });
+	CHECK(state.renderResolution() == Size{ 1600, 1200 });
 
 	// Startup in fullscreen uses the default scene size for the keep policy.
 	SceneMisc::RenderState startup;
 	window.fullscreen = true;
 	window.virtualSize = window.frameBufferSize = { 1920, 1080 };
 	startup.configure(SceneConfig{}, window);
-	CHECK(startup.size == Size{ 800, 600 });
-	CHECK(startup.renderSize() == Size{ 800, 600 });
+	CHECK(startup.sceneSize == Size{ 800, 600 });
+	CHECK(startup.renderResolution() == Size{ 800, 600 });
 }
 
 TEST_CASE("SceneConfig.validation_boundaries")
@@ -177,8 +177,8 @@ TEST_CASE("SceneConfig.validation_boundaries")
 	for (const Size size : { Size{ 1, 1 }, Size{ 16384, 16384 } })
 	{
 		CHECK_NOTHROW(state.configure(SceneConfig::Fixed(size), window));
-		CHECK(state.size == size);
-		CHECK(state.renderSize() == size);
+		CHECK(state.sceneSize == size);
+		CHECK(state.renderResolution() == size);
 	}
 	const auto before = state;
 	for (const Size size : { Size{ 0, 1 }, Size{ 1, 0 }, Size{ -1, 100 }, Size{ 16385, 1 }, Size{ 1, 16385 } })
@@ -188,8 +188,8 @@ TEST_CASE("SceneConfig.validation_boundaries")
 	}
 	window.virtualSize = window.frameBufferSize = { 32768, 24576 };
 	state.configure(SceneConfig::Fixed({ 800, 600 }, SceneResolution::Display), window);
-	CHECK(state.renderSize() == Size{ 32768, 24576 });
-	CHECK_THROWS_AS(SceneMisc::ValidateSceneSize(state.renderSize()), Error);
+	CHECK(state.renderResolution() == Size{ 32768, 24576 });
+	CHECK_THROWS_AS(SceneMisc::ValidateSceneSize(state.renderResolution()), Error);
 }
 
 TEST_CASE("SceneConfig.api_atomic_configuration_and_failure")
@@ -306,9 +306,9 @@ TEST_CASE("SceneConfig.Windows.maximize_minimize_restore")
 			CHECK(Scene::Size() == expected);
 			SceneMisc::RenderState reference;
 			reference.config = config;
-			reference.size = expected;
-			reference.frameBufferSize = window.frameBufferSize;
-			CHECK(Scene::RenderResolution() == reference.renderSize());
+			reference.sceneSize = expected;
+			reference.windowFrameBufferSize = window.frameBufferSize;
+			CHECK(Scene::RenderResolution() == reference.renderResolution());
 			const auto [scale, area] = reference.composition();
 			CHECK(Cursor::GetBaseWindowTransform() == Mat3x2::Scale(scale).translated(area.pos));
 			const auto all = (Cursor::GetLocalTransform() * Cursor::GetCameraTransform() * Cursor::GetBaseWindowTransform());

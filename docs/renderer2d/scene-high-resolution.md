@@ -209,6 +209,15 @@ and verify partial edge coverage. A backend test rejects a native unsupported
 count separately from public enum validation; unsupported valid enum values are
 also checked when the device exposes one.
 
+[Test_SceneAllocationFailure.cpp](../../Test/Test_SceneAllocationFailure.cpp)
+checks Metal allocation failures during configuration and MSAA changes. It
+verifies retained settings, resources, cursor mapping, and executed/pending
+pixels, followed by a successful retry. Disabling MSAA reuses the single-sample
+target without allocating a texture. The test-only
+[allocation helper](../../Test/MetalTextureAllocationFailure.hpp) rejects a
+selected texture allocation on the renderer device; this does not simulate
+physical GPU memory exhaustion.
+
 [Test_SceneConfig.cpp](../../Test/Test_SceneConfig.cpp) covers the four factories,
 six common uses, fullscreen keep/follow transitions, same-dimension fullscreen
 exits, startup in fullscreen, minimized reconfiguration, configuration copies,
@@ -237,7 +246,9 @@ Frame metrics compare subdivision and draw counts.
 
 [Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp) checks default
 fullscreen size preservation and reconfiguration through mixed API/shortcut
-round trips, including another-DPI display when available. On Windows it
+round trips, including another-DPI display when available. Platform-specific
+cases are separate from these shared scenarios.
+[Test_WindowFullscreen_Windows.cpp](../../Test/Test_WindowFullscreen_Windows.cpp)
 exercises the window-message route for Alt+Enter, same-method and mixed API/shortcut
 round trips, all size modes with both resolution policies and explicit fullscreen following, policy changes while
 fullscreen, disabled shortcuts (including cancellation before the next frame),
@@ -250,7 +261,8 @@ in fullscreen, and switching between KeepSize and FollowWindow without adding
 another full combination matrix. See the
 [window validation guide](../window/README.md#validation) for pair selection and
 the fallback on systems without mixed-DPI monitors.
-On macOS it checks API and UI round trips for the six size/resolution combinations with explicit fullscreen following, immediate scene/cursor
+[Test_WindowFullscreen_macOS.cpp](../../Test/Test_WindowFullscreen_macOS.cpp)
+checks API and UI round trips for the six size/resolution combinations with explicit fullscreen following, immediate scene/cursor
 updates, policy changes while fullscreen, monitor bounds, restored window
 position and dimensions for each source/destination monitor pair, native
 minimized state, unchanged native desktop modes and monitor positions, and
@@ -271,7 +283,7 @@ visibly change the real window. Each transition is followed by a 500 ms pause.
 Run the focused tests and then the full suite on the respective host:
 
 ```sh
-./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*'
+./macOS/run-tests.sh '--test-case=SceneConfig.*,SceneHighResolution.*,ScenePresentation.*,SceneMSAA.*,SceneAllocationFailure.*'
 ./macOS/run-tests.sh
 ```
 

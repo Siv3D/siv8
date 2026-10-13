@@ -226,6 +226,15 @@
     <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_macOS.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_Windows.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_WindowMacOS.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -524,6 +533,18 @@
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\WindowSceneTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp">
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp">

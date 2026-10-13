@@ -15,8 +15,7 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # elif SIV3D_PLATFORM(MACOS)
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
-# include <objc/runtime.h>
-# include <atomic>
+# include "MetalTextureAllocationFailure.hpp"
 # endif
 
 namespace s3d
@@ -249,55 +248,6 @@ namespace s3d
 
 # elif SIV3D_PLATFORM(MACOS)
 
-	namespace
-	{
-		// Confine the failure to the real renderer's device and this lexical scope.
-		// This exercises allocation-error propagation without exhausting GPU memory
-		// or adding a production failure flag.
-		class TextureAllocationFailure
-		{
-		public:
-
-			std::atomic<int32> attempts = 0;
-			std::atomic<int32> successes = 0;
-
-			TextureAllocationFailure(MTL::Device* device, const int32 failOnAttempt)
-			{
-				id target = (__bridge id)device;
-				m_method = class_getInstanceMethod(object_getClass(target), @selector(newTextureWithDescriptor:));
-				REQUIRE(m_method);
-				m_original = method_getImplementation(m_method);
-				typedef id<MTLTexture> (*NewTexture)(id, SEL, MTLTextureDescriptor*) NS_RETURNS_RETAINED;
-				const auto original = reinterpret_cast<NewTexture>(m_original);
-				auto* count = &attempts;
-				auto* succeeded = &successes;
-				m_replacement = imp_implementationWithBlock(^id<MTLTexture>(id receiver, MTLTextureDescriptor* descriptor)
-				{
-					if ((receiver == target) && (++(*count) == failOnAttempt))
-					{
-						return nil;
-					}
-					id<MTLTexture> texture = original(receiver, @selector(newTextureWithDescriptor:), descriptor);
-					if ((receiver == target) && texture) { ++(*succeeded); }
-					return texture;
-				});
-				REQUIRE(m_replacement);
-				method_setImplementation(m_method, m_replacement);
-			}
-
-			~TextureAllocationFailure()
-			{
-				method_setImplementation(m_method, m_original);
-				imp_removeBlock(m_replacement);
-			}
-
-		private:
-
-			Method m_method = nullptr;
-			IMP m_original = nullptr;
-			IMP m_replacement = nullptr;
-		};
-	}
 
 	TEST_CASE("WindowSceneSync.macOS.center_propagates_scene_allocation_error")
 	{
@@ -335,7 +285,7 @@ namespace s3d
 					REQUIRE(SIV3D_ENGINE(Window)->resizeByVirtualSize({ 620, 420 }));
 					const auto nativeSize = Window::GetState().virtualSize;
 					{
-						TextureAllocationFailure failure{ renderer->getDevice(), failOnAttempt };
+						Test::TextureAllocationFailure failure{ renderer->getDevice(), failOnAttempt };
 						if (indexed) { CHECK_THROWS_AS(Window::CenterToScreen(System::GetCurrentMonitorIndex()), Error); }
 						else { CHECK_THROWS_AS(Window::CenterToScreen(), Error); }
 						CHECK(failure.attempts.load() == failOnAttempt);

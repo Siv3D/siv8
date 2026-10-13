@@ -68,7 +68,7 @@ namespace s3d
 		
 		{
 			m_sceneState.configure(SceneConfig{}, Window::GetState());
-			m_sceneBuffers = createSceneBuffers(m_sceneState.renderSize(), m_sceneBuffers.sampleCount);
+			m_sceneBuffers = createSceneBuffers(m_sceneState.renderResolution(), m_sceneBuffers.sampleCount);
 		}
 
 		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
@@ -215,7 +215,7 @@ namespace s3d
 
 	const Size& D3D11BackBuffer::getSceneSize() const noexcept
 	{
-		return m_sceneState.size;
+		return m_sceneState.sceneSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -396,15 +396,15 @@ namespace s3d
 		{
 			return;
 		}
-		SceneMisc::ValidateSceneSize(state.size);
-		const Size size = state.renderSize();
-		SceneMisc::ValidateSceneSize(size);
-		const bool dimensionsChanged = ((size != getSceneBufferSize()) || (state.size != m_sceneState.size));
-		const bool replaceBuffer = ((size != getSceneBufferSize()) || samplesChanged);
+		SceneMisc::ValidateSceneSize(state.sceneSize);
+		const Size renderResolution = state.renderResolution();
+		SceneMisc::ValidateSceneSize(renderResolution);
+		const bool dimensionsChanged = ((renderResolution != getSceneBufferSize()) || (state.sceneSize != m_sceneState.sceneSize));
+		const bool replaceBuffer = ((renderResolution != getSceneBufferSize()) || samplesChanged);
 		SceneBuffer buffers;
 		if (replaceBuffer)
 		{
-			buffers = createSceneBuffers(size, sampleCount);
+			buffers = createSceneBuffers(renderResolution, sampleCount);
 		}
 		if (dimensionsChanged || samplesChanged)
 		{
@@ -417,7 +417,7 @@ namespace s3d
 		}
 		if (dimensionsChanged)
 		{
-			SIV3D_ENGINE(Renderer2D)->setSceneScale(Float2{ (float(size.x) / state.size.x), (float(size.y) / state.size.y) });
+			SIV3D_ENGINE(Renderer2D)->setSceneScale(Float2{ (float(renderResolution.x) / state.sceneSize.x), (float(renderResolution.y) / state.sceneSize.y) });
 		}
 		if (stateChanged)
 		{

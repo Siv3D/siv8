@@ -51,13 +51,13 @@ namespace s3d
 			{
 				return false;
 			}
-			if ((virtualSize == window.virtualSize) && (frameBufferSize == window.frameBufferSize) && (fullscreen == window.fullscreen))
+			if ((windowVirtualSize == window.virtualSize) && (windowFrameBufferSize == window.frameBufferSize) && (windowFullscreen == window.fullscreen))
 			{
 				return false;
 			}
-			virtualSize = window.virtualSize;
-			frameBufferSize = window.frameBufferSize;
-			fullscreen = window.fullscreen;
+			windowVirtualSize = window.virtualSize;
+			windowFrameBufferSize = window.frameBufferSize;
+			windowFullscreen = window.fullscreen;
 			return true;
 		}
 
@@ -65,27 +65,27 @@ namespace s3d
 		{
 			if (config.sizeMode == SceneSizeMode::Fixed)
 			{
-				size = config.fixedSceneSize;
+				sceneSize = config.fixedSceneSize;
 			}
-			else if (not (fullscreen && (config.fullscreen == FullscreenSceneMode::KeepSize)))
+			else if (not (windowFullscreen && (config.fullscreen == FullscreenSceneMode::KeepSize)))
 			{
-				size = ((config.sizeMode == SceneSizeMode::Window) ? virtualSize : frameBufferSize);
+				sceneSize = ((config.sizeMode == SceneSizeMode::Window) ? windowVirtualSize : windowFrameBufferSize);
 			}
 		}
 
-		Size RenderState::renderSize() const noexcept
+		Size RenderState::renderResolution() const noexcept
 		{
 			if (config.resolution == SceneResolution::SceneSize)
 			{
-				return size;
+				return sceneSize;
 			}
-			const double scale = Max(1.0, Min((double(frameBufferSize.x) / size.x), (double(frameBufferSize.y) / size.y)));
-			return{ static_cast<int32>(std::round(size.x * scale)), static_cast<int32>(std::round(size.y * scale)) };
+			const double scale = Max(1.0, Min((double(windowFrameBufferSize.x) / sceneSize.x), (double(windowFrameBufferSize.y) / sceneSize.y)));
+			return{ static_cast<int32>(std::round(sceneSize.x * scale)), static_cast<int32>(std::round(sceneSize.y * scale)) };
 		}
 
 		std::pair<double, RectF> RenderState::composition() const noexcept
 		{
-			return CalculateLetterboxComposition(frameBufferSize, size);
+			return CalculateLetterboxComposition(windowFrameBufferSize, sceneSize);
 		}
 
 		void ValidateSceneSize(const Size size)

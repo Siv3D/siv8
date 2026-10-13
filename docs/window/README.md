@@ -277,13 +277,23 @@ waits 500 ms without advancing a frame; `UpdateWithPause()` performs one asserte
 guard lifetimes, and the order of Scene, MSAA, style, and window restoration when
 reusing these helpers.
 
+Fullscreen tests keep shared scenarios in
+[Test_WindowFullscreen.cpp](../../Test/Test_WindowFullscreen.cpp), with native
+cases in [the Windows source](../../Test/Test_WindowFullscreen_Windows.cpp) and
+[the macOS source](../../Test/Test_WindowFullscreen_macOS.cpp).
+[WindowFullscreenTestHelper.hpp](../../Test/WindowFullscreenTestHelper.hpp)
+contains their restoration guard and presentation checks; the matching
+`_Windows.hpp` and `_macOS.hpp` helpers contain native input and geometry access.
+
 [Test_WindowSceneSync.cpp](../../Test/Test_WindowSceneSync.cpp) checks public
 operation boundaries: immediate and next-frame presentation for the six common
 scene configurations, maximization/restoration, asynchronous minimization, and
 Scene synchronization after a rejected centering request. Invalid resize sizes
 leave state unchanged, while same-size requests retain the centering option.
-The macOS allocation-error case rejects the first or second texture creation on
-the renderer device. Both centering overloads are checked with and without MSAA,
+The macOS allocation-error case uses the test-only
+[Metal allocation helper](../../Test/MetalTextureAllocationFailure.hpp) to reject
+the first or second texture creation on the renderer device. Both centering
+overloads are checked with and without MSAA,
 including failure of the resolve target after successful MSAA allocation. It
 checks retained resources, configuration, cursor mapping, and executed/pending
 pixels. Recovery is exercised through an explicit retry and preparation of the
@@ -407,7 +417,7 @@ policies, cursor warping through
 local and camera transforms, hit testing, and raw cursor pixels when the pointer
 is on another monitor. Actual mixed-DPI and negative-origin coverage depends on
 the connected display layout.
-[Fullscreen tests](../../Test/Test_WindowFullscreen.cpp) separately check every
+[macOS fullscreen tests](../../Test/Test_WindowFullscreen_macOS.cpp) separately check every
 source/destination monitor pair using public placement APIs. Native display
 mode IDs, point/pixel dimensions, refresh rates, and all monitor origins must
 match the snapshot taken before entering fullscreen, including after

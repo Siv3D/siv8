@@ -150,6 +150,15 @@
     <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_macOS.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_Windows.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -212,6 +221,10 @@
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp" />
+    <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />

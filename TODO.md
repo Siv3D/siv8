@@ -52,7 +52,8 @@
 - Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` で、2×2 のシーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。Linear、MSAA resolve、バッファ再利用の検証とは切り分け、D3D11 のテクスチャ座標の固定小数点精度と照合する。境界画素の厳密一致を保証する必要があるか、テストの観測位置を見直すかを決める。
 - [シーン高精細描画](docs/renderer2d/scene-high-resolution.md)の Windows / D3D11 [手動テスト](Test/Manual/SceneHighResolution.md): 全 6 表示設定と Alt+Enter / API の往復・混在経路の組み合わせを目視で網羅する。異種 DPI モニタ間移動、最大化、最小化・復元の未確認の組み合わせ（特に Fixed / SceneSize と PixelArt）を確認する。OS スケール変更、横長・縦長・キャンバスより小さいウィンドウへの連続リサイズ、右ドラッグ中の高精細切り替え、主モニターの真上・真下に置いた独立配置での全画面範囲と復帰位置・サイズは未検証。全画面中の G / Shift+G による複数回の表示先変更後の復帰・描画・ホバー・クリックも目視確認する。
 - macOS で同 [手動テスト](Test/Manual/SceneHighResolution.md)の異種 DPI モニタ間移動、OS スケール変更、連続リサイズ、ドラッグ中の切り替え、最大化、フルスクリーン、最小化・復元での描画とポインター操作を目視確認する。Control + Command + F の実キー入力、メニュー・緑ボタンの実クリックも含む。API とローカル Cocoa イベントによる全画面往復・復帰寸法・最小化状態の自動テストとは区別する。
-- GPU バッファ確保失敗時の維持・復帰を、D3D11 の確保段階、Metal の `Scene::Configure()` / MSAA 変更、および実際に確保が失敗する環境で検証する。Metal の Window → Scene 更新に対する[専用テスト](Test/Test_WindowSceneSync.cpp)の失敗注入検査とは区別する。
+- Windows / D3D11 で、内部 Scene 状態の名称整理と全画面テストのソース分割後のビルド・回帰検証を行う。`SceneConfig.*` / `SceneHighResolution.*` / `ScenePresentation.*` / `SceneMSAA.*` / `WindowSceneSync.*` / `WindowFullscreen.*` と通常全テストを実行し、分割前と同じテスト名・タグ・復元順序・500 ms 待機、および通常全テストからの hidden ケース除外を確認する。
+- GPU バッファ確保失敗時の維持・復帰を、D3D11 の確保段階、および実際に確保が失敗する環境で検証する。Metal の [Configure / MSAA テスト](Test/Test_SceneAllocationFailure.cpp)と [Window → Scene テスト](Test/Test_WindowSceneSync.cpp)の失敗注入検査とは区別する。
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
 ## Renderer2D / 組み込みシェーダ最適化

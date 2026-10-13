@@ -27,11 +27,11 @@ namespace s3d
 		// Configuration and the last usable window geometry. GPU resources are owned by the backend.
 		struct RenderState
 		{
-			Size size = Scene::DefaultSceneSize;
-			Size virtualSize = Scene::DefaultSceneSize;
-			Size frameBufferSize = Scene::DefaultSceneSize;
+			Size sceneSize = Scene::DefaultSceneSize;
+			Size windowVirtualSize = Scene::DefaultSceneSize;
+			Size windowFrameBufferSize = Scene::DefaultSceneSize;
 			SceneConfig config;
-			bool fullscreen = false;
+			bool windowFullscreen = false;
 
 			friend bool operator ==(const RenderState&, const RenderState&) = default;
 
@@ -40,7 +40,7 @@ namespace s3d
 			void updateWindow(const WindowState& window);
 
 			[[nodiscard]]
-			Size renderSize() const noexcept;
+			Size renderResolution() const noexcept;
 
 			[[nodiscard]]
 			std::pair<double, RectF> composition() const noexcept;
