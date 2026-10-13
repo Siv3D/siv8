@@ -2113,3 +2113,125 @@ TEST_CASE("ImageDraw.circle_arc_cap_boundary_and_translucent_union")
 					}
 			}
 }
+
+namespace
+{
+	Image CircleFrameDistanceMask(const Size size, const Circle& circle, const double inner, const double outer)
+	{
+		Image mask{ size, Color{ 0, 0 } };
+		const double innerRadius = (circle.r - inner), outerRadius = (circle.r + outer);
+		// Full-image distance reference: no row spans or interior classification.
+		const auto coverage = [](const double distance)
+		{
+			return static_cast<int32>(std::clamp(0.5 - distance, 0.0, 1.0) * 255.0 + 0.5);
+		};
+		for (int32 y = 0; y < size.y; ++y)
+			for (int32 x = 0; x < size.x; ++x)
+			{
+				const double dx = (x + 0.5 - circle.x), dy = (y + 0.5 - circle.y);
+				const double distance = std::sqrt(dx * dx + dy * dy);
+				const int32 outerCoverage = coverage(distance - outerRadius);
+				const int32 innerCoverage = (0 < innerRadius ? coverage(distance - innerRadius) : 0);
+				const uint8 value = static_cast<uint8>(Max(0, outerCoverage - innerCoverage));
+				mask[y][x] = Color{ value, value };
+			}
+		return mask;
+	}
+}
+
+TEST_CASE("ImageDraw.circle_frame_aa_distance_reference")
+{
+	for (const Size size : { Size{ 37, 31 }, Size{ 1, 31 }, Size{ 37, 1 } })
+		for (const Vec2 center : { Vec2{ 16.25, 14.75 }, Vec2{ 16.5, 14.5 }, Vec2{ -0.25, 0.75 }, Vec2{ -20.5, 14.5 } })
+			for (const double radius : { 0.2, 0.5, 1.0, 2.5, 8.25, 13.0, 100.0 })
+				for (const Vec2 thickness : { Vec2{ 0.0, 0.1 }, Vec2{ 0.1, 0.0 }, Vec2{ 0.25, 0.25 },
+					Vec2{ 0.5, 0.5 }, Vec2{ 2, 3 }, Vec2{ radius - 0.25, 0.0 } })
+				{
+					if (thickness.x < 0) continue;
+					const Circle circle{ center, radius };
+					const Image mask = CircleFrameDistanceMask(size, circle, thickness.x, thickness.y);
+					for (const bool paint : { false, true })
+						for (const uint8 alpha : { uint8{ 0 }, uint8{ 113 }, uint8{ 255 } })
+						{
+							Image actual = Background(size), expected = actual;
+							const Color color{ 211, 83, 147, alpha };
+							for (size_t i = 0; i < (actual.size_bytes() / sizeof(Color)); ++i)
+								expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+							if (paint) circle.paintFrame(actual, thickness.x, thickness.y, color);
+							else circle.overwriteFrame(actual, thickness.x, thickness.y, color);
+							CAPTURE(size, center, radius, thickness, paint, alpha);
+							CHECK((actual == expected));
+						}
+				}
+}
+
+TEST_CASE("ImageDraw.circle_frame_aa_boundaries_and_alpha_mode")
+{
+	const Circle circle{ 12.5, 12.5, 6 };
+	Image thin{ 25, 25, Color{ 0, 0 } };
+	circle.overwriteFrame(thin, 0.25, 0.25, Palette::White);
+	// Subtract the two independently rounded edge coverages: 191 - 64, not 128.
+	CHECK(thin[12][18].a == 127);
+	CHECK(thin[6][12].a == 127);
+	CHECK(thin[12][12].a == 0);
+	for (const double thickness : { 0.499999, 0.5, 0.500001, 2.0, 5.75 })
+		for (const bool paint : { false, true })
+		{
+			const Color color{ 211, 83, 147, 113 };
+			Image opaque{ 25, 25, Color{ 40, 70, 100, 255 } }, general = opaque, expected = opaque;
+			const Image mask = CircleFrameDistanceMask(opaque.size(), circle, thickness, thickness);
+			for (size_t i = 0; i < (expected.size_bytes() / sizeof(Color)); ++i)
+				expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+			const auto mode = (paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite);
+			ImageDraw::CircleFrame(opaque, circle, thickness, thickness, color, mode, EnableAntialiasing::Yes, ImageDraw::DstAlpha::AssumeOpaque);
+			ImageDraw::CircleFrame(general, circle, thickness, thickness, color, mode);
+			CAPTURE(thickness, paint);
+			CHECK((opaque == expected));
+			CHECK((general == expected));
+		}
+}
+
+TEST_CASE("ImageDraw.circle_frame_aa_large_clipped_boundaries")
+{
+	for (const double radius : { 31.5, 256.25, 1024.5 })
+		for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 0.6, 0.8 }, Vec2{ -0.6, -0.8 } })
+			for (const double shift : { -0.001, 0.0, 0.001, 0.25 })
+				for (const Vec2 thickness : { Vec2{ 0.03, 0.07 }, Vec2{ 0.25, 0.25 }, Vec2{ 0.5, 0.5 }, Vec2{ 2, 3 }, Vec2{ 20, 30 } })
+				{
+					const Circle circle{ Vec2{ 16.5 + shift, 14.5 } - direction * radius, radius };
+					Image actual{ 37, 31, Color{ 0, 0 } };
+					circle.overwriteFrame(actual, thickness.x, thickness.y, Palette::White);
+					CAPTURE(radius, direction, shift, thickness);
+					CHECK((actual == CircleFrameDistanceMask(actual.size(), circle, thickness.x, thickness.y)));
+				}
+}
+
+TEST_CASE("ImageDraw.benchmark_circle_frames", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("AA Circle frames").unit("draw").epochs(9).minEpochIterations(3);
+	for (const int32 size : { 8, 32, 256, 1024 })
+		for (const double thickness : { 0.25, 3.5, size * 0.2 })
+			for (const int32 placement : { 0, 1, 2 })
+			{
+				const Circle circle{ placement == 1 ? Vec2{ 0.25, -0.25 } : Vec2{ size * 0.5 + 0.25, size * 0.5 + 0.75 },
+					(size * (placement == 2 ? 1.25 : 0.35)) };
+				Image image{ size, Color{ 40, 70, 100, 255 } };
+				for (const bool paint : { false, true })
+					for (const uint8 alpha : { uint8{ 113 }, uint8{ 255 } })
+					{
+						const std::string name = std::to_string(size) + (thickness == 0.25 ? "/subpixel" : (thickness == 3.5 ? "/thin" : "/wide"))
+							+ (placement == 0 ? "/inside" : (placement == 1 ? "/clipped" : "/hole"))
+							+ (paint ? "/paint" : "/overwrite") + "/a=" + std::to_string(alpha);
+						image.fill(Color{ 40, 70, 100, 255 });
+						bench.run(name, [&]
+						{
+							const Color color{ 211, 83, 147, alpha };
+							if (paint) circle.paintFrame(image, thickness * 0.3, thickness * 0.7, color);
+							else circle.overwriteFrame(image, thickness * 0.3, thickness * 0.7, color);
+							ankerl::nanobench::doNotOptimizeAway(image.data());
+						});
+						CHECK(std::any_of(image.begin(), image.end(), [](Color c) { return c.r != 40; }) == (placement != 2));
+					}
+			}
+}

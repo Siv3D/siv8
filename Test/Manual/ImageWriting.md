@@ -16,7 +16,8 @@ acceptance criterion.
    to switch Circle between fill, shallow segment, semicircle, major segment,
    negative-angle segment, full segment, and arc. In arc mode, press **L** to
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
-   full sweeps. Press **T** to switch between thin and wide arcs.
+   full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
+   checks, select arc mode and a full sweep, then vary **A** and **T**.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -38,6 +39,9 @@ acceptance criterion.
   Round and Square arcs draw the cap alone; full CPU arcs match circle frames.
   GPU Square arcs also extend along the tangent, draw a square at zero angle, and
   omit caps on full sweeps. GPU caps may darken overlaps.
+- With AA enabled and a full Circle sweep, inspect both edges at the top,
+  bottom, left, and right. Subpixel frames remain partially covered; wide frames
+  have a solid band between the AA edges. The hole preserves its background.
 - The ellipse frame is continuous, including along the long axis. Its pies use
   angles measured from the center in image coordinates: zero points up and
   positive angles turn clockwise. The first ray is 30 degrees clockwise from up.
@@ -78,7 +82,9 @@ void Main()
 	const Array<LineCap> arcCaps{ LineCap::Flat, LineCap::Round, LineCap::Square };
 	const Array<double> arcSweeps{ 0.08, Math::TwoPi - 0.08, -4.5, 0, Math::TwoPi };
 	size_t arcCapIndex = 0, arcSweepIndex = 0;
-	bool wideArc = false;
+	const Array<Vec2> arcThicknesses{ Vec2{ 0.15, 0.35 }, Vec2{ 2, 3 }, Vec2{ 24, 10 } };
+	const Array<String> arcWidths{ U"subpixel", U"thin", U"wide" };
+	size_t arcThicknessIndex = 1;
 	const Array<double> heights{ 0, 0.2, 1.0, 1.8 };
 	int32 ellipseMode = 0;
 	const Array<String> ellipseModes{ U"frame", U"minor pie", U"major pie", U"negative pie", U"full pie" };
@@ -114,7 +120,7 @@ void Main()
 			}
 			else
 			{
-				const double inner = (wideArc ? 24 : 2), outer = (wideArc ? 10 : 3);
+				const auto [inner, outer] = arcThicknesses[arcThicknessIndex];
 				if (paint) shape.paintArc(image, arcCaps[arcCapIndex], PieStart, arcSweeps[arcSweepIndex], inner, outer, ink, antialiasing);
 				else shape.overwriteArc(image, arcCaps[arcCapIndex], PieStart, arcSweeps[arcSweepIndex], inner, outer, ink, antialiasing);
 			}
@@ -169,7 +175,7 @@ void Main()
 		if (KeyC.down()) { circleMode = (circleMode + 1) % 7; dirty = true; }
 		if (KeyL.down()) { arcCapIndex = (arcCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyR.down()) { arcSweepIndex = (arcSweepIndex + 1) % arcSweeps.size(); dirty = true; }
-		if (KeyT.down()) { wideArc = !wideArc; dirty = true; }
+		if (KeyT.down()) { arcThicknessIndex = (arcThicknessIndex + 1) % arcThicknesses.size(); dirty = true; }
 		if (KeyP.down()) { ellipseMode = (ellipseMode + 1) % 5; dirty = true; }
 		if (dirty)
 		{
@@ -186,7 +192,7 @@ void Main()
 			dirty = false;
 		}
 		font(U"A: AA = {}   Space: exponent = {}   F: {}"_fmt(aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], (wideArc ? U"wide" : U"thin"), ellipseModes[ellipseMode])).draw(20, 32);
+		font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
 		for (int32 row = 0; row < 5; ++row)
 		{
@@ -202,7 +208,11 @@ void Main()
 					if (circleMode == 0) shape.draw(ink);
 					else if (circleMode < 4) shape.drawSegment(PieStart, shape.r * heights[circleMode], ink);
 					else if (circleMode < 6) shape.drawSegmentFromAngles(PieStart, (circleMode == 4 ? -4.5 : -Math::TwoPi), ink);
-					else shape.drawArc(arcCaps[arcCapIndex], PieStart, arcSweeps[arcSweepIndex], (wideArc ? 24 : 2), (wideArc ? 10 : 3), ink);
+					else
+					{
+						const auto [inner, outer] = arcThicknesses[arcThicknessIndex];
+						shape.drawArc(arcCaps[arcCapIndex], PieStart, arcSweeps[arcSweepIndex], inner, outer, ink);
+					}
 				}
 				else if (kind == 1)
 				{

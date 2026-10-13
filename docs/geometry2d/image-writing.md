@@ -76,6 +76,17 @@ to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
 
+## Circle frames
+
+AA frames split each row into the untouched inner hole, the fully covered ring,
+and the inner/outer edge bands. Solid spans use the regular bulk color writer;
+only edge spans need pixel-center distance evaluation. One coverage buffer is
+reused across the partial spans, without clearing or scanning the hole. Tiny
+frames instead evaluate the whole outer span, avoiding subdivision overhead.
+Inner and outer coverage are rounded to bytes independently before subtraction,
+including frames thinner than one pixel whose AA bands overlap. Frames with no
+inner hole retain the ordinary Circle fill path. Full arcs reuse this frame path.
+
 ## Circle arc caps
 
 `paintArc()` / `overwriteArc()` accept `LineCap` after the destination image.
@@ -204,8 +215,11 @@ choices avoid per-pixel edge traversal and interior distance solving.
 Benchmarks reuse allocated destination images and prebuilt geometry. They include
 public API rasterization, compositing, and internal temporary allocations, but
 exclude image allocation, geometry construction, and validation. The smaller
-circle benchmark separates inside-image and clipped calls. Polygon frame cases
-include single contours and overlapping outer/hole frames. A separate hole-count
+circle benchmark separates inside-image and clipped calls. The AA Circle frame
+benchmark covers subpixel, thin, and wide rings at small and large sizes, with
+opaque/translucent source colors and paint/overwrite. It includes clipped rings
+and images entirely inside the hole, where no pixel should change. Polygon frame
+cases include single contours and overlapping outer/hole frames. A separate hole-count
 benchmark covers thin and wide frames with 1, 16, and 64 holes; its sequential
 contour calls are a cost reference and intentionally composite overlaps more than
 once. Use both sparse and overlapping contours when checking stroke changes.

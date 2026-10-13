@@ -1226,6 +1226,13 @@ namespace s3d
 			}
 
 			const double supportR = outerR + 0.5;
+			const double holeR = innerR - 0.5;
+			const double fullOuterR = outerR - 0.5;
+			const double innerSupportR = innerR + 0.5;
+			// On tiny frames, splitting the row costs more than evaluating its few pixels.
+			const bool splitSpans = (8.0 < outerR);
+			const bool hasSolidBand = (innerSupportR < fullOuterR);
+			const Vec2 center = circle.center;
 
 			int32 y0 = FloorToInt(circle.y - supportR - 0.5);
 			int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
@@ -1251,7 +1258,7 @@ namespace s3d
 				int32 x0 = 0;
 				int32 x1 = 0;
 
-				if (!GetCircleSpanAtY(Vec2{ circle.x, circle.y }, supportR, y, x0, x1))
+				if (!GetCircleSpanAtY(center, supportR, y, x0, x1))
 				{
 					continue;
 				}
@@ -1264,31 +1271,83 @@ namespace s3d
 					continue;
 				}
 
-				const size_t count = static_cast<size_t>(x1 - x0);
-				coverage.assign(count, 0);
-
-				const double py = static_cast<double>(y) + 0.5;
-
-				for (size_t i = 0; i < count; ++i)
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				const double dy = (y + 0.5 - circle.y);
+				const double dySq = (dy * dy);
+				const auto writeCoverage = [&](const int32 begin, const int32 end)
 				{
-					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-
-					const uint8 outerCoverage = CoverageFromSignedDistance(
-						CircleSignedDistance(px, py, circle.x, circle.y, outerR)
-					);
-
-					const uint8 innerCoverage = CoverageFromSignedDistance(
-						CircleSignedDistance(px, py, circle.x, circle.y, innerR)
-					);
-
-					coverage[i] = static_cast<uint8>(
-						(innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-						);
+					if (begin >= end) return;
+					const size_t count = static_cast<size_t>(end - begin);
+					coverage.resize(count);
+					for (size_t i = 0; i < count; ++i)
+					{
+						const double dx = (static_cast<double>(begin) + static_cast<double>(i) + 0.5 - circle.x);
+						const double distance = std::sqrt(dx * dx + dySq);
+						// Keep the independent byte rounding of the two edge coverages.
+						const uint8 outerCoverage = CoverageFromSignedDistance(distance - outerR);
+						const uint8 innerCoverage = CoverageFromSignedDistance(distance - innerR);
+						coverage[i] = static_cast<uint8>((innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0);
+					}
+					WriteCoverageRow(writer, row, begin, coverage);
+				};
+				if (!splitSpans)
+				{
+					writeCoverage(x0, x1);
+					continue;
 				}
 
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				int32 hole0 = x1, hole1 = x1;
+				if (GetCircleSpanAtY(center, holeR, y, hole0, hole1))
+				{
+					hole0 = ClampInt(hole0, x0, x1);
+					hole1 = ClampInt(hole1, x0, x1);
+				}
+				else
+				{
+					hole0 = hole1 = x1;
+				}
+				if ((hole0 == x0) && (hole1 == x1))
+				{
+					continue;
+				}
 
-				WriteCoverageRow(writer, row, x0, coverage);
+				const auto writeOutsideHole = [&](const int32 begin, const int32 end)
+				{
+					writeCoverage(begin, ClampInt(hole0, begin, end));
+					writeCoverage(ClampInt(hole1, begin, end), end);
+				};
+				const auto writeFull = [&](const int32 begin, const int32 end)
+				{
+					if (begin < end) writer.write(row + begin, static_cast<size_t>(end - begin));
+				};
+
+				int32 full0 = 0, full1 = 0;
+				if (hasSolidBand && GetCircleSpanAtY(center, fullOuterR, y, full0, full1))
+				{
+					full0 = ClampInt(full0, x0, x1);
+					full1 = ClampInt(full1, x0, x1);
+					int32 inner0 = full1, inner1 = full1;
+					if (GetCircleSpanAtY(center, innerSupportR, y, inner0, inner1))
+					{
+						inner0 = ClampInt(inner0, full0, full1);
+						inner1 = ClampInt(inner1, full0, full1);
+					}
+					else
+					{
+						inner0 = inner1 = full1;
+					}
+					// Only the two one-pixel radial edge bands need distance evaluation.
+					writeCoverage(x0, full0);
+					writeFull(full0, inner0);
+					writeOutsideHole(inner0, inner1);
+					writeFull(inner1, full1);
+					writeCoverage(full1, x1);
+				}
+				else
+				{
+					// Thin frames can have overlapping inner and outer AA bands.
+					writeOutsideHole(x0, x1);
+				}
 			}
 		}
 
