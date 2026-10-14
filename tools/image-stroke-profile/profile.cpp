@@ -67,7 +67,7 @@ namespace
 	}
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	using namespace s3d;
 # ifdef SIV3D_STROKE_COUNT_ALLOCATIONS
@@ -75,6 +75,65 @@ int main()
 # else
 	std::cout << "case,ns\n";
 # endif
+	if (argc > 1 && std::string{argv[1]} == "frames")
+	{
+		for (const int size : {32, 256, 1024})
+			for (const int shape : {0, 1, 2, 3})
+				for (const double width : {1.0, 8.0, 32.0})
+				{
+					const Vec2 fixtures[][4]{
+						{{5.21,4.37}, {29.21,8.37}, {12.21,29.37}, {}},
+						{{5.21,4.37}, {27.21,6.37}, {29.21,26.37}, {4.21,28.37}},
+						{{3.21,3.37}, {29.21,4.37}, {13.21,13.37}, {8.21,28.37}},
+						{{4.21,4.37}, {28.21,28.37}, {4.21,28.37}, {28.21,4.37}},
+					};
+					Vec2 points[4];
+					const size_t n = shape == 0 ? 3 : 4;
+					for (size_t i = 0; i < n; ++i) points[i] = fixtures[shape][i] * (size / 32.0);
+					const std::span<const Vec2> contour{points, n};
+					std::vector<Color> pixels(size * size, Color{40,70,100,255});
+					const ImageView view{pixels.data(), size, size, static_cast<size_t>(size)};
+					for (const auto style : {JoinStyle::Bevel, JoinStyle::Miter})
+						for (const int mode : {0, 1, 2, 3})
+						{
+							const std::string id = std::to_string(size) + "/" + std::to_string(shape) + "/" + std::to_string(int(width))
+								+ (style == JoinStyle::Bevel ? "/Bevel" : "/Miter") + (mode == 0 ? "/center" : mode == 1 ? "/inner" : mode == 2 ? "/outer" : "/mixed");
+							const auto prepare = [&](StrokeCornerPolygon* output, BoundsD& box)
+							{
+								const double firstWidth = width * (mode == 0 ? 0.5 : mode == 3 ? 0.25 : 1.0);
+								size_t count = MakeJoinedFramePolygons(contour, style, firstWidth, output, box);
+								const size_t innerCount = mode == 2 ? 0 : count;
+								if (mode == 3) count += MakeJoinedFramePolygons(contour, style, width * 0.75, output + count, box);
+								return std::pair{count, innerCount};
+							};
+							StrokeCornerPolygon parts[16];
+							BoundsD bounds;
+							const auto [count, innerCount] = prepare(parts, bounds);
+							const std::span<const StrokeCornerPolygon> polygons{parts, count};
+							Measure(id + "/prepare", [&]
+							{
+								StrokeCornerPolygon output[16];
+								BoundsD box;
+								const auto result = prepare(output, box);
+								Escape(output); Escape(box); Escape(result);
+							});
+							for (const bool aa : {false, true})
+							{
+								Measure(id + (aa ? "/AA" : "/noAA"), [&]
+								{
+									const auto raster = [&]<bool AA>()
+									{
+										if (mode == 0) DrawJoinedFramePolygons<AA>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::Preserve);
+										else DrawJoinedFramePolygons<AA, true>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::Preserve, contour, innerCount);
+									};
+									if (aa) raster.template operator()<true>(); else raster.template operator()<false>();
+									Escape(pixels);
+								});
+							}
+						}
+				}
+		return 0;
+	}
 	for (const int count : { 4, 32, 128 })
 		for (const int clip : { 0, 128, 240 })
 			for (const double width : { 1.5, 12.0 })

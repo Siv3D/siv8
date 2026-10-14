@@ -4203,6 +4203,12 @@ namespace s3d
 				double endY;
 				double slope;
 			};
+			struct Scanline
+			{
+				const Edge* first;
+				const Edge* second;
+				double endY = -std::numeric_limits<double>::infinity();
+			};
 			Edge edges[5];
 			size_t count = 0;
 			double minY = std::numeric_limits<double>::infinity();
@@ -4223,27 +4229,38 @@ namespace s3d
 			}
 
 			[[nodiscard]]
-			bool spanAt(const double y, double& left, double& right) const
+			bool spanAt(const double y, Scanline& scanline, double& left, double& right) const
 			{
 				if ((y < minY) || (maxY <= y)) return false;
-				bool found = false;
-				for (size_t i = 0; i < count; ++i)
+				// Rows advance monotonically. A convex piece keeps the same two
+				// crossing edges until the lower endpoint of either edge is reached.
+				if (scanline.endY <= y)
 				{
-					const Edge& e = edges[i];
-					if ((e.from.y <= y) && (y < e.endY))
+					const Edge* first = nullptr;
+					for (size_t i = 0; i < count; ++i)
 					{
-						const double x = (e.from.x + (y - e.from.y) * e.slope);
-						if (found)
+						const Edge& e = edges[i];
+						if ((e.from.y <= y) && (y < e.endY))
 						{
-							right = Max(left, x);
-							left = Min(left, x);
-							return (left < right); // A convex piece has only two crossings.
+							if (first)
+							{
+								scanline = { first, &e, Min(first->endY, e.endY) };
+								break;
+							}
+							first = &e;
 						}
-						left = x;
-						found = true;
 					}
+					if (scanline.endY <= y) return false;
 				}
-				return false;
+				// Evaluate from the original endpoint rather than accumulating x,
+				// preserving subpixel ties even when the first rows are clipped.
+				const Edge& a = *scanline.first;
+				const Edge& b = *scanline.second;
+				const double x0 = (a.from.x + (y - a.from.y) * a.slope);
+				const double x1 = (b.from.x + (y - b.from.y) * b.slope);
+				left = Min(x0, x1);
+				right = Max(x0, x1);
+				return (left < right);
 			}
 		};
 
@@ -4262,6 +4279,7 @@ namespace s3d
 			constexpr int32 samples = (Antialias ? 4 : 1);
 			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
 			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			StrokeCornerPolygon::Scanline scanlines[Split ? 16 : 8];
 			for (int32 y = y0; y < y1; ++y)
 			{
 				constexpr size_t maxSpans = (Split ? 40 : 8); // 8 inner parts x 2 intervals + 8 outer parts x 3 intervals.
@@ -4292,7 +4310,7 @@ namespace s3d
 					for (size_t part = 0; part < polygons.size(); ++part)
 					{
 						double left, right;
-						if (!polygons[part].spanAt(py, left, right)) continue;
+						if (!polygons[part].spanAt(py, scanlines[part], left, right)) continue;
 						const int32 begin = CeilToInt(Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
 						const int32 end = CeilToInt(Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
 						if constexpr (Split)

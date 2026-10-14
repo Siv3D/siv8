@@ -251,6 +251,43 @@ TEST_CASE("ImageJoinStyle.CompositingClippingAndNarrowImages")
 						}
 }
 
+TEST_CASE("ImageJoinStyle.InnerOuterClippedSampleRows")
+{
+	// Starting at a later row or drawing only one row must give the same samples
+	// as a crop. Thin corners can begin and end between consecutive sample rows.
+	const Color ink{220, 60, 130, 113}, background{30, 90, 150, 97};
+	for (const size_t index : {size_t{0}, size_t{2}, size_t{3}, size_t{4}})
+		for (const auto style : {JoinStyle::Bevel, JoinStyle::Miter})
+			for (const Vec2 widths : {Vec2{0.125, 0.375}, Vec2{12.25, 4.25}})
+				for (const bool aa : {false, true})
+					for (const bool paint : {false, true})
+					{
+						const auto draw = [&](Image& image, Vec2 origin)
+						{
+							const auto p = Contours[index].map([&](Vec2 v) { return v + Vec2{16, 16} - origin; });
+							const auto frame = [&](const auto& shape)
+							{
+								if (paint) shape.paintFrame(image, style, widths.x, widths.y, ink, EnableAntialiasing{aa});
+								else shape.overwriteFrame(image, style, widths.x, widths.y, ink, EnableAntialiasing{aa});
+							};
+							if (p.size() == 3) frame(Triangle{p[0], p[1], p[2]});
+							else frame(Quad{p[0], p[1], p[2], p[3]});
+						};
+						Image whole{64, 64, background};
+						draw(whole, Vec2{0, 0});
+						for (const Size size : {Size{1, 1}, Size{32, 1}, Size{1, 24}, Size{24, 24}})
+							for (const int32 top : {0, 16, 20, 21, 29, 30, 39, 40})
+							{
+								CAPTURE(index, style, widths, aa, paint, size, top);
+								Image actual{size, background}, expected = actual;
+								for (int32 y = 0; y < size.y; ++y)
+									for (int32 x = 0; x < size.x; ++x) expected[y][x] = whole[y + top][x + 16];
+								draw(actual, Vec2{16, top});
+								CHECK(actual == expected);
+							}
+					}
+}
+
 TEST_CASE("ImageJoinStyle.BevelThresholdAndUnlimitedMiter")
 {
 	for (const double angle : { 0.01, 30.0, 59.99, 60.0, 60.01, 90.0, 179.99 })

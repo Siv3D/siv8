@@ -110,7 +110,10 @@ rule in Y. Exact boundary ties can differ from the Round path.
 
 Point, edge, and interval storage is fixed-size for three/four-vertex input.
 Each piece caches its vertical bounds and edge slopes. Sample rows skip pieces
-outside those bounds and stop edge traversal after the two convex intersections.
+outside those bounds. A per-draw cursor retains the two crossing edges until
+either reaches its lower endpoint, then searches for the next pair. Intersections
+still use the original endpoint and slope, rather than accumulated X increments,
+so clipping the first rows does not introduce drift or change sample ties.
 No-AA needs no temporary heap storage; AA allocates one byte row spanning the
 clipped bounds and only converts and clears touched intervals. Offset-line and
 polygon geometry stays in double precision. GPU meshes and Boost buffer are not
@@ -456,7 +459,9 @@ boundary distances, winding, one-sided bands, collapsed geometry, compositing,
 and clipping. [JoinStyle tests](../../Test/Test_ImageJoinStyle.cpp) use an
 independent pointwise half-plane oracle, randomized contours, winding/start-point
 invariance, acute and nearly straight corners, compositing, clipping, and
-inner/outer spans clipped by an independent even-odd test. Both frame forms
+inner/outer spans clipped by an independent even-odd test. Unequal-width frames
+also compare later starting rows and one-pixel images against crops of a larger
+image, including thin corners between sample rows. Both frame forms
 check equality between omitted style and explicit Bevel, and explicit Round
 compatibility. ImageDraw also compares clipped strokes against crops of larger images, including
 dense duplicate points, wide overlapping parts, mixed caps, and closed contours.
@@ -500,68 +505,95 @@ Triangle, convex/concave/crossed Quad, 32/256/1024-pixel images, widths 1/8/32,
 and both AA settings. The different coverage approximations are not interchangeable
 reference images; mode 0 is a performance control.
 
-An inner/outer run on Apple M2, macOS 26.6.2, Apple Clang 21.0.0, Release,
-seven nanobench epochs, used the same reused RGBA destination and source as the
-centered measurement below. Representative AA times are µs per draw:
-
-| Image / shape | Inner / outer | Round distance band | Bevel | Miter |
-| --- | --- | ---: | ---: | ---: |
-| 32 / Triangle | 8 / 0 | 7.35 | 8.19 | 8.23 |
-| 32 / Triangle | 0 / 8 | 10.68 | 11.79 | 12.01 |
-| 256 / Triangle | 4 / 4 | 72.24 | 62.07 | 61.08 |
-| 256 / Triangle | 8 / 0 | 100.28 | 72.04 | 72.79 |
-| 256 / Triangle | 0 / 8 | 107.52 | 78.83 | 80.23 |
-| 256 / convex Quad | 4 / 4 | 91.93 | 68.05 | 66.71 |
-| 256 / convex Quad | 8 / 0 | 120.97 | 79.88 | 79.24 |
-| 256 / convex Quad | 0 / 8 | 137.76 | 86.22 | 86.26 |
-
-This Round column measures the two-width distance band, not the centered
-rectangle/disk rasterizer in the next table. Bevel's equal-width case reuses the
-centered scan; one-sided cases clip each sample row to the original interior.
-Small inward/outward Triangle AA cases can cost about 10–11% more than the old
-Round band, while the shown 256-pixel cases cost less. With AA disabled, the
-32-pixel inward Triangle is 2.26 µs for Bevel versus 5.27 µs for Round, and the
-256-pixel outward convex Quad is 27.77 versus 111.57 µs. Shapes and coverage differ,
-so these are workload costs, not equivalent-output optimization ratios. This
-matrix is the baseline for further AA work, including small one-sided frames.
-
 `ImageJoinStyle.Benchmark` compares the style-less Bevel overload (`omitted`)
-and explicit Bevel, Round, and Miter in the same run. Labels use the style names
-instead of enum integers. It covers Triangle and
-convex/concave/crossed Quads, image sizes 32/256, widths 1/8/40, and both AA modes.
-It measures translucent Source Over through the public API. The Bevel/Miter
-results have different corner geometry and AA from Round, so timing ratios are
-workload comparisons rather than equivalent-output speedups.
+and explicit Bevel, Round, and Miter. It covers Triangle and convex/concave/crossed
+Quads, image sizes 32/256, widths 1/8/40, and both AA modes.
+Both benchmarks measure translucent Source Over through the public API.
 
-A macOS measurement on Apple M2, macOS 26.6.2, Apple Clang 21.0.0, using the
-Xcode project's Release configuration and seven nanobench epochs, gave the
-following times in microseconds per draw at width 8. Destinations and geometry
-were reused; the source color was RGBA (220, 60, 130, 113). Repeated draws warm
-the destination and converge its alpha toward opaque; resetting it is excluded.
+The following measurements used Apple M2, macOS 26.6.2, Apple Clang 21.0.0,
+the Xcode project's Release configuration, and seven nanobench epochs. Geometry
+and RGBA destinations were reused; the source was (220, 60, 130, 113). Repeated
+draws warm the destination and converge its alpha toward opaque; resetting it is
+excluded. Times are microseconds per draw.
+
+Centered frames at width 8:
 
 | Image / shape | AA | Round | Bevel (omitted style) | Miter |
 | --- | --- | ---: | ---: | ---: |
-| 32 / Triangle | No | 3.87 | 2.99 | 2.88 |
-| 32 / Triangle | Yes | 7.12 | 8.43 | 8.24 |
-| 256 / Triangle | Yes | 54.24 | 60.54 | 60.56 |
-| 256 / convex Quad | Yes | 60.05 | 67.54 | 68.28 |
-| 256 / concave Quad | Yes | 54.59 | 66.76 | 68.26 |
-| 256 / crossed Quad | Yes | 69.93 | 74.44 | 75.05 |
+| 32 / Triangle | No | 3.80 | 2.81 | 2.78 |
+| 32 / Triangle | Yes | 7.09 | 7.75 | 7.86 |
+| 256 / Triangle | Yes | 53.08 | 58.65 | 58.83 |
+| 256 / convex Quad | Yes | 59.71 | 65.65 | 65.48 |
+| 256 / concave Quad | Yes | 54.76 | 64.63 | 67.71 |
+| 256 / crossed Quad | Yes | 69.88 | 72.74 | 72.42 |
 
-The Round column selects the former style-less Image path explicitly. The
-Bevel (omitted style) column measures the style-less overload. Across all 48
-geometry/width/AA cases, its median ratio to explicit Bevel was 1.00. The representative AA rows above cost
-about 6–22% more than Round, while the 32-pixel no-AA triangle is about 23% faster.
-The change therefore has a measurable Image AA cost despite the small GPU
-preparation cost; selecting Round preserves its geometry and sampling path.
-Caching vertical bounds and stopping after two crossings reduced the new
-Bevel/Miter path's median time by about 23–24% with AA and 14% without AA compared
-with its initial implementation. These comparisons normalize each case by the
-unchanged Round path in the same run to reduce run-to-run frequency variation.
-Geometry and coverage tests passed after the optimization.
-The remaining AA cost relative to Round reflects a different sampling algorithm;
-these results do not justify changing Round's output or adding a shared cache.
-Windows measurements and complete manual gallery operation remain in TODO.
+Inner/outer frames with AA:
+
+| Image / shape | Inner / outer | Round distance band | Bevel | Miter |
+| --- | --- | ---: | ---: | ---: |
+| 32 / Triangle | 8 / 0 | 7.18 | 7.24 | 7.19 |
+| 32 / Triangle | 0 / 8 | 10.75 | 11.06 | 10.94 |
+| 256 / Triangle | 4 / 4 | 71.80 | 57.97 | 58.70 |
+| 256 / Triangle | 8 / 0 | 99.76 | 71.37 | 70.83 |
+| 256 / Triangle | 0 / 8 | 107.41 | 78.28 | 81.54 |
+| 256 / convex Quad | 4 / 4 | 93.59 | 64.98 | 66.52 |
+| 256 / convex Quad | 8 / 0 | 121.19 | 76.82 | 76.86 |
+| 256 / convex Quad | 0 / 8 | 141.95 | 85.76 | 84.33 |
+
+The two Round columns measure different implementations: a centered stroke of
+rectangles/disks, and an inner/outer distance band. Bevel/Miter have different
+corners and coverage from Round, so these are workload costs, not speedups for
+identical output. Bevel's equal-width overload reuses the centered scan;
+one-sided and unequal-width cases clip sample spans against the original interior.
+
+A paired comparison of the per-draw edge cursor against searching every sample
+row used the same public benchmarks. Representative Bevel AA measurements are:
+
+| Image / shape | Frame | Search every sample row | Retain crossing edges |
+| --- | --- | ---: | ---: |
+| 32 / Triangle | centered, width 8 | 8.60 | 7.83 |
+| 32 / Triangle | inner 8, outer 0 | 8.62 | 7.24 |
+| 256 / convex Quad | centered, width 8 | 67.42 | 65.40 |
+| 256 / Triangle | inner 0, outer 8 | 79.00 | 78.28 |
+| 256 / convex Quad | inner 0, outer 8 | 89.08 | 85.76 |
+
+Normalize each before/after ratio by the unchanged Round path in the same pair
+to reduce run-to-run variation. Across the centered AA matrix, the median cost
+fell by 5.7% for Bevel and 5.1% for Miter. Across the equal-width and one-sided
+AA matrix, excluding its centered control, it fell by 4.3% and 4.2%. No-AA median
+cost fell by 3.9%/3.7% for centered and 1.8%/2.3% for inner/outer frames.
+Individual cases fluctuate; this is not a guarantee of a speedup for every shape.
+The cursor adds fixed stack storage and no heap allocation. It does not change
+geometry, sample locations, interval union, or color compositing. Windows
+measurements and complete manual gallery operation remain in TODO.
+
+For isolated frame preparation and raster/compositing costs, use the
+[phase tool](../../tools/image-stroke-profile/profile.cpp):
+
+```sh
+./tools/image-stroke-profile/run.sh frames-timing /tmp/siv8-frame-timing
+./tools/image-stroke-profile/run.sh frames-allocations /tmp/siv8-frame-allocations
+```
+
+These modes cover 32/256/1024-pixel images, Triangle and convex/concave/crossed
+Quad (shape IDs 0/1/2/3), widths 1/8/32, Bevel/Miter, and both AA settings.
+`center` uses half the labeled width on each side; `inner` and `outer` put the
+whole width on one side; `mixed` puts one quarter inside and three quarters
+outside. `prepare` builds edge/corner polygons in fixed storage. `AA` and `noAA`
+start from these prepared polygons and include row traversal, interval union,
+coverage, and compositing. They reuse an initially opaque destination and the
+same translucent source as above. These isolated costs exclude public API
+normalization and are not additive percentages of an instrumented draw.
+Timing uses the median of nine batches calibrated to at least two milliseconds;
+allocation mode counts calls and requested bytes separately. AA requires one
+clipped byte row; preparation and no-AA require no heap allocations.
+
+With the same compiler and machine, retaining crossing edges reduced isolated
+`mixed` AA raster/compositing time by a median 8.8% across its 72 cases; no-AA
+fell by 6.3%. For a 256-pixel convex Quad with inner width 2 and outer width 6,
+Bevel preparation remained 0.30 µs, while AA raster/compositing changed from
+70.70 to 65.66 µs. This supports reusing scan state within a draw; a cross-draw
+geometry cache would address a much smaller cost in this workload.
 
 `Spline2DImage.Benchmark` separates reusable conversion, the direct Image API,
 explicit conversion followed by LineString drawing, and drawing a cached outline.
