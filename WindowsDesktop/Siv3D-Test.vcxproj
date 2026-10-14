@@ -228,6 +228,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImageDrawingTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
     <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
@@ -365,6 +366,7 @@
     <ClCompile Include="..\Test\Test_Spline2D.cpp" />
     <ClCompile Include="..\Test\Test_Spline2DImage.cpp" />
     <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp" />
+    <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp" />
     <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp" />
   </ItemGroup>
 </Project>

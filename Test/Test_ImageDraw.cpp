@@ -9,9 +9,11 @@
 //
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include <ThirdParty/nanobench/nanobench.h>
 # include <functional>
+
+using namespace s3d::ImageDrawingTest;
 
 namespace
 {
@@ -412,33 +414,6 @@ namespace
 		};
 	}
 
-	Image Background(const Size size)
-	{
-		Image image{ size };
-		size_t i = 0;
-		for (auto& pixel : image)
-		{
-			pixel = Color{ uint8(i * 73), uint8(i * 31), uint8(i * 17), uint8(i * 23) };
-			++i;
-		}
-		return image;
-	}
-
-	// Independent scalar straight-alpha oracle, including the specified byte rounding.
-	Color Composite(Color src, Color dst, uint8 coverage, bool paint)
-	{
-		if (!paint)
-		{
-			const auto channel = [&](uint32 s, uint32 d) { return (s * coverage + d * (255 - coverage) + 127) / 255; };
-			return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), channel(src.a, dst.a) };
-		}
-		const uint32 a = (src.a * coverage + 127) / 255;
-		if (a == 0) return dst;
-		const uint32 denominator = a * 255 + dst.a * (255 - a);
-		const auto channel = [&](uint32 s, uint32 d) { return (s * a * 255 + d * dst.a * (255 - a) + denominator / 2) / denominator; };
-		return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), (denominator + 127) / 255 };
-	}
-
 	bool Inside(const Vec2 p, const Array<Array<Vec2>>& contours)
 	{
 		bool inside = false;
@@ -455,21 +430,7 @@ namespace
 
 	Image PolygonMask(const Size size, const Array<Array<Vec2>>& contours, const bool aa)
 	{
-		Image image{ size, Color{ 0, 0 } };
-		const int32 samples = aa ? 4 : 1;
-		for (int32 y = 0; y < size.y; ++y)
-		{
-			for (int32 x = 0; x < size.x; ++x)
-			{
-				int32 count = 0;
-				for (int32 sy = 0; sy < samples; ++sy)
-					for (int32 sx = 0; sx < samples; ++sx)
-						count += Inside(Vec2{ x + (sx + 0.5) / samples, y + (sy + 0.5) / samples }, contours);
-				const uint8 c = uint8((count * 255 + samples * samples / 2) / (samples * samples));
-				image[y][x] = Color{ c, c };
-			}
-		}
-		return image;
+		return SampleMask(size, aa, [&](Vec2 p) { return Inside(p, contours); });
 	}
 }
 
@@ -493,10 +454,9 @@ TEST_CASE("ImageDraw.shape_compositing_and_empty_destinations")
 					const Color color{ 203, 47, 119, alpha };
 					const Image before = Background(mask.size());
 					Image expected = before, actual = before;
-					for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i)
-						expected.data()[i] = Composite(color, before.data()[i], mask.data()[i].a, paint);
+					CompositeMask(expected, mask, color, paint);
 					drawing.draw(actual, color, paint, aa, Vec2{ 0, 0 });
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 					Image empty;
 					drawing.draw(empty, color, paint, aa, Vec2{ 0, 0 });
 					CHECK(empty.isEmpty());
@@ -544,10 +504,10 @@ TEST_CASE("ImageDraw.polygon_sampling_winding_holes_and_crossings")
 			const Image expected = PolygonMask(Size{ 32, 29 }, { points }, aa);
 			Image actual{ 32, 29, Color{ 0, 0 } };
 			ImageDraw::FillPolygon(actual, points, Palette::White, ImagePixel::BlendMode::Overwrite, antialiasing);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 			actual.fill(Color{ 0, 0 });
 			ImageDraw::FillPolygon(actual, points.reversed(), Palette::White, ImagePixel::BlendMode::Overwrite, antialiasing);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 		}
 	const Array<Vec2> outer{ { -3, -2 }, { 30, -2 }, { 30, 28 }, { -3, 28 } };
 	const Array<Vec2> hole{ { 7.25, 6.25 }, { 7.25, 19.75 }, { 22.75, 19.75 }, { 22.75, 6.25 } };
@@ -557,7 +517,7 @@ TEST_CASE("ImageDraw.polygon_sampling_winding_holes_and_crossings")
 	{
 		Image actual{ 32, 29, Color{ 0, 0 } };
 		polygon.overwrite(actual, Palette::White, EnableAntialiasing{ aa });
-		CHECK(actual == PolygonMask(actual.size(), { outer, hole }, aa));
+		CHECK_THAT(actual, ImageEquals(PolygonMask(actual.size(), { outer, hole }, aa)));
 	}
 }
 
@@ -654,7 +614,7 @@ TEST_CASE("ImageDraw.circle_integer_mask_is_composited_once")
 		Circle{ 21.2, 20.8, radius + 0.2 }.paint(actual, Color{ 255, 113 }, EnableAntialiasing::No);
 		for (size_t i = 0; i < actual.size_bytes() / sizeof(Color); ++i)
 			mask.data()[i] = mask.data()[i].a ? Color{ 255, 113 } : Color{ 0, 0 };
-		CHECK((actual == mask));
+		CHECK_THAT(actual, ImageEquals(mask));
 	}
 }
 
@@ -672,7 +632,7 @@ TEST_CASE("ImageDraw.small_curves_match_distance_coverage")
 				const auto c = coverage(Vec2{ x + 0.5, y + 0.5 }.distanceFrom(circle.center) - radius);
 				expected[y][x] = Color{ c, c };
 			}
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 	}
 	for (const RectF rect : { RectF{ 5.25, 6.75, 12, 9 }, RectF{ 10.2, 9.7, 0.6, 0.4 }, RectF{ 4.2, 6.8, 12, 0.6 } })
 		for (const double radius : { 0.1, 2.0, 50.0 })
@@ -690,7 +650,7 @@ TEST_CASE("ImageDraw.small_curves_match_distance_coverage")
 					const auto c = coverage(Vec2{ Max(q.x, 0.0), Max(q.y, 0.0) }.length() + Min(Max(q.x, q.y), 0.0) - r);
 					expected[y][x] = Color{ c, c };
 				}
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 		}
 }
 
@@ -720,7 +680,7 @@ TEST_CASE("ImageDraw.degenerate_shapes_and_nonpositive_strokes")
 		}
 		Circle{ 15, 13, 8 }.paintPie(image, 0.5, 0.0, color, aa);
 		Circle{ 15, 13, 8 }.overwriteArc(image, 0.5, 0.0, 2, 3, color, aa);
-		CHECK((image == Image{ 31, 27, bg }));
+		CHECK_THAT(image, ImageEquals(Image{ 31, 27, bg }));
 	}
 }
 
@@ -735,18 +695,18 @@ TEST_CASE("ImageDraw.circle_sweep_direction_and_full_sweeps")
 		circle.paintPie(pie, 0.3, Math::TwoPi, color, aa);
 		circle.paintFrame(frame, 2, 3, color, aa);
 		circle.paintArc(arc, 0.3, -Math::TwoPi, 2, 3, color, aa);
-		CHECK((fill == pie));
-		CHECK((frame == arc));
+		CHECK_THAT(fill, ImageEquals(pie));
+		CHECK_THAT(frame, ImageEquals(arc));
 		for (const double sweep : { 0.01, 1.2, 4.5 })
 		{
 			pie.fill(Color{ 0, 0 }); arc.fill(Color{ 0, 0 });
 			circle.overwritePie(pie, 0.25, sweep, color, aa);
 			circle.overwritePie(arc, 0.25 + sweep, -sweep, color, aa);
-			CHECK((pie == arc));
+			CHECK_THAT(pie, ImageEquals(arc));
 			pie.fill(Color{ 0, 0 }); arc.fill(Color{ 0, 0 });
 			circle.paintArc(pie, 0.25, sweep, 2, 3, color, aa);
 			circle.paintArc(arc, 0.25 + sweep, -sweep, 2, 3, color, aa);
-			CHECK((pie == arc));
+			CHECK_THAT(pie, ImageEquals(arc));
 		}
 	}
 }
@@ -761,12 +721,12 @@ TEST_CASE("ImageDraw.stroke_repeated_vertices_and_crossings_compose_once")
 			Image a{ 32, 30, Color{ 0, 0 } }, b = a;
 			points.paint(a, cap, 6, Color{ 255, 113 }, aa);
 			repeated.paint(b, cap, 6, Color{ 255, 113 }, aa);
-			CHECK((a == b));
+			CHECK_THAT(a, ImageEquals(b));
 			CHECK(std::all_of(a.begin(), a.end(), [](Color c) { return c.a <= 113; }));
 			a.fill(Color{ 0, 0 }); b.fill(Color{ 0, 0 });
 			points.paintClosed(a, 6, Color{ 255, 113 }, aa);
 			repeated.paintClosed(b, 6, Color{ 255, 113 }, aa);
-			CHECK((a == b));
+			CHECK_THAT(a, ImageEquals(b));
 			CHECK(std::all_of(a.begin(), a.end(), [](Color c) { return c.a <= 113; }));
 		}
 }
@@ -785,7 +745,7 @@ TEST_CASE("ImageDraw.polygon_random_sampling_reference")
 		ImageDraw::FillPolygon(actual, points, Palette::White, ImagePixel::BlendMode::Overwrite);
 		const Image expected = PolygonMask(actual.size(), { points }, true);
 		CAPTURE(trial);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 	}
 }
 
@@ -804,7 +764,7 @@ TEST_CASE("ImageDraw.ellipse_fill_matches_boundary_distance")
 				expected[y][x] = Color{ c, c };
 			}
 		CAPTURE(axes);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 	}
 }
 
@@ -833,12 +793,12 @@ TEST_CASE("ImageDraw.superellipse_implicit_sampling_and_axis_signs")
 				}
 			CAPTURE(n, aa);
 			CHECK(&shape.overwrite(actual, Palette::White, EnableAntialiasing{ aa }) == &shape);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 			for (const Vec2 signs : { Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
 			{
 				actual.fill(Color{ 0, 0 });
 				SuperEllipse{ shape.center, shape.axes * signs, n }.overwrite(actual, Palette::White, EnableAntialiasing{ aa });
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 		}
 }
@@ -853,14 +813,14 @@ TEST_CASE("ImageDraw.superellipse_special_cases")
 		const SuperEllipse shape{ 15.25, 13.75, -12, 8, 2 };
 		CHECK(&shape.paint(actual, color, aa) == &shape);
 		Ellipse{ shape.center, 12, 8 }.paint(expected, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		shape.overwrite(actual, color, aa);
 		Ellipse{ shape.center, 12, 8 }.overwrite(expected, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		actual = expected = background;
 		SuperEllipse{ 16, 14, 12, 8, 1 }.overwrite(actual, color, aa);
 		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.overwrite(expected, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		actual = background;
 		for (const auto invalid : { SuperEllipse{ 16, 14, 0, 8, 4 }, SuperEllipse{ 16, 14, 12, 0, 4 },
 			SuperEllipse{ 16, 14, 12, 8, 0 }, SuperEllipse{ 16, 14, 12, 8, -1 } })
@@ -868,7 +828,7 @@ TEST_CASE("ImageDraw.superellipse_special_cases")
 			invalid.paint(actual, color, aa);
 			invalid.overwrite(actual, color, aa);
 		}
-		CHECK((actual == background));
+		CHECK_THAT(actual, ImageEquals(background));
 	}
 	// A shape smaller than a pixel can still cover AA sample positions.
 	Image tiny{ 3, 3, Color{ 0, 0 } };
@@ -886,14 +846,7 @@ TEST_CASE("ImageDraw.quad_concave_and_crossed_contours")
 			quad.overwrite(actual, Palette::White, EnableAntialiasing{ aa });
 			const Image expected = PolygonMask(actual.size(), { { quad.p0, quad.p1, quad.p2, quad.p3 } }, aa);
 			CAPTURE(quad, aa);
-			const auto mismatch = std::mismatch(actual.begin(), actual.end(), expected.begin());
-			if (mismatch.first != actual.end())
-			{
-				const auto index = std::distance(actual.begin(), mismatch.first);
-				CAPTURE(index, *mismatch.first, *mismatch.second);
-				CHECK((actual == expected));
-			}
-			else CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 		}
 }
 
@@ -936,7 +889,7 @@ TEST_CASE("ImageDraw.narrow_destinations_and_offset_overloads")
 				polygon.overwriteFrame(actual, offset, 3.25, color, aa);
 				polygon.movedBy(offset).overwriteFrame(expected, 3.25, color, aa);
 			}
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 		}
 }
 
@@ -968,7 +921,7 @@ TEST_CASE("ImageDraw.pixel_compositing_bulk_tails_and_opaque_destination")
 			Image actual{ 31, 29, Color{ 30, 70, 110 } }, expected = actual;
 			ImageDraw::Fill(actual, shape, color, ImagePixel::BlendMode::SourceOver, aa, ImageDraw::DstAlpha::AssumeOpaque);
 			shape.paint(expected, color, aa);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 		}
 }
 
@@ -1015,7 +968,7 @@ TEST_CASE("ImageDraw.zero_length_line_matches_repeated_line_string")
 							repeated.overwrite(expected, cap, thickness, color, aa);
 						}
 						CAPTURE(point, thickness, bool(aa), cap, paint);
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 }
 
@@ -1033,9 +986,9 @@ TEST_CASE("ImageDraw.circle_full_sweep_and_collapsed_frame_reuse_fill")
 				circle.paintPie(pie, 1.2, Math::TwoPi, color, aa);
 				circle.paintArc(arc, -0.7, -Math::TwoPi, radius, 0, color, aa);
 				CAPTURE(center, radius, bool(aa));
-				CHECK((fill == frame));
-				CHECK((fill == pie));
-				CHECK((fill == arc));
+				CHECK_THAT(fill, ImageEquals(frame));
+				CHECK_THAT(fill, ImageEquals(pie));
+				CHECK_THAT(fill, ImageEquals(arc));
 			}
 }
 
@@ -1067,16 +1020,15 @@ TEST_CASE("ImageDraw.polygon_frame_contours_compose_once")
 						Image actual = Background(size), expected = actual;
 						if (paint) polygon.paintFrame(actual, offset, thickness, color, aa);
 						else polygon.overwriteFrame(actual, offset, thickness, color, aa);
-						for (size_t i = 0; i < actual.size_bytes() / sizeof(Color); ++i)
-							expected.data()[i] = Composite(color, expected.data()[i], coverage.data()[i].a, paint);
+						CompositeMask(expected, coverage, color, paint);
 						CAPTURE(offset, thickness, bool(aa), paint, alpha);
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 				Image actual{ size, Color{ 0, 0 } }, expected = actual;
 				if (offset == Vec2{ 0, 0 }) polygon.paintFrame(actual, thickness, Color{ 255, 113 }, aa);
 				else polygon.paintFrame(actual, offset, thickness, Color{ 255, 113 }, aa);
 				polygon.movedBy(offset).paintFrame(expected, thickness, Color{ 255, 113 }, aa);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 }
 
@@ -1094,19 +1046,19 @@ TEST_CASE("ImageDraw.polygon_frame_defaults_empty_and_single_contour")
 			else polygon.overwriteFrame(actual, color, aa);
 			ImageDraw::ClosedLineString(expected, polygon.outer(), 1.0, color,
 				paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite, aa);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 			actual = Background(actual.size()); expected = actual;
 			if (paint) polygon.paintFrame(actual, offset, color, aa);
 			else polygon.overwriteFrame(actual, offset, color, aa);
 			ImageDraw::ClosedLineString(expected, polygon.outer(), offset, 1.0, color,
 				paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite, aa);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 			actual = Background(actual.size()); expected = actual;
 			polygon.paintFrame(actual, 0.0, color, aa);
 			polygon.overwriteFrame(actual, offset, -1.0, color, aa);
 			Polygon{}.paintFrame(actual, offset, 6.5, color, aa);
 			Polygon{}.overwriteFrame(actual, 6.5, color, aa);
-			CHECK((actual == expected));
+			CHECK_THAT(actual, ImageEquals(expected));
 			Image empty;
 			polygon.paintFrame(empty, 6.5, color, aa);
 			polygon.overwriteFrame(empty, offset, 6.5, color, aa);
@@ -1143,7 +1095,7 @@ TEST_CASE("ImageDraw.multipolygon_preserves_member_compositing")
 					draw(multi, actual);
 					draw(polygon, expected);
 					draw(polygon, expected);
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 }
 
@@ -1173,9 +1125,8 @@ TEST_CASE("ImageDraw.shape2d_uses_vertex_contour_independently_of_indices")
 						if (paint) CHECK(&shape.paint(actual, offset, color, aa) == &shape);
 						else CHECK(&shape.overwrite(actual, offset, color, aa) == &shape);
 					}
-					for (size_t i = 0; i < actual.size_bytes() / sizeof(Color); ++i)
-						expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
-					CHECK((actual == expected));
+					CompositeMask(expected, mask, color, paint);
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 	}
 }
@@ -1223,7 +1174,7 @@ TEST_CASE("ImageDraw.shape2d_float_vertices_and_offsets_match_contour_path")
 							ImageDraw::FillPolygon(expected, points, color, mode, aa);
 						}
 						CAPTURE(offset, bool(aa), paint, frame, points.size());
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 }
 
@@ -1249,7 +1200,7 @@ TEST_CASE("ImageDraw.new_contour_paths_destination_alpha_and_empty_images")
 					Image actual{ 37, 35, Color{ 40, 70, 100, 255 } }, expected = actual;
 					draw(actual, ImageDraw::DstAlpha::AssumeOpaque);
 					draw(expected, ImageDraw::DstAlpha::Preserve);
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 					Image empty;
 					draw(empty, ImageDraw::DstAlpha::Preserve);
 					CHECK(empty.isEmpty());
@@ -1257,7 +1208,7 @@ TEST_CASE("ImageDraw.new_contour_paths_destination_alpha_and_empty_images")
 				Image actual = Background(Size{ 37, 35 }), expected = actual;
 				shape.paintFrame(actual, offset, 0.0, color, aa);
 				shape.overwriteFrame(actual, -1.0, color, aa);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 }
 
@@ -1322,7 +1273,7 @@ TEST_CASE("ImageDraw.round_strokes_match_distance_union")
 				// Closed strokes with fewer than three distinct consecutive vertices are empty.
 				if (closed && (pathIndex == 3))
 				{
-					CHECK((actual == Image{ actual.size(), Color{ 0, 0 } }));
+					CHECK_THAT(actual, ImageEquals(Image{ actual.size(), Color{ 0, 0 } }));
 					continue;
 				}
 				int32 largestError = 0;
@@ -1387,11 +1338,9 @@ TEST_CASE("ImageDraw.stroke_clipping_and_overlapping_coverage")
 								CAPTURE(pathIndex, closed, cap, width, bool(aa), origin, paint);
 								Image actual = Background(Size{ 32, 32 }), expected = actual;
 								const Color ink{ 220, 60, 130, 113 };
-								for (int32 y = 0; y < 32; ++y)
-									for (int32 x = 0; x < 32; ++x)
-										expected[y][x] = Composite(ink, expected[y][x], mask[y + origin.y][x + origin.x].a, paint);
+								CompositeMask(expected, mask, ink, paint, origin);
 								draw(actual, -Vec2{ origin }, ink, paint);
-								CHECK((actual == expected));
+								CHECK_THAT(actual, ImageEquals(expected));
 							}
 					}
 }
@@ -1446,10 +1395,10 @@ TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
 		const SuperEllipse diamond{ 16, 14, 12, 8, 1 };
 		CHECK(&diamond.paintFrame(actual, 3.5, color, aa) == &diamond);
 		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.paintFrame(expected, JoinStyle::Round, 3.5, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		CHECK(&diamond.overwriteFrame(actual, 3.5, color, aa) == &diamond);
 		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.overwriteFrame(expected, JoinStyle::Round, 3.5, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		for (const auto invalid : { SuperEllipse{ 16, 14, 0, 8, 4 }, SuperEllipse{ 16, 14, 12, 0, 4 },
 			SuperEllipse{ 16, 14, 12, 8, 0 }, SuperEllipse{ 16, 14, 12, 8, -1 } })
 		{
@@ -1458,7 +1407,7 @@ TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
 		}
 		diamond.paintFrame(actual, 0, color, aa);
 		diamond.overwriteFrame(actual, -1, color, aa);
-		CHECK((actual == expected));
+		CHECK_THAT(actual, ImageEquals(expected));
 		Image empty;
 		diamond.paintFrame(empty, 5, color, aa);
 		diamond.overwriteFrame(empty, 5, color, aa);
@@ -1472,14 +1421,14 @@ TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
 			{
 				expected = background;
 				SuperEllipse{ shape.center, shape.axes * signs, n }.paintFrame(expected, 7.5, color, aa);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 			for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
 			{
 				actual = expected = Image{ 33, 29, Color{ 40, 100, 160, 255 } };
 				ImageDraw::SuperEllipseFrame(actual, shape, 7.5, color, mode, aa);
 				ImageDraw::SuperEllipseFrame(expected, shape, 7.5, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 		}
 	}
@@ -1488,12 +1437,12 @@ TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
 	shape.paintFrame(explicitAA, 5, color, EnableAntialiasing::Yes);
 	shape.paintFrame(defaultAA, 5, color);
 	ImageDraw::SuperEllipseFrame(direct, shape, 5, color);
-	CHECK((explicitAA == defaultAA));
-	CHECK((direct == defaultAA));
+	CHECK_THAT(explicitAA, ImageEquals(defaultAA));
+	CHECK_THAT(direct, ImageEquals(defaultAA));
 	explicitAA = defaultAA = background;
 	shape.overwriteFrame(explicitAA, 5, color, EnableAntialiasing::Yes);
 	shape.overwriteFrame(defaultAA, 5, color);
-	CHECK((explicitAA == defaultAA));
+	CHECK_THAT(explicitAA, ImageEquals(defaultAA));
 }
 
 TEST_CASE("ImageDraw.superellipse_frame_symmetry_and_clipping")
@@ -1520,7 +1469,7 @@ TEST_CASE("ImageDraw.superellipse_frame_symmetry_and_clipping")
 					for (int32 x = 0; x < 21; ++x)
 						if ((x + offset.x < 48) && (y + offset.y < 48)) expected[y][x] = full[y + offset.y][x + offset.x];
 				CAPTURE(n, bool(aa), offset);
-				CHECK((clipped == expected));
+				CHECK_THAT(clipped, ImageEquals(expected));
 			}
 		}
 }
@@ -1566,28 +1515,19 @@ TEST_CASE("ImageDraw.ellipse_pie_matches_polar_samples")
 			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, -1.2, -4.5, Math::TwoPi - 0.001 })
 				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
 				{
-					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual;
+					Image actual{ 35, 31, Color{ 0, 0 } };
 					ellipse.overwritePie(actual, start, sweep, Palette::White, aa);
-					const int32 samples = aa ? 4 : 1;
 					const double clockwiseStart = (sweep > 0 ? start : start + sweep);
-					for (int32 y = 0; y < 31; ++y)
-						for (int32 x = 0; x < 35; ++x)
-						{
-							int32 covered = 0;
-							for (int32 sy = 0; sy < samples; ++sy)
-								for (int32 sx = 0; sx < samples; ++sx)
-								{
-									const Vec2 delta{ x + (sx + 0.5) / samples - ellipse.x, y + (sy + 0.5) / samples - ellipse.y };
-									const Vec2 unit = delta / ellipse.axes;
-									double angle = std::fmod(std::atan2(delta.x, -delta.y) - clockwiseStart, Math::TwoPi);
-									if (angle < 0) angle += Math::TwoPi;
-									covered += ((unit.lengthSq() <= 1.0) && (angle <= Abs(sweep)));
-								}
-							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
-							expected[y][x] = Color{ c, c };
-						}
+					const Image expected = SampleMask(actual.size(), bool(aa), [&](Vec2 sample)
+					{
+						const Vec2 delta = sample - ellipse.center;
+						const Vec2 unit = delta / ellipse.axes;
+						double angle = std::fmod(std::atan2(delta.x, -delta.y) - clockwiseStart, Math::TwoPi);
+						if (angle < 0) angle += Math::TwoPi;
+						return ((unit.lengthSq() <= 1.0) && (angle <= Abs(sweep)));
+					});
 					CAPTURE(ellipse, start, sweep, bool(aa));
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 }
 
@@ -1612,7 +1552,7 @@ TEST_CASE("ImageDraw.ellipse_pie_direction_full_sweeps_and_empty_inputs")
 					CHECK(&ellipse.overwritePie(actual, 0.31, sweep, color, aa) == &ellipse);
 					ellipse.overwrite(expected, color, aa);
 				}
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, Math::TwoPi - 0.001 })
 			{
@@ -1621,12 +1561,12 @@ TEST_CASE("ImageDraw.ellipse_pie_direction_full_sweeps_and_empty_inputs")
 				ImageDraw::EllipsePie(actual, ellipse, 0.25, sweep, color, mode, aa);
 				ImageDraw::EllipsePie(reversed, ellipse, 0.25 + sweep, -sweep, color, mode, aa);
 				ImageDraw::EllipsePie(rotated, ellipse, 0.25 + Math::TwoPi * 3, sweep, color, mode, aa);
-				CHECK((actual == reversed));
-				CHECK((actual == rotated));
+				CHECK_THAT(actual, ImageEquals(reversed));
+				CHECK_THAT(actual, ImageEquals(rotated));
 				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
 				ImageDraw::EllipsePie(opaque, ellipse, 0.25, sweep, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
 				ImageDraw::EllipsePie(general, ellipse, 0.25, sweep, color, mode, aa);
-				CHECK((opaque == general));
+				CHECK_THAT(opaque, ImageEquals(general));
 			}
 			Image actual = background;
 			for (const Ellipse invalid : { Ellipse{ 16, 14, 0, 8 }, Ellipse{ 16, 14, 13, 0 },
@@ -1638,7 +1578,7 @@ TEST_CASE("ImageDraw.ellipse_pie_direction_full_sweeps_and_empty_inputs")
 				}
 			if (paint) ellipse.paintPie(actual, 0.3, 0, color, aa);
 			else ellipse.overwritePie(actual, 0.3, 0, color, aa);
-			CHECK((actual == background));
+			CHECK_THAT(actual, ImageEquals(background));
 			Image empty;
 			if (paint) ellipse.paintPie(empty, 0.3, 1.2, color, aa);
 			else ellipse.overwritePie(empty, 0.3, 1.2, color, aa);
@@ -1648,12 +1588,12 @@ TEST_CASE("ImageDraw.ellipse_pie_direction_full_sweeps_and_empty_inputs")
 	ellipse.paintPie(actual, 0.3, 4.5, color);
 	ellipse.paintPie(explicitAA, 0.3, 4.5, color, EnableAntialiasing::Yes);
 	ImageDraw::EllipsePie(direct, ellipse, 0.3, 4.5, color);
-	CHECK((actual == explicitAA));
-	CHECK((actual == direct));
+	CHECK_THAT(actual, ImageEquals(explicitAA));
+	CHECK_THAT(actual, ImageEquals(direct));
 	actual = explicitAA = background;
 	ellipse.overwritePie(actual, 0.3, 4.5, color);
 	ellipse.overwritePie(explicitAA, 0.3, 4.5, color, EnableAntialiasing::Yes);
-	CHECK((actual == explicitAA));
+	CHECK_THAT(actual, ImageEquals(explicitAA));
 }
 
 TEST_CASE("ImageDraw.ellipse_pie_cardinal_bounds_and_circle_reduction")
@@ -1668,7 +1608,7 @@ TEST_CASE("ImageDraw.ellipse_pie_cardinal_bounds_and_circle_reduction")
 				Ellipse{ 16.31, 14.73, 12.25, 12.25 }.paintPie(actual, start, sweep, color, aa);
 				Circle{ 16.31, 14.73, 12.25 }.paintPie(expected, start, sweep, color, aa);
 				CAPTURE(start, sweep, bool(aa));
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 	}
 	// The center belongs to every nonempty pie. The start ray at zero degrees
@@ -1745,27 +1685,18 @@ TEST_CASE("ImageDraw.circle_segment_matches_implicit_samples")
 			for (const double ratio : { 0.001, 0.05, 0.5, 1.0, 1.5, 1.999 })
 				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
 				{
-					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual;
+					Image actual{ 35, 31, Color{ 0, 0 } };
 					const double height = (circle.r * ratio);
 					circle.overwriteSegment(actual, midpoint, height, Palette::White, aa);
-					const int32 samples = aa ? 4 : 1;
 					// Independent point tests: implicit disk and projection onto the arc midpoint.
-					for (int32 y = 0; y < 31; ++y)
-						for (int32 x = 0; x < 35; ++x)
-						{
-							int32 covered = 0;
-							for (int32 sy = 0; sy < samples; ++sy)
-								for (int32 sx = 0; sx < samples; ++sx)
-								{
-									const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
-									covered += ((p.lengthSq() <= circle.r * circle.r)
-										&& (circle.r - height <= p.x * std::sin(midpoint) - p.y * std::cos(midpoint)));
-								}
-							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
-							expected[y][x] = Color{ c, c };
-						}
+					const Image expected = SampleMask(actual.size(), bool(aa), [&](Vec2 sample)
+					{
+						const Vec2 p = sample - circle.center;
+						return ((p.lengthSq() <= circle.r * circle.r)
+							&& (circle.r - height <= p.x * std::sin(midpoint) - p.y * std::cos(midpoint)));
+					});
 					CAPTURE(circle, midpoint, ratio, bool(aa));
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 }
 
@@ -1776,30 +1707,20 @@ TEST_CASE("ImageDraw.circle_segment_angle_samples_and_direction")
 			for (const double sweep : { 0.001, 1.2, Math::Pi, 4.5, -1.2, -4.5, Math::TwoPi - 0.001 })
 				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
 				{
-					Image actual{ 35, 31, Color{ 0, 0 } }, expected = actual, reversed = actual;
+					Image actual{ 35, 31, Color{ 0, 0 } }, reversed = actual;
 					circle.overwriteSegmentFromAngles(actual, start, sweep, Palette::White, aa);
 					circle.overwriteSegmentFromAngles(reversed, start + sweep, -sweep, Palette::White, aa);
-					const int32 samples = aa ? 4 : 1;
 					// Construct the directed chord from the arc endpoints, independently of height conversion.
 					const double clockwiseStart = (sweep < 0 ? start + sweep : start);
 					const Vec2 a = circle.getPointByAngle(clockwiseStart);
 					const Vec2 b = circle.getPointByAngle(clockwiseStart + Abs(sweep));
-					for (int32 y = 0; y < 31; ++y)
-						for (int32 x = 0; x < 35; ++x)
-						{
-							int32 covered = 0;
-							for (int32 sy = 0; sy < samples; ++sy)
-								for (int32 sx = 0; sx < samples; ++sx)
-								{
-									const Vec2 p{ x + (sx + 0.5) / samples, y + (sy + 0.5) / samples };
-									covered += (((p - circle.center).lengthSq() <= circle.r * circle.r) && ((b - a).cross(p - a) <= 0));
-								}
-							const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
-							expected[y][x] = Color{ c, c };
-						}
+					const Image expected = SampleMask(actual.size(), bool(aa), [&](Vec2 sample)
+					{
+						return (((sample - circle.center).lengthSq() <= circle.r * circle.r) && ((b - a).cross(sample - a) <= 0));
+					});
 					CAPTURE(circle, start, sweep, bool(aa));
-					CHECK((actual == expected));
-					CHECK((actual == reversed));
+					CHECK_THAT(actual, ImageEquals(expected));
+					CHECK_THAT(actual, ImageEquals(reversed));
 				}
 }
 
@@ -1818,7 +1739,7 @@ TEST_CASE("ImageDraw.circle_segment_full_empty_defaults_and_alpha")
 				if (paint) CHECK(&circle.paintSegment(actual, 0.31, height, color, aa) == &circle);
 				else CHECK(&circle.overwriteSegment(actual, 0.31, height, color, aa) == &circle);
 				ImageDraw::Fill(expected, circle, color, mode, aa);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 			for (const double sweep : { Math::TwoPi, -Math::TwoPi, 7.5, -12.0 })
 			{
@@ -1826,7 +1747,7 @@ TEST_CASE("ImageDraw.circle_segment_full_empty_defaults_and_alpha")
 				if (paint) CHECK(&circle.paintSegmentFromAngles(actual, 0.31, sweep, color, aa) == &circle);
 				else CHECK(&circle.overwriteSegmentFromAngles(actual, 0.31, sweep, color, aa) == &circle);
 				ImageDraw::Fill(expected, circle, color, mode, aa);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 			Image actual = background;
 			for (const double radius : { -12.25, 0.0 })
@@ -1838,20 +1759,20 @@ TEST_CASE("ImageDraw.circle_segment_full_empty_defaults_and_alpha")
 				}
 			for (const double height : { -1.0, 0.0 }) ImageDraw::CircleSegment(actual, circle, 0.3, height, color, mode, aa);
 			ImageDraw::CircleSegmentFromAngles(actual, circle, 0.3, 0, color, mode, aa);
-			CHECK((actual == background));
+			CHECK_THAT(actual, ImageEquals(background));
 			for (const double height : { 2.0, 12.25, 22.0, 30.0 })
 			{
 				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
 				ImageDraw::CircleSegment(opaque, circle, 0.37, height, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
 				ImageDraw::CircleSegment(general, circle, 0.37, height, color, mode, aa);
-				CHECK((opaque == general));
+				CHECK_THAT(opaque, ImageEquals(general));
 			}
 			for (const double sweep : { 1.2, -4.5, Math::TwoPi })
 			{
 				Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
 				ImageDraw::CircleSegmentFromAngles(opaque, circle, 0.37, sweep, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
 				ImageDraw::CircleSegmentFromAngles(general, circle, 0.37, sweep, color, mode, aa);
-				CHECK((opaque == general));
+				CHECK_THAT(opaque, ImageEquals(general));
 			}
 		}
 	for (const bool angles : { false, true })
@@ -1873,8 +1794,8 @@ TEST_CASE("ImageDraw.circle_segment_full_empty_defaults_and_alpha")
 				ImageDraw::CircleSegment(direct, circle, 0.37, 18.5, color, mode);
 				ImageDraw::CircleSegment(explicitAA, circle, 0.37, 18.5, color, mode, EnableAntialiasing::Yes);
 			}
-			CHECK((actual == direct));
-			CHECK((actual == explicitAA));
+			CHECK_THAT(actual, ImageEquals(direct));
+			CHECK_THAT(actual, ImageEquals(explicitAA));
 		}
 }
 
@@ -1890,24 +1811,15 @@ TEST_CASE("ImageDraw.circle_segment_chord_boundary_and_half_circle")
 	CHECK(image[10][18].a == 0);
 	for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
 	{
-		Image actual{ 25, 25, Color{ 0, 0 } }, expected = actual;
+		Image actual{ 25, 25, Color{ 0, 0 } };
 		circle.overwriteSegment(actual, 0, circle.r, Palette::White, aa);
 		// An upward semicircle, including its diameter and the left/right circle tangents.
-		for (int32 y = 0; y < 25; ++y)
-			for (int32 x = 0; x < 25; ++x)
-			{
-				const int32 samples = aa ? 4 : 1;
-				int32 covered = 0;
-				for (int32 sy = 0; sy < samples; ++sy)
-					for (int32 sx = 0; sx < samples; ++sx)
-					{
-						const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
-						covered += ((p.y <= 0) && (p.lengthSq() <= 36));
-					}
-				const uint8 c = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
-				expected[y][x] = Color{ c, c };
-			}
-		CHECK((actual == expected));
+		const Image expected = SampleMask(actual.size(), bool(aa), [&](Vec2 sample)
+		{
+			const Vec2 p = sample - circle.center;
+			return ((p.y <= 0) && (p.lengthSq() <= 36));
+		});
+		CHECK_THAT(actual, ImageEquals(expected));
 	}
 }
 
@@ -1996,41 +1908,30 @@ namespace
 	Image CircleArcReference(const Size size, const Circle& circle, const LineCap cap,
 		const double start, const double sweep, const double inner, const double outer, const EnableAntialiasing aa)
 	{
-		Image expected{ size, Color{ 0, 0 } };
 		const double ri = Max(0.0, circle.r - inner), ro = (circle.r + outer);
 		const double mid = (ri + ro) * 0.5, half = (ro - ri) * 0.5;
 		const double begin = (sweep < 0 ? start + sweep : start), end = (begin + Abs(sweep));
 		const Vec2 directions[]{ { std::sin(begin), -std::cos(begin) }, { std::sin(end), -std::cos(end) } };
-		const int32 samples = aa ? 4 : 1;
-		for (int32 y = 0; y < size.y; ++y)
-			for (int32 x = 0; x < size.x; ++x)
+		return SampleMask(size, bool(aa), [&](Vec2 sample)
+		{
+			const Vec2 p = sample - circle.center;
+			double theta = std::fmod(std::atan2(p.x, -p.y) - begin, Math::TwoPi);
+			if (theta < 0) theta += Math::TwoPi;
+			bool inside = ((sweep != 0) && (ri * ri <= p.lengthSq()) && (p.lengthSq() <= ro * ro)
+				&& ((p == Vec2{ 0, 0 }) || (theta <= Abs(sweep))));
+			for (int32 i = 0; i < 2; ++i)
 			{
-				int32 covered = 0;
-				for (int32 sy = 0; sy < samples; ++sy)
-					for (int32 sx = 0; sx < samples; ++sx)
-					{
-						const Vec2 p{ x + (sx + 0.5) / samples - circle.x, y + (sy + 0.5) / samples - circle.y };
-						double theta = std::fmod(std::atan2(p.x, -p.y) - begin, Math::TwoPi);
-						if (theta < 0) theta += Math::TwoPi;
-						bool inside = ((sweep != 0) && (ri * ri <= p.lengthSq()) && (p.lengthSq() <= ro * ro)
-							&& ((p == Vec2{ 0, 0 }) || (theta <= Abs(sweep))));
-						for (int32 i = 0; i < 2; ++i)
-						{
-							const Vec2 q = (p - directions[i] * mid);
-							if (cap == LineCap::Round) inside |= (q.lengthSq() <= half * half);
-							else if (cap == LineCap::Square)
-							{
-								const Vec2 tangent{ -directions[i].y, directions[i].x };
-								const double along = q.dot(tangent) * (i == 0 ? -1 : 1);
-								inside |= ((0 <= along) && (along <= half) && (Abs(q.dot(directions[i])) <= half));
-							}
-						}
-						covered += inside;
-					}
-				const uint8 coverage = uint8((covered * 255 + samples * samples / 2) / (samples * samples));
-				expected[y][x] = Color{ coverage, coverage };
+				const Vec2 q = (p - directions[i] * mid);
+				if (cap == LineCap::Round) inside |= (q.lengthSq() <= half * half);
+				else if (cap == LineCap::Square)
+				{
+					const Vec2 tangent{ -directions[i].y, directions[i].x };
+					const double along = q.dot(tangent) * (i == 0 ? -1 : 1);
+					inside |= ((0 <= along) && (along <= half) && (Abs(q.dot(directions[i])) <= half));
+				}
 			}
-		return expected;
+			return inside;
+		});
 	}
 }
 
@@ -2045,7 +1946,7 @@ TEST_CASE("ImageDraw.circle_arc_flat_sampling_reference")
 						Image actual{ 35, 31, Color{ 0, 0 } };
 						circle.overwriteArc(actual, start, sweep, thickness.x, thickness.y, Palette::White, aa);
 						CAPTURE(circle, thickness, start, sweep, bool(aa));
-						CHECK((actual == CircleArcReference(actual.size(), circle, LineCap::Flat, start, sweep, thickness.x, thickness.y, aa)));
+						CHECK_THAT(actual, ImageEquals(CircleArcReference(actual.size(), circle, LineCap::Flat, start, sweep, thickness.x, thickness.y, aa)));
 					}
 }
 
@@ -2062,8 +1963,8 @@ TEST_CASE("ImageDraw.circle_arc_caps_sampling_reference")
 							circle.overwriteArc(actual, cap, start, sweep, thickness.x, thickness.y, Palette::White, aa);
 							circle.overwriteArc(reversed, cap, start + sweep, -sweep, thickness.x, thickness.y, Palette::White, aa);
 							CAPTURE(cap, circle, thickness, start, sweep, bool(aa));
-							CHECK((actual == CircleArcReference(actual.size(), circle, cap, start, sweep, thickness.x, thickness.y, aa)));
-							CHECK((actual == reversed));
+							CHECK_THAT(actual, ImageEquals(CircleArcReference(actual.size(), circle, cap, start, sweep, thickness.x, thickness.y, aa)));
+							CHECK_THAT(actual, ImageEquals(reversed));
 						}
 }
 
@@ -2084,7 +1985,7 @@ TEST_CASE("ImageDraw.circle_arc_cap_full_empty_defaults_and_alpha")
 						if (paint) CHECK(&circle.paintArc(actual, cap, 0.31, sweep, inner, 3, color, aa) == &circle);
 						else CHECK(&circle.overwriteArc(actual, cap, 0.31, sweep, inner, 3, color, aa) == &circle);
 						ImageDraw::CircleFrame(expected, circle, inner, 3, color, mode, aa);
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 				Image actual = background;
 				for (const Vec2 thickness : { Vec2{ -1, 2 }, Vec2{ 2, -1 }, Vec2{ 0, 0 } })
@@ -2092,13 +1993,13 @@ TEST_CASE("ImageDraw.circle_arc_cap_full_empty_defaults_and_alpha")
 						ImageDraw::CircleArc(actual, circle, cap, 0.3, sweep, thickness.x, thickness.y, color, mode, aa);
 				for (const double radius : { -12.25, 0.0 })
 					ImageDraw::CircleArc(actual, Circle{ circle.center, radius }, cap, 0.3, 1.2, 2, 3, color, mode, aa);
-				CHECK((actual == background));
+				CHECK_THAT(actual, ImageEquals(background));
 				for (const double sweep : { 0.0, 0.03, -4.5, Math::TwoPi - 0.03, Math::TwoPi })
 				{
 					Image opaque{ 35, 31, Color{ 40, 70, 100, 255 } }, general = opaque;
 					ImageDraw::CircleArc(opaque, circle, cap, 0.37, sweep, 2, 3, color, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
 					ImageDraw::CircleArc(general, circle, cap, 0.37, sweep, 2, 3, color, mode, aa);
-					CHECK((opaque == general));
+					CHECK_THAT(opaque, ImageEquals(general));
 				}
 				if (cap == LineCap::Flat)
 					for (const double sweep : { 0.0, 1.2, -4.5, Math::TwoPi })
@@ -2107,7 +2008,7 @@ TEST_CASE("ImageDraw.circle_arc_cap_full_empty_defaults_and_alpha")
 						ImageDraw::CircleArc(explicitCap, circle, cap, 0.37, sweep, 2, 3, color, mode, aa);
 						if (paint) circle.paintArc(old, 0.37, sweep, 2, 3, color, aa);
 						else circle.overwriteArc(old, 0.37, sweep, 2, 3, color, aa);
-						CHECK((explicitCap == old));
+						CHECK_THAT(explicitCap, ImageEquals(old));
 					}
 			}
 	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
@@ -2119,8 +2020,8 @@ TEST_CASE("ImageDraw.circle_arc_cap_full_empty_defaults_and_alpha")
 			else circle.overwriteArc(actual, cap, 0.37, -4.5, 2, 3, color);
 			ImageDraw::CircleArc(direct, circle, cap, 0.37, -4.5, 2, 3, color, mode);
 			ImageDraw::CircleArc(explicitAA, circle, cap, 0.37, -4.5, 2, 3, color, mode, EnableAntialiasing::Yes);
-			CHECK((actual == direct));
-			CHECK((actual == explicitAA));
+			CHECK_THAT(actual, ImageEquals(direct));
+			CHECK_THAT(actual, ImageEquals(explicitAA));
 		}
 }
 
@@ -2132,7 +2033,7 @@ TEST_CASE("ImageDraw.circle_arc_cap_boundary_and_translucent_union")
 	{
 		Image zero = flat;
 		circle.overwriteArc(zero, cap, 0, Math::HalfPi, 0, 0, Palette::White, EnableAntialiasing::No);
-		CHECK((zero == flat));
+		CHECK_THAT(zero, ImageEquals(flat));
 	}
 	circle.overwriteArc(round, LineCap::Round, 0, 0, 2, 2, Palette::White, EnableAntialiasing::No);
 	circle.overwriteArc(square, LineCap::Square, 0, 0, 2, 2, Palette::White, EnableAntialiasing::No);
@@ -2160,11 +2061,11 @@ TEST_CASE("ImageDraw.circle_arc_cap_boundary_and_translucent_union")
 					{
 						Image actual = Background(mask.size()), expected = actual;
 						const Color color{ 211, 83, 147, alpha };
-						for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i) expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+						CompositeMask(expected, mask, color, paint);
 						if (paint) shape.paintArc(actual, cap, 0.37, sweep, 3, 6, color, aa);
 						else shape.overwriteArc(actual, cap, 0.37, sweep, 3, 6, color, aa);
 						CAPTURE(cap, sweep, bool(aa), paint, alpha);
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 			}
 }
@@ -2210,12 +2111,11 @@ TEST_CASE("ImageDraw.circle_frame_aa_distance_reference")
 						{
 							Image actual = Background(size), expected = actual;
 							const Color color{ 211, 83, 147, alpha };
-							for (size_t i = 0; i < (actual.size_bytes() / sizeof(Color)); ++i)
-								expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+							CompositeMask(expected, mask, color, paint);
 							if (paint) circle.paintFrame(actual, thickness.x, thickness.y, color);
 							else circle.overwriteFrame(actual, thickness.x, thickness.y, color);
 							CAPTURE(size, center, radius, thickness, paint, alpha);
-							CHECK((actual == expected));
+							CHECK_THAT(actual, ImageEquals(expected));
 						}
 				}
 }
@@ -2235,14 +2135,13 @@ TEST_CASE("ImageDraw.circle_frame_aa_boundaries_and_alpha_mode")
 			const Color color{ 211, 83, 147, 113 };
 			Image opaque{ 25, 25, Color{ 40, 70, 100, 255 } }, general = opaque, expected = opaque;
 			const Image mask = CircleFrameDistanceMask(opaque.size(), circle, thickness, thickness);
-			for (size_t i = 0; i < (expected.size_bytes() / sizeof(Color)); ++i)
-				expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+			CompositeMask(expected, mask, color, paint);
 			const auto mode = (paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite);
 			ImageDraw::CircleFrame(opaque, circle, thickness, thickness, color, mode, EnableAntialiasing::Yes, ImageDraw::DstAlpha::AssumeOpaque);
 			ImageDraw::CircleFrame(general, circle, thickness, thickness, color, mode);
 			CAPTURE(thickness, paint);
-			CHECK((opaque == expected));
-			CHECK((general == expected));
+			CHECK_THAT(opaque, ImageEquals(expected));
+			CHECK_THAT(general, ImageEquals(expected));
 		}
 }
 
@@ -2257,7 +2156,7 @@ TEST_CASE("ImageDraw.circle_frame_aa_large_clipped_boundaries")
 					Image actual{ 37, 31, Color{ 0, 0 } };
 					circle.overwriteFrame(actual, thickness.x, thickness.y, Palette::White);
 					CAPTURE(radius, direction, shift, thickness);
-					CHECK((actual == CircleFrameDistanceMask(actual.size(), circle, thickness.x, thickness.y)));
+					CHECK_THAT(actual, ImageEquals(CircleFrameDistanceMask(actual.size(), circle, thickness.x, thickness.y)));
 				}
 }
 
@@ -2415,11 +2314,10 @@ TEST_CASE("ImageDraw.independent_caps_distance_and_compositing")
 								{
 									Image actual = Background(mask.size()), expected = actual;
 									const Color color{ 211, 83, 147, alpha };
-									for (size_t i = 0; i < (mask.size_bytes() / sizeof(Color)); ++i)
-										expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+									CompositeMask(expected, mask, color, paint);
 									draw(actual, color, paint);
 									CAPTURE(paint, alpha);
-									CHECK((actual == expected));
+									CHECK_THAT(actual, ImageEquals(expected));
 								}
 						}
 }
@@ -2442,14 +2340,14 @@ TEST_CASE("ImageDraw.independent_caps_reverse_repeated_points_and_offset")
 					ImageDraw::LineString(duplicated, repeated, offset, 7.5, color, mode, aa, start, end);
 					ImageDraw::LineString(moved, path.movedBy(offset), 7.5, color, mode, aa, start, end);
 					CAPTURE(start, end, bool(aa), paint);
-					CHECK((actual == reversed));
-					CHECK((actual == duplicated));
-					CHECK((actual == moved));
+					CHECK_THAT(actual, ImageEquals(reversed));
+					CHECK_THAT(actual, ImageEquals(duplicated));
+					CHECK_THAT(actual, ImageEquals(moved));
 					actual = Background(actual.size());
 					reversed = actual;
 					ImageDraw::Line(actual, path.front(), path.back(), 7.5, color, mode, aa, start, end);
 					ImageDraw::Line(reversed, path.back(), path.front(), 7.5, color, mode, aa, end, start);
-					CHECK((actual == reversed));
+					CHECK_THAT(actual, ImageEquals(reversed));
 				}
 }
 
@@ -2479,21 +2377,21 @@ TEST_CASE("ImageDraw.independent_caps_wrappers_and_defaults")
 						CHECK(&shape.overwrite(two, cap, cap, 4.5, color, aa) == &shape);
 						shape.overwrite(implicitAA, cap, cap, 4.5, color);
 					}
-					CHECK((one == two));
-					if (aa) CHECK((implicitAA == two));
+					CHECK_THAT(one, ImageEquals(two));
+					if (aa) CHECK_THAT(implicitAA, ImageEquals(two));
 				}
 		Image implicit = Background(Size{ 37, 35 }), explicitCaps = implicit;
 		shape.paint(implicit, Palette::White);
 		shape.paint(explicitCaps, LineCap::Round, LineCap::Round, 1.0, Palette::White);
-		CHECK((implicit == explicitCaps));
+		CHECK_THAT(implicit, ImageEquals(explicitCaps));
 		shape.overwrite(implicit, 3.5, Palette::Red);
 		shape.overwrite(explicitCaps, LineCap::Round, LineCap::Round, 3.5, Palette::Red);
-		CHECK((implicit == explicitCaps));
+		CHECK_THAT(implicit, ImageEquals(explicitCaps));
 		for (const double thickness : { 0.0, -1.0 })
 		{
 			shape.paint(implicit, LineCap::Square, LineCap::Round, thickness, Palette::White);
 			shape.overwrite(implicit, LineCap::Round, LineCap::Flat, thickness, Palette::White);
-			CHECK((implicit == explicitCaps));
+			CHECK_THAT(implicit, ImageEquals(explicitCaps));
 		}
 	};
 	check(line); check(path); check(quadratic); check(cubic);
@@ -2516,7 +2414,7 @@ TEST_CASE("ImageDraw.independent_caps_wrappers_and_defaults")
 							curve.overwrite(actual, start, end, 5.5, color, aa);
 							curve.toLineStringAdaptive().overwrite(expected, start, end, 5.5, color, aa);
 						}
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					};
 					curveCheck(quadratic); curveCheck(cubic);
 				}
@@ -2544,12 +2442,12 @@ TEST_CASE("ImageDraw.independent_caps_collapsed_empty_and_alpha_modes")
 						Image actual = Background(target.size());
 						if (paint) shape.paint(actual, start, end, 4.0, color, aa);
 						else shape.overwrite(actual, start, end, 4.0, color, aa);
-						CHECK((actual == target));
+						CHECK_THAT(actual, ImageEquals(target));
 						for (const double thickness : { 0.0, -1.0 })
 						{
 							shape.paint(actual, start, end, thickness, color, aa);
 							shape.overwrite(actual, start, end, thickness, color, aa);
-							CHECK((actual == target));
+							CHECK_THAT(actual, ImageEquals(target));
 						}
 						Image empty;
 						shape.paint(empty, start, end, 4.0, color, aa);
@@ -2565,7 +2463,7 @@ TEST_CASE("ImageDraw.independent_caps_collapsed_empty_and_alpha_modes")
 					Image unchanged = expected;
 					LineString{}.paint(unchanged, start, end, 4.0, color, aa);
 					LineString{ point }.overwrite(unchanged, start, end, 4.0, color, aa);
-					CHECK((unchanged == expected));
+					CHECK_THAT(unchanged, ImageEquals(expected));
 					for (const bool asLine : { false, true })
 					{
 						Image opaque{ 33, 29, Color{ 40, 70, 100, 255 } }, general = opaque;
@@ -2581,7 +2479,7 @@ TEST_CASE("ImageDraw.independent_caps_collapsed_empty_and_alpha_modes")
 							ImageDraw::LineString(opaque, path, 7.5, color, mode, aa, start, end, ImageDraw::DstAlpha::AssumeOpaque);
 							ImageDraw::LineString(general, path, 7.5, color, mode, aa, start, end);
 						}
-						CHECK((opaque == general));
+						CHECK_THAT(opaque, ImageEquals(general));
 					}
 				}
 }
@@ -2602,8 +2500,8 @@ TEST_CASE("ImageDraw.independent_caps_short_flat_boundary")
 			CHECK(actual[14][16] == body[14][16]);
 			CHECK(actual[14 + int32(outward.y)][16 + int32(outward.x)].a == 0);
 			CHECK(actual[14 - 2 * int32(outward.y)][16 - 2 * int32(outward.x)].a == 255);
-			CHECK((actual == reversed));
-			CHECK((actual == repeated));
+			CHECK_THAT(actual, ImageEquals(reversed));
+			CHECK_THAT(actual, ImageEquals(repeated));
 		}
 }
 
@@ -2663,28 +2561,17 @@ namespace
 		const double headLength = Min(length, headSize.y);
 		const double shaftLength = length - headLength;
 		const double headHalfWidth = half + headSize.x * (headLength / headSize.y) * 0.5;
-		Image result{ size, Color{ 0, 0 } };
-		const int32 samples = aa ? 4 : 1;
-		for (int32 y = 0; y < size.y; ++y)
-			for (int32 x = 0; x < size.x; ++x)
-			{
-				int32 count = 0;
-				for (int32 sy = 0; sy < samples; ++sy)
-					for (int32 sx = 0; sx < samples; ++sx)
-					{
-						const Vec2 p = Vec2{ x + (sx + 0.5) / samples, y + (sy + 0.5) / samples } - line.start;
-						const double along = p.dot(axis), across = Abs(p.cross(axis));
-						const bool shaft = (0.0 <= along) && (along < shaftLength) && (across < half);
-						const bool head = (shaftLength <= along) && (along < length)
-							&& (across < headHalfWidth * ((length - along) / headLength));
-						const bool tail = (along <= 0.0) && ((cap == LineCap::Round)
-							? (p.lengthSq() < half * half) : ((-half <= along) && (across < half)));
-						count += (shaft || head || tail);
-					}
-				const uint8 coverage = static_cast<uint8>((count * 255 + samples * samples / 2) / (samples * samples));
-				result[y][x] = Color{ coverage, coverage };
-			}
-		return result;
+		return SampleMask(size, aa, [&](Vec2 sample)
+		{
+			const Vec2 p = sample - line.start;
+			const double along = p.dot(axis), across = Abs(p.cross(axis));
+			const bool shaft = (0.0 <= along) && (along < shaftLength) && (across < half);
+			const bool head = (shaftLength <= along) && (along < length)
+				&& (across < headHalfWidth * ((length - along) / headLength));
+			const bool tail = (along <= 0.0) && ((cap == LineCap::Round)
+				? (p.lengthSq() < half * half) : ((-half <= along) && (across < half)));
+			return (shaft || head || tail);
+		});
 	}
 }
 
@@ -2708,7 +2595,7 @@ TEST_CASE("ImageDraw.arrow_caps_geometry")
 						CAPTURE(line, width, head, static_cast<int>(cap), static_cast<bool>(aa));
 						Image actual{ 37, 31, Color{ 0, 0 } };
 						line.overwriteArrow(actual, cap, width, head, Palette::White, aa);
-						CHECK(actual == ArrowMask(actual.size(), line, width, head, cap, static_cast<bool>(aa)));
+						CHECK_THAT(actual, ImageEquals(ArrowMask(actual.size(), line, width, head, cap, static_cast<bool>(aa))));
 					}
 }
 
@@ -2735,8 +2622,8 @@ TEST_CASE("ImageDraw.arrow_caps_flat_compatibility_and_wrappers")
 							CHECK(&line.overwriteArrow(implicit, width, head, color, aa) == &line);
 							CHECK(&line.overwriteArrow(explicitFlat, LineCap::Flat, width, SizeF{ head, head }, color, aa) == &line);
 						}
-						CHECK(implicit == legacy);
-						CHECK(explicitFlat == legacy);
+						CHECK_THAT(implicit, ImageEquals(legacy));
+						CHECK_THAT(explicitFlat, ImageEquals(legacy));
 						for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
 						{
 							Image scalar = Background(legacy.size()), vector = scalar;
@@ -2750,7 +2637,7 @@ TEST_CASE("ImageDraw.arrow_caps_flat_compatibility_and_wrappers")
 								CHECK(&line.overwriteArrow(scalar, cap, width, head, color, aa) == &line);
 								line.overwriteArrow(vector, cap, width, SizeF{ head, head }, color, aa);
 							}
-							CHECK(scalar == vector);
+							CHECK_THAT(scalar, ImageEquals(vector));
 						}
 					}
 }
@@ -2775,7 +2662,7 @@ TEST_CASE("ImageDraw.arrow_caps_boundaries_and_noop")
 					line.overwriteArrow(image, cap, 12, head, Palette::Red, aa);
 				}
 			}
-			CHECK(image == before);
+			CHECK_THAT(image, ImageEquals(before));
 			Image empty;
 			line.paintArrow(empty, cap, 12, 8, Palette::Red, aa);
 			line.overwriteArrow(empty, cap, 12, 8, Palette::Red, aa);
@@ -2807,16 +2694,15 @@ TEST_CASE("ImageDraw.arrow_caps_alpha_modes")
 						Image before = opaque ? Image{ mask.size(), Color{ 40, 70, 100, 255 } } : Background(mask.size());
 						Image actual = before, expected = before;
 						const Color ink{ 211, 83, 147, alpha };
-						for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i)
-							expected.data()[i] = Composite(ink, before.data()[i], mask.data()[i].a, mode == ImagePixel::BlendMode::SourceOver);
+						CompositeMask(expected, mask, ink, mode == ImagePixel::BlendMode::SourceOver);
 						ImageDraw::Arrow(actual, line.start, line.end, 17, head, ink, mode, aa, cap,
 							opaque ? ImageDraw::DstAlpha::AssumeOpaque : ImageDraw::DstAlpha::Preserve);
-						CHECK(actual == expected);
+						CHECK_THAT(actual, ImageEquals(expected));
 						if (opaque)
 						{
 							Image preserved = before;
 							ImageDraw::Arrow(preserved, line.start, line.end, 17, head, ink, mode, aa, cap);
-							CHECK(actual == preserved);
+							CHECK_THAT(actual, ImageEquals(preserved));
 						}
 					}
 			}

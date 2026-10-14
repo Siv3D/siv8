@@ -5,9 +5,11 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include <ThirdParty/nanobench/nanobench.h>
 # include <random>
+
+using namespace s3d::ImageDrawingTest;
 
 namespace
 {
@@ -55,20 +57,6 @@ namespace
 		const double covered = Clamp(outer - sd + 0.5, 0.0, 1.0) - Clamp(-inner - sd + 0.5, 0.0, 1.0);
 		return static_cast<uint8>(std::lround(covered * 255));
 	}
-
-	Color Composite(Color src, Color dst, uint32 coverage, bool paint)
-	{
-		if (!paint)
-		{
-			const auto channel = [&](uint32 s, uint32 d) { return (s * coverage + d * (255 - coverage) + 127) / 255; };
-			return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), channel(src.a, dst.a) };
-		}
-		const uint32 a = (src.a * coverage + 127) / 255;
-		if (a == 0) return dst;
-		const uint32 denominator = a * 255 + dst.a * (255 - a);
-		const auto channel = [&](uint32 s, uint32 d) { return (s * a * 255 + d * dst.a * (255 - a) + denominator / 2) / denominator; };
-		return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), (denominator + 127) / 255 };
-	}
 }
 
 TEST_CASE("ImagePolygonFrame.DistanceAndWinding")
@@ -89,7 +77,7 @@ TEST_CASE("ImagePolygonFrame.DistanceAndWinding")
 				CHECK(maxError <= (aa ? 1 : 0));
 				Image reversed{ 32, 32, Color{ 0, 0 } };
 				Draw(Contours[index].reversed(), reversed, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
-				CHECK((actual == reversed));
+				CHECK_THAT(actual, ImageEquals(reversed));
 			}
 }
 
@@ -156,11 +144,9 @@ TEST_CASE("ImagePolygonFrame.CompositingAndClipping")
 						Image mask{ 64, 64, Color{ 0, 0 } }, actual{ 32, 32, background }, expected = actual;
 						const Array<Vec2> large = points.map([](Vec2 p) { return p + Vec2{ 16, 16 }; });
 						Draw(large, mask, 7.25, 3.25, Palette::White, EnableAntialiasing{ aa });
-						for (int32 y = 0; y < 32; ++y)
-							for (int32 x = 0; x < 32; ++x)
-								expected[y][x] = Composite(ink, background, mask[y + 16][x + 16].a, paint);
+						CompositeMask(expected, mask, ink, paint, { 16, 16 });
 						Draw(points, actual, 7.25, 3.25, ink, EnableAntialiasing{ aa }, paint);
-						CHECK((actual == expected));
+						CHECK_THAT(actual, ImageEquals(expected));
 					}
 }
 
@@ -181,7 +167,7 @@ TEST_CASE("ImagePolygonFrame.DegeneracyAndNoOps")
 				{
 					Image image{ 32, 32, background }, original = image;
 					Draw(points, image, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint, style);
-					CHECK((image == original));
+					CHECK_THAT(image, ImageEquals(original));
 				}
 				for (const auto& points : Contours)
 				{
@@ -189,7 +175,7 @@ TEST_CASE("ImagePolygonFrame.DegeneracyAndNoOps")
 					{
 						Image image{ 32, 32, background }, original = image;
 						Draw(points, image, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, paint, style);
-						CHECK((image == original));
+						CHECK_THAT(image, ImageEquals(original));
 					}
 					Image empty;
 					Draw(points, empty, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint, style);
@@ -213,8 +199,8 @@ TEST_CASE("ImagePolygonFrame.CollinearSpurs")
 					triangle.overwriteFrame(expected, style, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
 					Draw(points, actual, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, false, style);
 					Draw(points.reversed(), reversed, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, false, style);
-					CHECK((actual == expected));
-					CHECK((reversed == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
+					CHECK_THAT(reversed, ImageEquals(expected));
 				}
 }
 
@@ -230,11 +216,11 @@ TEST_CASE("ImagePolygonFrame.DestinationAlpha")
 				const Color ink{ 220, 60, 130, 113 };
 				ImageDraw::TriangleFrame(expected, triangle, style, 3, 6, ink, mode, aa);
 				ImageDraw::TriangleFrame(actual, triangle, style, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 				expected.fill(Color{ 30, 90, 150 }); actual = expected;
 				ImageDraw::QuadFrame(expected, quad, style, 3, 6, ink, mode, aa);
 				ImageDraw::QuadFrame(actual, quad, style, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 }
 

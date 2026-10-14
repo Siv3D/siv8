@@ -556,6 +556,9 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImageDrawingTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp">
       <Filter>Test</Filter>
     </ClInclude>
@@ -603,6 +606,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp">

@@ -462,7 +462,19 @@ invoke the more expensive per-pixel Ellipse boundary-distance solver.
 ## Validation and measurement
 
 [Test_ImageDraw.cpp](../../Test/Test_ImageDraw.cpp) owns the automated shape
-matrix, independent compositing and sampling references, and opt-in benchmarks.
+matrix, independent geometry references, and opt-in benchmarks.
+[ImageDrawingTestHelper.hpp](../../Test/ImageDrawingTestHelper.hpp) provides the
+test-only scalar compositing oracle, alpha-mask composition (including crops),
+1x1/4x4 point sampling, a deterministic RGBA background, and the exact
+`ImageEquals` matcher. The matcher reports dimensions or the first differing
+pixel's coordinates and RGBA values at the calling assertion. The
+[helper tests](../../Test/Test_ImageDrawingTestHelper.cpp) anchor byte rounding,
+sample positions, coverage, and diagnostics with literal expectations.
+Keep these references independent of ImageDraw/ImagePixel implementation helpers.
+Shape-specific containment, boundary inclusion, and distance coverage stay in
+their tests; SuperEllipse retains its long-double implicit reference. Do not
+replace a distance oracle with sample coverage or broaden a tolerance when
+adopting shared helpers.
 [Curve integration tests](../../Test/Test_CurveAdaptive.cpp) cover Bezier Image
 quality, segment budgets, caps, default overloads, and renderer-state independence.
 [Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover open/closed paths,
@@ -492,6 +504,7 @@ regular Ellipse drawing before converting partial-pie endpoint directions.
 Run from the repository root on macOS, outside the sandbox:
 
 ```sh
+./macOS/run-tests.sh '--test-case=ImageDrawingTestHelper.*'
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImageDraw.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImagePolygonFrame.*'

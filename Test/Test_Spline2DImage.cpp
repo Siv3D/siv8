@@ -5,8 +5,10 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include <ThirdParty/nanobench/nanobench.h>
+
+using namespace s3d::ImageDrawingTest;
 
 namespace
 {
@@ -40,21 +42,6 @@ namespace
 			else outline.overwrite(image, start, end, width, color, aa);
 		}
 	}
-
-	// Independent scalar straight-alpha composition, including byte rounding.
-	Color Composite(const Color src, const Color dst, const uint32 coverage, const bool paint)
-	{
-		if (not paint)
-		{
-			const auto channel = [&](uint32 s, uint32 d) { return (s * coverage + d * (255 - coverage) + 127) / 255; };
-			return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), channel(src.a, dst.a) };
-		}
-		const uint32 alpha = (src.a * coverage + 127) / 255;
-		if (alpha == 0) return dst;
-		const uint32 denominator = alpha * 255 + dst.a * (255 - alpha);
-		const auto channel = [&](uint32 s, uint32 d) { return (s * alpha * 255 + d * dst.a * (255 - alpha) + denominator / 2) / denominator; };
-		return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), (denominator + 127) / 255 };
-	}
 }
 
 TEST_CASE("Spline2DImage.QualityCapsAndClosure")
@@ -80,7 +67,7 @@ TEST_CASE("Spline2DImage.QualityCapsAndClosure")
 									WriteOutline(path, outline, expected, paint, start, end, width, ink, aa);
 									if (paint) CHECK(&path.paint(actual, start, end, width, ink, aa, error, budget) == &path);
 									else CHECK(&path.overwrite(actual, start, end, width, ink, aa, error, budget) == &path);
-									CHECK(actual == expected);
+									CHECK_THAT(actual, ImageEquals(expected));
 								}
 			}
 
@@ -94,7 +81,7 @@ TEST_CASE("Spline2DImage.QualityCapsAndClosure")
 	Image limited{ 64, 64, background }, chords = limited;
 	path.overwrite(limited, 3, ink, EnableAntialiasing::Yes, 0.1, 1);
 	chordPath.overwrite(chords, 3, ink);
-	CHECK(limited == chords);
+	CHECK_THAT(limited, ImageEquals(chords));
 }
 
 TEST_CASE("Spline2DImage.DefaultsAndOverloads")
@@ -139,7 +126,7 @@ TEST_CASE("Spline2DImage.DefaultsAndOverloads")
 						else returned = &path.overwrite(actual, cap, width, ink);
 					}
 					CHECK(returned == &path);
-					CHECK(actual == expected);
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 	}
 }
@@ -159,16 +146,11 @@ TEST_CASE("Spline2DImage.CompositesJoinsAndIntersectionsOnce")
 				for (const uint32 alpha : { 0u, 113u, 255u })
 				{
 					const Color ink{ 220, 60, 130, alpha };
-					Image actual{ 64, 64 }, expected = actual;
-					for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i)
-					{
-						const Color background{ uint8(i * 73), uint8(i * 31), uint8(i * 17), uint8(i * 23) };
-						actual.data()[i] = background;
-						expected.data()[i] = Composite(ink, background, mask.data()[i].a, paint);
-					}
+					Image actual = Background(mask.size()), expected = actual;
+					CompositeMask(expected, mask, ink, paint);
 					if (paint) path.paint(actual, 8, ink, aa);
 					else path.overwrite(actual, 8, ink, aa);
-					CHECK(actual == expected);
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 		}
 }
@@ -191,13 +173,13 @@ TEST_CASE("Spline2DImage.EmptyDegenerateAndInvalid")
 				path.paint(image, cap, 8, Palette::Red, aa);
 				path.overwrite(image, cap, 8, Palette::Red, aa);
 			}
-			CHECK(image == before);
+			CHECK_THAT(image, ImageEquals(before));
 			for (const double width : { 0.0, -8.0 })
 			{
 				regular.paint(image, cap, width, Palette::Red, aa);
 				regular.overwrite(image, cap, width, Palette::Red, aa);
 			}
-			CHECK(image == before);
+			CHECK_THAT(image, ImageEquals(before));
 			Image empty;
 			regular.paint(empty, cap, 8, Palette::Red, aa);
 			regular.overwrite(empty, cap, 8, Palette::Red, aa);
@@ -211,12 +193,12 @@ TEST_CASE("Spline2DImage.EmptyDegenerateAndInvalid")
 					Image image = before;
 					CHECK_THROWS_AS(path.paint(image, 4, Palette::Red, EnableAntialiasing::Yes, error, budget), std::invalid_argument);
 					CHECK_THROWS_AS(path.overwrite(image, 4, Palette::Red, EnableAntialiasing::Yes, error, budget), std::invalid_argument);
-					CHECK(image == before);
+					CHECK_THAT(image, ImageEquals(before));
 				}
 	Image upper = before, expected = before;
 	regular.paint(upper, 4, Palette::Red, EnableAntialiasing::Yes, 0.25, 4096);
 	regular.toLineStringAdaptive(0.25, 4096).paint(expected, 4, Palette::Red);
-	CHECK(upper == expected);
+	CHECK_THAT(upper, ImageEquals(expected));
 }
 
 TEST_CASE("Spline2DImage.ReverseAndClipping")
@@ -246,7 +228,7 @@ TEST_CASE("Spline2DImage.ReverseAndClipping")
 					reversed.overwrite(backward, LineCap::Flat, LineCap::Square, 8, ink, aa);
 					clippedPath.overwrite(clipped, LineCap::Square, LineCap::Flat, 8, ink, aa);
 				}
-				CHECK(forward == backward);
+				CHECK_THAT(forward, ImageEquals(backward));
 				bool equal = true;
 				for (int32 y = 0; y < 32; ++y)
 					for (int32 x = 0; x < 32; ++x)

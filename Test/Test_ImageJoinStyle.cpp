@@ -5,10 +5,12 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include <ThirdParty/nanobench/nanobench.h>
 # include <array>
 # include <random>
+
+using namespace s3d::ImageDrawingTest;
 
 namespace
 {
@@ -71,26 +73,7 @@ namespace
 
 	uint8 Coverage(const Array<Vec2>& p, int32 x, int32 y, double width, JoinStyle style, bool aa)
 	{
-		const int32 n = aa ? 4 : 1;
-		int32 covered = 0;
-		for (int32 sy = 0; sy < n; ++sy)
-			for (int32 sx = 0; sx < n; ++sx)
-				covered += Contains(p, { x + (sx + 0.5) / n, y + (sy + 0.5) / n }, width * 0.5, style);
-		return static_cast<uint8>((covered * 255 + n * n / 2) / (n * n));
-	}
-
-	Color Composite(Color src, Color dst, uint32 coverage, bool paint)
-	{
-		if (!paint)
-		{
-			const auto channel = [&](uint32 s, uint32 d) { return (s * coverage + d * (255 - coverage) + 127) / 255; };
-			return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), channel(src.a, dst.a) };
-		}
-		const uint32 a = (src.a * coverage + 127) / 255;
-		if (a == 0) return dst;
-		const uint32 denominator = a * 255 + dst.a * (255 - a);
-		const auto channel = [&](uint32 s, uint32 d) { return (s * a * 255 + d * dst.a * (255 - a) + denominator / 2) / denominator; };
-		return Color{ channel(src.r, dst.r), channel(src.g, dst.g), channel(src.b, dst.b), (denominator + 127) / 255 };
+		return SampleCoverage({ x, y }, aa, [&](Vec2 sample) { return Contains(p, sample, width * 0.5, style); });
 	}
 }
 
@@ -106,26 +89,22 @@ TEST_CASE("ImageJoinStyle.InnerOuterReferenceAndCompositing")
 					{
 						CAPTURE(shape, style, widths, aa, paint);
 						const auto& points = Contours[shape];
-						const int samples = aa ? 4 : 1;
 						Image expected{32, 32, background};
 						for (int y = 0; y < 32; ++y)
 							for (int x = 0; x < 32; ++x)
 							{
-								int covered = 0;
-								for (int sy = 0; sy < samples; ++sy)
-									for (int sx = 0; sx < samples; ++sx)
+								const uint8 coverage = SampleCoverage({ x, y }, aa, [&](Vec2 q)
+								{
+									bool inside = false;
+									for (size_t i = 0; i < points.size(); ++i)
 									{
-										const Vec2 q{x + (sx + 0.5) / samples, y + (sy + 0.5) / samples};
-										bool inside = false;
-										for (size_t i = 0; i < points.size(); ++i)
-										{
-											const Vec2 a = points[i], b = points[(i + 1) % points.size()];
-											if (((a.y > q.y) != (b.y > q.y)) && (q.x < a.x + (q.y - a.y) * (b.x - a.x) / (b.y - a.y))) inside = !inside;
-										}
-										const double radius = inside ? widths.x : widths.y;
-										covered += (radius > 0 && Contains(points, q, radius, style));
+										const Vec2 a = points[i], b = points[(i + 1) % points.size()];
+										if (((a.y > q.y) != (b.y > q.y)) && (q.x < a.x + (q.y - a.y) * (b.x - a.x) / (b.y - a.y))) inside = !inside;
 									}
-								expected[y][x] = Composite(ink, background, (covered * 255 + samples * samples / 2) / (samples * samples), paint);
+									const double radius = inside ? widths.x : widths.y;
+									return (radius > 0 && Contains(points, q, radius, style));
+								});
+								expected[y][x] = Composite(ink, background, coverage, paint);
 							}
 						for (const bool reverse : {false, true})
 						{
@@ -135,12 +114,12 @@ TEST_CASE("ImageJoinStyle.InnerOuterReferenceAndCompositing")
 								Image actual{32, 32, background}, omitted = actual;
 								if (paint) CHECK(&polygon.paintFrame(actual, style, widths.x, widths.y, ink, EnableAntialiasing{aa}) == &polygon);
 								else CHECK(&polygon.overwriteFrame(actual, style, widths.x, widths.y, ink, EnableAntialiasing{aa}) == &polygon);
-								CHECK(actual == expected);
+								CHECK_THAT(actual, ImageEquals(expected));
 								if (style == JoinStyle::Bevel)
 								{
 									if (paint) polygon.paintFrame(omitted, widths.x, widths.y, ink, EnableAntialiasing{aa});
 									else polygon.overwriteFrame(omitted, widths.x, widths.y, ink, EnableAntialiasing{aa});
-									CHECK(omitted == actual);
+									CHECK_THAT(omitted, ImageEquals(actual));
 								}
 							};
 							if (p.size() == 3) check(Triangle{p[0], p[1], p[2]});
@@ -195,8 +174,8 @@ TEST_CASE("ImageJoinStyle.VariedGeometryAndWinding")
 					Image shifted{ 24, 24, Color{ 0, 0 } }, reversed = shifted;
 					Draw(rotated, shifted, style, width, Palette::White, EnableAntialiasing{ aa });
 					Draw(rotated.reversed(), reversed, style, width, Palette::White, EnableAntialiasing{ aa });
-					CHECK((shifted == image));
-					CHECK((reversed == image));
+					CHECK_THAT(shifted, ImageEquals(image));
+					CHECK_THAT(reversed, ImageEquals(image));
 				}
 			}
 	}
@@ -220,12 +199,12 @@ TEST_CASE("ImageJoinStyle.OmittedStyleAndExplicitRound")
 					};
 					if (p.size() == 3) draw(Triangle{ p[0], p[1], p[2] });
 					else draw(Quad{ p[0], p[1], p[2], p[3] });
-					CHECK((omitted == expected));
+					CHECK_THAT(omitted, ImageEquals(expected));
 					actual = expected = background;
 					Draw(p, actual, JoinStyle::Round, width, ink, EnableAntialiasing{ aa }, paint);
 					ImageDraw::ClosedLineString(expected, p, width, ink,
 						paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite, EnableAntialiasing{ aa });
-					CHECK((actual == expected));
+					CHECK_THAT(actual, ImageEquals(expected));
 				}
 }
 
@@ -243,11 +222,9 @@ TEST_CASE("ImageJoinStyle.CompositingClippingAndNarrowImages")
 							Image actual{ size, bg }, expected = actual;
 							Image mask{ 64, 64, Color{ 0, 0 } };
 							Draw(p.map([](Vec2 v) { return v + Vec2{ 16, 16 }; }), mask, style, 28.25, Palette::White, EnableAntialiasing{ aa });
-							for (int32 y = 0; y < size.y; ++y)
-								for (int32 x = 0; x < size.x; ++x)
-									expected[y][x] = Composite(ink, bg, mask[y + 16][x + 16].a, paint);
+							CompositeMask(expected, mask, ink, paint, { 16, 16 });
 							Draw(p, actual, style, 28.25, ink, EnableAntialiasing{ aa }, paint);
-							CHECK((actual == expected));
+							CHECK_THAT(actual, ImageEquals(expected));
 						}
 }
 
@@ -283,7 +260,7 @@ TEST_CASE("ImageJoinStyle.InnerOuterClippedSampleRows")
 								for (int32 y = 0; y < size.y; ++y)
 									for (int32 x = 0; x < size.x; ++x) expected[y][x] = whole[y + top][x + 16];
 								draw(actual, Vec2{16, top});
-								CHECK(actual == expected);
+								CHECK_THAT(actual, ImageEquals(expected));
 							}
 					}
 }
@@ -324,7 +301,7 @@ TEST_CASE("ImageJoinStyle.EquilateralRotation")
 				Draw(points, actual, JoinStyle::Bevel, width, Palette::White, EnableAntialiasing{aa});
 				Draw(points, expected, JoinStyle::Miter, width, Palette::White, EnableAntialiasing{aa});
 				CAPTURE(degrees, width, aa);
-				CHECK(actual == expected);
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 }
 
@@ -344,7 +321,7 @@ TEST_CASE("ImageJoinStyle.DegenerateAndNoOp")
 				for (const double width : { 0.0, -1.0 }) Draw(Contours[0], image, style, width, Palette::White, EnableAntialiasing{ aa }, paint);
 				Draw(Contours[0], noImage, style, 8, Palette::White, EnableAntialiasing{ aa }, paint);
 				Draw(Contours[0].map([](Vec2 p) { return p + Vec2{ 1000, 1000 }; }), image, style, 8, Palette::White, EnableAntialiasing{ aa }, paint);
-				CHECK((image == original));
+				CHECK_THAT(image, ImageEquals(original));
 				CHECK(noImage.isEmpty());
 			}
 	// Backtracking adds only edge bands with flat extremities for Bevel/Miter.
@@ -372,21 +349,17 @@ TEST_CASE("ImageJoinStyle.PixelBoundaryAndCollapsedHole")
 					const Quad square{ lo, lo, hi, lo, hi, hi, lo, hi };
 					Image image{ 32, 32, Color{ 0, 0 } };
 					square.overwriteFrame(image, style, width, Palette::White, EnableAntialiasing{ aa });
-					const int32 n = aa ? 4 : 1;
 					int32 errors = 0;
 					for (int32 y = 0; y < 32; ++y)
 						for (int32 x = 0; x < 32; ++x)
 						{
-							int32 covered = 0;
-							for (int32 sy = 0; sy < n; ++sy)
-								for (int32 sx = 0; sx < n; ++sx)
-								{
-									const double px = x + (sx + 0.5) / n, py = y + (sy + 0.5) / n;
-									const bool outer = ((lo - half <= px) && (px < hi + half) && (lo - half <= py) && (py < hi + half));
-									const bool inner = ((lo + half <= px) && (px < hi - half) && (lo + half <= py) && (py < hi - half));
-									covered += outer && !inner;
-								}
-							errors += (image[y][x].a != (covered * 255 + n * n / 2) / (n * n));
+							const uint8 coverage = SampleCoverage({ x, y }, aa, [&](Vec2 p)
+							{
+								const bool outer = ((lo - half <= p.x) && (p.x < hi + half) && (lo - half <= p.y) && (p.y < hi + half));
+								const bool inner = ((lo + half <= p.x) && (p.x < hi - half) && (lo + half <= p.y) && (p.y < hi - half));
+								return outer && !inner;
+							});
+							errors += (image[y][x].a != coverage);
 						}
 					CAPTURE(offset, width, aa, style);
 					CHECK(errors == 0);
@@ -405,11 +378,11 @@ TEST_CASE("ImageJoinStyle.DestinationAlpha")
 				const Quad quad{ Contours[4][0], Contours[4][1], Contours[4][2], Contours[4][3] };
 				ImageDraw::TriangleFrame(expected, triangle, style, 8, ink, mode, aa);
 				ImageDraw::TriangleFrame(actual, triangle, style, 8, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 				expected.fill(Color{ 30, 90, 150 }); actual = expected;
 				ImageDraw::QuadFrame(expected, quad, style, 28, ink, mode, aa);
 				ImageDraw::QuadFrame(actual, quad, style, 28, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-				CHECK((actual == expected));
+				CHECK_THAT(actual, ImageEquals(expected));
 			}
 }
 
