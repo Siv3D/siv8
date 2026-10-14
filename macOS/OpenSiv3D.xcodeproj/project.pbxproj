@@ -120,6 +120,7 @@
 		D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */; };
 		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
+		B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */; };
@@ -3515,6 +3516,8 @@
 		D845EB69276147C8B56FC102 /* Wave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wave.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A411 /* BezierGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BezierGeometry.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
+		B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierTessellation.cpp; sourceTree = "<group>"; };
+		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
 		9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneHighResolution.cpp; sourceTree = "<group>"; };
 		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
@@ -7255,6 +7258,8 @@
 				F90702C22B9DAEB900383E4D /* Test_NamedParameter.cpp */,
 				F90702C32B9DAEB900383E4D /* Test_Platform.cpp */,
 				D94C71C8E32144768219A413 /* Test_Bezier.cpp */,
+				B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */,
+				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
 				6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
@@ -17052,6 +17057,7 @@
 				E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */,
 				F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */,
 				D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */,
+				B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,
 				F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */,

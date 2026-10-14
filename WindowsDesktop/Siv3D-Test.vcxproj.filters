@@ -379,6 +379,12 @@
     <ClCompile Include="..\Test\Test_Bezier.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BezierTessellation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\Test\BezierTessellationStudy.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -135,6 +135,8 @@
     <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_Bezier.cpp" />
+    <ClCompile Include="..\Test\Test_BezierTessellation.cpp" />
+    <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
