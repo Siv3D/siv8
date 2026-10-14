@@ -1288,6 +1288,50 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool CRenderer2D_Metal::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Float4& color)
+	{
+		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, joinStyle, thickness, color, m_commandManager.getCurrentRasterScaling());
+		if (not result) return false;
+		if (const auto indexCount = *result)
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+		return true;
+	}
+
+	bool CRenderer2D_Metal::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	{
+		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, joinStyle, thickness, pattern.primaryColor, m_commandManager.getCurrentRasterScaling());
+		if (not result) return false;
+		if (const auto indexCount = *result)
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
+
+			m_commandManager.pushDraw(indexCount);
+		}
+		return true;
+	}
+
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, color, m_commandManager.getCurrentRasterScaling()))

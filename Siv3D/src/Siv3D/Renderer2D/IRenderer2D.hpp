@@ -153,6 +153,11 @@ namespace s3d
 
 		virtual void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const PatternParameters& pattern) = 0;
 
+		// Returns false only for unsupported topology, before reserving a buffer.
+		virtual bool addClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const Float4& color) = 0;
+
+		virtual bool addClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern) = 0;
+
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color) = 0;
 
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd) = 0;

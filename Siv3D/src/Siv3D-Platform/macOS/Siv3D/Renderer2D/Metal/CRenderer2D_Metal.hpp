@@ -294,6 +294,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		bool addClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const Float4& color) override;
+
+		bool addClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern) override;
+
 		void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color) override;
 
 		void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd) override;

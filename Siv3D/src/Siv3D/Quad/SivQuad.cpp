@@ -610,7 +610,8 @@ namespace s3d
 
 	const Quad& Quad::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, color);
+		const Vec2 points[] = { p0, p1, p2, p3, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, color);
 		return *this;
 	}
 
@@ -627,7 +628,8 @@ namespace s3d
 
 	const Quad& Quad::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, pattern);
+		const Vec2 points[] = { p0, p1, p2, p3, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, pattern);
 		return *this;
 	}
 

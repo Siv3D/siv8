@@ -3,6 +3,9 @@
 - [Scoped projective drawing](quad-warp.md): transform scopes, homography generation,
   custom VS layout, and migration from dedicated texture warping.
 
+- [Triangle and Quad GPU joins](gpu-joins.md): direct mesh eligibility, alpha
+  coverage, compatibility, tests, and CPU benchmarks.
+
 ## Scene rendering
 
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,

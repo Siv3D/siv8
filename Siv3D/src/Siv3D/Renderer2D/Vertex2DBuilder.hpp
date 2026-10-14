@@ -24,6 +24,7 @@ namespace s3d
 	struct LineStyle;
 	struct FloatQuad;
 	enum class LineCap : uint8;
+	enum class JoinStyle : uint8;
 
 	namespace Vertex2DBuilder
 	{
@@ -119,6 +120,11 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const Float4& color, const float scale);
+
+		// none: unsupported topology, no allocation; 0: handled but allocation failed.
+		// points is an open ring with 3 or 4 vertices (no repeated closure points).
+		[[nodiscard]]
+		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const Float4& color, float scale);
 
 		[[nodiscard]]
 		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);

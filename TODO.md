@@ -86,6 +86,13 @@
 
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
+## Renderer2D / Triangle・Quad の JoinStyle
+
+- Windows / D3D11 で [JoinStyle 専用テスト](Test/Test_Renderer2DJoinStyle.cpp) と全自動テストを実行し、[手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。macOS でのプロジェクト構文検証を Windows の実行検証とはみなさない。
+- 凹形状・自己交差・内側輪郭の消失は Boost buffer に残す。拡張する場合は非重複な領域分割と使用頻度を先に評価する。fallback の Round は旧分割のままなので、拡大表示での品質と経路切り替え時の輪郭差を改善する段階を別途検討する。
+- Boost 1.88 の旧 buffer 経路で、`Quad{{61,93},{22,119},{7,208},{221,152}}` の幅 160 / Bevel に対する libc++ の strict-weak-ordering アサートを切り分ける。検査用の Debug ライブラリをリンクした実験では `sort_by_side::side_sorter::apply()` 内で再現した。通常の最適化された分離ツールではこの入力を含む走査が完了するため、Debug 条件での再現と出力の妥当性を分けて検証する。今回のメッシュはこの太い枠を fallback に戻すので、既存問題は解消していない。
+- 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
+
 ## Renderer2D / 組み込みシェーダ最適化
 
 - WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。

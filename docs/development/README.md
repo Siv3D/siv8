@@ -322,6 +322,10 @@ the runner's lock; never run them concurrently with another build or test sessio
 
 ## Performance experiments
 
+The [Renderer2D JoinStyle benchmark](renderer2d-join-benchmark.md) separates
+polygon buffering, triangulation, vertex conversion, and direct mesh emission
+for Triangle and Quad GPU drawing. It measures CPU work and temporary allocations.
+
 The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compares
 the current Win32 reader with the historical `ifstream` implementation and
 experimental buffer sizes using controlled I/O patterns and real asset workloads. It builds and runs independently of the test app.

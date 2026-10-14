@@ -131,49 +131,47 @@ namespace s3d
 		}
 	}
 
-	void DrawClosedLineString(const Array<Vec2>& points, const JoinStyle joinStyle, const double thickness, const ColorF& color)
+	namespace
 	{
-		if (joinStyle == JoinStyle::Default)
+		template <class Fill>
+		void DrawFallback(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill)
 		{
-			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-				points, none,
-				Abs(static_cast<float>(thickness)), false,
-				CloseRing::Yes,
-				color.toFloat4());
-
-			return;
+			const auto polygon = MakeBuffer(LineString{ points.begin(), points.end() }, joinStyle, thickness);
+			if (polygon.empty()) return;
+			DrawTriangles(polygon[0].outer(), polygon[0].inners(), fill);
 		}
 
-		const auto polygon = MakeBuffer(points, joinStyle, thickness);
-
-		if (polygon.empty())
+		template <class Fill, class RendererFill>
+		void DrawClosed(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill, const RendererFill& rendererFill)
 		{
-			return;
+			if (joinStyle == JoinStyle::Default)
+			{
+				SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+					points, none, Abs(static_cast<float>(thickness)), false, CloseRing::Yes, rendererFill);
+				return;
+			}
+			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points.first(points.size() - 2), joinStyle, thickness, rendererFill)) return;
+			DrawFallback(points, joinStyle, thickness, fill);
 		}
-
-		DrawTriangles(polygon[0].outer(), polygon[0].inners(), color);
 	}
 
-	void DrawClosedLineString(const Array<Vec2>& points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	void DrawClosedLineStringFallback(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const ColorF& color)
 	{
-		if (joinStyle == JoinStyle::Default)
-		{
-			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-				points, none,
-				Abs(static_cast<float>(thickness)), false,
-				CloseRing::Yes,
-				pattern);
+		DrawFallback(points, joinStyle, thickness, color);
+	}
 
-			return;
-		}
+	void DrawClosedLineStringFallback(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	{
+		DrawFallback(points, joinStyle, thickness, pattern);
+	}
 
-		const auto polygon = MakeBuffer(points, joinStyle, thickness);
+	void DrawClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const ColorF& color)
+	{
+		DrawClosed(points, joinStyle, thickness, color, color.toFloat4());
+	}
 
-		if (polygon.empty())
-		{
-			return;
-		}
-
-		DrawTriangles(polygon[0].outer(), polygon[0].inners(), pattern);
+	void DrawClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	{
+		DrawClosed(points, joinStyle, thickness, pattern, pattern);
 	}
 }

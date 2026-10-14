@@ -17,7 +17,13 @@
 
 namespace s3d
 {
-	void DrawClosedLineString(const Array<Vec2>& points, JoinStyle joinStyle, double thickness, const ColorF& color);
+	// Input includes the first two points again at the end, as required by the
+	// existing buffer path and Default path.
+	void DrawClosedLineStringFallback(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const ColorF& color);
 
-	void DrawClosedLineString(const Array<Vec2>& points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
+	void DrawClosedLineStringFallback(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
+
+	void DrawClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const ColorF& color);
+
+	void DrawClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
 }

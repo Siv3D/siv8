@@ -13,6 +13,7 @@
 # include <limits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/JoinStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/QuarterArcTable.hpp>
 
@@ -3369,6 +3370,132 @@ namespace s3d
 
 			return BuildLineStringStrip(bufferCreator, prepared.points, (thickness * 0.5f), true,
 				[&color](size_t) { return color; });
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildClosedLineString
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+			const JoinStyle joinStyle, const double thickness, const Float4& color, const float scale)
+		{
+			// The input is a unique 3/4-point ring. Rejected geometry is handled by the
+			// polygon buffer path, before any renderer storage or commands are reserved.
+			const size_t n = points.size();
+			if (((n != 3) && (n != 4)) || (not (0.0 < thickness))
+				|| ((joinStyle != JoinStyle::Bevel) && (joinStyle != JoinStyle::Miter) && (joinStyle != JoinStyle::Round)))
+			{
+				return none;
+			}
+
+			struct Corner
+			{
+				Vec2 inner;
+				Vec2 miter;
+				Vec2 first;
+				Vec2 last;
+				double sweep = 0;
+				uint16 count = 1;
+				uint16 start = 0;
+			};
+			std::array<Vec2, 4> directions, normals;
+			std::array<Corner, 4> corners;
+			const double orientation = (((points[1] - points[0]).cross(points[2] - points[1]) > 0.0) ? 1.0 : -1.0);
+			const double radius = (thickness * 0.5);
+			for (size_t i = 0; i < n; ++i)
+			{
+				const Vec2 edge = (points[(i + 1) % n] - points[i]);
+				const double length = edge.length();
+				if (not (0.0 < length)) return none;
+				directions[i] = (edge / length);
+				normals[i] = Vec2{ directions[i].y, -directions[i].x } * orientation;
+			}
+
+			uint16 vertexCount = static_cast<uint16>(n);
+			for (size_t i = 0; i < n; ++i)
+			{
+				const size_t prev = ((i + n - 1) % n);
+				const double turn = (directions[prev].cross(directions[i]) * orientation);
+				const double dot = directions[prev].dot(directions[i]);
+				// Strict convexity excludes duplicate/collinear corners, concave quads,
+				// and crossing quads. A reversal has no offset-line intersection.
+				if ((not (0.0 < turn)) || (not (0.0 < (1.0 + dot)))) return none;
+				auto& corner = corners[i];
+				corner.miter = ((normals[prev] + normals[i]) * (radius / (1.0 + dot)));
+				corner.inner = (points[i] - corner.miter);
+				corner.first = corner.last = (points[i] + corner.miter);
+				if ((joinStyle == JoinStyle::Bevel) && (dot < -0.5))
+				{
+					// Historical Siv3D bevel: below 60 degrees, clip the miter by a
+					// line at radius along the outward bisector (not a simple bevel).
+					const double cosine = std::sqrt((1.0 + dot) * 0.5);
+					const double t = (cosine / (1.0 + cosine));
+					corner.first = (points[i] + normals[prev] * (radius * (1.0 - t)) + corner.miter * t);
+					corner.last = (points[i] + normals[i] * (radius * (1.0 - t)) + corner.miter * t);
+					corner.count = 2;
+				}
+				else if (joinStyle == JoinStyle::Round)
+				{
+					corner.first = (points[i] + normals[prev] * radius);
+					corner.last = (points[i] + normals[i] * radius);
+					corner.sweep = std::atan2(turn, dot);
+					corner.count = CalculateCirclePieQuality(static_cast<float>(radius) * scale, static_cast<float>(corner.sweep));
+				}
+				corner.start = vertexCount;
+				vertexCount += corner.count;
+			}
+
+			for (size_t i = 0; i < n; ++i)
+			{
+				// Convexity alone is insufficient: every inset edge must still run
+				// forward. This rejects a vanished hole or a quad whose short inset
+				// edge has disappeared even though another part of the hole remains.
+				if (not (0.0 < (corners[(i + 1) % n].inner - corners[i].inner).dot(directions[i]))) return none;
+			}
+
+			const uint32 indexCount = (3u * vertexCount);
+			const auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
+			if (not pVertex) return 0; // Handled: an allocation failure must not trigger fallback.
+
+			for (size_t i = 0; i < n; ++i)
+			{
+				pVertex[i].pos = corners[i].inner;
+				pVertex[corners[i].start].pos = corners[i].first;
+				pVertex[corners[i].start + corners[i].count - 1].pos = corners[i].last;
+				if (joinStyle == JoinStyle::Round)
+				{
+					const auto& corner = corners[i];
+					const Vec2 normal = normals[(i + n - 1) % n];
+					const double start = std::atan2(normal.y, normal.x);
+					const double step = (orientation * corner.sweep / (corner.count - 1));
+					for (uint16 k = 1; k + 1 < corner.count; ++k)
+					{
+						const double angle = (start + step * k);
+						pVertex[corner.start + k].pos = (points[i] + Vec2{ std::cos(angle), std::sin(angle) } * radius);
+					}
+				}
+			}
+			for (uint16 i = 0; i < vertexCount; ++i) pVertex[i].color = color;
+
+			auto* dst = pIndex;
+			const auto triangle = [&](const uint16 a, const uint16 b, const uint16 c)
+			{
+				*dst++ = (indexOffset + a);
+				*dst++ = (indexOffset + ((orientation > 0.0) ? b : c));
+				*dst++ = (indexOffset + ((orientation > 0.0) ? c : b));
+			};
+			for (uint16 i = 0; i < n; ++i)
+			{
+				const uint16 next = static_cast<uint16>((i + 1) % n);
+				const auto& corner = corners[i];
+				const uint16 last = (corner.start + corner.count - 1);
+				triangle(i, last, corners[next].start);
+				triangle(i, corners[next].start, next);
+				for (uint16 k = 1; k < corner.count; ++k) triangle(i, (corner.start + k - 1), (corner.start + k));
+			}
+			return indexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
