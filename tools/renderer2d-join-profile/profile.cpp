@@ -158,14 +158,14 @@ int main(int argc, char** argv)
 				? Array<Vec2>{ { 40, 30 }, { 280, 50 }, { 120, 240 }, { 40, 30 }, { 280, 50 } }
 				: Array<Vec2>{ { 40, 30 }, { 280, 50 }, { 260, 240 }, { 60, 220 }, { 40, 30 }, { 280, 50 } };
 			const std::string id = std::to_string(n) + "/" + std::to_string(static_cast<int>(thickness));
-			Measure(id + "/Default-array", [&]
+			Measure(id + "/legacy-strip-array", [&]
 			{
 				const Array<Vec2> input = points;
 				const auto count = Vertex2DBuilder::BuildLineString(allocate, LineCap::Square, LineCap::Square,
 					input, none, static_cast<float>(thickness), false, CloseRing::Yes, color, 1);
 				Escape(count); Escape(vertices); Escape(indices);
 			});
-			Measure(id + "/Default-stack", [&]
+			Measure(id + "/legacy-strip-stack", [&]
 			{
 				std::array<Vec2, 6> input;
 				std::copy(points.begin(), points.end(), input.begin());

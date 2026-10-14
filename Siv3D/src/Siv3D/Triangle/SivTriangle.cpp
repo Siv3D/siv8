@@ -601,8 +601,12 @@ namespace s3d
 
 	const Triangle& Triangle::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[3] = { p0, p1, p2 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return paintFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::paintFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -620,8 +624,12 @@ namespace s3d
 
 	const Triangle& Triangle::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[3] = { p0, p1, p2 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return overwriteFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

@@ -12,6 +12,7 @@
 # pragma once
 # include "ImagePixel.hpp"
 # include "LineCap.hpp"
+# include "JoinStyle.hpp"
 # include "2DShapesFwd.hpp"
 # include "Polygon.hpp"
 
@@ -437,6 +438,26 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief 角の結合方法を指定して、三角形の中央配置の枠を描画します。
+		/// @param image 描画先画像
+		/// @param triangle 基準となる三角形
+		/// @param joinStyle 角の結合方法
+		/// @param thickness 枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see Triangle::paintFrame(Image&, JoinStyle, double, const Color&, EnableAntialiasing) const
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			JoinStyle joinStyle,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 三角形の内側と外側の太さを指定して、枠を描画します。
 		/// @param image 描画先画像
 		/// @param triangle 基準となる三角形
@@ -468,6 +489,26 @@ namespace s3d
 		void Fill(
 			Image& image,
 			const Quad& quad,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief 角の結合方法を指定して、四角形の中央配置の枠を描画します。
+		/// @param image 描画先画像
+		/// @param quad 基準となる四角形
+		/// @param joinStyle 角の結合方法
+		/// @param thickness 枠の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see Quad::paintFrame(Image&, JoinStyle, double, const Color&, EnableAntialiasing) const
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			JoinStyle joinStyle,
+			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,

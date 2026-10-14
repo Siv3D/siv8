@@ -26,6 +26,18 @@ namespace
 
 TEST_CASE("EnumFormatter")
 {
+	SECTION("JoinStyle")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ JoinStyle::Bevel, StringView{ U"Bevel" } },
+			std::pair{ JoinStyle::Round, StringView{ U"Round" } },
+			std::pair{ JoinStyle::Miter, StringView{ U"Miter" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
 	SECTION("MSAASampleCount")
 	{
 		static constexpr std::array Cases =

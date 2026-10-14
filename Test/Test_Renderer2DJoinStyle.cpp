@@ -238,7 +238,6 @@ TEST_CASE("Renderer2D.join_style_mesh_rejection_and_failure")
 		CHECK(mesh.requests == 0);
 	}
 	CHECK(BuildJoin(square, 99.9, JoinStyle::Miter).count.has_value());
-	CHECK_FALSE(BuildJoin(square, 10, JoinStyle::Default).count.has_value());
 	const auto failed = BuildJoin(square, 10, JoinStyle::Miter, 1, true);
 	REQUIRE(failed.count.has_value());
 	CHECK(*failed.count == 0);
@@ -286,11 +285,11 @@ TEST_CASE("Renderer2D.join_style_round_scale_and_bevel_threshold")
 	}
 }
 
-TEST_CASE("Renderer2D.join_style_pattern_batch_and_default")
+TEST_CASE("Renderer2D.join_style_pattern_batch")
 {
 	const Array<Vec2> square{{80,60}, {240,60}, {240,220}, {80,220}};
 	const Pattern::PolkaDot pattern{ .primary = ColorF{1, 0, 0, 0.5}, .background = ColorF{0, 0, 1, 0.5} };
-	for (const auto style : {JoinStyle::Default, JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+	for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
 	{
 		CAPTURE(static_cast<int>(style));
 		const auto normal = CaptureJoin([&] { DrawFrame(square, 20, pattern, style); });
@@ -303,11 +302,6 @@ TEST_CASE("Renderer2D.join_style_pattern_batch_and_default")
 		if (style == JoinStyle::Miter || style == JoinStyle::Bevel)
 		{
 			const auto old = CaptureJoin([&] { DrawClosedLineStringFallback(Closed(square), style, 20, pattern); });
-			CHECK(normal == old);
-		}
-		if (style == JoinStyle::Default)
-		{
-			const auto old = CaptureJoin([&] { LineString{Closed(square)}.drawClosed(20, pattern); });
 			CHECK(normal == old);
 		}
 	}
@@ -323,6 +317,101 @@ TEST_CASE("Renderer2D.join_style_pattern_batch_and_default")
 		const auto direct = CaptureJoin([&] { DrawFrame(shape, 20, ColorF{1,0.5}, JoinStyle::Round); });
 		CHECK(zoom == direct);
 	}
+}
+
+TEST_CASE("Renderer2D.join_style_default_bevel_and_single_composite")
+{
+	const Array<Array<Vec2>> shapes{
+		{{80,140}, {240,120}, {240,160}}, // acute tip
+		{{80,60}, {240,80}, {130,210}},
+		{{80,60}, {240,60}, {240,220}, {80,220}},
+		{{80,60}, {240,80}, {150,110}, {100,210}}, // concave
+		{{80,60}, {240,210}, {80,210}, {240,60}}, // crossing
+	};
+	const ColorF ink{1, 0.5};
+	const auto reference = CaptureJoin([&] { Rect{0,0,32,32}.draw(ink); });
+	const int single = reference[16][16].r;
+	const Pattern::PolkaDot pattern{ .primary = ColorF{1,0,0,0.5}, .background = ColorF{0,0,1,0.5} };
+	for (const auto& points : shapes)
+		for (const double width : {1.0, 20.0, 220.0})
+		{
+			CAPTURE(points, width);
+			const auto check = [&](const auto& shape, const auto& fill)
+			{
+				const auto expected = CaptureJoin([&] { shape.drawFrame(width, fill, JoinStyle::Bevel); });
+				const auto omitted = CaptureJoin([&] { shape.drawFrame(width, fill); });
+				CHECK(omitted == expected);
+				int maximum = 0;
+				for (const Color pixel : omitted) maximum = std::max({maximum, int(pixel.r), int(pixel.g), int(pixel.b)});
+				CHECK(maximum <= single + 1);
+			};
+			if (points.size() == 3)
+			{
+				const Triangle shape{points[0], points[1], points[2]};
+				check(shape, ink);
+				check(shape, pattern);
+			}
+			else
+			{
+				const Quad shape{points[0], points[1], points[2], points[3]};
+				check(shape, ink);
+				check(shape, pattern);
+			}
+
+		}
+}
+
+TEST_CASE("Renderer2D.join_style_common_convex_frames")
+{
+	const double h = (100 * std::sqrt(3.0));
+	const Array<Array<Vec2>> shapes{
+		{{-100,-h/3}, {100,-h/3}, {0,2*h/3}}, // equilateral, side 200
+		{{-120,-60}, {120,-60}, {120,60}, {-120,60}}, // rectangle
+		{{-80,-60}, {80,-60}, {120,60}, {-120,60}}, // trapezoid
+		{{-120,-60}, {80,-60}, {120,60}, {-80,60}}, // parallelogram
+		{{0,-60}, {100,0}, {0,60}, {-100,0}}, // rhombus
+	};
+	// Independent analytic inset-collapse widths. Stay clear of equality, where
+	// double rounding can change which side of the strict topology check is used.
+	const double limits[]{2*h/3, 120, 120, 120, 12000/std::sqrt(13600.0)};
+	for (size_t i = 0; i < shapes.size(); ++i)
+		for (int degrees = 0; degrees < 360; degrees += 15)
+			for (const bool reverse : {false, true})
+			{
+				auto points = shapes[i].map([&](const Vec2 p) { return p.rotated(Math::ToRadians(degrees)) + Vec2{320,240}; });
+				if (reverse) points.reverse();
+				for (const double width : {0.5, 1.0, 2.0, 4.0, 8.0, 12.0, 20.0, 40.0, 80.0})
+				{
+					CAPTURE(i, degrees, reverse, width);
+					const auto mesh = BuildJoin(points, width, JoinStyle::Bevel);
+					REQUIRE(mesh.count.has_value());
+					CHECK(mesh.requests == 1);
+					CHECK(*mesh.count > 0);
+					if (width == 20.0) CheckMesh(mesh);
+					if (i == 0) CHECK(mesh.vertices.size() == 6); // No clipped tips at 60 degrees.
+				}
+				CHECK(BuildJoin(points, limits[i] * 0.999, JoinStyle::Bevel).count.has_value());
+				const auto collapsed = BuildJoin(points, limits[i] * 1.001, JoinStyle::Bevel);
+				CHECK_FALSE(collapsed.count.has_value());
+				CHECK(collapsed.requests == 0);
+			}
+}
+
+TEST_CASE("Renderer2D.join_style_equilateral_threshold")
+{
+	const double h = (100 * std::sqrt(3.0));
+	const Array<Vec2> triangle{{-100,-h/3}, {100,-h/3}, {0,2*h/3}};
+	for (const int degrees : {0, 30, 90, 165})
+		for (const double width : {20.0, 180.0})
+		{
+			const auto points = triangle.map([&](const Vec2 p) { return p.rotated(Math::ToRadians(degrees)) + Vec2{320,240}; });
+			CAPTURE(degrees, width);
+			const auto expected = CaptureJoin([&] { DrawFrame(points, width, ColorF{1,0.5}, JoinStyle::Miter); });
+			const auto actual = CaptureJoin([&] { DrawFrame(points, width, ColorF{1,0.5}, JoinStyle::Bevel); });
+			const auto fallback = CaptureJoin([&] { DrawClosedLineStringFallback(Closed(points), JoinStyle::Bevel, width, ColorF{1,0.5}); });
+			CheckBoundaryPixels(actual, expected);
+			CheckBoundaryPixels(fallback, expected);
+		}
 }
 
 TEST_CASE("Renderer2D.join_style_deterministic_topologies")

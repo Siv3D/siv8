@@ -944,13 +944,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 四角形の枠を Image に描き込みます。
+		/// @brief 四角形の枠を Bevel 結合で Image に描き込みます。
 		/// @param dst 描き込み先の画像
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ。0 以下の場合は何もしません。
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @see paintFrame(Image&, JoinStyle, double, const Color&, EnableAntialiasing) const
 		const Quad& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 角の結合方法を指定して、四角形の中央配置の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param joinStyle 角の結合方法
+		/// @param thickness 枠の太さ。0 以下の場合は何もしません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 凹形状や自己交差でも、辺と角の領域を合わせて一度だけ合成します。
+		/// @remark 隣り合う重複点を除いて 3 点未満になる場合は何もしません。
+		/// @remark Bevel と Miter は、直線上の折り返しに角を追加しません。
+		/// @return *this
+		const Quad& paintFrame(Image& dst, JoinStyle joinStyle, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 四角形の内側と外側の太さを指定して、枠を Image に描き込みます。
 		/// @param dst 描き込み先の画像
@@ -969,13 +982,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 四角形の枠を Image に上書きします。
+		/// @brief 四角形の枠を Bevel 結合で Image に上書きします。
 		/// @param dst 上書き先の画像
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ。0 以下の場合は何もしません。
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @see overwriteFrame(Image&, JoinStyle, double, const Color&, EnableAntialiasing) const
 		const Quad& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 角の結合方法を指定して、四角形の中央配置の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param joinStyle 角の結合方法
+		/// @param thickness 枠の太さ。0 以下の場合は何もしません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 凹形状や自己交差でも、辺と角の領域を合わせて一度だけ合成します。
+		/// @remark 隣り合う重複点を除いて 3 点未満になる場合は何もしません。
+		/// @remark Bevel と Miter は、直線上の折り返しに角を追加しません。
+		/// @return *this
+		const Quad& overwriteFrame(Image& dst, JoinStyle joinStyle, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 四角形の内側と外側の太さを指定して、枠を Image に上書きします。
 		/// @param dst 上書き先の画像
@@ -1023,7 +1049,7 @@ namespace s3d
 		/// @param color 枠の色
 		/// @param joinStyle 線分の結合スタイル
 		/// @return *this
-		const Quad& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Default) const;
+		const Quad& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Bevel) const;
 
 		/// @brief 四角形の枠を描きます。
 		/// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）
@@ -1037,7 +1063,7 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @param joinStyle 線分の結合スタイル
 		/// @return *this
-		const Quad& drawFrame(double thickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Default) const;
+		const Quad& drawFrame(double thickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Bevel) const;
 
 		/// @brief 四角形の枠を描きます。
 		/// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）

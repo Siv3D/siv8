@@ -25,9 +25,6 @@ namespace s3d
 	/// @brief 線の結合方法 | Line join style
 	enum class JoinStyle : uint8
 	{
-		/// @brief 標準の結合方法を使用します。
-		Default,
-
 		/// @brief 内角が 60° 未満の角を、頂点から線幅の半分の距離にある、角の二等分線に垂直な直線で切り落とします。それ以外の角は Miter と同じです。
 		Bevel,
 

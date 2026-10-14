@@ -1,16 +1,16 @@
 # Triangle and Quad GPU joins
 
-This gallery checks explicit GPU joins, alpha coverage, winding reversal, and
+This gallery checks GPU joins, alpha coverage, winding reversal, and
 zoomed round corners. It does not exercise Image painting or polygon buffers.
 Run it as a separate Siv3D application with the current engine, on Metal and D3D11.
 Do not replace the repository test runner's `Main.cpp`.
 
 ## Steps and expected results
 
-1. Run the complete program below. Columns are Default, Bevel, Round, Miter.
+1. Run the complete program below. Columns are Bevel, Round, Miter.
    Rows are an ordinary triangle, convex quad, concave quad, crossing quad, acute
    triangle, and a triangle whose inner hole disappears at the selected width.
-2. Hold Space to reverse vertex order. Explicit joins should retain their shape.
+2. Hold Space to reverse vertex order. All styles should retain their shape.
    Use Up/Down to change width and Left/Right to change zoom (about each cell).
 3. Press P to switch between a translucent solid and a translucent pattern.
    There should be no dark/bright seams or doubled alpha where edges meet corners.
@@ -39,11 +39,11 @@ cover captured pixels and mesh topology; this gallery is for interactive inspect
 
 void Main()
 {
-    Window::Resize(1200, 900);
+    Window::Resize(900, 900);
     Scene::SetBackground(ColorF{ 0.12 });
     const Font font{ 18 };
     const Array<JoinStyle> styles{
-        JoinStyle::Default, JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter };
+        JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter };
     const Array<Array<Vec2>> shapes{
         {{-70,-45}, {75,-35}, {-10,45}},
         {{-70,-45}, {70,-30}, {60,45}, {-60,35}},
@@ -86,7 +86,7 @@ void Main()
                 ? Array<Vec2>{{-10.5,-10.5}, {10.5,-10.5}, {10.5,10.5}, {-10.5,10.5}}
                 : Array<Vec2>{{-30,-20}, {30,-20}, {30,-10}, {-30,20}};
             if (KeySpace.pressed()) points.reverse();
-            const Transformer2D transform{ Mat3x2::Scale(zoom).translated(600,450) };
+            const Transformer2D transform{ Mat3x2::Scale(zoom).translated(450,450) };
             draw(Quad{points[0], points[1], points[2], points[3]}, JoinStyle::Round);
             continue;
         }

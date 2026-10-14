@@ -1445,10 +1445,10 @@ TEST_CASE("ImageDraw.superellipse_frame_special_cases_and_alpha")
 		Image actual = background, expected = background;
 		const SuperEllipse diamond{ 16, 14, 12, 8, 1 };
 		CHECK(&diamond.paintFrame(actual, 3.5, color, aa) == &diamond);
-		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.paintFrame(expected, 3.5, color, aa);
+		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.paintFrame(expected, JoinStyle::Round, 3.5, color, aa);
 		CHECK((actual == expected));
 		CHECK(&diamond.overwriteFrame(actual, 3.5, color, aa) == &diamond);
-		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.overwriteFrame(expected, 3.5, color, aa);
+		Quad{ 16, 6, 28, 14, 16, 22, 4, 14 }.overwriteFrame(expected, JoinStyle::Round, 3.5, color, aa);
 		CHECK((actual == expected));
 		for (const auto invalid : { SuperEllipse{ 16, 14, 0, 8, 4 }, SuperEllipse{ 16, 14, 12, 0, 4 },
 			SuperEllipse{ 16, 14, 12, 8, 0 }, SuperEllipse{ 16, 14, 12, 8, -1 } })

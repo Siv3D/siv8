@@ -3427,7 +3427,8 @@ namespace s3d
 				corner.miter = ((normals[prev] + normals[i]) * (radius / (1.0 + dot)));
 				corner.inner = (points[i] - corner.miter);
 				corner.first = corner.last = (points[i] + corner.miter);
-				if ((joinStyle == JoinStyle::Bevel) && (dot < -0.5))
+				// Keep 60-degree corners on the miter side despite rotation roundoff.
+				if ((joinStyle == JoinStyle::Bevel) && (dot < (-0.5 - 1e-12)))
 				{
 					// Historical Siv3D bevel: below 60 degrees, clip the miter by a
 					// line at radius along the outward bisector (not a simple bevel).

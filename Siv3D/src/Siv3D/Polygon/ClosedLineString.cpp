@@ -93,7 +93,7 @@ namespace s3d
 				range_out.push_back(p0);
 
 				if (const double angle = (p0 - top).getAngle(p1 - top);
-					(60.0_deg <= angle))
+					((60.0_deg - 1e-12) <= angle))
 				{
 					range_out.push_back(top);
 				}
@@ -241,12 +241,6 @@ namespace s3d
 		template <class Fill, class RendererFill>
 		void DrawClosed(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill, const RendererFill& rendererFill)
 		{
-			if (joinStyle == JoinStyle::Default)
-			{
-				SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-					points, none, Abs(static_cast<float>(thickness)), false, CloseRing::Yes, rendererFill);
-				return;
-			}
 			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points.first(points.size() - 2), joinStyle, thickness, rendererFill)) return;
 			DrawFallback(points, joinStyle, thickness, fill);
 		}

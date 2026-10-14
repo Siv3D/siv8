@@ -18,7 +18,7 @@ acceptance criterion.
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
    full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
    checks, select arc mode and a full sweep, then vary **A** and **T**.
-   Press **S** to cycle the shape, stroke, arrow, spline, and polygon-frame pages. The stroke page has
+   Press **S** to cycle the shape, stroke, arrow, spline, polygon-frame, and centered-join pages. The stroke page has
    Line, LineString, Bezier2, Bezier3, and a short Line. On this page, **J** and **K** independently cycle the
    start and end caps through Flat / Round / Square. **D** changes the last Line
    length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
@@ -36,6 +36,9 @@ acceptance criterion.
    **T** cycles total width through 0.5 / 8 / 80 pixels, and **B** reverses winding.
    Columns show Triangle, a clipped convex Quad, concave Quad, crossed Quad, and
    a collinear Quad. The degenerate GPU column is omitted.
+   On the centered-join page, **J** cycles Bevel / Round / Miter, **T**
+   changes width, and **B** reverses winding. The first column is an acute Triangle;
+   the remaining columns reuse the Quads from the polygon-frame page.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -110,6 +113,12 @@ acceptance criterion.
   joins may differ. See the [API inventory](../../docs/geometry2d/image-writing.md)
   for differences that require separate API work.
 
+- On the centered-join page, Bevel clips the acute tip and Miter extends it;
+  Round is curved. Omitting the style selects Bevel for both CPU and GPU. Inspect both alpha rows: crossed
+  edges and thick frames must not darken at overlaps, and reversing winding must
+  preserve the image. The collinear CPU frame has flat extremities for Bevel/Miter
+  and rounded extremities for Round. CPU AA need not match GPU samples.
+
 ## Complete program
 
 ```cpp
@@ -139,7 +148,9 @@ void Main()
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
 	constexpr double PieStart = Math::Pi / 6;
 	int32 page = 0;
-	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines", U"polygon frames" };
+	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines", U"polygon frames", U"centered joins" };
+	const Array<JoinStyle> joins{ JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter };
+	size_t joinIndex = 0;
 	const Array<double> arrowWidths{ 0.6, 6.5, 24.5 };
 	size_t startCapIndex = 0, endCapIndex = 1;
 	const Line strokeLine{ 30.25, 30.75, 160.25, 96.75 };
@@ -183,7 +194,8 @@ void Main()
 		Quad{ 24.25, 64.75, 72.25, 64.75, 168.25, 64.75, 120.25, 64.75 } };
 	const auto frameTriangle = [&]
 	{
-		const Triangle t{ 24.25, 106.75, 96.25, 18.75, 168.25, 106.75 };
+		const Triangle t = (page == 5) ? Triangle{ 74.25, 106.75, 96.25, 18.75, 118.25, 106.75 }
+			: Triangle{ 24.25, 106.75, 96.25, 18.75, 168.25, 106.75 };
 		return curveLimited ? Triangle{ t.p2, t.p1, t.p0 } : t;
 	};
 	const auto frameQuad = [&](int32 kind)
@@ -205,6 +217,18 @@ void Main()
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
 		const EnableAntialiasing antialiasing{ aa };
+		if (page == 5)
+		{
+			const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
+			const auto draw = [&](const auto& shape)
+			{
+				if (paint) shape.paintFrame(image, joins[joinIndex], width, ink, antialiasing);
+				else shape.overwriteFrame(image, joins[joinIndex], width, ink, antialiasing);
+			};
+			if (kind == 0) draw(frameTriangle());
+			else draw(frameQuad(kind));
+			return;
+		}
 		if (page == 4)
 		{
 			const auto [inner, outer] = frameWidths();
@@ -329,8 +353,13 @@ void Main()
 		if (KeyQ.down()) { curveQualityIndex = (curveQualityIndex + 1) % curveQuality.size(); dirty = true; }
 		if (KeyB.down()) { curveLimited = !curveLimited; dirty = true; }
 		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
-		if (KeyS.down()) { page = (page + 1) % 5; dirty = true; }
-		if (KeyJ.down()) { startCapIndex = (startCapIndex + 1) % arcCaps.size(); dirty = true; }
+		if (KeyS.down()) { page = (page + 1) % 6; dirty = true; }
+		if (KeyJ.down())
+		{
+			if (page == 5) joinIndex = (joinIndex + 1) % joins.size();
+			else startCapIndex = (startCapIndex + 1) % arcCaps.size();
+			dirty = true;
+		}
 		if (KeyK.down()) { endCapIndex = (endCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyA.down()) { aa = !aa; dirty = true; }
 		if (KeySpace.down()) { exponentIndex = (exponentIndex + 1) % exponents.size(); dirty = true; }
@@ -354,11 +383,12 @@ void Main()
 				}
 			dirty = false;
 		}
-		if (page == 4) font(U"S: polygon frames   A: AA = {}   F: inner / outer = {}   B: reversed = {}"_fmt(aa, frameWidths(), curveLimited)).draw(20, 12);
+		if (page == 5) font(U"S: centered joins   A: AA = {}   J: join = {}   B: reversed = {}"_fmt(aa, joins[joinIndex], curveLimited)).draw(20, 12);
+		else if (page == 4) font(U"S: polygon frames   A: AA = {}   F: inner / outer = {}   B: reversed = {}"_fmt(aa, frameWidths(), curveLimited)).draw(20, 12);
 		else if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
 		else if (page == 3) font(U"S: splines   A: AA = {}   Q: target = {}px   B: per-curve budget = {} (GPU caps: Square)"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 1 : 256)).draw(20, 12);
 		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		if (page == 4) font(U"T: width   triangle / clipped convex / concave / crossed / collinear (GPU omitted)").draw(20, 32);
+		if ((page == 4) || (page == 5)) font(U"T: width   triangle / clipped convex / concave / crossed / collinear (GPU omitted)").draw(20, 32);
 		else if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else if (page == 3) font(U"J: start = {}   K: end = {}   T: width = {}    open / closed / crossed / clipped / point"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], arrowWidths[arcThicknessIndex])).draw(20, 32);
 		else if (page == 2) font(U"J: tail = {}   T: width = {}    horizontal / diagonal / D: {} / clipped / zero"_fmt(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], shortLengths[shortLengthIndex])).draw(20, 32);
@@ -372,6 +402,13 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
+				else if (page == 5)
+				{
+					const ScopedScissorRect2D clip{ static_cast<int32>(pos.x), static_cast<int32>(pos.y), 192, 128 };
+					const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
+					if (kind == 0) frameTriangle().movedBy(pos).drawFrame(width, ink, joins[joinIndex]);
+					else if (kind < 4) frameQuad(kind).movedBy(pos).drawFrame(width, ink, joins[joinIndex]);
+				}
 				else if (page == 4)
 				{
 					const auto [inner, outer] = frameWidths();

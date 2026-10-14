@@ -605,5 +605,8 @@
     <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

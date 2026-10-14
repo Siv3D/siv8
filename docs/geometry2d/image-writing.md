@@ -49,7 +49,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
-| Triangle, Quad | Fill, centered and inner/outer frames | Vertex colors, patterns, selectable joins; Image offset frames use boundary distance |
+| Triangle, Quad | Fill, centered frames with JoinStyle, inner/outer frames | Vertex colors, patterns; Image offset frames use boundary distance |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
@@ -76,6 +76,47 @@ to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
 
+## Triangle and Quad centered frame joins
+
+Put the join style after the destination image:
+
+```cpp
+triangle.paintFrame(image, JoinStyle::Miter, 6.0, color);
+quad.overwriteFrame(image, JoinStyle::Bevel, 8.0, color);
+```
+
+The [JoinStyle contract](../../Siv3D/include/Siv3D/JoinStyle.hpp) defines the corner
+geometry shared with GPU drawing. Miter extends to the offset-line intersection
+without a length limit. Bevel clips acute tips below 60 degrees at half the width
+along the outward bisector; it is not a simple chord bevel. Omitting the style
+selects Bevel in paint, overwrite, and GPU draw. Select Round
+explicitly to retain the former Image centered frame geometry and AA.
+
+The centered frame is the union of finite edge rectangles and the selected outer
+corner regions, independent of winding. This also defines concave and crossed
+Quads and wide strokes whose interior hole disappears. Adjacent duplicate points
+and a repeated closing point are omitted; fewer than three remaining points draw
+nothing. Collinear continuations and reversals add no Bevel/Miter corner, leaving
+flat extremities for a collapsed line. Round retains its disks at those vertices.
+The inner/outer-width overloads below use their own distance-band contract.
+
+Bevel and Miter use pixel centers without AA, or a 4x4 sample grid with AA.
+The small convex pieces are intersected with each sample row and their intervals
+are merged **before** counting coverage or applying color. Crossings, joins, and
+collapsed holes therefore composite once. Subpixel features can disappear between
+samples; the existing Round path uses a different distance-coverage approximation.
+Intervals include the left boundary and exclude the right, with the same half-open
+rule in Y. Exact boundary ties can differ from the Round path.
+
+Point, edge, and interval storage is fixed-size for three/four-vertex input.
+Each piece caches its vertical bounds and edge slopes. Sample rows skip pieces
+outside those bounds and stop edge traversal after the two convex intersections.
+No-AA needs no temporary heap storage; AA allocates one byte row spanning the
+clipped bounds and only converts and clears touched intervals. Offset-line and
+polygon geometry stays in double precision. GPU meshes and Boost buffer are not
+involved. Extending the same public choice to arbitrary LineStrings or one-sided
+frames is separate API work, tracked in [TODO](../../TODO.md).
+
 ## Triangle and Quad inner/outer frames
 
 Specify the two widths after the destination:
@@ -96,12 +137,14 @@ backtracking are removed before measuring boundary distance.
 AA uses the difference between the expanded and contracted distance coverage,
 rounded once after subtraction. This preserves subpixel widths. It is an
 approximation at corners, crossings, and tiny remaining holes. The fill's 4x4 AA
-and the centered frame's rectangle/disk AA have different approximations.
+and the explicit Round centered frame's rectangle/disk AA have different approximations.
 Without AA, pixel-center distances include both band boundaries. At exact edge
 ties this can differ from the fill's half-open spans, even when the inward band
 consumes the entire interior.
-The existing single-width overload remains on the common round-join stroke path,
-including its behavior for degenerate contours.
+The single-width overload uses Bevel; even with equal inner/outer widths, these
+overloads have different corner geometry and AA. The two-width GPU overloads
+still use stretched geometry and the ordinary line-strip builder; their join and
+collapsed-inset behavior are separate work.
 
 The rasterizer caches edge geometry and row intervals in fixed-size storage and
 reuses one byte coverage row. Conservative rectangles around the edges bound
@@ -112,8 +155,8 @@ changing the common centered-stroke path.
 
 GPU inner/outer drawing moves vertices with `stretched()` before drawing a
 stroke. It does not define the CPU path's winding, concavity, or collapse behavior.
-Selectable joins are separate work; a miter offset needs a different corner
-construction and limit policy.
+Selectable joins on these one-sided frames are separate work; the centered
+JoinStyle overload does not change their corner construction.
 
 ## Open stroke caps
 
@@ -407,7 +450,9 @@ independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
 invalid arguments, and one-time compositing at knots, seams, and intersections.
 [Triangle/Quad frame tests](../../Test/Test_ImagePolygonFrame.cpp) cover independent
 boundary distances, winding, one-sided bands, collapsed geometry, compositing,
-and clipping. ImageDraw also compares clipped strokes against crops of larger images, including
+and clipping. [Centered join tests](../../Test/Test_ImageJoinStyle.cpp) use an
+independent pointwise half-plane oracle, randomized contours, winding/start-point
+invariance, acute and nearly straight corners, compositing, clipping, equality between omitted style and explicit Bevel, and explicit Round compatibility. ImageDraw also compares clipped strokes against crops of larger images, including
 dense duplicate points, wide overlapping parts, mixed caps, and closed contours.
 Keep conversion-specific checks in the curve tests and common raster/compositing
 checks in ImageDraw.
@@ -426,6 +471,8 @@ Run from the repository root on macOS, outside the sandbox:
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImagePolygonFrame.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImagePolygonFrame.Benchmark'
+./macOS/run-tests.sh '--test-case=~[benchmark]ImageJoinStyle.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageJoinStyle.Benchmark'
 ./macOS/run-tests.sh '--test-case=~[benchmark]Spline2DImage.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Spline2DImage.Benchmark'
 ./macOS/run-tests.sh
@@ -441,11 +488,49 @@ Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
 
-`ImagePolygonFrame.Benchmark` compares the unchanged centered stroke (mode 0),
+`ImagePolygonFrame.Benchmark` compares the default Bevel centered stroke (mode 0),
 equal inner/outer widths (1), inward-only (2), and outward-only (3). It covers
 Triangle, convex/concave/crossed Quad, 32/256/1024-pixel images, widths 1/8/32,
 and both AA settings. The different coverage approximations are not interchangeable
 reference images; mode 0 is a performance control.
+
+`ImageJoinStyle.Benchmark` compares the style-less Bevel overload (`omitted`)
+and explicit Bevel, Round, and Miter in the same run. Labels use the style names
+instead of enum integers. It covers Triangle and
+convex/concave/crossed Quads, image sizes 32/256, widths 1/8/40, and both AA modes.
+It measures translucent Source Over through the public API. The Bevel/Miter
+results have different corner geometry and AA from Round, so timing ratios are
+workload comparisons rather than equivalent-output speedups.
+
+A macOS measurement on Apple M2, macOS 26.6.2, Apple Clang 21.0.0, using the
+Xcode project's Release configuration and seven nanobench epochs, gave the
+following times in microseconds per draw at width 8. Destinations and geometry
+were reused; the source color was RGBA (220, 60, 130, 113). Repeated draws warm
+the destination and converge its alpha toward opaque; resetting it is excluded.
+
+| Image / shape | AA | Round | Bevel (omitted style) | Miter |
+| --- | --- | ---: | ---: | ---: |
+| 32 / Triangle | No | 3.87 | 2.99 | 2.88 |
+| 32 / Triangle | Yes | 7.12 | 8.43 | 8.24 |
+| 256 / Triangle | Yes | 54.24 | 60.54 | 60.56 |
+| 256 / convex Quad | Yes | 60.05 | 67.54 | 68.28 |
+| 256 / concave Quad | Yes | 54.59 | 66.76 | 68.26 |
+| 256 / crossed Quad | Yes | 69.93 | 74.44 | 75.05 |
+
+The Round column selects the former style-less Image path explicitly. The
+Bevel (omitted style) column measures the style-less overload. Across all 48
+geometry/width/AA cases, its median ratio to explicit Bevel was 1.00. The representative AA rows above cost
+about 6–22% more than Round, while the 32-pixel no-AA triangle is about 23% faster.
+The change therefore has a measurable Image AA cost despite the small GPU
+preparation cost; selecting Round preserves its geometry and sampling path.
+Caching vertical bounds and stopping after two crossings reduced the new
+Bevel/Miter path's median time by about 23–24% with AA and 14% without AA compared
+with its initial implementation. These comparisons normalize each case by the
+unchanged Round path in the same run to reduce run-to-run frequency variation.
+Geometry and coverage tests passed after the optimization.
+The remaining AA cost relative to Round reflects a different sampling algorithm;
+these results do not justify changing Round's output or adding a shared cache.
+Windows measurements and complete manual gallery operation remain in TODO.
 
 `Spline2DImage.Benchmark` separates reusable conversion, the direct Image API,
 explicit conversion followed by LineString drawing, and drawing a cached outline.

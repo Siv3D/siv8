@@ -43,13 +43,15 @@ Remove an output directory when its artifacts are no longer needed.
 - `fallback-total`: stack input preparation and all four buffer-based phases.
 - `mesh`: direct topology preparation and destination writing.
 - `new-total`: stack input preparation plus the direct builder.
-- `Default-array` and `Default-stack`: the unchanged Default builder with
-  allocating and stack inputs respectively.
+- `legacy-strip-array` and `legacy-strip-stack`: the former default line-strip
+  builder with allocating and stack inputs respectively. Omitting the style
+  uses Bevel and its direct/fallback paths.
 
 Timing warms each case, calibrates to at least 3 ms per sample, and reports the
 median and the second/tenth sorted samples from 11 repetitions. Cases reuse the
 same inputs, so branch predictors and caches are warm. Phase timings are measured
 independently and should not be summed as an exact reconstruction of total time.
+The direct figures use `new-total`, including stack input preparation.
 The callback writes real vertices/indices into fixed storage with compiler
 barriers, but excludes renderer commands, buffer growth, transfers, and GPU work.
 
@@ -72,29 +74,35 @@ attempt to reconstruct the historical, coarser Round path.
 
 | Shape / style | Forced fallback (µs) | Direct (µs) | CPU ratio | Fallback allocations / requested bytes |
 | --- | ---: | ---: | ---: | ---: |
-| Triangle / Bevel | 17.101 | 0.038 | 456× | 196 / 58,714 |
-| Triangle / Round | 18.176 | 0.200 | 91× | 199 / 63,342 |
-| Triangle / Miter | 16.768 | 0.035 | 475× | 194 / 58,542 |
-| Quad / Bevel | 17.744 | 0.043 | 414× | 203 / 59,496 |
-| Quad / Round | 18.895 | 0.232 | 81× | 209 / 64,328 |
-| Quad / Miter | 17.696 | 0.042 | 418× | 203 / 59,496 |
+| Triangle / Bevel | 16.971 | 0.038 | 445× | 196 / 58,714 |
+| Triangle / Round | 17.826 | 0.200 | 89× | 199 / 63,342 |
+| Triangle / Miter | 16.666 | 0.036 | 468× | 194 / 58,542 |
+| Quad / Bevel | 17.390 | 0.042 | 411× | 203 / 59,496 |
+| Quad / Round | 18.366 | 0.222 | 83× | 209 / 64,328 |
+| Quad / Miter | 17.438 | 0.042 | 413× | 203 / 59,496 |
 
-Default input Array → stack:
+Former default line-strip input Array → stack:
 
-- Triangle: 0.102 → 0.093 µs.
-- Quad: 0.098 → 0.092 µs.
+- Triangle: 0.101 → 0.094 µs.
+- Quad: 0.097 → 0.090 µs.
 
 Every `new-total` case recorded **zero** temporary allocations. For width 20,
-Default-stack also removes the one input allocation (80 bytes for Triangle, 96 for Quad).
-Its existing polyline scratch storage remains reusable after warm-up.
+`legacy-strip-stack` also removes the one input allocation (80 bytes for Triangle, 96 for Quad).
+Its existing polyline scratch storage remains reusable after warm-up. The current
+default uses Bevel: at width 20, its measured geometry preparation is
+about 2.1–2.5 times faster than the former line-strip path for these inputs.
+The default's geometry and compositing also changed, so this is a workload
+comparison, not an identical-output algorithm comparison. Common-shape rotation
+and inset-collapse limits are covered in the
+[implementation guide](../renderer2d/gpu-joins.md#common-shapes-and-width-limits).
 
 For the width-20 quad, the independently measured fallback phases were:
 
 | Style | Buffer (µs) | Earcut (µs) | Float2 (µs) | Write (µs) |
 | --- | ---: | ---: | ---: | ---: |
-| Bevel | 17.367 | 0.276 | 0.027 | 0.012 |
-| Round | 17.725 | 0.730 | 0.032 | 0.029 |
-| Miter | 17.560 | 0.264 | 0.026 | 0.011 |
+| Bevel | 17.041 | 0.267 | 0.028 | 0.011 |
+| Round | 17.473 | 0.737 | 0.032 | 0.030 |
+| Miter | 17.072 | 0.263 | 0.028 | 0.011 |
 
 
 | Shape / style, width 20 | Fallback vertices / indices | Direct vertices / indices |

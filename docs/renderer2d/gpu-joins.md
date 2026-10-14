@@ -1,13 +1,14 @@
 # Triangle and Quad GPU joins
 
 `Triangle::drawFrame(thickness, fill, JoinStyle)` and the corresponding Quad
-operation use a direct mesh for strictly convex rings whose inset edges all
+operation default to Bevel and use a direct mesh for strictly convex rings whose inset edges all
 remain forward-facing. Other topology uses polygon buffer and
 Earcut path. The inner/outer-thickness overloads, Image painting, polygon buffer
 APIs, and ordinary LineString/Bezier/Spline drawing are separate operations.
 
 The public [JoinStyle contract](../../Siv3D/include/Siv3D/JoinStyle.hpp) owns the
-meaning of the styles. Bevel preserves the historical 60-degree clipped-miter
+meaning of the styles. Omitting the style selects Bevel in both GPU and Image
+centered frames. Bevel preserves the historical 60-degree clipped-miter
 shape, including the radius-distance clipping plane. Miter retains unlimited
 extension. Both input windings are supported. Round uses the shared Renderer2D
 circle-pie quality calculation with raster scale, radius, and corner angle in
@@ -19,10 +20,9 @@ boundary pixels or monotonic pixel coverage at every quality threshold.
 ## Topology and ownership
 
 [ClosedLineString.cpp](../../Siv3D/src/Siv3D/Polygon/ClosedLineString.cpp) selects
-Default before trying the explicit-join builder. Triangle and Quad supply a
-stack array, including the two repeated points that the original paths expect.
-The explicit builder receives only the distinct ring vertices. Default uses
-its original `BuildLineString` implementation and no new topology checks.
+the direct mesh or fallback for the requested style. Triangle and Quad
+supply a stack array, including the two repeated points required by the fallback
+view. The direct builder receives only the distinct ring vertices.
 
 The shared
 [Vertex2DBuilder](../../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_Rounded.cpp)
@@ -48,10 +48,47 @@ Metal and D3D11. `none` means unsupported topology with no reservation or draw
 command; an engaged zero means allocation failure already handled, and does not
 attempt another draw through fallback.
 
+The former default centered path sent the repeated closing points to the ordinary
+closed-polyline builder, which closes the ring itself. That could blend parts
+of even an ordinary frame repeatedly. Offset strips can also overlap when a
+hole disappears or a ring crosses itself. The default centered path now uses Bevel's
+non-overlapping mesh or resolved buffer topology. Regression captures require
+omitted style and explicit Bevel to match for solid and patterned
+fills, and reject any color brighter than one translucent application.
+
 The existing polyline preparation and miter helpers simplify points, split sharp
 corners, and work in Float2. Those operations change explicit unlimited-miter
 geometry, so the small convex-ring calculation does not use them. Arc quality
 and buffer allocation/writing conventions are shared instead.
+
+## Common shapes and width limits
+
+Rotation and winding do not by themselves trigger fallback. The common-shape
+regression uses an equilateral triangle (side 200), a 240 by 120 rectangle,
+a trapezoid (parallel bases 160/240, height 120), a parallelogram (base 200,
+height 120, horizontal shear 40), and a rhombus (diagonals 200/120). For each,
+24 rotations, both windings, and widths 0.5/1/2/4/8/12/20/40/80 use the direct
+path. The exact coordinates are in the automated test.
+
+| Shape | Width at inset collapse |
+| --- | ---: |
+| Equilateral triangle | 115.47 |
+| Rectangle, trapezoid, parallelogram above | 120 |
+| Rhombus above | 102.90 |
+
+Tests probe just below and above these analytic limits. These are properties of
+the specified shapes, not a statistical fallback rate for applications. A much
+shorter trapezoid base can vanish before the entire hole closes; its first
+collapsed edge is the relevant limit. Thin shapes can therefore reach fallback
+at smaller widths.
+
+Bevel's hard 60-degree transition is sensitive to roundoff at equilateral
+corners. Direct and Image dot-product thresholds allow 1e-12 on the miter side;
+the fallback's angle threshold allows 1e-12 radians. These constant comparisons
+stabilize equality after ordinary rotation without adding per-corner arithmetic.
+The tolerance bands differ negligibly; exact GPU/Image pixel matching is not
+part of the contract. Tests cover rotated equilateral corners and angles on
+either side of the threshold.
 
 ## Fallback robustness
 
@@ -70,7 +107,7 @@ buffer intersections. Its area bound is 32 double epsilons times the larger
 adjacent squared edge length, with reversals preserved. This is independent of
 the exact predicate used for sorting. Keeping those redundant points can produce
 sliver triangles and a doubly blended MSAA boundary sample. The cleanup adds no
-allocation and does not affect the direct mesh or Default path.
+allocation and does not affect the direct mesh.
 
 The independent regression oracle clips half-planes for the offset edges and
 acute-corner bisectors. It checks the filled footprint after the inset disappears,
@@ -84,12 +121,13 @@ This is bounded evidence, not a proof of robustness for every floating-point inp
 index offsets, colors, winding, independent triangle-intersection area checks,
 analytic miter area, deterministic varied topology, rejected geometry, buffer
 failure, the Bevel threshold, Round radial/chord error under scaling, translucent
-pixels, patterns, batch rollover, and forced-fallback/Default comparisons. Dedicated checks cover inset-collapse
+pixels, patterns, batch rollover, forced-fallback comparisons, and exact equality
+between omitted style and explicit Bevel. Dedicated checks cover inset-collapse
 transitions, a quad losing only one inset edge, fallback zoom invariance, and the
 wide-Bevel sorting regression.
 
 Two triangulations of the same straight boundary may round differently at an
-MSAA sample. The old/new solid comparison allows differences above 1/255 only
+MSAA sample. The direct/fallback solid comparison allows differences above 1/255 only
 within a one-pixel boundary neighborhood in **both** images. Separate overlap
 and alpha checks reject duplicated coverage; this tolerance does not permit
 interior seams. Round quality is checked against the circle. Transition tests choose widths
@@ -103,17 +141,15 @@ owns the interactive program and expected observations. The
 [CPU benchmark](../development/renderer2d-join-benchmark.md) owns measurement
 conditions and performance results.
 
-## Image-side handoff and further work
+## Image integration and further work
 
-Share geometric meaning and orientation conventions if Image gains public
-JoinStyle support: round outer corners, unlimited miter intersection, and
-Siv3D's clipped tip below 60 degrees. A simple chord bevel would change that
-contract. Keep coverage/rasterization and GPU mesh generation independent.
-The GPU work does not modify Image stroke code or its private join enum.
-Nonpositive widths, duplicate points, and collinear corners continue through
-the old GPU fallback. This preserves behavior rather than establishing a new
-cross-backend normalization rule; Image's treatment of degenerate inputs should
-be agreed separately before sharing a preprocessing helper.
+[Image centered frames](../geometry2d/image-writing.md#triangle-and-quad-centered-frame-joins)
+share the JoinStyle geometry while keeping sample coverage separate from GPU
+mesh generation. Both default to Bevel. The Image Bevel/Miter path unions
+edge and corner samples before compositing, including for concave/crossed frames
+and collapsed holes. Nonpositive widths, duplicate points, and collinear corners
+continue through the GPU fallback, while Image owns its documented normalization
+and degenerate-input behavior. These are not shared preprocessing rules.
 
 Do not generalize the direct path based on convexity alone or handle thick and
 concave rings by overlapping rectangles/fans. They need topology resolution.
