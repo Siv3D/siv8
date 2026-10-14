@@ -647,6 +647,18 @@ namespace s3d
 		/// @return *this
 		const Bezier3& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した線端と太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 制御点がすべて同じ位置の場合は何も描きません。
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const Bezier3& paint(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwrite
@@ -676,6 +688,18 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const Bezier3& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 曲線を指定した線端と太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 制御点がすべて同じ位置の場合は何も描きません。
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const Bezier3& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

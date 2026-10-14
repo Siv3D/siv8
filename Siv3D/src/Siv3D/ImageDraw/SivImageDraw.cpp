@@ -2890,6 +2890,45 @@ namespace s3d
 			);
 		}
 
+		[[nodiscard]]
+		LineCap ZeroLengthLineCap(const LineCap startCap, const LineCap endCap) noexcept
+		{
+			if ((startCap == LineCap::Square) || (endCap == LineCap::Square)) return LineCap::Square;
+			if ((startCap == LineCap::Round) || (endCap == LineCap::Round)) return LineCap::Round;
+			return LineCap::Flat;
+		}
+
+		void ClipSpanAtLineEnd(const Vec2& point, const Vec2& outward, const int32 y, int32& x0, int32& x1) noexcept
+		{
+			const double dy = (y + 0.5 - point.y);
+			if (0.0 < outward.x)
+			{
+				// Use the same half-open boundary as the line body.
+				const double end = std::ceil(point.x - outward.y * dy / outward.x - 0.5);
+				x1 = static_cast<int32>(Clamp(end, static_cast<double>(x0), static_cast<double>(x1)));
+			}
+			else if (outward.x < 0.0)
+			{
+				const double begin = std::ceil(point.x - outward.y * dy / outward.x - 0.5);
+				x0 = static_cast<int32>(Clamp(begin, static_cast<double>(x0), static_cast<double>(x1)));
+			}
+			else if ((0.0 < outward.y) ? (0.0 <= dy) : (dy < 0.0))
+			{
+				x1 = x0;
+			}
+		}
+
+		void LimitCoverageAtLineEnd(const Vec2& point, const Vec2& outward,
+			const int32 y, const int32 x0, std::vector<uint8>& coverage)
+		{
+			const double dy = (y + 0.5 - point.y);
+			for (size_t i = 0; i < coverage.size(); ++i)
+			{
+				const double dx = (x0 + static_cast<double>(i) + 0.5 - point.x);
+				coverage[i] = Min(coverage[i], CoverageFromSignedDistance(dx * outward.x + dy * outward.y));
+			}
+		}
+
 		void DrawLineNoAA(
 			ImageView view,
 			const Vec2& from,
@@ -2897,7 +2936,8 @@ namespace s3d
 			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode,
-			LineCap lineCap,
+			LineCap startCap,
+			LineCap endCap,
 			ImageDraw::DstAlpha dstAlpha)
 		{
 			if (!(0.0 < thickness))
@@ -2912,6 +2952,7 @@ namespace s3d
 
 			if (!(0.0 < length))
 			{
+				const LineCap lineCap = ZeroLengthLineCap(startCap, endCap);
 				if (lineCap == LineCap::Round)
 				{
 					const Circle circle{ from.x, from.y, half };
@@ -2941,6 +2982,12 @@ namespace s3d
 
 			const double ux = dx / length;
 			const double uy = dy / length;
+			const bool clipRound = (length < half)
+				&& (((startCap == LineCap::Round) && (endCap == LineCap::Flat))
+					|| ((startCap == LineCap::Flat) && (endCap == LineCap::Round)));
+			const Vec2 clipPoint = (startCap == LineCap::Flat) ? from : to;
+			const Vec2 clipNormal = (startCap == LineCap::Flat) ? Vec2{ -ux, -uy } : Vec2{ ux, uy };
+
 
 			const double nx = -uy;
 			const double ny = ux;
@@ -2948,10 +2995,13 @@ namespace s3d
 			Vec2 body0 = from;
 			Vec2 body1 = to;
 
-			if (lineCap == LineCap::Square)
+			if (startCap == LineCap::Square)
 			{
 				body0.x -= ux * half;
 				body0.y -= uy * half;
+			}
+			if (endCap == LineCap::Square)
+			{
 				body1.x += ux * half;
 				body1.y += uy * half;
 			}
@@ -2970,7 +3020,7 @@ namespace s3d
 				ToDstAlphaMode(dstAlpha)
 			};
 
-			if (lineCap != LineCap::Round)
+			if ((startCap != LineCap::Round) && (endCap != LineCap::Round))
 			{
 				FillConvexPolygonNoAA(view, quad, 4, writer);
 				return;
@@ -2985,8 +3035,16 @@ namespace s3d
 				maxY = Max(maxY, quad[i].y);
 			}
 
-			minY = Min(minY, Min(from.y - half, to.y - half));
-			maxY = Max(maxY, Max(from.y + half, to.y + half));
+			if (startCap == LineCap::Round)
+			{
+				minY = Min(minY, from.y - half);
+				maxY = Max(maxY, from.y + half);
+			}
+			if (endCap == LineCap::Round)
+			{
+				minY = Min(minY, to.y - half);
+				maxY = Max(maxY, to.y + half);
+			}
 
 			int32 y0 = FloorToInt(minY - 0.5);
 			int32 y1 = CeilToInt(maxY - 0.5) + 1;
@@ -3014,13 +3072,15 @@ namespace s3d
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
-				if (GetCircleSpanAtY(from, half, y, x0, x1))
+				if ((startCap == LineCap::Round) && GetCircleSpanAtY(from, half, y, x0, x1))
 				{
+					if (clipRound) ClipSpanAtLineEnd(clipPoint, clipNormal, y, x0, x1);
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
-				if (GetCircleSpanAtY(to, half, y, x0, x1))
+				if ((endCap == LineCap::Round) && GetCircleSpanAtY(to, half, y, x0, x1))
 				{
+					if (clipRound) ClipSpanAtLineEnd(clipPoint, clipNormal, y, x0, x1);
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
@@ -3035,7 +3095,8 @@ namespace s3d
 			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode,
-			LineCap lineCap,
+			LineCap startCap,
+			LineCap endCap,
 			ImageDraw::DstAlpha dstAlpha)
 		{
 			if (!(0.0 < thickness))
@@ -3050,6 +3111,7 @@ namespace s3d
 
 			if (!(0.0 < length))
 			{
+				const LineCap lineCap = ZeroLengthLineCap(startCap, endCap);
 				if (lineCap == LineCap::Flat)
 				{
 					return;
@@ -3125,19 +3187,32 @@ namespace s3d
 
 			const double ux = dx / length;
 			const double uy = dy / length;
+			const bool clipRound = (length < (half + 0.5))
+				&& (((startCap == LineCap::Round) && (endCap == LineCap::Flat))
+					|| ((startCap == LineCap::Flat) && (endCap == LineCap::Round)));
+			const Vec2 clipPoint = (startCap == LineCap::Flat) ? from : to;
+			const Vec2 clipNormal = (startCap == LineCap::Flat) ? Vec2{ -ux, -uy } : Vec2{ ux, uy };
+
 
 			const Vec2 dir{ ux, uy };
 			const Vec2 normal{ -uy, ux };
 
 			double halfLength = length * 0.5;
-
-			if (lineCap == LineCap::Square)
+			Vec2 bodyCenter{ (from.x + to.x) * 0.5, (from.y + to.y) * 0.5 };
+			const bool squareStart = (startCap == LineCap::Square);
+			const bool squareEnd = (endCap == LineCap::Square);
+			if (squareStart && squareEnd)
 			{
 				halfLength += half;
 			}
+			else if (squareStart || squareEnd)
+			{
+				halfLength += half * 0.5;
+				bodyCenter += dir * (squareStart ? (-half * 0.5) : (half * 0.5));
+			}
 
 			const OrientedRectBasis body{
-				Vec2{ (from.x + to.x) * 0.5, (from.y + to.y) * 0.5 },
+				bodyCenter,
 				dir,
 				normal,
 				halfLength,
@@ -3147,11 +3222,8 @@ namespace s3d
 			BoundsD bounds;
 			IncludeOrientedRectBounds(bounds, body, 0.5, 0.5);
 
-			if (lineCap == LineCap::Round)
-			{
-				bounds.includeCircle(from, half + 0.5);
-				bounds.includeCircle(to, half + 0.5);
-			}
+			if (startCap == LineCap::Round) bounds.includeCircle(from, half + 0.5);
+			if (endCap == LineCap::Round) bounds.includeCircle(to, half + 0.5);
 
 			if (!bounds.valid())
 			{
@@ -3192,17 +3264,13 @@ namespace s3d
 					AddSpanClipped(supportSpans, x0, x1, view.width);
 				}
 
-				if (lineCap == LineCap::Round)
+				if ((startCap == LineCap::Round) && GetCircleSpanAtY(from, half + 0.5, y, x0, x1))
 				{
-					if (GetCircleSpanAtY(from, half + 0.5, y, x0, x1))
-					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
-					}
-
-					if (GetCircleSpanAtY(to, half + 0.5, y, x0, x1))
-					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
-					}
+					AddSpanClipped(supportSpans, x0, x1, view.width);
+				}
+				if ((endCap == LineCap::Round) && GetCircleSpanAtY(to, half + 0.5, y, x0, x1))
+				{
+					AddSpanClipped(supportSpans, x0, x1, view.width);
 				}
 
 				if (supportSpans.empty())
@@ -3222,11 +3290,9 @@ namespace s3d
 
 					AddOrientedRectCoverageToRange(body, y, span.x0, coverage);
 
-					if (lineCap == LineCap::Round)
-					{
-						AddCircleCoverageToRange(from, half, y, span.x0, coverage);
-						AddCircleCoverageToRange(to, half, y, span.x0, coverage);
-					}
+					if (startCap == LineCap::Round) AddCircleCoverageToRange(from, half, y, span.x0, coverage);
+					if (endCap == LineCap::Round) AddCircleCoverageToRange(to, half, y, span.x0, coverage);
+					if (clipRound) LimitCoverageAtLineEnd(clipPoint, clipNormal, y, span.x0, coverage);
 
 					WriteCoverageRow(writer, row, span.x0, coverage);
 				}
@@ -3732,34 +3798,15 @@ namespace s3d
 
 		void BuildOpenStrokePrimitives(
 			ImageView view,
-			const Vec2* points,
-			const size_t count,
-			const Vec2& offset,
+			const std::vector<Vec2>& effectivePoints,
 			const double thickness,
-			const LineCap lineCap,
+			const LineCap startCap,
+			const LineCap endCap,
 			const StrokeJoinStyle joinStyle,
 			std::vector<StrokePrimitive>& primitives)
 		{
 			primitives.clear();
 
-			if ((points == nullptr) || (count < 2) || !(0.0 < thickness))
-			{
-				return;
-			}
-
-			std::vector<Vec2> effectivePoints;
-			effectivePoints.reserve(count);
-			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
-
-			for (size_t i = 1; i < count; ++i)
-			{
-				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
-
-				if (!IsSamePoint(p, effectivePoints.back()))
-				{
-					effectivePoints.push_back(p);
-				}
-			}
 
 			const double half = thickness * 0.5;
 
@@ -3770,7 +3817,7 @@ namespace s3d
 					primitives,
 					effectivePoints.front(),
 					half,
-					lineCap
+					ZeroLengthLineCap(startCap, endCap)
 				);
 				return;
 			}
@@ -3780,8 +3827,8 @@ namespace s3d
 
 			for (size_t i = 0; i < segmentCount; ++i)
 			{
-				const double extendBegin = ((i == 0) && (lineCap == LineCap::Square)) ? half : 0.0;
-				const double extendEnd = (((i + 1) == segmentCount) && (lineCap == LineCap::Square)) ? half : 0.0;
+				const double extendBegin = ((i == 0) && (startCap == LineCap::Square)) ? half : 0.0;
+				const double extendEnd = (((i + 1) == segmentCount) && (endCap == LineCap::Square)) ? half : 0.0;
 
 				AddStrokeBodyPrimitive(
 					view,
@@ -3799,11 +3846,8 @@ namespace s3d
 				AddStrokeJoinPrimitive(view, primitives, effectivePoints[i], half, joinStyle);
 			}
 
-			if (lineCap == LineCap::Round)
-			{
-				AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
-				AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
-			}
+			if (startCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
+			if (endCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
 		}
 
 		template <class PointType>
@@ -5454,6 +5498,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
+			Line(image, from, to, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void Line(
+			Image& image,
+			const Vec2& from,
+			const Vec2& to,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < thickness))
@@ -5463,11 +5522,11 @@ namespace s3d
 
 			if (enableAntialiasing == EnableAntialiasing::No)
 			{
-				DrawLineNoAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
+				DrawLineNoAA(view, from, to, thickness, color, blendMode, startCap, endCap, dstAlpha);
 			}
 			else
 			{
-				DrawLineAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
+				DrawLineAA(view, from, to, thickness, color, blendMode, startCap, endCap, dstAlpha);
 			}
 		}
 
@@ -5481,17 +5540,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
-			LineString(
-				image,
-				points,
-				Vec2{ 0.0, 0.0 },
-				thickness,
-				color,
-				blendMode,
-				enableAntialiasing,
-				lineCap,
-				dstAlpha
-			);
+			LineString(image, points, Vec2{ 0.0, 0.0 }, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void LineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
+			LineString(image, points, Vec2{ 0.0, 0.0 }, thickness, color, blendMode, enableAntialiasing, startCap, endCap, dstAlpha);
 		}
 
 		void LineString(
@@ -5505,6 +5568,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
+			LineString(image, points, offset, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void LineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 2) || !(0.0 < thickness))
@@ -5512,8 +5590,28 @@ namespace s3d
 				return;
 			}
 
+			std::vector<Vec2> effectivePoints;
+			effectivePoints.reserve(points.size());
+			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
+
+			for (size_t i = 1; i < points.size(); ++i)
+			{
+				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
+
+				if (!IsSamePoint(p, effectivePoints.back()))
+				{
+					effectivePoints.push_back(p);
+				}
+			}
+
+			if ((effectivePoints.size() == 2) && (startCap != endCap))
+			{
+				Line(image, effectivePoints.front(), effectivePoints.back(), thickness, color, blendMode, enableAntialiasing, startCap, endCap, dstAlpha);
+				return;
+			}
+
 			std::vector<StrokePrimitive> primitives;
-			BuildOpenStrokePrimitives(view, points.data(), points.size(), offset, thickness, lineCap, StrokeJoinStyle::Round, primitives);
+			BuildOpenStrokePrimitives(view, effectivePoints, thickness, startCap, endCap, StrokeJoinStyle::Round, primitives);
 
 			DrawStrokePrimitives(
 				view,

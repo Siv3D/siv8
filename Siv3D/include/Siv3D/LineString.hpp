@@ -2725,6 +2725,17 @@ namespace s3d
 		/// @return *this
 		const LineString& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const LineString& paint(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwrite
@@ -2754,6 +2765,17 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const LineString& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const LineString& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

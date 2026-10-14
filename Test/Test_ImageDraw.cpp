@@ -2235,3 +2235,319 @@ TEST_CASE("ImageDraw.benchmark_circle_frames", "[.benchmark]")
 					}
 			}
 }
+
+TEST_CASE("ImageDraw.benchmark_stroke_caps", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Image stroke caps").unit("draw").epochs(9).minEpochIterations(3);
+	for (const int32 size : { 32, 256, 1024 })
+	{
+		const double s = size;
+		const Line line{ -0.05 * s, 0.2 * s, 0.85 * s, 0.75 * s };
+		const LineString path{ line.start, Vec2{ 0.8 * s, 0.15 * s }, Vec2{ 0.2 * s, 0.8 * s }, line.end };
+		const Bezier2 quadratic{ line.start, Vec2{ 0.8 * s, 0.1 * s }, line.end };
+		const Bezier3 cubic{ line.start, Vec2{ 0.7 * s, 0.1 * s }, Vec2{ 0.2 * s, 0.9 * s }, line.end };
+		Image image{ size, Color{ 40, 70, 100, 255 } };
+		for (const double thickness : { 1.5, 12.0 })
+			for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool paint : { false, true })
+					{
+						const std::string suffix = "/" + std::to_string(size) + (thickness == 1.5 ? "/thin" : "/wide")
+							+ (cap == LineCap::Flat ? "/Flat" : (cap == LineCap::Round ? "/Round" : "/Square"))
+							+ (aa ? "/AA" : "/noAA") + (paint ? "/paint" : "/overwrite");
+						const auto run = [&](const char* name, const auto& shape)
+						{
+							image.fill(Color{ 40, 70, 100, 255 });
+							bench.run(name + suffix, [&]
+							{
+								if (paint) shape.paint(image, cap, thickness, Color{ 211, 83, 147, 113 }, aa);
+								else shape.overwrite(image, cap, thickness, Color{ 211, 83, 147, 113 }, aa);
+								ankerl::nanobench::doNotOptimizeAway(image.data());
+							});
+						};
+						run("Line", line);
+						run("LineString", path);
+						run("Bezier2", quadratic);
+						run("Bezier3", cubic);
+					}
+	}
+}
+
+namespace
+{
+	double OpenStrokeDistance(const LineString& points, const Vec2 p, const double half,
+		const LineCap startCap, const LineCap endCap)
+	{
+		double distance = Math::Inf;
+		for (size_t i = 0; (i + 1) < points.size(); ++i)
+		{
+			const Vec2 from = points[i], to = points[i + 1];
+			const double length = from.distanceFrom(to);
+			const Vec2 direction = (to - from) / length;
+			const double begin = ((i == 0) && (startCap == LineCap::Square)) ? -half : 0;
+			const double end = length + (((i + 2) == points.size() && (endCap == LineCap::Square)) ? half : 0);
+			const Vec2 local = p - from;
+			const double qx = Max(begin - local.dot(direction), local.dot(direction) - end);
+			const double qy = Abs(local.cross(direction)) - half;
+			distance = Min(distance, Vec2{ Max(qx, 0.0), Max(qy, 0.0) }.length() + Min(Max(qx, qy), 0.0));
+		}
+		for (size_t i = 0; i < points.size(); ++i)
+			if (((0 < i) && ((i + 1) < points.size()))
+				|| ((i == 0) && (startCap == LineCap::Round))
+				|| (((i + 1) == points.size()) && (endCap == LineCap::Round)))
+			{
+				double capDistance = p.distanceFrom(points[i]) - half;
+				if ((points.size() == 2) && ((startCap == LineCap::Flat) || (endCap == LineCap::Flat)))
+				{
+					const Vec2 inward = (points[i] - points[1 - i]).normalized();
+					capDistance = Max(capDistance, -(p - points[1 - i]).dot(inward));
+				}
+				distance = Min(distance, capDistance);
+			}
+		return distance;
+	}
+}
+
+TEST_CASE("ImageDraw.independent_caps_distance_and_compositing")
+{
+	const Array<LineString> paths{
+		{ Vec2{ 4.25, 6.75 }, Vec2{ 28.25, 6.75 } },
+		{ Vec2{ 3.25, 2.75 }, Vec2{ 30.75, 27.25 } },
+		{ Vec2{ 13.25, 14.75 }, Vec2{ 13.5, 14.9 } },
+		{ Vec2{ 13.25, 14.75 }, Vec2{ 13.5, 14.75 } },
+		{ Vec2{ 13.25, 14.75 }, Vec2{ 13.25, 15.0 } },
+		{ Vec2{ 13.25, 14.75 }, Vec2{ 13.25 + 1e-12, 15.0 } },
+		{ Vec2{ -4.25, 2.75 }, Vec2{ 32.5, 37.25 } },
+		{ Vec2{ 4.25, 4.75 }, Vec2{ 30.25, 27.75 }, Vec2{ 4.25, 27.75 }, Vec2{ 30.25, 4.75 } },
+		{ Vec2{ 8.25, 8.75 }, Vec2{ 28.25, 9.75 }, Vec2{ 8.25, 8.75 } }
+	};
+	for (const auto& path : paths)
+		for (const LineCap start : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const LineCap end : { LineCap::Flat, LineCap::Round, LineCap::Square })
+				for (const double thickness : { 0.5, 3.25, 11.5 })
+					for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+						for (const bool line : { false, true })
+						{
+							if (line && (path.size() != 2)) continue;
+							const auto draw = [&](Image& image, Color color, bool paint)
+							{
+								if (line)
+								{
+									const Line shape{ path.front(), path.back() };
+									if (paint) shape.paint(image, start, end, thickness, color, aa);
+									else shape.overwrite(image, start, end, thickness, color, aa);
+								}
+								else if (paint) path.paint(image, start, end, thickness, color, aa);
+								else path.overwrite(image, start, end, thickness, color, aa);
+							};
+							Image mask{ 37, 35, Color{ 0, 0 } };
+							draw(mask, Palette::White, false);
+							int32 largestError = 0, wrongInterior = 0;
+							for (int32 y = 0; y < mask.height(); ++y)
+								for (int32 x = 0; x < mask.width(); ++x)
+								{
+									const double distance = OpenStrokeDistance(path, Vec2{ x + 0.5, y + 0.5 }, thickness * 0.5, start, end);
+									const int32 coverage = int32(Clamp(0.5 - distance, 0.0, 1.0) * 255 + 0.5);
+									largestError = Max(largestError, Abs(int32(mask[y][x].a) - coverage));
+									if (1e-8 < Abs(distance)) wrongInterior += ((mask[y][x].a != 0) != (distance < 0));
+								}
+							CAPTURE(path, start, end, thickness, bool(aa), line);
+							if (aa) CHECK(largestError <= 1); // Independent distance arithmetic may round differently at a byte tie.
+							else CHECK(wrongInterior == 0);
+							for (const bool paint : { false, true })
+								for (const uint8 alpha : { uint8{ 0 }, uint8{ 113 }, uint8{ 255 } })
+								{
+									Image actual = Background(mask.size()), expected = actual;
+									const Color color{ 211, 83, 147, alpha };
+									for (size_t i = 0; i < (mask.size_bytes() / sizeof(Color)); ++i)
+										expected.data()[i] = Composite(color, expected.data()[i], mask.data()[i].a, paint);
+									draw(actual, color, paint);
+									CAPTURE(paint, alpha);
+									CHECK((actual == expected));
+								}
+						}
+}
+
+TEST_CASE("ImageDraw.independent_caps_reverse_repeated_points_and_offset")
+{
+	const LineString path{ Vec2{ 5.25, 6.75 }, Vec2{ 29.25, 7.75 }, Vec2{ 7.25, 27.75 }, Vec2{ 28.25, 26.75 } };
+	const LineString repeated{ path[0], path[0], path[1], path[1], path[2], path[3], path[3] };
+	const Vec2 offset{ -8.5, 2.25 };
+	for (const LineCap start : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const LineCap end : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+					const Color color{ 211, 83, 147, 113 };
+					Image actual = Background(Size{ 37, 35 }), reversed = actual, duplicated = actual, moved = actual;
+					ImageDraw::LineString(actual, path, offset, 7.5, color, mode, aa, start, end);
+					ImageDraw::LineString(reversed, path.reversed(), offset, 7.5, color, mode, aa, end, start);
+					ImageDraw::LineString(duplicated, repeated, offset, 7.5, color, mode, aa, start, end);
+					ImageDraw::LineString(moved, path.movedBy(offset), 7.5, color, mode, aa, start, end);
+					CAPTURE(start, end, bool(aa), paint);
+					CHECK((actual == reversed));
+					CHECK((actual == duplicated));
+					CHECK((actual == moved));
+					actual = Background(actual.size());
+					reversed = actual;
+					ImageDraw::Line(actual, path.front(), path.back(), 7.5, color, mode, aa, start, end);
+					ImageDraw::Line(reversed, path.back(), path.front(), 7.5, color, mode, aa, end, start);
+					CHECK((actual == reversed));
+				}
+}
+
+TEST_CASE("ImageDraw.independent_caps_wrappers_and_defaults")
+{
+	const Line line{ 5.25, 6.75, 28.25, 26.75 };
+	const LineString path{ line.start, Vec2{ 29.25, 7.75 }, Vec2{ 7.25, 27.75 }, line.end };
+	const Bezier2 quadratic{ line.start, Vec2{ 28.25, 4.75 }, line.end };
+	const Bezier3 cubic{ line.start, Vec2{ 28.25, 4.75 }, Vec2{ 5.25, 28.75 }, line.end };
+	const auto check = [&](const auto& shape)
+	{
+		for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					Image one = Background(Size{ 37, 35 }), two = one, implicitAA = one;
+					const Color color{ 211, 83, 147, 113 };
+					if (paint)
+					{
+						shape.paint(one, cap, 4.5, color, aa);
+						CHECK(&shape.paint(two, cap, cap, 4.5, color, aa) == &shape);
+						shape.paint(implicitAA, cap, cap, 4.5, color);
+					}
+					else
+					{
+						shape.overwrite(one, cap, 4.5, color, aa);
+						CHECK(&shape.overwrite(two, cap, cap, 4.5, color, aa) == &shape);
+						shape.overwrite(implicitAA, cap, cap, 4.5, color);
+					}
+					CHECK((one == two));
+					if (aa) CHECK((implicitAA == two));
+				}
+		Image implicit = Background(Size{ 37, 35 }), explicitCaps = implicit;
+		shape.paint(implicit, Palette::White);
+		shape.paint(explicitCaps, LineCap::Round, LineCap::Round, 1.0, Palette::White);
+		CHECK((implicit == explicitCaps));
+		shape.overwrite(implicit, 3.5, Palette::Red);
+		shape.overwrite(explicitCaps, LineCap::Round, LineCap::Round, 3.5, Palette::Red);
+		CHECK((implicit == explicitCaps));
+		for (const double thickness : { 0.0, -1.0 })
+		{
+			shape.paint(implicit, LineCap::Square, LineCap::Round, thickness, Palette::White);
+			shape.overwrite(implicit, LineCap::Round, LineCap::Flat, thickness, Palette::White);
+			CHECK((implicit == explicitCaps));
+		}
+	};
+	check(line); check(path); check(quadratic); check(cubic);
+	for (const LineCap start : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const LineCap end : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					const auto curveCheck = [&](const auto& curve)
+					{
+						Image actual = Background(Size{ 37, 35 }), expected = actual;
+						const Color color{ 211, 83, 147, 113 };
+						if (paint)
+						{
+							curve.paint(actual, start, end, 5.5, color, aa);
+							curve.toLineStringAdaptive().paint(expected, start, end, 5.5, color, aa);
+						}
+						else
+						{
+							curve.overwrite(actual, start, end, 5.5, color, aa);
+							curve.toLineStringAdaptive().overwrite(expected, start, end, 5.5, color, aa);
+						}
+						CHECK((actual == expected));
+					};
+					curveCheck(quadratic); curveCheck(cubic);
+				}
+}
+
+TEST_CASE("ImageDraw.independent_caps_collapsed_empty_and_alpha_modes")
+{
+	const Vec2 point{ 15.5, 13.5 };
+	const Line line{ point, point };
+	const LineString repeated{ point, point, point };
+	for (const LineCap start : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const LineCap end : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					const LineCap combined = ((start == LineCap::Square) || (end == LineCap::Square)) ? LineCap::Square
+						: (((start == LineCap::Round) || (end == LineCap::Round)) ? LineCap::Round : LineCap::Flat);
+					const Color color{ 211, 83, 147, 113 };
+					const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+					Image expected = Background(Size{ 33, 29 });
+					if (paint) line.paint(expected, combined, 4.0, color, aa);
+					else line.overwrite(expected, combined, 4.0, color, aa);
+					const auto check = [&](const auto& shape, const Image& target)
+					{
+						Image actual = Background(target.size());
+						if (paint) shape.paint(actual, start, end, 4.0, color, aa);
+						else shape.overwrite(actual, start, end, 4.0, color, aa);
+						CHECK((actual == target));
+						for (const double thickness : { 0.0, -1.0 })
+						{
+							shape.paint(actual, start, end, thickness, color, aa);
+							shape.overwrite(actual, start, end, thickness, color, aa);
+							CHECK((actual == target));
+						}
+						Image empty;
+						shape.paint(empty, start, end, 4.0, color, aa);
+						shape.overwrite(empty, start, end, 4.0, color, aa);
+						CHECK(empty.isEmpty());
+					};
+					CAPTURE(start, end, bool(aa), paint);
+					check(line, expected); check(repeated, expected);
+					// Adaptive Bezier conversion removes coincident endpoints, leaving a one-point path.
+					const Image emptyCurve = Background(expected.size());
+					check(Bezier2{ point, point, point }, emptyCurve);
+					check(Bezier3{ point, point, point, point }, emptyCurve);
+					Image unchanged = expected;
+					LineString{}.paint(unchanged, start, end, 4.0, color, aa);
+					LineString{ point }.overwrite(unchanged, start, end, 4.0, color, aa);
+					CHECK((unchanged == expected));
+					for (const bool asLine : { false, true })
+					{
+						Image opaque{ 33, 29, Color{ 40, 70, 100, 255 } }, general = opaque;
+						const Vec2 from{ 2.25, 4.75 }, to{ 29.25, 25.75 };
+						if (asLine)
+						{
+							ImageDraw::Line(opaque, from, to, 7.5, color, mode, aa, start, end, ImageDraw::DstAlpha::AssumeOpaque);
+							ImageDraw::Line(general, from, to, 7.5, color, mode, aa, start, end);
+						}
+						else
+						{
+							const LineString path{ from, Vec2{ 27.25, 3.75 }, to };
+							ImageDraw::LineString(opaque, path, 7.5, color, mode, aa, start, end, ImageDraw::DstAlpha::AssumeOpaque);
+							ImageDraw::LineString(general, path, 7.5, color, mode, aa, start, end);
+						}
+						CHECK((opaque == general));
+					}
+				}
+}
+
+TEST_CASE("ImageDraw.independent_caps_short_flat_boundary")
+{
+	const Vec2 flat{ 16.5, 14.5 };
+	for (const Vec2 outward : { Vec2{ 1, 0 }, Vec2{ -1, 0 }, Vec2{ 0, 1 }, Vec2{ 0, -1 } })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		{
+			const Line line{ flat - outward * 0.25, flat };
+			Image actual{ 33, 29, Color{ 0, 0 } }, body = actual, reversed = actual, repeated = actual;
+			line.overwrite(actual, LineCap::Round, LineCap::Flat, 6.0, Palette::White, aa);
+			line.overwrite(body, LineCap::Flat, 6.0, Palette::White, aa);
+			Line{ line.end, line.start }.overwrite(reversed, LineCap::Flat, LineCap::Round, 6.0, Palette::White, aa);
+			LineString{ line.start, line.start, line.end, line.end }.overwrite(repeated, LineCap::Round, LineCap::Flat, 6.0, Palette::White, aa);
+			CAPTURE(outward, bool(aa));
+			CHECK(actual[14][16] == body[14][16]);
+			CHECK(actual[14 + int32(outward.y)][16 + int32(outward.x)].a == 0);
+			CHECK(actual[14 - 2 * int32(outward.y)][16 - 2 * int32(outward.x)].a == 255);
+			CHECK((actual == reversed));
+			CHECK((actual == repeated));
+		}
+}

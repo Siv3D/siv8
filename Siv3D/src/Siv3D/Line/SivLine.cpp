@@ -219,9 +219,14 @@ namespace s3d
 		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
 	}
 
-	const Line& Line::paint(Image& dst, const  LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Line& Line::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::paint(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 
@@ -243,7 +248,12 @@ namespace s3d
 
 	const Line& Line::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 

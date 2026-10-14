@@ -18,6 +18,10 @@ acceptance criterion.
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
    full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
    checks, select arc mode and a full sweep, then vary **A** and **T**.
+   Press **S** to switch to the stroke page (Line, LineString, Bezier2, Bezier3,
+   and a short Line). On this page, **J** and **K** independently cycle the
+   start and end caps through Flat / Round / Square. **D** changes the last Line
+   length between zero, 1.5, and 20 pixels.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -47,7 +51,7 @@ acceptance criterion.
   positive angles turn clockwise. The first ray is 30 degrees clockwise from up.
   Negative sweeps turn counterclockwise. Major pies have no darker band where
   their regions meet; full CPU and GPU pies each match their regular ellipse fills.
-- The last column has a Polygon with a hole and overlapping wide frames. The CPU
+- On the shape page, the last column has a Polygon with a hole and overlapping wide frames. The CPU
   combines the frames before applying color; the overlap must not become darker.
   The GPU may composite the contours separately.
 - SuperEllipse changes from concave to diamond to ellipse to a rounded box.
@@ -55,6 +59,12 @@ acceptance criterion.
   so very small features can disappear between sample positions. Frames are
   centered on an approximation of the boundary and have rounded corners. Check
   horizontal/vertical symmetry and that wide concave frames have no darker overlaps.
+- On the stroke page, changing one cap changes only that end. Square extends
+  along the tangent; Round adds a rounded end. CPU intersections composite once.
+  A short Round/Flat Line keeps its Flat end even when the round cap is wider
+  than the line is long. The zero-length CPU Line draws a centered square if either cap is Square, a
+  disk if either remaining cap is Round, and nothing for Flat/Flat. GPU collapsed
+  caps may differ because they retain a start/end orientation.
 - Paint raises background alpha. Overwrite replaces alpha in fully covered
   pixels. Both preserve pixels outside the shape. The grayscale views distinguish
   these effects from ordinary display blending.
@@ -90,6 +100,15 @@ void Main()
 	const Array<String> ellipseModes{ U"frame", U"minor pie", U"major pie", U"negative pie", U"full pie" };
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
 	constexpr double PieStart = Math::Pi / 6;
+	bool strokePage = false;
+	size_t startCapIndex = 0, endCapIndex = 1;
+	const Line strokeLine{ 30.25, 30.75, 160.25, 96.75 };
+	const LineString strokePath{ Vec2{ 30.25, 30.75 }, Vec2{ 160.25, 96.75 }, Vec2{ 30.25, 96.75 }, Vec2{ 160.25, 30.75 } };
+	const Bezier2 quadratic{ Vec2{ 30.25, 96.75 }, Vec2{ 96.25, -20.75 }, Vec2{ 160.25, 96.75 } };
+	const Bezier3 cubic{ Vec2{ 30.25, 96.75 }, Vec2{ 170.25, -20.75 }, Vec2{ 20.25, -20.75 }, Vec2{ 160.25, 96.75 } };
+	const Array<double> shortLengths{ 0.0, 1.5, 20.0 };
+	size_t shortLengthIndex = 0;
+	const auto shortLine = [&] { return Line{ 96.25, 64.75, 96.25 + shortLengths[shortLengthIndex], 64.75 }; };
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -99,6 +118,20 @@ void Main()
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
 		const EnableAntialiasing antialiasing{ aa };
+		if (strokePage)
+		{
+			const auto draw = [&](const auto& shape)
+			{
+				if (paint) shape.paint(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink, antialiasing);
+				else shape.overwrite(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink, antialiasing);
+			};
+			if (kind == 0) draw(strokeLine);
+			else if (kind == 1) draw(strokePath);
+			else if (kind == 2) draw(quadratic);
+			else if (kind == 3) draw(cubic);
+			else draw(shortLine());
+			return;
+		}
 		if (kind == 0)
 		{
 			const Circle shape{ 96.25, 64.75, 49.5 };
@@ -169,6 +202,10 @@ void Main()
 
 	while (System::Update())
 	{
+		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
+		if (KeyS.down()) { strokePage = !strokePage; dirty = true; }
+		if (KeyJ.down()) { startCapIndex = (startCapIndex + 1) % arcCaps.size(); dirty = true; }
+		if (KeyK.down()) { endCapIndex = (endCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyA.down()) { aa = !aa; dirty = true; }
 		if (KeySpace.down()) { exponentIndex = (exponentIndex + 1) % exponents.size(); dirty = true; }
 		if (KeyF.down()) { superEllipseMode = (superEllipseMode + 1) % 3; dirty = true; }
@@ -191,8 +228,9 @@ void Main()
 				}
 			dirty = false;
 		}
-		font(U"A: AA = {}   Space: exponent = {}   F: {}"_fmt(aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
+		font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt((strokePage ? U"strokes" : U"shapes"), aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
+		if (strokePage) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
+		else font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
 		for (int32 row = 0; row < 5; ++row)
 		{
@@ -202,6 +240,18 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
+				else if (strokePage)
+				{
+					const auto draw = [&](const auto& shape)
+					{
+						shape.movedBy(pos).draw(arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink);
+					};
+					if (kind == 0) draw(strokeLine);
+					else if (kind == 1) draw(strokePath);
+					else if (kind == 2) draw(quadratic);
+					else if (kind == 3) draw(cubic);
+					else draw(shortLine());
+				}
 				else if (kind == 0)
 				{
 					const Circle shape{ pos + Vec2{ 96.25, 64.75 }, 49.5 };

@@ -539,7 +539,12 @@ namespace s3d
 
 	const Bezier2& Bezier2::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		toLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::paint(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		toLineStringAdaptive().paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 
@@ -561,7 +566,12 @@ namespace s3d
 
 	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		toLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		toLineStringAdaptive().overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 

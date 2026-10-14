@@ -51,9 +51,9 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
-| Line | Stroke, arrow, double-headed arrow | Independent end caps, gradients and line styles |
-| LineString | Open / closed stroke | Independent end caps, vertex colors, gradients, patterns, vertex markers |
-| Bezier2, Bezier3 | Adaptive stroke | Independent end caps and explicit subdivision / adaptive quality controls |
+| Line | Stroke with independent end caps, arrow, double-headed arrow | Arrow tail cap, gradients and line styles |
+| LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
+| Bezier2, Bezier3 | Adaptive stroke with independent end caps | Explicit subdivision / adaptive quality controls |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
 | Spline2D | No direct methods | Open / closed strokes; reuse its sampled LineString for Image |
@@ -75,6 +75,38 @@ with `.draw()`. Triangle-union rasterization is separate API work; it is not add
 to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
+
+## Open stroke caps
+
+`Line`, `LineString`, `Bezier2`, and `Bezier3` accept independent caps after the
+image argument, matching the order of their `draw()` overloads:
+
+```cpp
+line.paint(image, LineCap::Flat, LineCap::Round, 8.0, Color{ 220, 60, 130, 113 });
+path.overwrite(image, LineCap::Square, LineCap::Flat, 8.0, Palette::White);
+```
+
+A single cap argument still applies to both ends, and omitting it retains Round
+ends for Image writing. Square extends the endpoint by half the stroke width;
+Round adds a rounded end. The caps follow point order, so reversing a path and
+swapping its caps preserves the region. Adjacent duplicate points do not create
+extra ends. Bezier curves retain their adaptive LineString conversion. Open
+LineString joins remain round, and coverage is combined before compositing.
+
+A zero-length Line, or an open LineString of at least two coincident points,
+uses the union of the two cap regions: Square yields a centered square, otherwise
+Round yields a disk, and two Flat caps draw nothing. Empty and one-point
+LineStrings draw nothing. A Bezier whose control points all coincide also draws
+nothing because adaptive conversion produces one point. These collapsed cases
+have no tangent direction.
+
+The straight-line rasterizer extends the body separately at each Square end and
+adds only the requested Round disks. On a short Round/Flat line, the disk is
+clipped at the opposite Flat end so it cannot extend past that endpoint. This
+clipping is restricted to mixed caps whose support can reach the opposite end.
+After removing adjacent duplicate points, a two-point LineString with different
+caps reuses the Line rasterizer. Longer paths retain the common stroke union;
+the neighboring round join already covers the inward part of an endpoint disk.
 
 ## Circle frames
 
@@ -215,7 +247,10 @@ choices avoid per-pixel edge traversal and interior distance solving.
 Benchmarks reuse allocated destination images and prebuilt geometry. They include
 public API rasterization, compositing, and internal temporary allocations, but
 exclude image allocation, geometry construction, and validation. The smaller
-circle benchmark separates inside-image and clipped calls. The AA Circle frame
+circle benchmark separates inside-image and clipped calls. The stroke-cap benchmark
+covers Line, LineString, Bezier2, and Bezier3 with each shared cap, thin/wide
+strokes, both AA modes, and paint/overwrite. It measures existing single-cap
+calls to check the cost of supporting independent ends. The AA Circle frame
 benchmark covers subpixel, thin, and wide rings at small and large sizes, with
 opaque/translucent source colors and paint/overwrite. It includes clipped rings
 and images entirely inside the hole, where no pixel should change. Polygon frame

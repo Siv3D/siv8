@@ -644,7 +644,7 @@ namespace s3d
 		/// @param image 描画先画像
 		/// @param from 始点
 		/// @param to 終点
-		/// @param thickness 線の太さ
+		/// @param thickness 線の太さ。正でない場合は何も描きません。
 		/// @param color 描画色
 		/// @param blendMode 合成方式
 		/// @param enableAntialiasing アンチエイリアス設定
@@ -662,6 +662,32 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap lineCap = LineCap::Round,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief 太さのある線分を描画します。
+		/// @param image 描画先画像
+		/// @param from 始点
+		/// @param to 終点
+		/// @param thickness 線の太さ。正でない場合は何も描きません。
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark 線と丸い線端が重なる部分も一度だけ描き込みます。
+		/// @remark 始点と終点が同じ場合、どちらかが Square なら一辺 thickness の正方形、そうでなく Round があれば直径 thickness の円を描きます。両方 Flat では何も描きません。
+		/// @remark 画像の範囲外はクリップされます。
+		void Line(
+			Image& image,
+			const Vec2& from,
+			const Vec2& to,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode,
+			EnableAntialiasing enableAntialiasing,
+			LineCap startCap,
+			LineCap endCap,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
 		/// @brief 点列を太さのある連続線として描画します。
@@ -689,6 +715,33 @@ namespace s3d
 			LineCap lineCap = LineCap::Round,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief 点列を太さのある連続線として描画します。
+		/// @param image 描画先画像
+		/// @param points 頂点配列
+		/// @param thickness 線の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark 隣接する点を結ぶ線分列として描画します。
+		/// @remark 線端は点列全体の始点と終点にのみ適用され、接続部は丸くなります。
+		/// @remark 2 点以上あり、全点が同じ位置の場合、線端の扱いは ImageDraw::Line() と同じです。
+		/// @remark 線分、接続部、線端が重なる部分も一度だけ描き込みます。
+		/// @remark 画像の範囲外はクリップされます。
+		/// @remark points.size() が 2 未満、または thickness が正でない場合、この関数は何もしません。
+		void LineString(
+			Image& image,
+			std::span<const Vec2> points,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode,
+			EnableAntialiasing enableAntialiasing,
+			LineCap startCap,
+			LineCap endCap,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 点列を太さのある連続線として、offset を加えて描画します。
 		/// @param image 描画先画像
 		/// @param points 頂点配列
@@ -714,6 +767,35 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap lineCap = LineCap::Round,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief 点列を太さのある連続線として、offset を加えて描画します。
+		/// @param image 描画先画像
+		/// @param points 頂点配列
+		/// @param offset 各頂点に加算するオフセット
+		/// @param thickness 線の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark points の内容は変更しません。
+		/// @remark 線端は点列全体の始点と終点にのみ適用され、接続部は丸くなります。
+		/// @remark 2 点以上あり、全点が同じ位置の場合、線端の扱いは ImageDraw::Line() と同じです。
+		/// @remark 線分、接続部、線端が重なる部分も一度だけ描き込みます。
+		/// @remark 画像の範囲外はクリップされます。
+		/// @remark points.size() が 2 未満、または thickness が正でない場合、この関数は何もしません。
+		void LineString(
+			Image& image,
+			std::span<const Vec2> points,
+			const Vec2& offset,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode,
+			EnableAntialiasing enableAntialiasing,
+			LineCap startCap,
+			LineCap endCap,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
 		/// @brief 点列を太さのある閉じた連続線として描画します。
