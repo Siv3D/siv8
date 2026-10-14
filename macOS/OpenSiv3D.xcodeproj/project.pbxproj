@@ -126,6 +126,7 @@
 		6064B044D57A48688C26F31A /* Test_BezierDrawAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */; };
 		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
+		184A2FF02587E88823E7452F /* Test_DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */; };
 		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */; };
 		E928752BE27A427C911BFA01 /* Ripple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = E928752BE27A427C911BFA02 /* Ripple.hpp */; };
@@ -3432,6 +3433,7 @@
 		315A1A954557FA476A89D60D /* Test_BigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BigFloat.cpp; sourceTree = "<group>"; };
 		36D38289ABC948A9810E2D02 /* Test_Finite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Finite.cpp; sourceTree = "<group>"; };
 		37B19946552E772146018900 /* Test_ArrayLike.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayLike.cpp; sourceTree = "<group>"; };
+		A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DisjointSet.cpp; sourceTree = "<group>"; };
 		3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuaternion.cpp; sourceTree = "<group>"; };
 		40BAF825BB2E4A0DADB18C01 /* MetalFrameContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalFrameContext.hpp; sourceTree = "<group>"; };
 		42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DBatchBoundary.cpp; sourceTree = "<group>"; };
@@ -7261,6 +7263,7 @@
 				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
 				F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */,
 				37B19946552E772146018900 /* Test_ArrayLike.cpp */,
+				A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */,
 				0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */,
 				427183128F20406C94B67D32 /* Test_Geometry2D_Polygon.cpp */,
 				7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */,
@@ -17041,6 +17044,7 @@
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
 				DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */,
+				184A2FF02587E88823E7452F /* Test_DisjointSet.cpp in Sources */,
 				3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */,
 				920E5794B6C44B628B9F7904 /* Test_Geometry2D_Polygon.cpp in Sources */,
 				20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */,
