@@ -83,8 +83,6 @@ The v0.8.0 implementation scope is complete: adaptive Bezier and Spline
 conversion, GPU drawing, and Bezier/Spline Image writing use the shared kernel.
 Fixed-subdivision APIs, arc-length measurement, Walkers, and geometric queries
 have separate algorithms and do not require this tessellation change.
-Outstanding Windows validation is tracked separately in
-[TODO.md](../../TODO.md#windows-validation-for-curve-drawing).
 
 Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
 quality, singular transforms, storage reuse, output and workspace limits, near
@@ -175,8 +173,8 @@ Wang's estimate. These are geometric work limits, not exceptional-input guards.
 ## Vertex count and runtime
 
 Representative Release measurements use Apple M2, Apple Clang 21, and the macOS
-Metal renderer. CPU rankings were checked in a second run. They are host-specific
-results; Windows execution and GPU execution time are not established here.
+Metal renderer. CPU rankings were checked in a second run. These timings are
+specific to that host and do not measure GPU execution time.
 
 At the same 0.5-pixel target, the six ordinary base curves of each degree give:
 

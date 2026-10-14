@@ -595,8 +595,9 @@ AA matrix, excluding its centered control, it fell by 4.3% and 4.2%. No-AA media
 cost fell by 3.9%/3.7% for centered and 1.8%/2.3% for inner/outer frames.
 Individual cases fluctuate; this is not a guarantee of a speedup for every shape.
 The cursor adds fixed stack storage and no heap allocation. It does not change
-geometry, sample locations, interval union, or color compositing. Windows
-measurements and complete manual gallery operation remain in TODO.
+geometry, sample locations, interval union, or color compositing. These
+before/after measurements are specific to macOS. Complete manual gallery
+operation remains in TODO.
 
 For isolated frame preparation and raster/compositing costs, use the
 [phase tool](../../tools/image-stroke-profile/profile.cpp):

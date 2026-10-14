@@ -7,10 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## Windows validation for curve drawing
-
-- Bezier2 / Bezier3 / Spline2D の適応分割と Bezier / Spline の paint / overwrite について、[検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と D3D11 での結果を確認する。
-
 ## 2D 図形の Image 書き込み
 
 今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。
@@ -19,8 +15,6 @@
 
 ### 継続検証
 
-- **Windows / Image**。Image 描画全体の自動テストと Release ベンチマークを実行する。穴・凹形状・交差・AA・半透明合成・クリッピングを含む [ImageDraw テスト](Test/Test_ImageDraw.cpp)、[JoinStyle](Test/Test_ImageJoinStyle.cpp)、[内外幅指定](Test/Test_ImagePolygonFrame.cpp)、[共通参照ヘルパー](Test/Test_ImageDrawingTestHelper.cpp)を確認する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。曲線分割と Bezier / Spline は [Windows validation for curve drawing](#windows-validation-for-curve-drawing)を参照。
-- **Windows / D3D11**。[Circle arc](Test/Test_Renderer2DCircleArc.cpp) の Square 線端・ゼロ角度・全周・描画バッチと、[Ellipse pie](Test/Test_Renderer2DEllipsePie.cpp) の正負の全周角度を確認する。単色だけでなくグラデーション・パターンの経路も対象とする。Triangle / Quad の枠は [Renderer2D / Triangle・Quad の JoinStyle](#renderer2d--trianglequad-の-joinstyle)にまとめた検証を行う。
 - **手動確認**。[共通ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle も含め、実際に操作・確認した条件を記録する。自動テストやサンプルの構文検査と区別する。
 
 ### 次に機能拡張する場合の推奨順
@@ -32,7 +26,7 @@
 
 - **変換付き描き込み・wireframe・添字付き三角形**。Polygon 等の変換済みコピーを作らない描き込みや、Shape2D の GPU と同じ添字付きメッシュを描く用途を評価する。Shape2D の頂点列を輪郭として塗る既存契約を保ち、添字付きメッシュは別 API として三角形の重複・共有辺・半透明の合成規則を決める。
 - **グラデーション・頂点色・パターン・影**。利用頻度と補間・座標・alpha の仕様を先に決め、一種類ずつ採否を判断する。単色描画の共通経路へ一律に費用を加えない。
-- **実用途に基づく追加最適化**。同じ画像への反復描画に加え、初期 alpha の異なる描画先やアプリ相当の呼び出し列を測定する。CPU の準備・ラスタライズ・合成、一時確保、GPU 実行時間を区別する。再利用可能な公開コンテキストやキャッシュは、既存の [分離計測](tools/image-stroke-profile/profile.cpp)で費用と再利用の効果を確認してから検討する。
+- **実用途に基づく追加最適化**。同じ画像への反復描画に加え、初期 alpha の異なる描画先やアプリ相当の呼び出し列を測定する。短い区間を多数連ねた Spline は、[曲線統合ベンチマーク](docs/geometry2d/bezier-drawing.md#spline-and-image-integration-costs)で密度分割の変換費用が頂点削減の効果を上回るケースを優先して切り分ける。CPU の準備・ラスタライズ・合成、一時確保、GPU 実行時間を区別する。再利用可能な公開コンテキストやキャッシュは、既存の [分離計測](tools/image-stroke-profile/profile.cpp)で費用と再利用の効果を確認してから検討する。
 
 ### GPU 側の追加調査
 
@@ -100,7 +94,7 @@
 
 ## Renderer2D / Triangle・Quad の JoinStyle
 
-- Windows / D3D11 で [JoinStyle 専用テスト](Test/Test_Renderer2DJoinStyle.cpp) と全自動テストを実行し、[手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。macOS でのプロジェクト構文検証を Windows の実行検証とはみなさない。
+- Windows / D3D11 で [手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。
 - 凹形状・自己交差・内側輪郭の消失は Boost の topology 処理に残す。内外幅指定では領域の intersection / difference / union も含む。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
 - 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
 
