@@ -7,9 +7,9 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## Bezier2 and Bezier3 adaptive drawing
+## Windows validation for curve drawing
 
-- [採用方式と検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と描画 backend の性能差を確認する。GPU 頂点削減の実時間効果が必要な用途では、CPU submission と分けて GPU 時間を計測する。
+- Bezier2 / Bezier3 / Spline2D の適応分割と Bezier の paint / overwrite について、[検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と D3D11 での結果を確認する。
 
 ## 2D 図形の Image 書き込み
 

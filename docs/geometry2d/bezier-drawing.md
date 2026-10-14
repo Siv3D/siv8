@@ -75,9 +75,14 @@ For `Spline2D`, the budget is named **`maxSegmentsPerCurve`** and applies to eac
 Bezier3 interval, not to the entire path. Defaults are 0.5 and 256. With a budget
 of one, only interval endpoints remain. Conversion keeps every distinct knot;
 a closed result omits the repeated final point. See [Spline paths](splines.md)
-for drawing and caching examples. Arc-length measurement is independent of
-rendering subdivision. Platform validation still pending is tracked in
-[TODO.md](../../TODO.md#bezier2-and-bezier3-adaptive-drawing).
+for drawing and caching examples.
+
+The v0.8.0 implementation scope is complete: adaptive Bezier and Spline
+conversion, GPU drawing, and Bezier Image writing use the shared kernel.
+Fixed-subdivision APIs, arc-length measurement, Walkers, and geometric queries
+have separate algorithms and do not require this tessellation change.
+Outstanding Windows validation is tracked separately in
+[TODO.md](../../TODO.md#windows-validation-for-curve-drawing).
 
 Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
 quality, singular transforms, storage reuse, output and workspace limits, near
