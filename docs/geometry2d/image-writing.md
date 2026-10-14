@@ -53,10 +53,10 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
-| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | Explicit subdivision / adaptive quality controls |
+| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | Fixed-subdivision `draw()`; adaptive GPU quality includes renderer transforms and render-target resolution |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
-| Spline2D | No direct methods | Open / closed strokes; reuse its sampled LineString for Image |
+| Spline2D | Adaptive conversion to LineString; no direct image-writing methods | `draw()` handles open / closed paths; Image callers select the corresponding LineString method |
 
 MultiPolygon draws members in order, so overlapping members compose repeatedly.
 Polygon frames combine the outer contour and all holes using maximum stroke
@@ -95,7 +95,8 @@ compositing. Bezier Image writing uses the shared [density tessellation](bezier-
 with optional `targetError` and `maxSegments` after the antialiasing argument.
 Defaults are 0.5 Image pixels and 256 segments. The positive finite target is
 approximate, and the segment cap takes priority. Renderer transforms do not
-affect Image quality.
+affect Image quality. GPU `drawAdaptive()` defaults to Square caps, while Image
+writing defaults to Round; specify caps explicitly when comparing the two.
 
 ```cpp
 curve.paint(image, 6, Palette::White, EnableAntialiasing::Yes, 0.25, 256);
@@ -116,6 +117,46 @@ clipping is restricted to mixed caps whose support can reach the opposite end.
 After removing adjacent duplicate points, a two-point LineString with different
 caps reuses the Line rasterizer. Longer paths retain the common stroke union;
 the neighboring round join already covers the inward part of an endpoint disk.
+
+## Reusing sampled curves
+
+Bezier adaptive conversion, adaptive GPU drawing, and Bezier Image writing share
+the [curve tessellation kernel](bezier-drawing.md). Image quality/budget controls
+are already available; they do not need a second implementation in ImageDraw.
+Fixed-subdivision `draw()` remains a separate GPU family. Image callers needing
+uniform parameter subdivisions can use `toLineString(subdivisions)` and paint
+that result.
+
+Spline2D already provides the same adaptive conversion with a budget per cubic
+interval. It currently has no direct `paint()` / `overwrite()` methods:
+
+```cpp
+LineString outline;
+// Retain outline across updates to reuse its allocation.
+path.toLineStringAdaptive(outline, 0.5, 256);
+if (path.isClosed())
+{
+    outline.paintClosed(image, 6.0, color);
+}
+else
+{
+    outline.paint(image, LineCap::Round, LineCap::Flat, 6.0, color);
+}
+```
+
+Convert and draw the connected path as a whole. Painting each cubic separately
+adds caps at internal knots and composites overlaps repeatedly. The closed
+conversion omits the repeated endpoint, so use `paintClosed()` / `overwriteClosed()`
+to retain its closing segment.
+
+For unchanged geometry, keep the sampled LineString and skip conversion on
+subsequent draws. Reusing conversion output does not reuse all rasterizer storage:
+ImageDraw still prepares effective points, stroke primitives, and coverage work.
+Measure these stages separately before adding a cache or a public drawing context.
+Fewer tessellation points alone do not guarantee a faster whole draw; the
+[curve integration measurements](bezier-drawing.md#spline-and-image-integration-costs)
+include the tradeoff for many short cubic intervals. Pending Image API and
+performance work is ordered in [TODO](../../TODO.md#2d-図形の-image-書き込み).
 
 ## Arrow tail caps
 
@@ -251,6 +292,9 @@ invoke the more expensive per-pixel Ellipse boundary-distance solver.
 
 [Test_ImageDraw.cpp](../../Test/Test_ImageDraw.cpp) owns the automated shape
 matrix, independent compositing and sampling references, and opt-in benchmarks.
+[Curve integration tests](../../Test/Test_CurveAdaptive.cpp) cover Bezier Image
+quality, segment budgets, caps, default overloads, and renderer-state independence;
+keep conversion-specific checks there and common raster/compositing checks in ImageDraw.
 The [manual gallery](../../Test/Manual/ImageWriting.md) compares CPU and GPU
 appearance and exposes alpha as grayscale. Automated coverage comparisons do not
 replace this visual check.
