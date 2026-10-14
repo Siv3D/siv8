@@ -137,14 +137,14 @@ def main():
     for kind, function in [("geometry", plot_geometry), ("temporal", plot_temporal), ("benchmark", plot_bench)]:
         if rows[kind]:
             function(rows[kind], args.output)
-    body = "<h1>Bezier tessellation comparison</h1><p>Experimental candidates only. Native screenshots use the existing Siv3D stroke renderer and 4x MSAA. The reference is a 4096-segment polyline through the same renderer, not an exact analytic stroke. CPU timings do not measure GPU execution time.</p>"
+    body = "<h1>Bezier tessellation comparison</h1><p>Density is the adopted Bezier2/Bezier3 drawAdaptive implementation. Current/current-deep retain the legacy recursive conversion as comparison baselines; Wang is the uniform-parameter alternative. Native screenshots use the existing Siv3D stroke renderer and 4x MSAA. The reference is a 4096-segment polyline through the same renderer, not an exact analytic stroke. CPU timings do not measure GPU execution time.</p>"
     for name in ["geometry", "temporal", "benchmark"]:
         if rows[name]:
             body += f'<h2>{name.title()}</h2><img src="{name}.png" alt="{name} plots">'
     if rows["benchmark"]:
         body += "<details><summary>CPU timing table (ns / curve)</summary>" + table(rows["benchmark"], SCHEMAS["benchmark"].split()) + "</details>"
     if rows["submission"]:
-        body += "<h2>Engine submission CPU time</h2><p>768 off-screen curves per frame, tolerance 0.5, 6px round caps. Timed region includes generation and draw submission, excludes frame update/presentation/GPU wait. This is not a GPU benchmark.</p>" + table(rows["submission"], SCHEMAS["submission"].split())
+        body += "<h2>Engine submission CPU time</h2><p>768 off-screen curves per frame, tolerance 0.5, 6px round caps. Density calls the public drawAdaptive API, including its transform setup and reusable output. Other methods generate a LineString and draw it. The timed region excludes frame update/presentation/GPU wait. This is not a GPU benchmark.</p>" + table(rows["submission"], SCHEMAS["submission"].split())
     worst = sorted(rows["random"], key=lambda x: x["error"], reverse=True)[:24]
     if worst:
         body += "<h2>Largest sampled errors in the random corpus</h2>" + table(worst, SCHEMAS["random"].split())
@@ -156,10 +156,10 @@ def main():
             animations.setdefault(group, []).append(name)
     for group, names in animations.items():
         names.sort(key=lambda name: int(name.rsplit("-", 1)[1].split(".")[0]))
-        body += f'<details><summary>{"S curve" if group == "2" else "Near cusp"}</summary><button type="button" data-play="{group}">Play / pause</button> <input type="range" min="0" max="{len(names)-1}" value="0" data-slider="{group}"><img id="animation-{group}" src="{names[0]}" alt="Native animation comparison"></details>'
+        body += f'<details><summary>{"S curve" if group == "2" else "Near cusp"}</summary><button type="button" data-play="{group}">Play / pause</button> <input type="range" min="0" max="{len(names)-1}" value="0" data-slider="{group}"><img id="animation-{group}" src="{names[0]}" alt="Native animation comparison (Current is the legacy default)"></details>'
     if animations:
         body += '<script>const captures=' + json.dumps(animations) + ';const timers={};document.querySelectorAll("[data-slider]").forEach(s=>s.oninput=()=>document.getElementById("animation-"+s.dataset.slider).src=captures[s.dataset.slider][+s.value]);document.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{const g=b.dataset.play;if(timers[g]){clearInterval(timers[g]);delete timers[g];return;}const s=document.querySelector(`[data-slider="${g}"]`);timers[g]=setInterval(()=>{s.value=(+s.value+1)%captures[g].length;s.oninput();},100);});</script>'
-    body += "<h2>Native raster captures</h2><p>Rows: dense reference; shipping default; Wang; density. Columns: 1, 6, 24 pixel round-capped strokes. Open an image at its native size to judge game-scale appearance.</p>"
+    body += "<h2>Native raster captures</h2><p>Rows: dense reference; legacy default (Current 0.48 / depth 5); Wang; production density. Columns: 1, 6, 24 pixel round-capped strokes. Open an image at its native size to judge game-scale appearance.</p>"
     for filename in (name for name in images if not name.startswith("animation-")):
         body += f'<details><summary>{html.escape(filename)}</summary><a href="{filename}"><img loading="lazy" src="{filename}" alt="{html.escape(filename)}"></a></details>'
     body += "<h2>Raw measurements</h2><p>" + " · ".join(f'<a href="{name}.csv">{name}.csv</a>' for name in SCHEMAS) + "</p>"

@@ -383,6 +383,7 @@ namespace s3d
 		void flush() override;
 
 		void setSceneScale(Float2 scale) override { m_commandManager.setSceneScale(scale); }
+		Float2 getSceneScale() const noexcept override { return m_commandManager.getSceneScale(); }
 
 		////////////////////////////////////////////////////////////////
 		//

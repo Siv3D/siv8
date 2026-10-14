@@ -12,6 +12,8 @@
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
@@ -610,26 +612,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier2& Bezier2::drawAdaptive(const ColorF& color, const double maxError, const int32 maxDepth) const
+	const Bezier2& Bezier2::drawAdaptive(const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		return drawAdaptive(1.0, color, maxError, maxDepth);
+		return drawAdaptive(LineCap::Square, LineCap::Square, 1.0, color, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::drawAdaptive(double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	const Bezier2& Bezier2::drawAdaptive(const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive(maxError, maxDepth).draw(thickness, color);
-		return *this;
+		return drawAdaptive(LineCap::Square, LineCap::Square, thickness, color, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::drawAdaptive(LineCap lineCap, double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	const Bezier2& Bezier2::drawAdaptive(const LineCap lineCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive(maxError, maxDepth).draw(lineCap, thickness, color);
-		return *this;
+		return drawAdaptive(lineCap, lineCap, thickness, color, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	const Bezier2& Bezier2::drawAdaptive(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive(maxError, maxDepth).draw(startCap, endCap, thickness, color);
+		SIV3D_ENGINE(Renderer2D)->addBezier(*this, startCap, endCap, static_cast<float>(thickness), color.toFloat4(), targetError, maxSegments);
 		return *this;
 	}
 

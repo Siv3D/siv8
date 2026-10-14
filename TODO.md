@@ -9,18 +9,15 @@
 
 ## Bezier2 and Bezier3 adaptive drawing
 
-- [比較結果と採用主案](docs/geometry2d/proposals/bezier-adaptive-tessellation.md)に基づき、分割密度方式と内部 Wang フォールバックを描画用 kernel に実装する。出力先への書き込みを正本とし、作業領域と頂点列を再利用する。
-- `drawAdaptive` の品質を描画先のピクセル単位の目標偏差で指定し、分割上限を `maxDepth` から `maxSegments` に変更する案を詰める。既定値は偏差 0.5、上限 256 を出発点とし、型・範囲・上限到達時の契約を確定してから Doxygen を更新する。
-- 非等方 scale、shear、camera、scene scale、quad warp で品質制御と負荷を検証する。今回の identity transform の測定から射影変換後の誤差保証を導かない。細線・太線・cusp の見た目と時間変化も本番経路で再確認する。
-- Windows Release で比較と全自動テストを実行し、MSVC と描画 backend の性能差を確認する。GPU 頂点削減の実時間効果が採用判断に必要な用途では、CPU submission と分けて GPU 時間を計測する。
-- 最初の本番変更は Bezier2 / Bezier3 の描画に限定する。既存 `toLineStringAdaptive()` を使う paint / overwrite と `Bezier3Flatten.hpp` を共有する Spline2D への反映は、今回の Bezier 描画が固まってから設計する。新方式の実装を複製せず、座標単位と既定品質の責務を分離する。
+- [採用方式と検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と描画 backend の性能差を確認する。GPU 頂点削減の実時間効果が必要な用途では、CPU submission と分けて GPU 時間を計測する。
+- `toLineStringAdaptive()`、Image paint / overwrite、Spline2D への密度方式の適用を検討する。共有 kernel を使い、幾何変換の座標単位、描画先ピクセル単位、既定品質と出力上限の責務を分離する。複数曲線の境界で品質と分割数が変化する挙動も確認する。
 
 ## 2D 図形の Image 書き込み
 
 [設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
 
 - `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
-- Bezier2 / Bezier3 の Image 分割精度の指定は、GPU を含む精度改良が済んでから検討する。
+- Bezier2 / Bezier3 の Image 分割精度は、上記の共有 kernel と品質指定の統合時に検討する。
 - [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の自動テストと Release ベンチマークを実行する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 

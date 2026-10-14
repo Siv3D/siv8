@@ -1,22 +1,63 @@
-# Bezier adaptive tessellation comparison
+# Bezier adaptive drawing
 
-Status: comparison complete; density placement is the preferred implementation
-candidate, not an adopted public API. Release scope: Bezier2 and Bezier3 drawing
-for v0.8. Spline2D and Image paint/overwrite remain separate follow-up work.
+`Bezier2::drawAdaptive` and `Bezier3::drawAdaptive` use density-based vertex
+placement with a default target deviation of **0.5 render-target pixels**.
+This balances a game-oriented appearance with vertex count. It avoids the large
+subdivision jumps seen on the tested slow deformations, without per-curve history
+or a temporal cache. Wang subdivision remains an internal bounded fallback.
 
-Prefer density-based placement with a target deviation of **0.5 render-target
-pixels** for the next drawing implementation. It reduces ordinary stroke
-vertices and avoids the large count changes observed with midpoint subdivision
-and with Wang's formula near straight curves. The measured cubic CPU cost is
-close to the current implementation, which fits a game-oriented quality target
-that allows some extra calculation to save vertices. Wang remains useful as a
-bounded internal fallback and as the faster comparison baseline.
+## Choosing quality and work limits
 
-The [study instructions](../../../Test/Manual/BezierTessellationStudy.md) generate
-the canonical local gallery, animation controls, plots, and CSV measurements.
-All candidates currently live in
-[test support](../../../Test/BezierTessellationStudy.hpp); production behavior
-and public declarations are unchanged.
+```cpp
+const Bezier3 curve{ { 40, 200 }, { 100, 20 }, { 400, 380 }, { 560, 200 } };
+curve.drawAdaptive(6, Palette::White);             // 0.5 pixels, at most 256 segments
+curve.drawAdaptive(6, Palette::White, 0.25, 256);   // Finer approximation
+curve.drawAdaptive(6, Palette::White, 0.75, 128);   // Fewer vertices, visible facets possible
+```
+
+The authoritative contracts are in [Bezier2.hpp](../../Siv3D/include/Siv3D/Bezier2.hpp)
+and [Bezier3.hpp](../../Siv3D/include/Siv3D/Bezier3.hpp). `targetError` is a finite
+positive visual target, not a strict error bound. Quality uses the Local and
+Camera transforms and the scene's render-resolution scale, including nonuniform
+scaling and shear. It excludes QuadWarp and custom vertex-shader deformation,
+consistent with [ScopedQuadWarp2D](../../Siv3D/include/Siv3D/ScopedQuadWarp2D.hpp).
+It describes the centerline, not stroke joins, caps, or raster coverage.
+
+The final argument is **`maxSegments`**, with a default of 256 and a precondition
+of 1–4096. It replaces the old recursion-depth argument; an old call ending in
+`5` now allows only five segments. This budget limits centerline segments, not
+GPU vertices added for thickness, joins, and caps. The budget takes priority
+over the quality target; one segment draws the endpoint chord. Finite,
+representable geometry and intermediate calculations are caller preconditions.
+
+The [manual gallery and study instructions](../../Test/Manual/BezierTessellationStudy.md)
+cover moving curves, quality controls, native captures, plots, and measurements.
+The study's **Current** label means the legacy recursive conversion, preserved
+as a baseline. **Density** uses the adopted kernel, and native captures and
+submission timings call the public drawing API.
+
+## Implementation boundaries
+
+A single [destination-writing kernel](../../Siv3D/src/Siv3D/Geometry2D/BezierTessellation.hpp)
+accepts a source curve and an affine metric curve. It evaluates quality in the
+metric and writes points on the source curve. Translation is removed before
+metric calculations. The [shared renderer path](../../Siv3D/src/Siv3D/Renderer2D/SivRenderer2D_Bezier.cpp)
+reuses a renderer-owned vertex array and passes it to the existing stroke builder.
+D3D11 and Metal provide their scene scale; the tessellation logic is shared.
+The fixed-size workspace is local to each call and does not allocate.
+
+Geometry conversion (`toLineStringAdaptive`) uses curve-coordinate units and
+is independent of renderer state. Its recursive implementation, Image paint /
+overwrite, and Spline2D remain separate from this drawing path. Their future
+integration can reuse the destination-writing kernel without duplicating its
+mathematics. Remaining integration and platform validation are tracked in
+[TODO.md](../../TODO.md#bezier2-and-bezier3-adaptive-drawing).
+
+Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
+quality, singular transforms, storage reuse, output and workspace limits, near
+collinear reversals, sampled count continuity, all cap combinations, degenerate
+curves, default overloads, and the public render path at different scene
+resolutions. The larger [study](../../Test/Test_BezierTessellation.cpp) is opt-in.
 
 ## What the comparison measures
 
@@ -43,7 +84,7 @@ guarantees. The measured GPU vertex and triangle counts come from the actual
 
 | Candidate | Count and placement | Important limitation |
 | --- | --- | --- |
-| Current | Existing public adaptive conversion, midpoint recursion, depth 5 | At most 32 segments; multiple leaves can split together |
+| Current | Legacy adaptive conversion, midpoint recursion, depth 5 | At most 32 segments; multiple leaves can split together |
 | Current deep | Same implementation, depth 12 | Diagnostic control for the depth cap, not the shipping default |
 | Wang | One arbitrary integer count, uniform parameter spacing | Tangential acceleration can cause excessive geometric subdivision |
 | Density | Integrated curvature-derived density, inverse-density placement | Approximate error target; cubic setup costs more |
@@ -65,7 +106,7 @@ N = ceil(sqrt(d (d - 1) D / (8 tolerance)))
 Rounding is to any integer, not a power of two. This follows the formula
 documented in [Skia's Wang implementation](https://skia.googlesource.com/skia/%2B/50f5e68b7cac24bfa83b3ce03dc55075f0c6db92/src/gpu/tessellate/GrWangsFormula.h).
 
-The density candidate uses the approximate parabola density integral and inverse
+Density placement uses the approximate parabola density integral and inverse
 from [Raph Levien's quadratic flattening analysis](https://raphlinus.github.io/graphics/curves/2019/12/23/flatten-quadbez.html).
 Cubics first receive quadratic approximations, reserving 10% of the target for
 that approximation. A single rounded count spans their accumulated densities;
@@ -73,7 +114,7 @@ output points are evaluated on the original cubic. This is the family of
 approaches also used by [Kurbo's path flattening](https://docs.rs/kurbo/0.13.1/src/kurbo/bezpath.rs.html),
 not a benchmark of Kurbo itself.
 
-Two geometric details matter for animated curves:
+Three geometric details matter for animated and transformed curves:
 
 - Split cubic approximation intervals at inflections. Otherwise an intermediate
   quadratic can become spuriously straight and make inverse placement jump.
@@ -84,6 +125,11 @@ Two geometric details matter for animated curves:
   `sign(B) sqrt(abs(B))`. The common scale cancels in inverse placement, whose
   limiting inverse is `x abs(x)`. This keeps the count and placement near their
   noncollinear limits. Focused tests compare both sides of the limit.
+- Include cubic extrema projected onto the endpoint chord as vertices (at most
+  two), using a control-point direction when the endpoints coincide. Density
+  can vanish on a nearly straight interval leading into a reversal, leaving its
+  turn underrepresented. Explicit extrema also retain turns after a rank-one
+  affine transform. These vertices share the output budget with density samples.
 
 The cubic workspace holds at most 64 quadratic pieces; exceeding it falls back
 to bounded Wang subdivision. Nearly constant quadratic derivatives also use
@@ -101,8 +147,8 @@ At the same 0.5-pixel target, the six ordinary base curves of each degree give:
 | --- | ---: | ---: | ---: |
 | Bezier2 mean segments | 11.00 | 10.67 | 8.33 |
 | Bezier2 mean GPU vertices, 6px stroke | 38.00 | 37.33 | 32.67 |
-| Bezier3 mean segments | 19.67 | 22.83 | 16.17 |
-| Bezier3 mean GPU vertices, 6px stroke | 55.33 | 61.67 | 48.33 |
+| Bezier3 mean segments | 19.67 | 22.83 | 16.33 |
+| Bezier3 mean GPU vertices, 6px stroke | 55.33 | 61.67 | 48.67 |
 
 For CPU timing, each degree instead uses 96 ordinary deformations. Values below
 are median nanoseconds per curve from 11 rounds, with two warmup rounds and
@@ -110,10 +156,10 @@ rotating method order. Every round repeats the corpus 64 times.
 
 | Degree and workload | Current | Wang | Density |
 | --- | ---: | ---: | ---: |
-| Bezier2, reusable output | 156 | 44 | 95 |
-| Bezier2, output plus stroke mesh | 376 | 248 | 289 |
-| Bezier3, reusable output | 352 | 98 | 407 |
-| Bezier3, output plus stroke mesh | 654 | 418 | 675 |
+| Bezier2, reusable output | 149 | 42 | 95 |
+| Bezier2, output plus stroke mesh | 368 | 248 | 292 |
+| Bezier3, reusable output | 353 | 98 | 423 |
+| Bezier3, output plus stroke mesh | 654 | 420 | 697 |
 
 The current public conversion returns a newly allocated LineString even in the
 reuse workload. Candidate timings therefore include the benefit of reusable
@@ -122,19 +168,20 @@ also exported and retain Wang's speed advantage. The mesh workload includes the
 production stroke builder, reusable mesh buffers, and flattening; it excludes
 renderer command submission and GPU work.
 
-Density saves about 14% of quadratic stroke vertices and 13% of cubic stroke
-vertices at this target. Its mesh workload is about 23% faster for quadratics
-and 3% slower for cubics than current. Wang is about 34–36% faster in that
+Density saves about 14% of quadratic stroke vertices and 12% of cubic stroke
+vertices at this target. Its mesh workload is about 21% faster for quadratics
+and 7% slower for cubics than current. Wang is about 33–36% faster in that
 workload, but generates more vertices for the ordinary cubic set.
 
 A separate test submits 768 offscreen round-capped strokes per frame through
-the renderer. It times flattening and draw submission, excluding frame update,
-presentation, and GPU waits. Across two runs, median CPU time was 2.07–2.24 µs
-per curve for current, 1.62–1.64 µs for Wang, and 2.22–2.25 µs for density.
-Density was approximately equal to current in one run and about 7% slower in
-the other. Triangle counts were 31,112, 32,776, and 26,256 respectively. The
-timing spread is visible in the report; these results do not predict FPS or
-establish a GPU speedup.
+the renderer. Density calls the public `drawAdaptive`, including transform setup
+and reusable output; other methods call adaptive conversion and `LineString::draw`.
+It excludes frame update, presentation, and GPU waits. Across two runs, median
+CPU time was 1.57–2.32 µs per curve for current, 1.00–1.71 µs for Wang, and
+1.51–2.38 µs for density. Density was about 4% faster in one run and 2% slower in
+the other. Triangle counts were 31,112, 32,776, and 26,384 respectively. Submission
+timing varies substantially with scheduling; these results do not predict FPS
+or establish a GPU speedup.
 
 ## Changes during deformation
 
@@ -157,7 +204,7 @@ spacing must accommodate large tangential acceleration. Removing the shortcut
 would retain excessive subdivisions even for straight curves. Density remains
 at one or two segments on these paths. The exact reversing quadratic needs 25
 Wang segments versus five density segments; the collinear cubic reversal uses
-43 versus three. These are representative counterexamples to choosing Wang
+43 versus five. These are representative counterexamples to choosing Wang
 solely from its CPU timings.
 
 This is a sampled result, not a one-segment-per-frame guarantee. All methods
@@ -170,13 +217,13 @@ changes alone do not guarantee less visible flicker.
 
 ## Appearance and default quality
 
-The native gallery supports **0.5 pixels as the starting default**, especially
+The native gallery supports the adopted **0.5-pixel default**, especially
 for density placement. At 0.75–1 pixel, small arches and S curves show more
 obvious facets, particularly with 6- and 24-pixel strokes. Those values remain
 useful explicit performance choices. A 0.25-pixel target is available for more
 demanding drawing; it is not needed as the game-oriented default.
 
-For all 12 ordinary base curves, compared with the current shipping default
+For all 12 ordinary base curves, compared with the legacy drawing default
 of 0.48 and depth 5:
 
 | Setting | Mean GPU vertices, 6px | Change | Mean sampled maximum error |
@@ -184,12 +231,12 @@ of 0.48 and depth 5:
 | Current default | 47.50 | — | 0.311px |
 | Wang 0.5 | 49.50 | +4.2% | 0.339px |
 | Wang 0.75 | 43.33 | −8.8% | 0.494px |
-| Density 0.5 | 40.50 | −14.7% | 0.378px |
+| Density 0.5 | 40.67 | −14.4% | 0.378px |
 
 Equal tolerance does not imply identical appearance. On seven larger raster
 cases at stroke width 6, mean normalized coverage difference from the dense
 reference was 0.0695 for current, 0.0459 for Wang 0.5, 0.0699 for Wang 0.75,
-and 0.0965 for density 0.5. The metric is summed absolute red-channel difference
+and 0.0958 for density 0.5. The metric is summed absolute red-channel difference
 divided by reference coverage, not a perceptual score. Density spends the error
 budget more broadly, so fewer vertices can produce more aggregate raster
 difference even with a similar maximum centerline error. It is a deliberate
@@ -209,32 +256,3 @@ promise to remove those artifacts. The captured animation sequences and
 representative frames complement the sampled metrics; they are not a complete
 perceptual flicker test across display sizes and frame rates.
 
-## Implementation direction
-
-Use density placement as the main Bezier drawing kernel, with bounded Wang
-fallbacks internal to it. Do not expose an algorithm-selection enum merely
-because the experiment compared several methods. Keep an explicit vertex-work
-budget separate from the visual quality target; replacing `maxDepth` with
-`maxSegments` makes that budget understandable independently of the algorithm.
-A default budget of 256 is a starting proposal, not a settled public contract.
-
-The implementation should have one destination-writing core so draw paths can
-reuse storage. Any value-returning convenience wrapper should call that core.
-Do not add hidden temporal caches or per-object history to these small value
-types. Preconditions, quality units, and behavior at the output cap belong in
-the final Doxygen once the implementation contract is established.
-
-The next evaluation must carry local/camera transforms into drawing quality,
-including nonuniform scale, shear, scene scaling, and quad warp. The current
-experiment validates identity transforms; it does not justify promising final
-screen-pixel accuracy under projective warps. Independent of this work, geometry
-conversion uses curve-coordinate units and must not silently inherit renderer
-state.
-
-Keep the first production patch at `drawAdaptive` and its dedicated internal
-kernel. Existing Bezier `toLineStringAdaptive()` is also used by paint/overwrite,
-and `Bezier3Flatten.hpp` is shared with Spline2D: replacing either in place would
-extend the change beyond the requested scope. Decide the public conversion API
-and the paint/Spline transition after Bezier drawing behavior is settled, without
-duplicating the new algorithm. Pending implementation and validation stages are
-tracked in [TODO.md](../../../TODO.md#bezier2-and-bezier3-adaptive-drawing).

@@ -1,15 +1,16 @@
 # Bezier tessellation study
 
-This opt-in automated study compares current Bezier2/Bezier3 flattening, a deeper
-current baseline, Wang subdivision, and density placement. It captures the
-actual renderer, measures stroke mesh counts, and produces a local interactive
-report. It does not replace a platform Main.cpp or change a production API.
+This opt-in automated study compares legacy Bezier2/Bezier3 flattening, a deeper
+legacy baseline, Wang subdivision, and the adopted density placement. It captures
+the actual renderer, measures stroke mesh counts, and produces a local interactive
+report. Density captures and submission timings use the public `drawAdaptive`
+API. The study does not replace a platform Main.cpp.
 
 The complete executable test program is
-[Test_BezierTessellation.cpp](../Test_BezierTessellation.cpp), with its candidate
-implementations and fixed corpus in
+[Test_BezierTessellation.cpp](../Test_BezierTessellation.cpp), with comparison baselines
+and the fixed corpus in
 [BezierTessellationStudy.hpp](../BezierTessellationStudy.hpp). The
-[comparison and proposed direction](../../docs/geometry2d/proposals/bezier-adaptive-tessellation.md)
+[drawing guide and comparison](../../docs/geometry2d/bezier-drawing.md)
 explain measurement boundaries and known limitations.
 
 ## Run on macOS
@@ -52,14 +53,15 @@ commands there. A macOS timing result does not validate Windows performance.
 ## Expected results and inspection
 
 The default automated suite runs endpoint, output-budget, storage-reuse,
-ordinary-error, and collinear-limit checks. Geometry, raster, animation, and
-timing studies are hidden unless explicitly selected. A complete study ends
+ordinary-error, and collinear-limit checks. `BezierDrawAdaptive.*` adds public
+API captures, affine and resolution tests, and cubic reversal regressions.
+Geometry, raster, animation, and timing studies are hidden unless explicitly selected. A complete study ends
 with passing test results and emits `BSTUDY` measurement records and
 `BSTUDY_IMAGE` base64 PNG records on stdout. No capture files are written by the
 tests. The report tool exports CSV, JSON, plots, and the unmodified native PNGs.
 
 Open the HTML report at native scale. Static capture rows are the dense
-reference, current shipping default, Wang, and density. Columns are 1-, 6-, and
+reference, legacy default (Current), Wang, and density. Columns are 1-, 6-, and
 24-pixel round-capped strokes. Check small arches, asymmetric curves, S curves,
 loops, and near cusps at each quality setting. The animation sections provide
 play/pause and frame scrubbing for the S and near-cusp captures.
@@ -75,3 +77,75 @@ Inspect error and cap columns together: reaching a work limit can exceed the
 quality target. Raster coverage difference is diagnostic, not a perceptual
 acceptance score. CPU submission timings exclude frame update and GPU waits;
 neither those timings nor triangle counts establish a GPU execution speedup.
+
+## Interactive quality and transform check
+
+Build the complete program below in a Siv3D application. Keep repository platform
+`Main.cpp` files unchanged. Press **1/2** for quadratic/cubic, **Space** to pause,
+**Q/W/E** for targets 0.25/0.5/1 pixel, and **B** for a deliberately small
+four-segment budget. Hold **Up/Down** to zoom; **A** changes between uniform and
+nonuniform scaling, and **H** switches scene/display render resolution. Compare
+the drawing with the dense reference using **R**. No output files are created.
+
+Expected: the default follows the animated curve without the large subdivision
+steps of the legacy method. Zooming in retains roughly the same centerline
+quality in render pixels. A 1-pixel target can look faceted, and the four-segment
+budget deliberately overrides quality. The reference can still show stroke-join
+artifacts near a sharp turn. Display resolution may equal scene resolution on
+some configurations; use a high-DPI display to inspect that difference.
+
+```cpp
+# include <Siv3D.hpp>
+# include <cmath>
+
+void Main()
+{
+	Window::Resize(1000, 700);
+	Scene::Configure(SceneConfig::Fixed({ 1000, 700 }, SceneResolution::SceneSize));
+	Scene::SetBackground(ColorF{ 0.08 });
+	Scene::SetMSAASampleCount(MSAASampleCount::X4MSAA);
+	const Font font{ 18 };
+	double time = 0, targetError = 0.5, zoom = 1;
+	bool cubic = true, paused = false, limited = false;
+	bool anisotropic = false, display = false, reference = false;
+	while (System::Update())
+	{
+		if (Key1.down()) cubic = false;
+		if (Key2.down()) cubic = true;
+		if (KeySpace.down()) paused = !paused;
+		if (KeyQ.down()) targetError = 0.25;
+		if (KeyW.down()) targetError = 0.5;
+		if (KeyE.down()) targetError = 1.0;
+		if (KeyB.down()) limited = !limited;
+		if (KeyA.down()) anisotropic = !anisotropic;
+		if (KeyR.down()) reference = !reference;
+		if (KeyH.down())
+		{
+			display = !display;
+			Scene::Configure(SceneConfig::Fixed({ 1000, 700 },
+				display ? SceneResolution::Display : SceneResolution::SceneSize));
+		}
+		const double delta = Scene::DeltaTime();
+		if (!paused) time += delta;
+		zoom = Clamp(zoom + (int(KeyUp.pressed()) - int(KeyDown.pressed())) * delta, 0.25, 2.0);
+		const int32 budget = limited ? 4 : 256;
+		{
+			const Transformer2D transform{ Mat3x2::Scale(zoom, anisotropic ? 0.4 * zoom : zoom)
+				* Mat3x2::Translate(500, 400) };
+			const Bezier2 q{ { -200, 0 }, { -100 + 300 * std::sin(time * 0.4), 160 * std::sin(time) }, { 200, 0 } };
+			const Bezier3 c{ { -200, 0 }, { -150, 160 * std::sin(time) }, { 100, -180 * std::sin(time * 0.7) }, { 200, 0 } };
+			if (reference)
+			{
+				const LineString line = cubic ? c.toLineString(4096) : q.toLineString(4096);
+				line.draw(LineCap::Round, 6, Palette::White);
+			}
+			else if (cubic) c.drawAdaptive(LineCap::Round, 6, Palette::White, targetError, budget);
+			else q.drawAdaptive(LineCap::Round, 6, Palette::White, targetError, budget);
+		}
+		font(U"Bezier{} | target={}px | budget={} | zoom={:.2f} | reference={}"_fmt(
+			cubic ? 3 : 2, targetError, budget, zoom, reference)).draw(20, 20);
+		font(U"1/2: degree   Space: pause   Q/W/E: quality   B: budget   Up/Down: zoom").draw(20, 50);
+		font(U"A: nonuniform scale   H: resolution   R: reference | render {}"_fmt(Scene::RenderResolution())).draw(20, 80);
+	}
+}
+```

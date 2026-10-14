@@ -97,6 +97,12 @@ namespace
 		return curve.degree == 2 ? curve.quadratic().toLineString(count) : curve.cubic().toLineString(count);
 	}
 
+	void DrawDensity(const Curve& curve, const double width, const ColorF& color, const double tolerance)
+	{
+		if (curve.degree == 2) curve.quadratic().drawAdaptive(LineCap::Round, width, color, tolerance);
+		else curve.cubic().drawAdaptive(LineCap::Round, width, color, tolerance);
+	}
+
 	double ResidualChange(const Curve& a, const LineString& la, const Curve& b, const LineString& lb)
 	{
 		double maximum = 0;
@@ -345,7 +351,8 @@ TEST_CASE("BezierTessellation.RasterStudy", "[.bezier-study]")
 						const Curve curve = Fitted(item.curve, { 285.0 + column * 270, y + 85.0 }, 220, 95);
 						if (row == 0) line = Reference(curve);
 						else Flatten(line, work, curve, row == 1 ? Method::Current : row == 2 ? Method::Wang : Method::Density, row == 1 ? 0.48 : tolerance);
-						line.draw(LineCap::Round, width, ColorF{ 0.85, 0.92, 1 });
+						if (row == 3) DrawDensity(curve, width, ColorF{ 0.85, 0.92, 1 }, tolerance);
+						else line.draw(LineCap::Round, width, ColorF{ 0.85, 0.92, 1 });
 						font(U"width={}  segments={}"_fmt(width, line.size() - 1)).draw(190 + column * 270, y + 140);
 					}
 				}
@@ -364,7 +371,11 @@ TEST_CASE("BezierTessellation.RasterStudy", "[.bezier-study]")
 				for (const double tolerance : { 0.5, 0.75, 1.0, 1.5 })
 				{
 					Flatten(line, work, curve, method, method == Method::Current ? 0.48 : tolerance);
-					const Image actual = Capture([&] { line.draw(LineCap::Round, width); });
+					const Image actual = Capture([&]
+					{
+						if (method == Method::Density) DrawDensity(curve, width, Palette::White, tolerance);
+						else line.draw(LineCap::Round, width);
+					});
 					REQUIRE(actual.size() == reference.size());
 					double difference = 0, mass = 0;
 					int32 changed = 0;
@@ -418,8 +429,15 @@ TEST_CASE("BezierTessellation.SubmissionBenchmark", "[.benchmark]")
 				for (int32 repeat = 0; repeat < 4; ++repeat)
 					for (const auto& curve : curves)
 					{
-						Flatten(line, work, curve, Methods[index], 0.5);
-						line.draw(LineCap::Round, 6);
+						if (Methods[index] == Method::Density)
+						{
+							DrawDensity(curve, 6, Palette::White, 0.5);
+						}
+						else
+						{
+							Flatten(line, work, curve, Methods[index], 0.5);
+							line.draw(LineCap::Round, 6);
+						}
 					}
 				const double ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count() / (4 * curves.size());
 				if (round >= 0) timings[index].push_back(ns);
@@ -458,7 +476,8 @@ TEST_CASE("BezierTessellation.AnimationStudy", "[.bezier-study]")
 						const Curve curve = Fitted(input, { 285.0 + column * 270, y + 85.0 }, 220, 95);
 						if (row == 0) line = Reference(curve);
 						else Flatten(line, work, curve, row == 1 ? Method::Current : row == 2 ? Method::Wang : Method::Density, row == 1 ? 0.48 : 0.5);
-						line.draw(LineCap::Round, width, ColorF{ 0.85, 0.92, 1 });
+						if (row == 3) DrawDensity(curve, width, ColorF{ 0.85, 0.92, 1 }, 0.5);
+						else line.draw(LineCap::Round, width, ColorF{ 0.85, 0.92, 1 });
 						font(U"width={}  segments={}"_fmt(width, line.size() - 1)).draw(190 + column * 270, y + 140);
 					}
 				}

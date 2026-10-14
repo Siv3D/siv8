@@ -16,12 +16,12 @@ API inventory, validation, and reproducible performance measurements.
 ownership, drawing buffers, and the interactive gallery for `Spline2D` and
 `Spline2DMeasure`.
 
-## Bezier drawing study
+## Bezier drawing
 
-[Adaptive tessellation comparison](proposals/bezier-adaptive-tessellation.md)
-compares current subdivision, Wang's formula, and density placement. It records
-the proposed Bezier2/Bezier3 drawing direction and links to the reproducible
-renderer gallery and benchmarks; Spline2D and Image integration are deferred.
+[Adaptive Bezier drawing](bezier-drawing.md) explains pixel-based quality,
+segment budgets, transform handling, and the adopted density placement. It
+records the comparison with recursive subdivision and Wang's formula and links
+to the reproducible renderer gallery and benchmarks.
 
 ## Continuing a ray after contact
 

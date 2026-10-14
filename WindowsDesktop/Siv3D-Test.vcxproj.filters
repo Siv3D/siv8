@@ -382,6 +382,9 @@
     <ClCompile Include="..\Test\Test_BezierTessellation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp">
       <Filter>Test</Filter>
     </ClInclude>

@@ -716,37 +716,44 @@ namespace s3d
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
 		/// @return *this
-		const Bezier2& drawAdaptive(const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& drawAdaptive(const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
 		/// @return *this
-		const Bezier2& drawAdaptive(double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& drawAdaptive(double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param lineCap 線端の種類
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
 		/// @return *this
-		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
 		/// @param startCap 始点側の線端の種類
 		/// @param endCap 終点側の線端の種類
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @pre 制御点と適用する変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 品質評価には Local、Camera とシーンの解像度倍率を反映します。QuadWarp とカスタム VS は含みません。
+		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
+		/// @remark 太さには絶対値を使用します。すべての制御点が同じ場合は、その点に線端を描画します。
 		/// @return *this
-		const Bezier2& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -33,6 +33,8 @@ namespace s3d
 	struct Mat3x3;
 	enum class LineCap : uint8;
 	struct PatternParameters;
+	struct Bezier2;
+	struct Bezier3;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -44,6 +46,10 @@ namespace s3d
 		virtual ~ISiv3DRenderer2D() = default;
 
 		virtual void init() = 0;
+
+		// Shared CPU tessellation and reusable storage, independent of the graphics backend.
+		void addBezier(const Bezier2& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
+		void addBezier(const Bezier3& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
 
 		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
@@ -183,6 +189,7 @@ namespace s3d
 		virtual void flush() = 0;
 
 		virtual void setSceneScale(Float2 scale) = 0;
+		virtual Float2 getSceneScale() const noexcept = 0;
 
 
 		virtual Float4 getColorMul() const = 0;
@@ -245,5 +252,9 @@ namespace s3d
 
 
 		virtual const Texture& getShadowTexture() const noexcept = 0;
+
+	private:
+
+		Array<Vec2> m_bezierPoints;
 	};
 }
