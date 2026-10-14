@@ -3375,17 +3375,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	BuildClosedLineString
+		//	TryBuildSmallConvexFrame
 		//
 		////////////////////////////////////////////////////////////////
 
-		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+		Optional<uint32> TryBuildSmallConvexFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
 			const JoinStyle joinStyle, const double thickness, const Float4& color, const float scale)
 		{
-			return BuildClosedLineString(bufferCreator, points, joinStyle, thickness * 0.5, thickness * 0.5, color, scale);
+			return TryBuildSmallConvexFrame(bufferCreator, points, joinStyle, thickness * 0.5, thickness * 0.5, color, scale);
 		}
 
-		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+		Optional<uint32> TryBuildSmallConvexFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
 			const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Float4& color, const float scale)
 		{
 			// The input is a unique 3/4-point ring. Rejected geometry is handled by the

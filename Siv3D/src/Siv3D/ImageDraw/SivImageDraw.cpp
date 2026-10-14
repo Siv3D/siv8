@@ -3306,11 +3306,6 @@ namespace s3d
 			RoundDisk,
 		};
 
-		enum class StrokeJoinStyle : uint8
-		{
-			Round,
-		};
-
 		struct StrokePrimitive
 		{
 			StrokePrimitiveType type = StrokePrimitiveType::BodyRect;
@@ -3437,21 +3432,6 @@ namespace s3d
 			bounds.includeCircle(center, radius + 0.5);
 
 			AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
-		}
-
-		void AddStrokeJoinPrimitive(
-			ImageView view,
-			std::vector<StrokePrimitive>& primitives,
-			const Vec2& point,
-			const double halfThickness,
-			const StrokeJoinStyle joinStyle)
-		{
-			switch (joinStyle)
-			{
-			case StrokeJoinStyle::Round:
-				AddStrokeDiskPrimitive(view, primitives, point, halfThickness);
-				return;
-			}
 		}
 
 		[[nodiscard]]
@@ -3848,17 +3828,16 @@ namespace s3d
 			}
 		}
 
+		// Segment rectangles and round joins; only the two endpoint caps are selectable.
 		void BuildOpenStrokePrimitives(
 			ImageView view,
 			const std::vector<Vec2>& effectivePoints,
 			const double thickness,
 			const LineCap startCap,
 			const LineCap endCap,
-			const StrokeJoinStyle joinStyle,
 			std::vector<StrokePrimitive>& primitives)
 		{
 			primitives.clear();
-
 
 			const double half = thickness * 0.5;
 
@@ -3895,13 +3874,14 @@ namespace s3d
 
 			for (size_t i = 1; (i + 1) < effectivePoints.size(); ++i)
 			{
-				AddStrokeJoinPrimitive(view, primitives, effectivePoints[i], half, joinStyle);
+				AddStrokeDiskPrimitive(view, primitives, effectivePoints[i], half);
 			}
 
 			if (startCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
 			if (endCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
 		}
 
+		// Append one round-join contour to the shared union, including polygon holes.
 		template <class PointType>
 		void AppendClosedStrokePrimitives(
 			ImageView view,
@@ -3909,7 +3889,6 @@ namespace s3d
 			const size_t count,
 			const Vec2& offset,
 			const double thickness,
-			const StrokeJoinStyle joinStyle,
 			std::vector<StrokePrimitive>& primitives,
 			std::vector<Vec2>& effectivePoints)
 		{
@@ -3948,7 +3927,7 @@ namespace s3d
 
 			for (const Vec2& p : effectivePoints)
 			{
-				AddStrokeJoinPrimitive(view, primitives, p, half, joinStyle);
+				AddStrokeDiskPrimitive(view, primitives, p, half);
 			}
 		}
 
@@ -4193,9 +4172,35 @@ namespace s3d
 			AddSubpixelSamples4(samples, begin, end);
 		}
 
-		// A centered stroke is the union of edge rectangles and outer corner polygons.
+		// Counts are in [0, 16]; convert in place after all four subpixel rows.
+		template <class ByteRange>
+		void ConvertSampleCounts4x4ToCoverage(ByteRange&& values)
+		{
+			for (uint8& value : values)
+			{
+				value = static_cast<uint8>((value * 255 + 8) / 16);
+			}
+		}
+
+		// Touched spans use image X coordinates; samples[0] corresponds to x0.
+		// Merge them to composite each pixel once, then clear those counts for reuse.
+		void WriteAndClearSampleSpans4x4(
+			const ImagePixel::detail::SolidColorWriter& writer, Color* row, const int32 x0,
+			const std::span<uint8> samples, const std::span<SpanI> touchedSpans)
+		{
+			for (const SpanI& span : SortAndMergeSpans(touchedSpans))
+			{
+				uint8* values = (samples.data() + span.x0 - x0);
+				const size_t length = static_cast<size_t>(span.x1 - span.x0);
+				ConvertSampleCounts4x4ToCoverage(std::span<uint8>{ values, length });
+				WriteCoverageSpan(writer, row + span.x0, values, length);
+				std::fill_n(values, length, uint8{ 0 });
+			}
+		}
+
+		// One convex edge rectangle or corner polygon in a stroke union.
 		// Union sample intervals before compositing, including for crossed/wide frames.
-		struct StrokeCornerPolygon
+		struct ConvexStrokePiece
 		{
 			struct Edge
 			{
@@ -4203,7 +4208,8 @@ namespace s3d
 				double endY;
 				double slope;
 			};
-			struct Scanline
+			// Traversal state for one piece, used with monotonically increasing Y.
+			struct SpanCursor
 			{
 				const Edge* first;
 				const Edge* second;
@@ -4229,12 +4235,12 @@ namespace s3d
 			}
 
 			[[nodiscard]]
-			bool spanAt(const double y, Scanline& scanline, double& left, double& right) const
+			bool spanAt(const double y, SpanCursor& cursor, double& left, double& right) const
 			{
 				if ((y < minY) || (maxY <= y)) return false;
 				// Rows advance monotonically. A convex piece keeps the same two
 				// crossing edges until the lower endpoint of either edge is reached.
-				if (scanline.endY <= y)
+				if (cursor.endY <= y)
 				{
 					const Edge* first = nullptr;
 					for (size_t i = 0; i < count; ++i)
@@ -4244,18 +4250,18 @@ namespace s3d
 						{
 							if (first)
 							{
-								scanline = { first, &e, Min(first->endY, e.endY) };
+								cursor = { first, &e, Min(first->endY, e.endY) };
 								break;
 							}
 							first = &e;
 						}
 					}
-					if (scanline.endY <= y) return false;
+					if (cursor.endY <= y) return false;
 				}
 				// Evaluate from the original endpoint rather than accumulating x,
 				// preserving subpixel ties even when the first rows are clipped.
-				const Edge& a = *scanline.first;
-				const Edge& b = *scanline.second;
+				const Edge& a = *cursor.first;
+				const Edge& b = *cursor.second;
 				const double x0 = (a.from.x + (y - a.from.y) * a.slope);
 				const double x1 = (b.from.x + (y - b.from.y) * b.slope);
 				left = Min(x0, x1);
@@ -4265,7 +4271,7 @@ namespace s3d
 		};
 
 		template <bool Antialias, bool Split = false>
-		void DrawJoinedFramePolygons(const ImageView view, const std::span<const StrokeCornerPolygon> polygons,
+		void DrawJoinedFramePolygons(const ImageView view, const std::span<const ConvexStrokePiece> polygons,
 			const BoundsD& bounds, const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha,
 			const std::span<const Vec2> contour = {}, const size_t innerCount = 0)
 		{
@@ -4279,7 +4285,7 @@ namespace s3d
 			constexpr int32 samples = (Antialias ? 4 : 1);
 			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
 			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
-			StrokeCornerPolygon::Scanline scanlines[Split ? 16 : 8];
+			ConvexStrokePiece::SpanCursor spanCursors[Split ? 16 : 8];
 			for (int32 y = y0; y < y1; ++y)
 			{
 				constexpr size_t maxSpans = (Split ? 40 : 8); // 8 inner parts x 2 intervals + 8 outer parts x 3 intervals.
@@ -4310,7 +4316,7 @@ namespace s3d
 					for (size_t part = 0; part < polygons.size(); ++part)
 					{
 						double left, right;
-						if (!polygons[part].spanAt(py, scanlines[part], left, right)) continue;
+						if (!polygons[part].spanAt(py, spanCursors[part], left, right)) continue;
 						const int32 begin = CeilToInt(Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
 						const int32 end = CeilToInt(Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
 						if constexpr (Split)
@@ -4348,21 +4354,14 @@ namespace s3d
 				}
 				if constexpr (Antialias)
 				{
-					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ pixelSpans, pixelSpanCount }))
-					{
-						uint8* values = (coverage.data() + span.x0 - x0);
-						const size_t length = static_cast<size_t>(span.x1 - span.x0);
-						for (size_t i = 0; i < length; ++i) values[i] = static_cast<uint8>((values[i] * 255 + 8) / 16);
-						WriteCoverageSpan(writer, row + span.x0, values, length);
-						std::fill_n(values, length, uint8{ 0 });
-					}
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
 				}
 			}
 		}
 
 		[[nodiscard]]
 		size_t MakeJoinedFramePolygons(const std::span<const Vec2> points, const JoinStyle joinStyle,
-			const double half, StrokeCornerPolygon* polygons, BoundsD& bounds)
+			const double half, ConvexStrokePiece* polygons, BoundsD& bounds)
 		{
 			const size_t count = points.size();
 			size_t polygonCount = 0;
@@ -4431,11 +4430,11 @@ namespace s3d
 			if ((1 < count) && IsSamePoint(points[0], points[count - 1])) --count;
 			if (count < 3) return;
 
-			StrokeCornerPolygon polygons[N * 2];
+			ConvexStrokePiece polygons[N * 2];
 			BoundsD bounds;
 			const size_t polygonCount = MakeJoinedFramePolygons({points, count}, joinStyle, thickness * 0.5, polygons, bounds);
 			const ImageView view = MakeImageView(image);
-			const std::span<const StrokeCornerPolygon> parts{ polygons, polygonCount };
+			const std::span<const ConvexStrokePiece> parts{ polygons, polygonCount };
 			if (enableAntialiasing == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
 			else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
 		}
@@ -4559,14 +4558,7 @@ namespace s3d
 				}
 				if constexpr (Antialias)
 				{
-					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ pixelSpans, pixelSpanCount }))
-					{
-						uint8* values = (coverage.data() + span.x0 - x0);
-						const size_t count = static_cast<size_t>(span.x1 - span.x0);
-						for (size_t i = 0; i < count; ++i) values[i] = static_cast<uint8>((values[i] * 255 + 8) / 16);
-						WriteCoverageSpan(writer, row + span.x0, values, count);
-						std::fill_n(values, count, uint8{ 0 });
-					}
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
 				}
 			}
 		}
@@ -4699,14 +4691,7 @@ namespace s3d
 				}
 				if constexpr (Antialias)
 				{
-					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ pixelSpans, pixelSpanCount }))
-					{
-						uint8* values = (coverage.data() + span.x0 - x0);
-						const size_t length = static_cast<size_t>(span.x1 - span.x0);
-						for (size_t i = 0; i < length; ++i) values[i] = static_cast<uint8>((values[i] * 255 + 8) / 16);
-						WriteCoverageSpan(writer, row + span.x0, values, length);
-						std::fill_n(values, length, uint8{ 0 });
-					}
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
 				}
 			}
 		}
@@ -4788,10 +4773,7 @@ namespace s3d
 				}
 				if constexpr (Antialias)
 				{
-					for (auto& value : coverage)
-					{
-						value = static_cast<uint8>((value * 255 + 8) / 16);
-					}
+					ConvertSampleCounts4x4ToCoverage(coverage);
 					Color* row = view.data + static_cast<size_t>(y) * view.stride;
 					WriteCoverageRow(writer, row, x0, coverage);
 				}
@@ -4884,10 +4866,7 @@ namespace s3d
 				}
 				if (aa)
 				{
-					for (auto& value : coverage)
-					{
-						value = static_cast<uint8>((value * 255 + 8) / 16);
-					}
+					ConvertSampleCounts4x4ToCoverage(coverage);
 					Color* row = view.data + static_cast<size_t>(y) * view.stride;
 					WriteCoverageRow(writer, row, x0, coverage);
 				}
@@ -4895,7 +4874,7 @@ namespace s3d
 		}
 
 		template <size_t N>
-		void DrawSmallPolygonFrame(const ImageView view, const Vec2 (&input)[N], double innerThickness,
+		void DrawSmallPolygonFrameByDistance(const ImageView view, const Vec2 (&input)[N], double innerThickness,
 			double outerThickness, Color color, ImagePixel::BlendMode blendMode,
 			EnableAntialiasing enableAntialiasing, ImageDraw::DstAlpha dstAlpha);
 
@@ -4906,7 +4885,7 @@ namespace s3d
 		{
 			if (joinStyle == JoinStyle::Round)
 			{
-				DrawSmallPolygonFrame(MakeImageView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
+				DrawSmallPolygonFrameByDistance(MakeImageView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
 				return;
 			}
 			if (image.isEmpty() || (innerThickness < 0.0) || (outerThickness < 0.0)
@@ -4916,12 +4895,12 @@ namespace s3d
 			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
 			if (count == 0) return;
 			const std::span<const Vec2> contour{points, count};
-			StrokeCornerPolygon polygons[N * 4];
+			ConvexStrokePiece polygons[N * 4];
 			BoundsD bounds;
 			if (innerThickness == outerThickness)
 			{
 				const size_t polygonCount = MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
-				const std::span<const StrokeCornerPolygon> parts{polygons, polygonCount};
+				const std::span<const ConvexStrokePiece> parts{polygons, polygonCount};
 				const ImageView view = MakeImageView(image);
 				if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
 				else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
@@ -4931,7 +4910,7 @@ namespace s3d
 				: MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
 			const size_t outerCount = (outerThickness == 0.0) ? 0
 				: MakeJoinedFramePolygons(contour, joinStyle, outerThickness, polygons + innerCount, bounds);
-			const std::span<const StrokeCornerPolygon> parts{polygons, innerCount + outerCount};
+			const std::span<const ConvexStrokePiece> parts{polygons, innerCount + outerCount};
 			const ImageView view = MakeImageView(image);
 			if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
 			else DrawJoinedFramePolygons<false, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
@@ -4940,7 +4919,7 @@ namespace s3d
 		// Triangle / Quad offsets use the original even-odd interior. Moving vertices
 		// first cannot preserve concave corners, crossings, or a collapsing inner hole.
 		template <size_t N>
-		void DrawSmallPolygonFrame(
+		void DrawSmallPolygonFrameByDistance(
 			const ImageView view,
 			const Vec2 (&input)[N],
 			const double innerThickness,
@@ -5138,10 +5117,7 @@ namespace s3d
 						AddSubpixelSpan4(coverage, x0, x1, intersections[i], intersections[i + 1]);
 					}
 				}
-				for (auto& value : coverage)
-				{
-					value = static_cast<uint8>((value * 255 + 8) / 16);
-				}
+				ConvertSampleCounts4x4ToCoverage(coverage);
 				Color* row = view.data + static_cast<size_t>(y) * view.stride + static_cast<size_t>(x0);
 				WriteCoverageSpan(writer, row, coverage.data(), rowLength);
 			}
@@ -5665,10 +5641,7 @@ namespace s3d
 				}
 				if (aa)
 				{
-					for (auto& value : coverage)
-					{
-						value = static_cast<uint8>((value * 255 + 8) / 16);
-					}
+					ConvertSampleCounts4x4ToCoverage(coverage);
 					WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
 				}
 			}
@@ -6067,7 +6040,7 @@ namespace s3d
 			std::vector<StrokePrimitive> primitives;
 			std::vector<Vec2> effectivePoints;
 			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness,
-				StrokeJoinStyle::Round, primitives, effectivePoints);
+				primitives, effectivePoints);
 			DrawStrokePrimitives(view, primitives, thickness, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
@@ -6110,7 +6083,7 @@ namespace s3d
 			const auto append = [&](const Array<Vec2>& contour)
 			{
 				AppendClosedStrokePrimitives(view, contour.data(), contour.size(), offset, thickness,
-					StrokeJoinStyle::Round, primitives, effectivePoints);
+					primitives, effectivePoints);
 			};
 			append(polygon.outer());
 			for (const auto& hole : polygon.inners())
@@ -6257,7 +6230,7 @@ namespace s3d
 			}
 
 			std::vector<StrokePrimitive> primitives;
-			BuildOpenStrokePrimitives(view, effectivePoints, thickness, startCap, endCap, StrokeJoinStyle::Round, primitives);
+			BuildOpenStrokePrimitives(view, effectivePoints, thickness, startCap, endCap, primitives);
 
 			DrawStrokePrimitives(
 				view,
@@ -6310,7 +6283,7 @@ namespace s3d
 
 			std::vector<StrokePrimitive> primitives;
 			std::vector<Vec2> effectivePoints;
-			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, StrokeJoinStyle::Round, primitives, effectivePoints);
+			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, primitives, effectivePoints);
 
 			DrawStrokePrimitives(
 				view,

@@ -183,7 +183,7 @@ int main(int argc, char** argv)
 					const std::string label = id + (style == JoinStyle::Bevel ? "/Bevel" : style == JoinStyle::Round ? "/Round" : "/Miter");
 					Measure(label + "/direct", [&]
 					{
-						const auto count = Vertex2DBuilder::BuildClosedLineString(allocate, input, style, widths.x, widths.y, color, 1);
+						const auto count = Vertex2DBuilder::TryBuildSmallConvexFrame(allocate, input, style, widths.x, widths.y, color, 1);
 						if (!count) std::abort();
 						Escape(count); Escape(vertices); Escape(indices);
 					});
@@ -275,7 +275,7 @@ int main(int argc, char** argv)
 				Measure(label + "/write", [&] { const auto count = Vertex2DBuilder::BuildPolygon(allocate, positions, triangles, color); Escape(count); Escape(vertices); Escape(indices); });
 				Measure(label + "/mesh", [&]
 				{
-					const auto count = Vertex2DBuilder::BuildClosedLineString(allocate, std::span<const Vec2>{ points.data(), static_cast<size_t>(n) }, style, thickness, color, 1);
+					const auto count = Vertex2DBuilder::TryBuildSmallConvexFrame(allocate, std::span<const Vec2>{ points.data(), static_cast<size_t>(n) }, style, thickness, color, 1);
 					if (not count) std::abort();
 					Escape(count); Escape(vertices); Escape(indices);
 				});
@@ -283,7 +283,7 @@ int main(int argc, char** argv)
 				{
 					std::array<Vec2, 6> input;
 					std::copy(points.begin(), points.end(), input.begin());
-					const auto count = Vertex2DBuilder::BuildClosedLineString(allocate,
+					const auto count = Vertex2DBuilder::TryBuildSmallConvexFrame(allocate,
 						std::span<const Vec2>{ input.data(), static_cast<size_t>(n) }, style, thickness, color, 1);
 					if (not count) std::abort();
 					Escape(count); Escape(vertices); Escape(indices);

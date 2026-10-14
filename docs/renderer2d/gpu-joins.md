@@ -22,9 +22,11 @@ boundary pixels or monotonic pixel coverage at every quality threshold.
 ## Topology and ownership
 
 [ClosedLineString.cpp](../../Siv3D/src/Siv3D/Polygon/ClosedLineString.cpp) selects
-the direct mesh or fallback for the requested style. Triangle and Quad
-supply a stack array. The centered stroke buffer view includes the two repeated
-points needed to join its closing vertex. The direct builder receives only the
+the direct mesh or fallback for the requested style. The renderer probes
+`tryAddSmallConvexFrame`, backed by `Vertex2DBuilder::TryBuildSmallConvexFrame`;
+this path accepts only small convex rings, not arbitrary closed LineStrings.
+Triangle and Quad supply a stack array. The centered stroke buffer view includes
+the two repeated points needed to join its closing vertex. The direct builder receives only the
 distinct ring vertices and separate inner/outer widths; centered entry points
 supply half the total width to each side.
 

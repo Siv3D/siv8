@@ -21,6 +21,10 @@
 - **Windows**。Image 描画全体の自動テストと Release ベンチマークを実行する。塗りつぶしでは穴・凹形状・交差・AA・半透明合成・クリッピングを含む [ImageDraw テスト](Test/Test_ImageDraw.cpp)、枠では [JoinStyle](Test/Test_ImageJoinStyle.cpp) と [内外幅指定](Test/Test_ImagePolygonFrame.cpp)を確認する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。曲線分割と GPU は [Windows validation for curve drawing](#windows-validation-for-curve-drawing)、GPU の枠は [GPU JoinStyle ガイド](docs/renderer2d/gpu-joins.md)を参照。
 - **手動確認**。[共通ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle も含め、実際に操作・確認した条件を記録する。自動テストやサンプルの構文検査と区別する。
 
+### API の命名整理
+
+- **`ImageDraw::DstAlpha::Preserve`**。描画先 alpha の値を保持するという誤解を避け、一般の straight alpha として扱う実際の契約に合う名前を検討する。`AssumeOpaque` との対応、既存コードの互換性、公開ヘッダ・呼び出し側・テストへの影響を確認してから改名する。
+
 ### 次に機能拡張する場合の推奨順
 
 1. **Line の破線・LineStyle**。最初の範囲を Line の paint / overwrite に限定し、各パターン、位相、端点、短い区間の仕様と最小 API を決める。線端と破線断片の重複を一度だけ合成し、既存の実線の性能も比較する。その後、LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。

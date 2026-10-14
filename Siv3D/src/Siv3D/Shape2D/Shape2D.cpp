@@ -944,15 +944,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
-	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 

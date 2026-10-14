@@ -36,6 +36,19 @@ to find missing operations and visible defects, not to require identical pixels.
 `ImageDraw::DstAlpha::AssumeOpaque` is an explicit optimization for images whose
 alpha is already 255. Shape methods use the general destination-alpha path.
 
+## Coverage helpers
+
+The 4x4 sampling paths accumulate counts in a reusable byte row, then use
+`ConvertSampleCounts4x4ToCoverage` to map 0–16 samples to 0–255 coverage with
+the same integer rounding. It preserves the iterator type of the input row or
+span. Joined frames, capped arrows, and circle arcs track
+touched pixel spans; `WriteAndClearSampleSpans4x4` merges those spans, converts
+and composites each pixel once, and clears the touched counts for the next row.
+Polygon fills, circle segments, ellipse pies, and SuperEllipse fills instead
+clear the whole row before sampling and share only the conversion step.
+The helpers add no storage. Shape-specific intersection rules, half-open versus
+closed sample intervals, and distance-based AA remain separate.
+
 ## API inventory and GPU differences
 
 The table lists image-writing families; both `paint` and `overwrite` forms exist
@@ -109,9 +122,10 @@ Intervals include the left boundary and exclude the right, with the same half-op
 rule in Y. Exact boundary ties can differ from the Round path.
 
 Point, edge, and interval storage is fixed-size for three/four-vertex input.
-Each piece caches its vertical bounds and edge slopes. Sample rows skip pieces
-outside those bounds. A per-draw cursor retains the two crossing edges until
-either reaches its lower endpoint, then searches for the next pair. Intersections
+Each `ConvexStrokePiece` caches its vertical bounds and edge slopes. Sample rows
+skip pieces outside those bounds. Its per-draw `SpanCursor` retains the two
+crossing edges until either reaches its lower endpoint, then searches for the
+next pair. Intersections
 still use the original endpoint and slope, rather than accumulated X increments,
 so clipping the first rows does not introduce drift or change sample ties.
 No-AA needs no temporary heap storage; AA allocates one byte row spanning the

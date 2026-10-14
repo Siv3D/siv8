@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 						{
 							const std::string id = std::to_string(size) + "/" + std::to_string(shape) + "/" + std::to_string(int(width))
 								+ (style == JoinStyle::Bevel ? "/Bevel" : "/Miter") + (mode == 0 ? "/center" : mode == 1 ? "/inner" : mode == 2 ? "/outer" : "/mixed");
-							const auto prepare = [&](StrokeCornerPolygon* output, BoundsD& box)
+							const auto prepare = [&](ConvexStrokePiece* output, BoundsD& box)
 							{
 								const double firstWidth = width * (mode == 0 ? 0.5 : mode == 3 ? 0.25 : 1.0);
 								size_t count = MakeJoinedFramePolygons(contour, style, firstWidth, output, box);
@@ -106,13 +106,13 @@ int main(int argc, char** argv)
 								if (mode == 3) count += MakeJoinedFramePolygons(contour, style, width * 0.75, output + count, box);
 								return std::pair{count, innerCount};
 							};
-							StrokeCornerPolygon parts[16];
+							ConvexStrokePiece parts[16];
 							BoundsD bounds;
 							const auto [count, innerCount] = prepare(parts, bounds);
-							const std::span<const StrokeCornerPolygon> polygons{parts, count};
+							const std::span<const ConvexStrokePiece> polygons{parts, count};
 							Measure(id + "/prepare", [&]
 							{
-								StrokeCornerPolygon output[16];
+								ConvexStrokePiece output[16];
 								BoundsD box;
 								const auto result = prepare(output, box);
 								Escape(output); Escape(box); Escape(result);
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 				Measure(id + "/points-fresh", [&] { std::vector<Vec2> out; collect(out); });
 				Measure(id + "/points-reuse", [&] { collect(effective); });
 				std::vector<StrokePrimitive> primitives;
-				const auto build = [&](auto& out) { BuildOpenStrokePrimitives(view, effective, width, LineCap::Round, LineCap::Round, StrokeJoinStyle::Round, out); Escape(out); };
+				const auto build = [&](auto& out) { BuildOpenStrokePrimitives(view, effective, width, LineCap::Round, LineCap::Round, out); Escape(out); };
 				build(primitives);
 				Measure(id + "/primitives-fresh", [&] { std::vector<StrokePrimitive> out; build(out); });
 				Measure(id + "/primitives-reuse", [&] { build(primitives); });
@@ -215,7 +215,7 @@ int main(int argc, char** argv)
 							std::vector<Vec2> out;
 							collect(out);
 							std::vector<StrokePrimitive> parts;
-							BuildOpenStrokePrimitives(view, out, width, LineCap::Round, LineCap::Round, StrokeJoinStyle::Round, parts);
+							BuildOpenStrokePrimitives(view, out, width, LineCap::Round, LineCap::Round, parts);
 							raster(parts);
 						});
 					}

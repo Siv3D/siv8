@@ -142,7 +142,7 @@ namespace
 			result.indices.resize(indices);
 			return Vertex2DBufferPointer{ result.vertices.data(), result.indices.data(), 37 };
 		};
-		result.count = Vertex2DBuilder::BuildClosedLineString(allocate, points, style, widths.x, widths.y, Float4{1, 0.25f, 0.5f, 0.5f}, scale);
+		result.count = Vertex2DBuilder::TryBuildSmallConvexFrame(allocate, points, style, widths.x, widths.y, Float4{1, 0.25f, 0.5f, 0.5f}, scale);
 		return result;
 	}
 

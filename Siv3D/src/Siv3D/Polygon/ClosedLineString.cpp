@@ -283,7 +283,7 @@ namespace s3d
 		void DrawPolygon(const std::span<const Vec2> points, const JoinStyle joinStyle,
 			const double innerThickness, const double outerThickness, const Fill& fill, const RendererFill& rendererFill)
 		{
-			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points, joinStyle, innerThickness, outerThickness, rendererFill)) return;
+			if (SIV3D_ENGINE(Renderer2D)->tryAddSmallConvexFrame(points, joinStyle, innerThickness, outerThickness, rendererFill)) return;
 			DrawPolygonFallback(points, joinStyle, innerThickness, outerThickness, fill);
 		}
 	}
@@ -326,7 +326,7 @@ namespace s3d
 		template <class Fill, class RendererFill>
 		void DrawClosed(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill, const RendererFill& rendererFill)
 		{
-			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points.first(points.size() - 2), joinStyle, thickness * 0.5, thickness * 0.5, rendererFill)) return;
+			if (SIV3D_ENGINE(Renderer2D)->tryAddSmallConvexFrame(points.first(points.size() - 2), joinStyle, thickness * 0.5, thickness * 0.5, rendererFill)) return;
 			DrawFallback(points, joinStyle, thickness, fill);
 		}
 	}
