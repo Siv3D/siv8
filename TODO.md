@@ -13,24 +13,28 @@
 
 ## 2D 図形の Image 書き込み
 
-[設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
+今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。
+`.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。
 
-`.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。推奨する実装・検討順は次のとおり。
+### 継続検証
 
-1. **破線・LineStyle**。まず Line の paint / overwrite に最小 API を設計し、各パターン、位相、端点、短い区間の仕様を決める。線端と破線断片の重複を一度だけ合成する。次に LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。
-2. **LineString などへの JoinStyle 拡張**。開いた折れ線・閉じた輪郭から始め、Polygon / Shape2D の枠、Bezier / Spline の折り返しや cusp への適用を段階的に検討する。真の角と曲線近似の分割点を区別し、分割品質の変更で不自然な角が現れないようにする。Image と GPU は幾何的な意味を共有し、長い点列の一時確保、自己交差、穴、多重合成の費用を個別に評価する。
+- **Windows**。Image 描画全体の自動テストと Release ベンチマークを実行する。塗りつぶしでは穴・凹形状・交差・AA・半透明合成・クリッピングを含む [ImageDraw テスト](Test/Test_ImageDraw.cpp)、枠では [JoinStyle](Test/Test_ImageJoinStyle.cpp) と [内外幅指定](Test/Test_ImagePolygonFrame.cpp)を確認する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。曲線分割と GPU は [Windows validation for curve drawing](#windows-validation-for-curve-drawing)、GPU の枠は [GPU JoinStyle ガイド](docs/renderer2d/gpu-joins.md)を参照。
+- **手動確認**。[共通ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle も含め、実際に操作・確認した条件を記録する。自動テストやサンプルの構文検査と区別する。
 
-用途に応じて選ぶ追加候補:
+### 次に機能拡張する場合の推奨順
 
-- **変換付き描き込み・wireframe・添字付き三角形**。Polygon 等の変換済みコピーを作らない描き込みや、Shape2D の GPU と同じ添字付きメッシュを描く用途を評価する。輪郭塗りとは別 API として検討し、三角形の重複・共有辺・半透明の合成規則を決める。
+1. **Line の破線・LineStyle**。最初の範囲を Line の paint / overwrite に限定し、各パターン、位相、端点、短い区間の仕様と最小 API を決める。線端と破線断片の重複を一度だけ合成し、既存の実線の性能も比較する。その後、LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。
+2. **LineString などへの JoinStyle 拡張**。最初は開いた折れ線・閉じた輪郭を対象に、既定値と線端・結合部の合成規則を決める。その後、Polygon / Shape2D の枠、Bezier / Spline の折り返しや cusp への適用を検討する。真の角と曲線近似の分割点を区別し、分割品質の変更で不自然な角が現れないようにする。Image と GPU は幾何的な意味を共有し、長い点列の一時確保、自己交差、穴、多重合成の費用を個別に評価する。
+
+### 用途・測定結果に応じて選ぶ候補
+
+- **変換付き描き込み・wireframe・添字付き三角形**。Polygon 等の変換済みコピーを作らない描き込みや、Shape2D の GPU と同じ添字付きメッシュを描く用途を評価する。Shape2D の頂点列を輪郭として塗る既存契約を保ち、添字付きメッシュは別 API として三角形の重複・共有辺・半透明の合成規則を決める。
 - **グラデーション・頂点色・パターン・影**。利用頻度と補間・座標・alpha の仕様を先に決め、一種類ずつ採否を判断する。単色描画の共通経路へ一律に費用を加えない。
-- **GPU の Circle arc の線端重複**。[手動ギャラリー](Test/Manual/ImageWriting.md)に記載された GPU キャップの重複を、短い弧・全周直前などで検証し、修正範囲を判断する。Image では一度だけ合成しているため、追加の GPU 修正候補として扱う。
+- **実用途に基づく追加最適化**。同じ画像への反復描画に加え、初期 alpha の異なる描画先やアプリ相当の呼び出し列を測定する。CPU の準備・ラスタライズ・合成、一時確保、GPU 実行時間を区別する。再利用可能な公開コンテキストやキャッシュは、既存の [分離計測](tools/image-stroke-profile/profile.cpp)で費用と再利用の効果を確認してから検討する。
 
-検証として残る項目:
+### GPU 側の追加調査
 
-- [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle の切り替えも含め、自動テストとサンプルの構文検査とは分けて記録する。
-- Windows の Image 描画全体の自動テストと Release ベンチマークを実行する。曲線分割と GPU の検証は上記の [Windows validation for curve drawing](#windows-validation-for-curve-drawing) にまとめる。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
-- 最適化の計測は、既存の同じ画像への反復描画に加え、初期 alpha の異なる描画先やアプリ相当の呼び出し列も評価する。CPU の準備・ラスタライズ・合成、一時確保、GPU 実行時間を区別し、再利用可能な公開コンテキストやキャッシュは必要性が確認できてから検討する。
+- **Circle arc の線端重複**。[共通ギャラリー](Test/Manual/ImageWriting.md)に記載された GPU キャップの重複を、短い弧・全周直前などで検証し、修正範囲を判断する。Image の一度だけの合成を参照しつつ、GPU 側の独立した作業として扱う。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
