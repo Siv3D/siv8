@@ -20,7 +20,7 @@ namespace s3d
         {
             enum class DstAlphaMode : uint8
             {
-                Preserve,
+                UseStored,
                 AssumeOpaque,
             };
 
@@ -62,7 +62,7 @@ namespace s3d
                 SolidColorWriter(
                     BlendMode blendMode,
                     Color src,
-                    DstAlphaMode dstAlphaMode = DstAlphaMode::Preserve) noexcept;
+                    DstAlphaMode dstAlphaMode = DstAlphaMode::UseStored) noexcept;
 
                 void write(Color* dst, size_t count) const noexcept;
 

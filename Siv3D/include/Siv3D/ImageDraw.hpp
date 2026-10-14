@@ -20,15 +20,16 @@ namespace s3d
 {
 	namespace ImageDraw
 	{
-		/// @brief 描画先 alpha の扱い
+		/// @brief Source Over 合成での描画先 alpha の扱い
+		/// @remark ImagePixel::BlendMode::Overwrite では、この指定は使用されません。
 		enum class DstAlpha : uint8
 		{
-			/// @brief dst の alpha を一般の straight alpha として扱います。
-			Preserve,
+			/// @brief 描画先に格納されている alpha 値を使って合成します。
+			UseStored,
 
-			/// @brief dst の alpha が常に 255 であると仮定します。
-			/// @remark 高速化のため、実行時には確認しません。
-			/// @remark 仮定を満たさない場合の結果は保証されません。
+			/// @brief 描画先 alpha が 255 であると仮定して合成します。
+			/// @pre Source Over で描画する画素の alpha は 255 でなければなりません。
+			/// @remark 実行時には確認しません。前提を満たさない場合の結果は保証されません。
 			AssumeOpaque,
 		};
 
@@ -50,7 +51,7 @@ namespace s3d
 			const Rect& rect,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 浮動小数点座標の長方形を描画します。
 		/// @param image 描画先画像
@@ -65,7 +66,7 @@ namespace s3d
 			const RectF& rect,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 整数座標の長方形の枠を描画します。
 		/// @param image 描画先画像
@@ -85,7 +86,7 @@ namespace s3d
 			int32 outerThickness,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 浮動小数点座標の長方形の枠を描画します。
 		/// @param image 描画先画像
@@ -107,7 +108,7 @@ namespace s3d
 			double outerThickness,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 円を描画します。
 		/// @param image 描画先画像
@@ -124,7 +125,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 円の枠を描画します。
 		/// @param image 描画先画像
@@ -148,7 +149,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 円の扇形を描画します。
 		/// @param image 描画先画像
@@ -173,7 +174,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 円弧の枠を描画します。
 		/// @param image 描画先画像
@@ -198,7 +199,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_circle_arc
 		/// @brief 円弧の枠を描画します。
@@ -230,7 +231,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_circle_segment
 		/// @brief 円の弓形を描画します。
@@ -253,7 +254,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_circle_segment_angles
 		/// @brief 円の弓形を描画します。
@@ -276,7 +277,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 楕円を描画します。
 		/// @param image 描画先画像
@@ -293,7 +294,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_ellipse_pie
 		/// @brief 楕円の扇形を描画します。
@@ -316,7 +317,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_superellipse
 		/// @brief スーパー楕円を描画します。
@@ -334,7 +335,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @anchor image_draw_superellipse_frame
 		/// @brief スーパー楕円の輪郭を中心とする枠を描画します。
@@ -355,7 +356,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 楕円の枠を描画します。
 		/// @param image 描画先画像
@@ -379,7 +380,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 角丸長方形を描画します。
 		/// @param image 描画先画像
@@ -396,7 +397,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 角丸長方形の枠を描画します。
 		/// @param image 描画先画像
@@ -420,7 +421,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 三角形を描画します。
 		/// @param image 描画先画像
@@ -436,7 +437,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 角の結合方法を指定して、三角形の中央配置の枠を描画します。
 		/// @param image 描画先画像
@@ -456,7 +457,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 三角形の内側と外側の太さを指定して、枠を描画します。
 		/// @param image 描画先画像
@@ -476,7 +477,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 三角形の内側と外側の太さを指定して、枠を描画します。
 		/// @param image 描画先画像
@@ -498,7 +499,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 四角形を描画します。
 		/// @param image 描画先画像
@@ -514,7 +515,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 角の結合方法を指定して、四角形の中央配置の枠を描画します。
 		/// @param image 描画先画像
@@ -534,7 +535,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 四角形の内側と外側の太さを指定して、枠を描画します。
 		/// @param image 描画先画像
@@ -554,7 +555,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 四角形の内側と外側の太さを指定して、枠を描画します。
 		/// @param image 描画先画像
@@ -576,7 +577,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列で表される polygon を描画します。
 		/// @param image 描画先画像
@@ -597,7 +598,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Polygon を描画します。
 		/// @param image 描画先画像
@@ -616,7 +617,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Polygon をオフセット付きで描画します。
 		/// @param image 描画先画像
@@ -639,7 +640,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Shape2D の輪郭の内側を塗りつぶします。
 		/// @anchor image_draw_shape2d
@@ -658,7 +659,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Shape2D の輪郭の内側を、指定した位置に移動して塗りつぶします。
 		/// @param image 描画先画像
@@ -676,7 +677,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Shape2D の枠を描画します。
 		/// @anchor image_draw_shape2d_frame
@@ -697,7 +698,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Shape2D の枠をオフセット付きで描画します。
 		/// @param image 描画先画像
@@ -717,7 +718,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Polygon の枠を描画します。
 		/// @anchor image_draw_polygon_frame
@@ -737,7 +738,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief Polygon の枠をオフセット付きで描画します。
 		/// @param image 描画先画像
@@ -757,7 +758,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		//-------------------------------------------------------------------------
 		//
@@ -787,7 +788,7 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap lineCap = LineCap::Round,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 太さのある線分を描画します。
 		/// @param image 描画先画像
@@ -813,7 +814,7 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing,
 			LineCap startCap,
 			LineCap endCap,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 始点から終点へ向かう矢印を描画します。
 		/// @param image 描画先画像
@@ -838,7 +839,7 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap startCap = LineCap::Flat,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある連続線として描画します。
 		/// @param image 描画先画像
@@ -863,7 +864,7 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap lineCap = LineCap::Round,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある連続線として描画します。
 		/// @param image 描画先画像
@@ -890,7 +891,7 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing,
 			LineCap startCap,
 			LineCap endCap,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある連続線として、offset を加えて描画します。
 		/// @param image 描画先画像
@@ -917,7 +918,7 @@ namespace s3d
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			LineCap lineCap = LineCap::Round,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある連続線として、offset を加えて描画します。
 		/// @param image 描画先画像
@@ -946,7 +947,7 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing,
 			LineCap startCap,
 			LineCap endCap,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある閉じた連続線として描画します。
 		/// @param image 描画先画像
@@ -969,7 +970,7 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 
 		/// @brief 点列を太さのある閉じた連続線として、offset を加えて描画します。
 		/// @param image 描画先画像
@@ -995,6 +996,6 @@ namespace s3d
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-			DstAlpha dstAlpha = DstAlpha::Preserve);
+			DstAlpha dstAlpha = DstAlpha::UseStored);
 	}
 }

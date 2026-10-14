@@ -123,8 +123,8 @@ int main(int argc, char** argv)
 								{
 									const auto raster = [&]<bool AA>()
 									{
-										if (mode == 0) DrawJoinedFramePolygons<AA>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::Preserve);
-										else DrawJoinedFramePolygons<AA, true>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::Preserve, contour, innerCount);
+										if (mode == 0) DrawJoinedFramePolygons<AA>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::UseStored);
+										else DrawJoinedFramePolygons<AA, true>(view, polygons, bounds, Color{220,60,130,113}, ImagePixel::BlendMode::SourceOver, ImageDraw::DstAlpha::UseStored, contour, innerCount);
 									};
 									if (aa) raster.template operator()<true>(); else raster.template operator()<false>();
 									Escape(pixels);
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
 				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
 					for (const auto mode : { ImagePixel::BlendMode::Overwrite, ImagePixel::BlendMode::SourceOver })
 					{
-						const auto raster = [&](const auto& parts) { DrawStrokePrimitives(view, parts, width, Color{ 220, 60, 130, 113 }, mode, aa, ImageDraw::DstAlpha::Preserve); Escape(pixels); };
+						const auto raster = [&](const auto& parts) { DrawStrokePrimitives(view, parts, width, Color{ 220, 60, 130, 113 }, mode, aa, ImageDraw::DstAlpha::UseStored); Escape(pixels); };
 						const auto suffix = std::string(aa ? "/AA" : "/noAA") + (mode == ImagePixel::BlendMode::Overwrite ? "/overwrite" : "/paint");
 						Measure(id + "/raster" + suffix, [&] { raster(primitives); });
 						Measure(id + "/whole" + suffix, [&]

@@ -893,6 +893,39 @@ TEST_CASE("ImageDraw.narrow_destinations_and_offset_overloads")
 		}
 }
 
+TEST_CASE("ImageDraw.destination_alpha_modes_and_default")
+{
+	// The rectangle covers half the first pixel, all of the second, and none of the third.
+	const RectF rect{ 0.5, 0, 1.5, 1 };
+	Image mask{ 3, 1, Color{ 0, 0 } };
+	mask[0][0] = Color{ 128, 128 };
+	mask[0][1] = Palette::White;
+	for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
+		for (const uint32 dstAlpha : { 0u, 128u, 255u })
+			for (const uint32 srcAlpha : { 0u, 128u, 255u })
+			{
+				CAPTURE(mode, dstAlpha, srcAlpha);
+				const Color ink{ 200, 80, 20, srcAlpha }, background{ 30, 90, 150, dstAlpha };
+				Image stored{ 3, 1, background }, omitted = stored, expected = stored;
+				CompositeMask(expected, mask, ink, mode == ImagePixel::BlendMode::SourceOver);
+				ImageDraw::Fill(stored, rect, ink, mode, ImageDraw::DstAlpha::UseStored);
+				ImageDraw::Fill(omitted, rect, ink, mode);
+				CHECK_THAT(stored, ImageEquals(expected));
+				CHECK_THAT(omitted, ImageEquals(expected));
+				if ((mode == ImagePixel::BlendMode::SourceOver) && (dstAlpha == 128) && (srcAlpha == 128))
+				{
+					CHECK(stored[0][1].a == 192); // Stored alpha participates in the blend and is updated.
+				}
+				// Overwrite ignores DstAlpha, including when the destination is translucent.
+				if ((mode == ImagePixel::BlendMode::Overwrite) || (dstAlpha == 255))
+				{
+					Image opaque{ 3, 1, background };
+					ImageDraw::Fill(opaque, rect, ink, mode, ImageDraw::DstAlpha::AssumeOpaque);
+					CHECK_THAT(opaque, ImageEquals(expected));
+				}
+			}
+}
+
 TEST_CASE("ImageDraw.pixel_compositing_bulk_tails_and_opaque_destination")
 {
 	for (const size_t count : { 0u, 1u, 3u, 4u, 7u, 15u, 16u, 17u, 31u })
@@ -1199,10 +1232,10 @@ TEST_CASE("ImageDraw.new_contour_paths_destination_alpha_and_empty_images")
 					};
 					Image actual{ 37, 35, Color{ 40, 70, 100, 255 } }, expected = actual;
 					draw(actual, ImageDraw::DstAlpha::AssumeOpaque);
-					draw(expected, ImageDraw::DstAlpha::Preserve);
+					draw(expected, ImageDraw::DstAlpha::UseStored);
 					CHECK_THAT(actual, ImageEquals(expected));
 					Image empty;
-					draw(empty, ImageDraw::DstAlpha::Preserve);
+					draw(empty, ImageDraw::DstAlpha::UseStored);
 					CHECK(empty.isEmpty());
 				}
 				Image actual = Background(Size{ 37, 35 }), expected = actual;
@@ -2696,13 +2729,13 @@ TEST_CASE("ImageDraw.arrow_caps_alpha_modes")
 						const Color ink{ 211, 83, 147, alpha };
 						CompositeMask(expected, mask, ink, mode == ImagePixel::BlendMode::SourceOver);
 						ImageDraw::Arrow(actual, line.start, line.end, 17, head, ink, mode, aa, cap,
-							opaque ? ImageDraw::DstAlpha::AssumeOpaque : ImageDraw::DstAlpha::Preserve);
+							opaque ? ImageDraw::DstAlpha::AssumeOpaque : ImageDraw::DstAlpha::UseStored);
 						CHECK_THAT(actual, ImageEquals(expected));
 						if (opaque)
 						{
-							Image preserved = before;
-							ImageDraw::Arrow(preserved, line.start, line.end, 17, head, ink, mode, aa, cap);
-							CHECK_THAT(actual, ImageEquals(preserved));
+							Image stored = before;
+							ImageDraw::Arrow(stored, line.start, line.end, 17, head, ink, mode, aa, cap);
+							CHECK_THAT(actual, ImageEquals(stored));
 						}
 					}
 			}

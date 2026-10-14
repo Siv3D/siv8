@@ -33,8 +33,12 @@ pixel-identical. Image-writing throughput takes priority over
 matching GPU tessellation, sampling, or blending details. Use the GPU comparison
 to find missing operations and visible defects, not to require identical pixels.
 
-`ImageDraw::DstAlpha::AssumeOpaque` is an explicit optimization for images whose
-alpha is already 255. Shape methods use the general destination-alpha path.
+`ImageDraw::DstAlpha::UseStored` is the default: Source Over uses the stored
+destination alpha and writes the resulting alpha. Shape methods use this path.
+`AssumeOpaque` explicitly selects the optimization for Source Over onto pixels
+whose alpha is already 255; this precondition is not checked at runtime.
+Overwrite ignores this setting and retains its RGBA replacement/interpolation
+behavior.
 
 ## Coverage helpers
 

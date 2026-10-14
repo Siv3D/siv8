@@ -108,7 +108,7 @@ namespace s3d
 		{
 			return (dstAlpha == ImageDraw::DstAlpha::AssumeOpaque)
 				? ImagePixel::detail::DstAlphaMode::AssumeOpaque
-				: ImagePixel::detail::DstAlphaMode::Preserve;
+				: ImagePixel::detail::DstAlphaMode::UseStored;
 		}
 
 		[[nodiscard]]
