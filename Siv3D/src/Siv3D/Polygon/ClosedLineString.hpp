@@ -18,7 +18,7 @@
 namespace s3d
 {
 	// Input includes the first two points again at the end, as required by the
-	// existing buffer path and Default path.
+	// closed buffer path.
 	void DrawClosedLineStringFallback(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const ColorF& color);
 
 	void DrawClosedLineStringFallback(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
@@ -26,4 +26,12 @@ namespace s3d
 	void DrawClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const ColorF& color);
 
 	void DrawClosedLineString(std::span<const Vec2> points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
+	// Unique Triangle / Quad vertices; widths refer to the original filled region.
+	void DrawSmallPolygonFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const ColorF& color);
+
+	void DrawSmallPolygonFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const PatternParameters& pattern);
+
+	void DrawSmallPolygonFrameFallback(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const ColorF& color);
+
+	void DrawSmallPolygonFrameFallback(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const PatternParameters& pattern);
 }

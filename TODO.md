@@ -17,10 +17,9 @@
 
 `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。推奨する実装・検討順は次のとおり。
 
-1. **Triangle / Quad の内外幅指定の枠**。GPU は `stretched()` と従来の線分列メッシュ、Image は元の輪郭からの距離帯を使い、中央配置の Bevel 枠とは仕様・経路が異なる。まず半透明、頂点順、片側だけの幅、内側の穴の消失、凹・交差形状を再現テストで確認する。内外幅と JoinStyle の意味を整理してから実装を統合し、通常の凸形状の費用も測る。GPU 側の残課題は [Renderer2D / Triangle・Quad の JoinStyle](#renderer2d--trianglequad-の-joinstyle) にまとめる。
-2. **Image の中央配置 Bevel / Miter 枠の AA 最適化**。既定となった Bevel の費用を優先して測る。[測定記録](docs/geometry2d/image-writing.md#validation-and-measurement)では、代表的な AA ケースは Round より約 6〜22% 高コストだが、角の形と coverage が異なるため同一出力の速度比較ではない。凸形状の走査処理・重複計算を候補として調べ、凹・交差形状、穴の消失、極細枠、クリッピング、半透明の一度だけの合成を保つ。AA なしや小さい図形も測定し、GPU との画素一致を目的に処理を増やさない。
-3. **破線・LineStyle**。まず Line の paint / overwrite に最小 API を設計し、各パターン、位相、端点、短い区間の仕様を決める。線端と破線断片の重複を一度だけ合成する。次に LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。
-4. **LineString などへの JoinStyle 拡張**。開いた折れ線・閉じた輪郭から始め、Polygon / Shape2D の枠、Bezier / Spline の折り返しや cusp への適用を段階的に検討する。真の角と曲線近似の分割点を区別し、分割品質の変更で不自然な角が現れないようにする。Image と GPU は幾何的な意味を共有し、長い点列の一時確保、自己交差、穴、多重合成の費用を個別に評価する。
+1. **Image の Bevel / Miter 枠の AA 最適化**。既定となった Bevel の費用を優先して測る。[測定記録](docs/geometry2d/image-writing.md#validation-and-measurement)では、中央配置の代表的な AA ケースは Round より約 6〜22% 高コストだが、角の形と coverage が異なるため同一出力の速度比較ではない。内外幅指定の小さい片側 AA 枠では Round 距離帯より約 10〜11% 高い例もある。中央配置と内外幅指定は Round の基準経路が異なるため別に測り、凸形状の走査処理・重複計算を候補として調べ、凹・交差形状、穴の消失、極細枠、クリッピング、半透明の一度だけの合成を保つ。AA なしや小さい図形も測定し、GPU との画素一致を目的に処理を増やさない。
+2. **破線・LineStyle**。まず Line の paint / overwrite に最小 API を設計し、各パターン、位相、端点、短い区間の仕様を決める。線端と破線断片の重複を一度だけ合成する。次に LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。
+3. **LineString などへの JoinStyle 拡張**。開いた折れ線・閉じた輪郭から始め、Polygon / Shape2D の枠、Bezier / Spline の折り返しや cusp への適用を段階的に検討する。真の角と曲線近似の分割点を区別し、分割品質の変更で不自然な角が現れないようにする。Image と GPU は幾何的な意味を共有し、長い点列の一時確保、自己交差、穴、多重合成の費用を個別に評価する。
 
 用途に応じて選ぶ追加候補:
 
@@ -97,8 +96,7 @@
 ## Renderer2D / Triangle・Quad の JoinStyle
 
 - Windows / D3D11 で [JoinStyle 専用テスト](Test/Test_Renderer2DJoinStyle.cpp) と全自動テストを実行し、[手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。macOS でのプロジェクト構文検証を Windows の実行検証とはみなさない。
-- Triangle / Quad の内外幅を別指定する GPU `drawFrame()` は、`stretched()` と従来の線分列メッシュを使う。半透明の重複や輪郭の反転が起きる条件を先に再現し、元の輪郭を基準にした内外幅・片側だけの枠・穴の消失時の領域を整理する。JoinStyle を導入する場合の既定値は Bevel とし、Image の距離帯仕様との関係を明示する。通常の凸形状について、一時確保・fallback 条件・CPU 時間を確認する。
-- 凹形状・自己交差・内側輪郭の消失は Boost buffer に残す。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
+- 凹形状・自己交差・内側輪郭の消失は Boost の topology 処理に残す。内外幅指定では領域の intersection / difference / union も含む。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
 - 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
 
 ## Renderer2D / 組み込みシェーダ最適化

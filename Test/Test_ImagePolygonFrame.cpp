@@ -22,12 +22,12 @@ namespace
 	};
 
 	void Draw(const Array<Vec2>& p, Image& image, double inner, double outer, Color color,
-		EnableAntialiasing aa, bool paint = false)
+		EnableAntialiasing aa, bool paint = false, JoinStyle style = JoinStyle::Round)
 	{
 		const auto draw = [&](const auto& shape)
 		{
-			if (paint) CHECK(&shape.paintFrame(image, inner, outer, color, aa) == &shape);
-			else CHECK(&shape.overwriteFrame(image, inner, outer, color, aa) == &shape);
+			if (paint) CHECK(&shape.paintFrame(image, style, inner, outer, color, aa) == &shape);
+			else CHECK(&shape.overwriteFrame(image, style, inner, outer, color, aa) == &shape);
 		};
 		if (p.size() == 3) draw(Triangle{ p[0], p[1], p[2] });
 		else draw(Quad{ p[0], p[1], p[2], p[3] });
@@ -124,9 +124,9 @@ TEST_CASE("ImagePolygonFrame.OneSidedAndCollapsedHole")
 	for (const bool aa : { false, true })
 	{
 		Image inner{ 32, 32, Color{ 0, 0 } }, outer = inner, filled = inner;
-		square.overwriteFrame(inner, 2, 0, Palette::White, EnableAntialiasing{ aa });
-		square.overwriteFrame(outer, 0, 2, Palette::White, EnableAntialiasing{ aa });
-		square.overwriteFrame(filled, 20, 0, Palette::White, EnableAntialiasing{ aa });
+		square.overwriteFrame(inner, JoinStyle::Round, 2, 0, Palette::White, EnableAntialiasing{ aa });
+		square.overwriteFrame(outer, JoinStyle::Round, 0, 2, Palette::White, EnableAntialiasing{ aa });
+		square.overwriteFrame(filled, JoinStyle::Round, 20, 0, Palette::White, EnableAntialiasing{ aa });
 		CHECK(inner[8][12].a == 255);
 		CHECK(inner[7][12].a == 0);
 		CHECK(inner[16][16].a == 0);
@@ -139,7 +139,7 @@ TEST_CASE("ImagePolygonFrame.OneSidedAndCollapsedHole")
 	}
 	// A subpixel band retains its width instead of accumulating its two sides.
 	Image thin{ 32, 32, Color{ 0, 0 } };
-	Quad{ 8.5, 8.5, 24.5, 8.5, 24.5, 24.5, 8.5, 24.5 }.overwriteFrame(thin, 0.15, 0.35, Palette::White);
+	Quad{ 8.5, 8.5, 24.5, 8.5, 24.5, 24.5, 8.5, 24.5 }.overwriteFrame(thin, JoinStyle::Round, 0.15, 0.35, Palette::White);
 	CHECK(thin[8][16].a == 128);
 }
 
@@ -173,66 +173,69 @@ TEST_CASE("ImagePolygonFrame.DegeneracyAndNoOps")
 		{ { 8, 8 }, { 24, 8 }, { 24, 24 }, { 24, 8 } },
 		{ { 8, 8 }, { 24, 8 }, { 8, 8 }, { 24, 24 } },
 		{ { 8, 8 }, { 12, 12 }, { 24, 24 }, { 16, 16 } } };
-	for (const bool aa : { false, true })
-		for (const bool paint : { false, true })
-		{
-			for (const auto& points : emptyContours)
+	for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+		for (const bool aa : { false, true })
+			for (const bool paint : { false, true })
 			{
-				Image image{ 32, 32, background }, original = image;
-				Draw(points, image, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint);
-				CHECK((image == original));
-			}
-			for (const auto& points : Contours)
-			{
-				for (const Vec2 widths : { Vec2{ 0, 0 }, Vec2{ -1, 4 }, Vec2{ 4, -1 } })
+				for (const auto& points : emptyContours)
 				{
 					Image image{ 32, 32, background }, original = image;
-					Draw(points, image, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, paint);
+					Draw(points, image, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint, style);
 					CHECK((image == original));
 				}
-				Image empty;
-				Draw(points, empty, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint);
-				CHECK(empty.isEmpty());
+				for (const auto& points : Contours)
+				{
+					for (const Vec2 widths : { Vec2{ 0, 0 }, Vec2{ -1, 4 }, Vec2{ 4, -1 } })
+					{
+						Image image{ 32, 32, background }, original = image;
+						Draw(points, image, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, paint, style);
+						CHECK((image == original));
+					}
+					Image empty;
+					Draw(points, empty, 4, 8, Palette::White, EnableAntialiasing{ aa }, paint, style);
+					CHECK(empty.isEmpty());
+				}
 			}
-		}
 }
 
 TEST_CASE("ImagePolygonFrame.CollinearSpurs")
 {
 	const Triangle triangle{ 4.25, 4.75, 16.25, 4.75, 12.25, 28.75 };
 	const Array<Vec2> contour{ { 4.25, 4.75 }, { 28.25, 4.75 }, { 16.25, 4.75 }, { 12.25, 28.75 } };
-	for (const bool aa : { false, true })
-		for (const Vec2 widths : { Vec2{ 0, 4.25 }, Vec2{ 4.25, 0 }, Vec2{ 2.25, 3.25 } })
-			for (size_t rotation = 0; rotation < 4; ++rotation)
-			{
-				Array<Vec2> points;
-				for (size_t i = 0; i < 4; ++i) points.push_back(contour[(i + rotation) % 4]);
-				Image expected{ 32, 32, Color{ 0, 0 } }, actual = expected, reversed = expected;
-				triangle.overwriteFrame(expected, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
-				Draw(points, actual, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
-				Draw(points.reversed(), reversed, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
-				CHECK((actual == expected));
-				CHECK((reversed == expected));
-			}
+	for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+		for (const bool aa : { false, true })
+			for (const Vec2 widths : { Vec2{ 0, 4.25 }, Vec2{ 4.25, 0 }, Vec2{ 2.25, 3.25 } })
+				for (size_t rotation = 0; rotation < 4; ++rotation)
+				{
+					Array<Vec2> points;
+					for (size_t i = 0; i < 4; ++i) points.push_back(contour[(i + rotation) % 4]);
+					Image expected{ 32, 32, Color{ 0, 0 } }, actual = expected, reversed = expected;
+					triangle.overwriteFrame(expected, style, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa });
+					Draw(points, actual, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, false, style);
+					Draw(points.reversed(), reversed, widths.x, widths.y, Palette::White, EnableAntialiasing{ aa }, false, style);
+					CHECK((actual == expected));
+					CHECK((reversed == expected));
+				}
 }
 
 TEST_CASE("ImagePolygonFrame.DestinationAlpha")
 {
 	const Triangle triangle{ Contours[0][0], Contours[0][1], Contours[0][2] };
 	const Quad quad{ Contours[4][0], Contours[4][1], Contours[4][2], Contours[4][3] };
-	for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
-		for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
-		{
-			Image expected{ 32, 32, Color{ 30, 90, 150 } }, actual = expected;
-			const Color ink{ 220, 60, 130, 113 };
-			ImageDraw::TriangleFrame(expected, triangle, 3, 6, ink, mode, aa);
-			ImageDraw::TriangleFrame(actual, triangle, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-			CHECK((actual == expected));
-			expected.fill(Color{ 30, 90, 150 }); actual = expected;
-			ImageDraw::QuadFrame(expected, quad, 3, 6, ink, mode, aa);
-			ImageDraw::QuadFrame(actual, quad, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
-			CHECK((actual == expected));
-		}
+	for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+		for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
+			for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			{
+				Image expected{ 32, 32, Color{ 30, 90, 150 } }, actual = expected;
+				const Color ink{ 220, 60, 130, 113 };
+				ImageDraw::TriangleFrame(expected, triangle, style, 3, 6, ink, mode, aa);
+				ImageDraw::TriangleFrame(actual, triangle, style, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				CHECK((actual == expected));
+				expected.fill(Color{ 30, 90, 150 }); actual = expected;
+				ImageDraw::QuadFrame(expected, quad, style, 3, 6, ink, mode, aa);
+				ImageDraw::QuadFrame(actual, quad, style, 3, 6, ink, mode, aa, ImageDraw::DstAlpha::AssumeOpaque);
+				CHECK((actual == expected));
+			}
 }
 
 TEST_CASE("ImagePolygonFrame.Benchmark", "[.benchmark]")
@@ -248,19 +251,21 @@ TEST_CASE("ImagePolygonFrame.Benchmark", "[.benchmark]")
 					Image image{ size, size, Color{ 30, 90, 150, 97 } };
 					const auto measure = [&](const auto& shape)
 					{
-						for (const int32 mode : { 0, 1, 2, 3 })
-						{
-							const std::string label = "size=" + std::to_string(size) + "/shape=" + std::to_string(index)
-								+ "/width=" + std::to_string(width) + "/aa=" + std::to_string(aa) + "/mode=" + std::to_string(mode);
-							bench.run(label, [&]
+						for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+							for (const int32 mode : { 0, 1, 2, 3 })
 							{
-								const Color ink{ 220, 60, 130, 113 };
-								if (mode == 0) shape.paintFrame(image, width, ink, EnableAntialiasing{ aa });
-								else shape.paintFrame(image, mode == 2 ? width : (mode == 3 ? 0.0 : width * 0.5),
-									mode == 3 ? width : (mode == 2 ? 0.0 : width * 0.5), ink, EnableAntialiasing{ aa });
-								ankerl::nanobench::doNotOptimizeAway(image.data());
-							});
-						}
+								const std::string label = "size=" + std::to_string(size) + "/shape=" + std::to_string(index)
+									+ "/width=" + std::to_string(width) + "/aa=" + std::to_string(aa) + "/mode=" + std::to_string(mode)
+									+ (style == JoinStyle::Bevel ? "/Bevel" : style == JoinStyle::Round ? "/Round" : "/Miter");
+								bench.run(label, [&]
+								{
+									const Color ink{ 220, 60, 130, 113 };
+									if (mode == 0) shape.paintFrame(image, style, width, ink, EnableAntialiasing{ aa });
+									else shape.paintFrame(image, style, mode == 2 ? width : (mode == 3 ? 0.0 : width * 0.5),
+										mode == 3 ? width : (mode == 2 ? 0.0 : width * 0.5), ink, EnableAntialiasing{ aa });
+									ankerl::nanobench::doNotOptimizeAway(image.data());
+								});
+							}
 					};
 					if (p.size() == 3) measure(Triangle{ p[0], p[1], p[2] });
 					else measure(Quad{ p[0], p[1], p[2], p[3] });

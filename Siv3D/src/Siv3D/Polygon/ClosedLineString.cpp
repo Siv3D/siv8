@@ -15,6 +15,7 @@
 # include <Siv3D/LineCap.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
+# include "../Geometry2D/PolygonGeometry.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -52,7 +53,7 @@ namespace s3d
 {
 	namespace
 	{
-		class JoinDefaultSymmetric
+		class JoinBevel
 		{
 		public:
 
@@ -195,7 +196,7 @@ namespace s3d
 				boost::geometry::buffer(stroke, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
-					JoinDefaultSymmetric{},
+					JoinBevel{},
 					boost::geometry::strategy::buffer::end_flat{},
 					boost::geometry::strategy::buffer::point_square{});
 			}
@@ -229,6 +230,90 @@ namespace s3d
 
 	namespace
 	{
+		// Each side is clipped against the original filled region before union.
+		// This also handles a disappearing hole and the two lobes of a crossed quad.
+		[[nodiscard]]
+		CwOpenMultiPolygon MakePolygonFrame(const std::span<const Vec2> input, const JoinStyle joinStyle,
+			const double innerThickness, const double outerThickness, const float scale = 1.0f)
+		{
+			if ((innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))) return {};
+			Vec2 points[6];
+			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
+			if (count == 0) return {};
+			const auto interior = detail::CorrectPolygonRings(std::span<const Vec2>{points, count});
+			if (interior.empty()) return {};
+			points[count] = points[0]; points[count + 1] = points[1];
+			const std::span<const Vec2> stroke{points, count + 2};
+			if (innerThickness == outerThickness) return MakeBuffer(stroke, joinStyle, innerThickness * 2, scale);
+			CwOpenMultiPolygon inside, outside, result;
+			if (0.0 < innerThickness)
+			{
+				const auto band = MakeBuffer(stroke, joinStyle, innerThickness * 2, scale);
+				boost::geometry::intersection(band, interior, inside);
+			}
+			if (0.0 < outerThickness)
+			{
+				const auto band = MakeBuffer(stroke, joinStyle, outerThickness * 2, scale);
+				boost::geometry::difference(band, interior, outside);
+			}
+			if (inside.empty()) result = std::move(outside);
+			else if (outside.empty()) result = std::move(inside);
+			else boost::geometry::union_(inside, outside, result);
+			for (auto& part : result)
+			{
+				RemoveCollinearStrokePoints(part.outer());
+				for (auto& hole : part.inners()) RemoveCollinearStrokePoints(hole);
+			}
+			return result;
+		}
+
+		template <class Fill>
+		void DrawPolygonFallback(const std::span<const Vec2> points, const JoinStyle joinStyle,
+			const double innerThickness, const double outerThickness, const Fill& fill)
+		{
+			const float scale = ((joinStyle == JoinStyle::Round) ? SIV3D_ENGINE(Renderer2D)->getRasterScaling() : 1.0f);
+			for (const auto& part : MakePolygonFrame(points, joinStyle, innerThickness, outerThickness, scale))
+			{
+				DrawTriangles(part.outer(), part.inners(), fill);
+			}
+		}
+
+		template <class Fill, class RendererFill>
+		void DrawPolygon(const std::span<const Vec2> points, const JoinStyle joinStyle,
+			const double innerThickness, const double outerThickness, const Fill& fill, const RendererFill& rendererFill)
+		{
+			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points, joinStyle, innerThickness, outerThickness, rendererFill)) return;
+			DrawPolygonFallback(points, joinStyle, innerThickness, outerThickness, fill);
+		}
+	}
+
+	void DrawSmallPolygonFrameFallback(const std::span<const Vec2> points, const JoinStyle joinStyle,
+		const double innerThickness, const double outerThickness, const ColorF& color)
+	{
+		DrawPolygonFallback(points, joinStyle, innerThickness, outerThickness, color);
+	}
+
+	void DrawSmallPolygonFrameFallback(const std::span<const Vec2> points, const JoinStyle joinStyle,
+		const double innerThickness, const double outerThickness, const PatternParameters& pattern)
+	{
+		DrawPolygonFallback(points, joinStyle, innerThickness, outerThickness, pattern);
+	}
+
+	void DrawSmallPolygonFrame(const std::span<const Vec2> points, const JoinStyle joinStyle,
+		const double innerThickness, const double outerThickness, const ColorF& color)
+	{
+		DrawPolygon(points, joinStyle, innerThickness, outerThickness, color, color.toFloat4());
+	}
+
+	void DrawSmallPolygonFrame(const std::span<const Vec2> points, const JoinStyle joinStyle,
+		const double innerThickness, const double outerThickness, const PatternParameters& pattern)
+	{
+		DrawPolygon(points, joinStyle, innerThickness, outerThickness, pattern, pattern);
+	}
+
+	namespace
+	{
 		template <class Fill>
 		void DrawFallback(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill)
 		{
@@ -241,7 +326,7 @@ namespace s3d
 		template <class Fill, class RendererFill>
 		void DrawClosed(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill, const RendererFill& rendererFill)
 		{
-			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points.first(points.size() - 2), joinStyle, thickness, rendererFill)) return;
+			if (SIV3D_ENGINE(Renderer2D)->addClosedLineString(points.first(points.size() - 2), joinStyle, thickness * 0.5, thickness * 0.5, rendererFill)) return;
 			DrawFallback(points, joinStyle, thickness, fill);
 		}
 	}

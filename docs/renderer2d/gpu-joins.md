@@ -1,14 +1,16 @@
 # Triangle and Quad GPU joins
 
-`Triangle::drawFrame(thickness, fill, JoinStyle)` and the corresponding Quad
-operation default to Bevel and use a direct mesh for strictly convex rings whose inset edges all
-remain forward-facing. Other topology uses polygon buffer and
-Earcut path. The inner/outer-thickness overloads, Image painting, polygon buffer
-APIs, and ordinary LineString/Bezier/Spline drawing are separate operations.
+`Triangle::drawFrame(thickness, fill, JoinStyle)` and
+`drawFrame(innerThickness, outerThickness, fill, JoinStyle)`, with corresponding
+Quad operations, default to Bevel. They use a direct mesh for strictly convex
+rings whose inset edges all remain forward-facing. Other topology uses polygon
+buffer and Earcut. Image painting shares the geometric meaning and has its own
+coverage calculation. Polygon buffer APIs and ordinary LineString/Bezier/Spline
+drawing are separate operations.
 
 The public [JoinStyle contract](../../Siv3D/include/Siv3D/JoinStyle.hpp) owns the
 meaning of the styles. Omitting the style selects Bevel in both GPU and Image
-centered frames. Bevel preserves the historical 60-degree clipped-miter
+frames. Bevel preserves the historical 60-degree clipped-miter
 shape, including the radius-distance clipping plane. Miter retains unlimited
 extension. Both input windings are supported. Round uses the shared Renderer2D
 circle-pie quality calculation with raster scale, radius, and corner angle in
@@ -21,14 +23,17 @@ boundary pixels or monotonic pixel coverage at every quality threshold.
 
 [ClosedLineString.cpp](../../Siv3D/src/Siv3D/Polygon/ClosedLineString.cpp) selects
 the direct mesh or fallback for the requested style. Triangle and Quad
-supply a stack array, including the two repeated points required by the fallback
-view. The direct builder receives only the distinct ring vertices.
+supply a stack array. The centered stroke buffer view includes the two repeated
+points needed to join its closing vertex. The direct builder receives only the
+distinct ring vertices and separate inner/outer widths; centered entry points
+supply half the total width to each side.
 
 The shared
 [Vertex2DBuilder](../../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_Rounded.cpp)
 performs these steps:
 
-1. Require a positive width and a strictly convex three- or four-corner ring.
+1. Require nonnegative widths with a positive sum and a strictly convex
+   three- or four-corner ring.
    Duplicate edges, collinear corners, concavity, and self-intersection reject
    the direct path.
 2. Intersect adjacent offset lines in double precision. Require each inset
@@ -75,6 +80,12 @@ path. The exact coordinates are in the automated test.
 | Equilateral triangle | 115.47 |
 | Rectangle, trapezoid, parallelogram above | 120 |
 | Rhombus above | 102.90 |
+
+For separate widths, inset collapse depends on the **inner** width: half the
+centered width in the table. A large outer width does not collapse the hole.
+The asymmetric regression combines inner/outer widths 0/20, 20/0, 4/16, 16/4,
+and 40/200 with the same rotations and windings and all three styles, without
+fallback. Outer-only frames have no inset collapse.
 
 Tests probe just below and above these analytic limits. These are properties of
 the specified shapes, not a statistical fallback rate for applications. A much
@@ -141,19 +152,36 @@ owns the interactive program and expected observations. The
 [CPU benchmark](../development/renderer2d-join-benchmark.md) owns measurement
 conditions and performance results.
 
-## Image integration and further work
+## Inner/outer frames and Image integration
 
-[Image centered frames](../geometry2d/image-writing.md#triangle-and-quad-centered-frame-joins)
-share the JoinStyle geometry while keeping sample coverage separate from GPU
-mesh generation. Both default to Bevel. The Image Bevel/Miter path unions
-edge and corner samples before compositing, including for concave/crossed frames
-and collapsed holes. Nonpositive widths, duplicate points, and collinear corners
-continue through the GPU fallback, while Image owns its documented normalization
-and degenerate-input behavior. These are not shared preprocessing rules.
+[Image inner/outer frames](../geometry2d/image-writing.md#triangle-and-quad-innerouter-frames)
+share the default Bevel and the original even-odd interior. Each width selects
+its side of a joined stroke measured from the original contour. A zero width
+omits that side; negative widths, both zero, or no filled region draw nothing.
+Adjacent duplicates and collinear spurs are normalized consistently.
+
+The direct mesh places inset vertices using the inner width and outer corners
+using the outer width. The former `stretched()` plus ordinary strip construction
+could reverse an inset and draw outside the original region; the regression
+uses a 160-square with inner width 200 and outer width zero, which must fill only
+the square with one translucent application.
+
+Fallback obtains the original region through the existing polygon ring
+correction helper. It intersects the inner joined stroke with that region,
+subtracts the region from the outer joined stroke, and unions the pieces before
+triangulation. Every resulting Polygon is drawn, including disconnected lobes
+of an inward-only crossed Quad. Equal positive widths reuse the centered buffer
+once the filled contour has been normalized. This path deliberately owns the
+extra topology work; ordinary convex frames do not allocate temporary storage.
+
+The centered frame's degenerate-line behavior remains separate from the
+filled-region contract of the inner/outer overload. Image and GPU keep their
+own AA and Round tessellation. GPU/Image comparisons require matching interiors
+away from the boundary, not identical edge coverage. Direct/fallback GPU
+comparisons and half-transparent maximum-color checks remain stricter.
 
 Do not generalize the direct path based on convexity alone or handle thick and
 concave rings by overlapping rectangles/fans. They need topology resolution.
-The current fallback remains useful; replacement needs evidence that these
-cases are frequent enough to justify it. A public LineString JoinStyle API is
-a separate design stage. Pending platform validation and broader workload measurements
-are tracked in [TODO.md](../../TODO.md).
+Replacement of the fallback needs evidence that these cases are frequent enough
+to justify it. Public LineString JoinStyle is a separate design stage. Pending
+platform validation and broader workload measurements are tracked in [TODO.md](../../TODO.md).

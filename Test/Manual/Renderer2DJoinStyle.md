@@ -12,6 +12,9 @@ Do not replace the repository test runner's `Main.cpp`.
    triangle, and a triangle whose inner hole disappears at the selected width.
 2. Hold Space to reverse vertex order. All styles should retain their shape.
    Use Up/Down to change width and Left/Right to change zoom (about each cell).
+   Press F to cycle centered / inward-only / outward-only / inner:outer 1:3.
+   Width is the total of the two sides. Inward-only frames stay inside the original
+   contour and fill it when the hole disappears; outward-only frames stay outside.
 3. Press P to switch between a translucent solid and a translucent pattern.
    There should be no dark/bright seams or doubled alpha where edges meet corners.
    The pattern should continue through each corner without a coordinate reset.
@@ -24,7 +27,7 @@ Do not replace the repository test runner's `Main.cpp`.
    future change to the join contract.
 
 6. Press T to cycle from the gallery to a square inset-collapse check (width 21)
-   and a short-edge quad check (width 12.360679775), then back. In these modes,
+   and a short-edge quad check (width 12.360679775), then back. Select centered mode with F for these transition widths. In these modes,
    Up/Down changes width by 0.001, with initial zoom 4x. Cross each boundary in
    both directions. Outer Round corners should retain the same subdivision
    quality when the direct path switches to fallback. The usual subdivision
@@ -54,9 +57,10 @@ void Main()
     };
     double width = 12, zoom = 1;
     bool patterned = false;
-    int transition = 0;
+    int transition = 0, frameMode = 0;
     while (System::Update())
     {
+        if (KeyF.down()) frameMode = (frameMode + 1) % 4;
         if (KeyT.down())
         {
             transition = (transition + 1) % 3;
@@ -69,16 +73,25 @@ void Main()
         if (KeyRight.down()) zoom = Min(zoom * 2, 4.0);
         if (KeyLeft.down()) zoom = Max(zoom * 0.5, 0.5);
         if (KeyP.down()) patterned = !patterned;
-        font(U"Width: {:.6f}  Zoom: {}  Space: reverse  P: pattern  T: transition"_fmt(width, zoom)).draw(16, 8);
+        font(U"Width: {:.6f}  Zoom: {}  Space: reverse  P: pattern  T: transition  F: mode {}"_fmt(width, zoom, frameMode)).draw(16, 8);
         const auto draw = [&](const auto& shape, const JoinStyle style)
         {
+            const auto apply = [&](const auto& fill)
+            {
+                if (frameMode == 0) shape.drawFrame(width, fill, style);
+                else
+                {
+                    const double inner = (frameMode == 1 ? width : frameMode == 2 ? 0 : width * 0.25);
+                    shape.drawFrame(inner, width - inner, fill, style);
+                }
+            };
             if (patterned)
             {
-                shape.drawFrame(width, Pattern::PolkaDot{
+                apply(Pattern::PolkaDot{
                     .primary = ColorF{ 0.3, 0.8, 1.0, 0.5 },
-                    .background = ColorF{ 1.0, 0.3, 0.2, 0.5 } }, style);
+                    .background = ColorF{ 1.0, 0.3, 0.2, 0.5 } });
             }
-            else shape.drawFrame(width, ColorF{ 0.3, 0.8, 1.0, 0.5 }, style);
+            else apply(ColorF{ 0.3, 0.8, 1.0, 0.5 });
         };
         if (transition)
         {

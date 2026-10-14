@@ -33,9 +33,10 @@ acceptance criterion.
    and all-coincident paths. Native GPU Spline drawing retains Square ends;
    **J** / **K** do not affect that row.
    On the polygon-frame page, **F** selects balanced / inward / outward widths,
-   **T** cycles total width through 0.5 / 8 / 80 pixels, and **B** reverses winding.
+   **T** cycles total width through 0.5 / 8 / 80 pixels, **B** reverses winding,
+   and **J** selects Bevel / Round / Miter.
    Columns show Triangle, a clipped convex Quad, concave Quad, crossed Quad, and
-   a collinear Quad. The degenerate GPU column is omitted.
+   a collinear Quad; the last column must remain empty for both rasterizers.
    On the centered-join page, **J** cycles Bevel / Round / Miter, **T**
    changes width, and **B** reverses winding. The first column is an acute Triangle;
    the remaining columns reuse the Quads from the polygon-frame page.
@@ -101,11 +102,10 @@ acceptance criterion.
   cap; GPU Round arrows draw a disk at that point.
 - On the polygon-frame page, inward-only bands remain inside the original
   contour except for AA at the boundary; outward-only bands remain outside.
-  Rounded outward corners and crossed lobes must not darken at overlaps. Wide
+  The selected corners and crossed lobes must not darken at overlaps. Wide
   inward bands consume the interior without flipping it or creating new islands.
-  **B** preserves the CPU result. The collinear CPU contour draws nothing.
-  GPU offset frames can differ for reversed, concave, crossed, or collapsed
-  geometry; this page is not a pixel-parity check.
+  **B** preserves both filled regions. The collinear contour draws nothing.
+  CPU AA and GPU boundary sampling can differ; this page is not a pixel-parity check.
 - Paint raises background alpha. Overwrite replaces alpha in fully covered
   pixels. Both preserve pixels outside the shape. The grayscale views distinguish
   these effects from ordinary display blending.
@@ -234,8 +234,8 @@ void Main()
 			const auto [inner, outer] = frameWidths();
 			const auto draw = [&](const auto& shape)
 			{
-				if (paint) shape.paintFrame(image, inner, outer, ink, antialiasing);
-				else shape.overwriteFrame(image, inner, outer, ink, antialiasing);
+				if (paint) shape.paintFrame(image, joins[joinIndex], inner, outer, ink, antialiasing);
+				else shape.overwriteFrame(image, joins[joinIndex], inner, outer, ink, antialiasing);
 			};
 			if (kind == 0) draw(frameTriangle());
 			else draw(frameQuad(kind));
@@ -356,7 +356,7 @@ void Main()
 		if (KeyS.down()) { page = (page + 1) % 6; dirty = true; }
 		if (KeyJ.down())
 		{
-			if (page == 5) joinIndex = (joinIndex + 1) % joins.size();
+			if (page >= 4) joinIndex = (joinIndex + 1) % joins.size();
 			else startCapIndex = (startCapIndex + 1) % arcCaps.size();
 			dirty = true;
 		}
@@ -384,7 +384,7 @@ void Main()
 			dirty = false;
 		}
 		if (page == 5) font(U"S: centered joins   A: AA = {}   J: join = {}   B: reversed = {}"_fmt(aa, joins[joinIndex], curveLimited)).draw(20, 12);
-		else if (page == 4) font(U"S: polygon frames   A: AA = {}   F: inner / outer = {}   B: reversed = {}"_fmt(aa, frameWidths(), curveLimited)).draw(20, 12);
+		else if (page == 4) font(U"S: polygon frames   A: AA = {}   F: widths = {}   J: {}   B: reversed = {}"_fmt(aa, frameWidths(), joins[joinIndex], curveLimited)).draw(20, 12);
 		else if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
 		else if (page == 3) font(U"S: splines   A: AA = {}   Q: target = {}px   B: per-curve budget = {} (GPU caps: Square)"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 1 : 256)).draw(20, 12);
 		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
@@ -407,13 +407,13 @@ void Main()
 					const ScopedScissorRect2D clip{ static_cast<int32>(pos.x), static_cast<int32>(pos.y), 192, 128 };
 					const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
 					if (kind == 0) frameTriangle().movedBy(pos).drawFrame(width, ink, joins[joinIndex]);
-					else if (kind < 4) frameQuad(kind).movedBy(pos).drawFrame(width, ink, joins[joinIndex]);
+					else frameQuad(kind).movedBy(pos).drawFrame(width, ink, joins[joinIndex]);
 				}
 				else if (page == 4)
 				{
 					const auto [inner, outer] = frameWidths();
-					if (kind == 0) frameTriangle().movedBy(pos).drawFrame(inner, outer, ink);
-					else if (kind < 4) frameQuad(kind).movedBy(pos).drawFrame(inner, outer, ink);
+					if (kind == 0) frameTriangle().movedBy(pos).drawFrame(inner, outer, ink, joins[joinIndex]);
+					else frameQuad(kind).movedBy(pos).drawFrame(inner, outer, ink, joins[joinIndex]);
 				}
 				else if (page == 3)
 				{

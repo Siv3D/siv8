@@ -12,6 +12,39 @@
 
 namespace s3d::detail
 {
+	// Triangle / Quad filled contours: discard duplicate vertices and collinear
+	// spurs before measuring a frame from the original even-odd interior.
+	// input has at most four vertices; output has at least input.size() entries.
+	[[nodiscard]]
+	inline size_t NormalizeSmallPolygonRing(const std::span<const Vec2> input, Vec2* output)
+	{
+		size_t count = 0;
+		for (const Vec2 p : input)
+		{
+			if ((count == 0) || (output[count - 1] != p)) output[count++] = p;
+		}
+		if ((1 < count) && (output[0] == output[count - 1])) --count;
+		if (count < 3) return 0;
+		if (count == 4)
+		{
+			if ((output[0] == output[2]) || (output[1] == output[3])) return 0;
+			for (size_t i = 0; i < count; ++i)
+			{
+				if ((output[i] - output[(i + 3) % 4]).cross(output[(i + 1) % 4] - output[i]) == 0.0)
+				{
+					for (size_t j = i; (j + 1) < count; ++j) output[j] = output[j + 1];
+					--count;
+					break;
+				}
+			}
+		}
+		for (size_t i = 2; i < count; ++i)
+		{
+			if ((output[1] - output[0]).cross(output[i] - output[0]) != 0.0) return count;
+		}
+		return 0;
+	}
+
 	struct PolygonRingsView
 	{
 		std::span<const Vec2> outer;

@@ -478,6 +478,28 @@ namespace s3d
 			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief 三角形の内側と外側の太さを指定して、枠を描画します。
+		/// @param image 描画先画像
+		/// @param triangle 基準となる三角形
+		/// @param joinStyle 角の結合方法
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see Triangle::paintFrame(Image&, JoinStyle, double, double, const Color&, EnableAntialiasing) const
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			JoinStyle joinStyle,
+			double innerThickness,
+			double outerThickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 四角形を描画します。
 		/// @param image 描画先画像
 		/// @param quad 描画する四角形
@@ -527,6 +549,28 @@ namespace s3d
 		void QuadFrame(
 			Image& image,
 			const Quad& quad,
+			double innerThickness,
+			double outerThickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief 四角形の内側と外側の太さを指定して、枠を描画します。
+		/// @param image 描画先画像
+		/// @param quad 基準となる四角形
+		/// @param joinStyle 角の結合方法
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @see Quad::paintFrame(Image&, JoinStyle, double, double, const Color&, EnableAntialiasing) const
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			JoinStyle joinStyle,
 			double innerThickness,
 			double outerThickness,
 			Color color,

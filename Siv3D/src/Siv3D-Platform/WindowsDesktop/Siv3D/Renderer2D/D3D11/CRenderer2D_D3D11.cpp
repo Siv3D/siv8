@@ -1304,9 +1304,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CRenderer2D_D3D11::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Float4& color)
+	bool CRenderer2D_D3D11::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Float4& color)
 	{
-		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, thickness, color, m_commandManager.getCurrentRasterScaling());
+		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, innerThickness, outerThickness, color, m_commandManager.getCurrentRasterScaling());
 		if (not result) return false;
 		if (const auto indexCount = *result)
 		{
@@ -1325,9 +1325,9 @@ namespace s3d
 		return true;
 	}
 
-	bool CRenderer2D_D3D11::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	bool CRenderer2D_D3D11::addClosedLineString(const std::span<const Vec2> points, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const PatternParameters& pattern)
 	{
-		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, thickness, pattern.primaryColor, m_commandManager.getCurrentRasterScaling());
+		const auto result = Vertex2DBuilder::BuildClosedLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, innerThickness, outerThickness, pattern.primaryColor, m_commandManager.getCurrentRasterScaling());
 		if (not result) return false;
 		if (const auto indexCount = *result)
 		{

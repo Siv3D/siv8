@@ -116,6 +116,92 @@ int main(int argc, char** argv)
 		std::cout << "scan,cases=" << cases << ",empty=" << empty << ",multi=" << multi << ",invalid=" << invalid << '\n';
 		return invalid ? 1 : 0;
 	}
+	if (argc > 1 && std::string{argv[1]} == "scan-frames")
+	{
+		std::minstd_rand rng{20261016};
+		size_t cases = 0, invalid = 0, multiple = 0;
+		const size_t limit = argc > 2 ? std::stoul(argv[2]) : 500;
+		for (size_t i = 0; i < limit; ++i)
+		{
+			Array<Vec2> points;
+			for (size_t k = 0; k < 3 + (i % 2); ++k) points << Vec2{double(rng() % 241), double(rng() % 241)};
+			if (i % 10 == 0) points[1] = points[0];
+			for (const Vec2 widths : {Vec2{0, 0.25}, Vec2{12, 0}, Vec2{4, 16}, Vec2{160, 8}})
+				for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+				{
+					std::cerr << "frame case " << i << " inner " << widths.x << " outer " << widths.y << " style " << int(style) << '\n';
+					const auto polygon = MakePolygonFrame(points, style, widths.x, widths.y);
+					++cases;
+					multiple += polygon.size() > 1;
+					std::string reason;
+					if (!boost::geometry::is_valid(polygon, reason))
+					{
+						++invalid;
+						std::cout << "invalid,case=" << i << ",inner=" << widths.x << ",outer=" << widths.y << ",style=" << int(style) << ",reason=" << reason << '\n';
+					}
+				}
+		}
+		std::cout << "scan-frames,cases=" << cases << ",multiple=" << multiple << ",invalid=" << invalid << '\n';
+		return invalid ? 1 : 0;
+	}
+	if (argc > 1 && std::string{argv[1]} == "frames")
+	{
+		std::array<Vertex2D, 4096> vertices;
+		std::array<Vertex2D::IndexType, 16384> indices;
+		const auto allocate = [&](uint16 v, uint32 i)
+		{
+			if (v > vertices.size() || i > indices.size()) std::abort();
+			return Vertex2DBufferPointer{vertices.data(), indices.data(), 0};
+		};
+		const Float4 color{1, 0.5f, 0, 0.5f};
+		for (const int n : {3, 4})
+			for (const Vec2 widths : {Vec2{0, 20}, Vec2{20, 0}, Vec2{4, 16}, Vec2{16, 4}})
+			{
+				const Vec2 points[]{{40, 30}, {280, 50}, {260, 240}, {60, 220}};
+				const std::span<const Vec2> input{points, size_t(n)};
+				const std::string id = std::to_string(n) + "/" + std::to_string(int(widths.x)) + "/" + std::to_string(int(widths.y));
+				Measure(id + "/legacy", [&]
+				{
+					Vec2 shifted[4];
+					const double offset = (widths.y - widths.x) * 0.5;
+					if (n == 3)
+					{
+						const auto t = Triangle{points[0], points[1], points[2]}.stretched(offset);
+						shifted[0] = t.p0; shifted[1] = t.p1; shifted[2] = t.p2;
+					}
+					else
+					{
+						const auto q = Quad{points[0], points[1], points[2], points[3]}.stretched(offset);
+						shifted[0] = q.p0; shifted[1] = q.p1; shifted[2] = q.p2; shifted[3] = q.p3;
+					}
+					const auto count = Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat,
+						{shifted, size_t(n)}, none, float(widths.x + widths.y), widths.y == 0, CloseRing::Yes, color, 1);
+					Escape(count); Escape(vertices); Escape(indices);
+				});
+				for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+				{
+					const std::string label = id + (style == JoinStyle::Bevel ? "/Bevel" : style == JoinStyle::Round ? "/Round" : "/Miter");
+					Measure(label + "/direct", [&]
+					{
+						const auto count = Vertex2DBuilder::BuildClosedLineString(allocate, input, style, widths.x, widths.y, color, 1);
+						if (!count) std::abort();
+						Escape(count); Escape(vertices); Escape(indices);
+					});
+					Measure(label + "/fallback", [&]
+					{
+						const auto polygons = MakePolygonFrame(input, style, widths.x, widths.y);
+						for (const auto& polygon : polygons)
+						{
+							const auto triangles = MakeTriangleIndices(std::span<const Vec2>{polygon.outer()}, polygon.inners());
+							const auto positions = MakeVertices(polygon.outer(), polygon.inners());
+							const auto count = Vertex2DBuilder::BuildPolygon(allocate, positions, triangles, color);
+							Escape(count); Escape(vertices); Escape(indices);
+						}
+					});
+				}
+			}
+		return 0;
+	}
 	if (argc > 1)
 	{
 		std::cout << std::setprecision(17);

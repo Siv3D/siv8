@@ -3382,10 +3382,17 @@ namespace s3d
 		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
 			const JoinStyle joinStyle, const double thickness, const Float4& color, const float scale)
 		{
+			return BuildClosedLineString(bufferCreator, points, joinStyle, thickness * 0.5, thickness * 0.5, color, scale);
+		}
+
+		Optional<uint32> BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+			const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Float4& color, const float scale)
+		{
 			// The input is a unique 3/4-point ring. Rejected geometry is handled by the
 			// polygon buffer path, before any renderer storage or commands are reserved.
 			const size_t n = points.size();
-			if (((n != 3) && (n != 4)) || (not (0.0 < thickness))
+			if (((n != 3) && (n != 4)) || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
 				|| ((joinStyle != JoinStyle::Bevel) && (joinStyle != JoinStyle::Miter) && (joinStyle != JoinStyle::Round)))
 			{
 				return none;
@@ -3404,7 +3411,7 @@ namespace s3d
 			std::array<Vec2, 4> directions, normals;
 			std::array<Corner, 4> corners;
 			const double orientation = (((points[1] - points[0]).cross(points[2] - points[1]) > 0.0) ? 1.0 : -1.0);
-			const double radius = (thickness * 0.5);
+			const double radius = outerThickness;
 			for (size_t i = 0; i < n; ++i)
 			{
 				const Vec2 edge = (points[(i + 1) % n] - points[i]);
@@ -3424,11 +3431,12 @@ namespace s3d
 				// and crossing quads. A reversal has no offset-line intersection.
 				if ((not (0.0 < turn)) || (not (0.0 < (1.0 + dot)))) return none;
 				auto& corner = corners[i];
-				corner.miter = ((normals[prev] + normals[i]) * (radius / (1.0 + dot)));
-				corner.inner = (points[i] - corner.miter);
+				const Vec2 bisector = ((normals[prev] + normals[i]) / (1.0 + dot));
+				corner.miter = (bisector * radius);
+				corner.inner = (points[i] - bisector * innerThickness);
 				corner.first = corner.last = (points[i] + corner.miter);
 				// Keep 60-degree corners on the miter side despite rotation roundoff.
-				if ((joinStyle == JoinStyle::Bevel) && (dot < (-0.5 - 1e-12)))
+				if ((0.0 < radius) && (joinStyle == JoinStyle::Bevel) && (dot < (-0.5 - 1e-12)))
 				{
 					// Historical Siv3D bevel: below 60 degrees, clip the miter by a
 					// line at radius along the outward bisector (not a simple bevel).
@@ -3438,7 +3446,7 @@ namespace s3d
 					corner.last = (points[i] + normals[i] * (radius * (1.0 - t)) + corner.miter * t);
 					corner.count = 2;
 				}
-				else if (joinStyle == JoinStyle::Round)
+				else if ((0.0 < radius) && (joinStyle == JoinStyle::Round))
 				{
 					corner.first = (points[i] + normals[prev] * radius);
 					corner.last = (points[i] + normals[i] * radius);
@@ -3466,7 +3474,7 @@ namespace s3d
 				pVertex[i].pos = corners[i].inner;
 				pVertex[corners[i].start].pos = corners[i].first;
 				pVertex[corners[i].start + corners[i].count - 1].pos = corners[i].last;
-				if (joinStyle == JoinStyle::Round)
+				if ((1 < corners[i].count) && (joinStyle == JoinStyle::Round))
 				{
 					const auto& corner = corners[i];
 					const Vec2 normal = normals[(i + n - 1) % n];

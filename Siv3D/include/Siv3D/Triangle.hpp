@@ -1104,10 +1104,22 @@ namespace s3d
 		/// @param outerThickness 輪郭から外側への太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。外側へ張り出す角は丸くなります。
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。角は Bevel 結合になります。
 		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
 		/// @return *this
 		const Triangle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 三角形の内側と外側の太さを指定して、枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param joinStyle 角の結合方法
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
+		/// @return *this
+		const Triangle& paintFrame(Image& dst, JoinStyle joinStyle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1141,10 +1153,22 @@ namespace s3d
 		/// @param outerThickness 輪郭から外側への太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。外側へ張り出す角は丸くなります。
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。角は Bevel 結合になります。
 		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
 		/// @return *this
 		const Triangle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 三角形の内側と外側の太さを指定して、枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param joinStyle 角の結合方法
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
+		/// @return *this
+		const Triangle& overwriteFrame(Image& dst, JoinStyle joinStyle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1193,15 +1217,21 @@ namespace s3d
 		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
 		/// @param color 枠の色
+		/// @param joinStyle 角の結合方法
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
 		/// @return *this
-		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Bevel) const;
 
 		/// @brief 三角形の枠を描きます。
 		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
+		/// @param joinStyle 角の結合方法
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
 		/// @return *this
-		const Triangle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+		const Triangle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Bevel) const;
 
 		////////////////////////////////////////////////////////////////
 		//

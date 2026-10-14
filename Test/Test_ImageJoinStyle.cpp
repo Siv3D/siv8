@@ -94,6 +94,61 @@ namespace
 	}
 }
 
+TEST_CASE("ImageJoinStyle.InnerOuterReferenceAndCompositing")
+{
+	const Color ink{220, 60, 130, 113}, background{30, 90, 150, 97};
+	for (size_t shape = 0; shape < 5; ++shape)
+		for (const JoinStyle style : {JoinStyle::Bevel, JoinStyle::Miter})
+			for (const Vec2 widths : {Vec2{0, 4.25}, Vec2{4.25, 0}, Vec2{0.15, 0.35},
+				Vec2{2.25, 2.25}, Vec2{9.25, 3.25}, Vec2{100, 0}, Vec2{100, 12.25}})
+				for (const bool aa : {false, true})
+					for (const bool paint : {false, true})
+					{
+						CAPTURE(shape, style, widths, aa, paint);
+						const auto& points = Contours[shape];
+						const int samples = aa ? 4 : 1;
+						Image expected{32, 32, background};
+						for (int y = 0; y < 32; ++y)
+							for (int x = 0; x < 32; ++x)
+							{
+								int covered = 0;
+								for (int sy = 0; sy < samples; ++sy)
+									for (int sx = 0; sx < samples; ++sx)
+									{
+										const Vec2 q{x + (sx + 0.5) / samples, y + (sy + 0.5) / samples};
+										bool inside = false;
+										for (size_t i = 0; i < points.size(); ++i)
+										{
+											const Vec2 a = points[i], b = points[(i + 1) % points.size()];
+											if (((a.y > q.y) != (b.y > q.y)) && (q.x < a.x + (q.y - a.y) * (b.x - a.x) / (b.y - a.y))) inside = !inside;
+										}
+										const double radius = inside ? widths.x : widths.y;
+										covered += (radius > 0 && Contains(points, q, radius, style));
+									}
+								expected[y][x] = Composite(ink, background, (covered * 255 + samples * samples / 2) / (samples * samples), paint);
+							}
+						for (const bool reverse : {false, true})
+						{
+							const auto p = reverse ? points.reversed() : points;
+							const auto check = [&](const auto& polygon)
+							{
+								Image actual{32, 32, background}, omitted = actual;
+								if (paint) CHECK(&polygon.paintFrame(actual, style, widths.x, widths.y, ink, EnableAntialiasing{aa}) == &polygon);
+								else CHECK(&polygon.overwriteFrame(actual, style, widths.x, widths.y, ink, EnableAntialiasing{aa}) == &polygon);
+								CHECK(actual == expected);
+								if (style == JoinStyle::Bevel)
+								{
+									if (paint) polygon.paintFrame(omitted, widths.x, widths.y, ink, EnableAntialiasing{aa});
+									else polygon.overwriteFrame(omitted, widths.x, widths.y, ink, EnableAntialiasing{aa});
+									CHECK(omitted == actual);
+								}
+							};
+							if (p.size() == 3) check(Triangle{p[0], p[1], p[2]});
+							else check(Quad{p[0], p[1], p[2], p[3]});
+						}
+					}
+}
+
 TEST_CASE("ImageJoinStyle.ReferenceGeometry")
 {
 	for (size_t i = 0; i < Contours.size(); ++i)

@@ -12,6 +12,9 @@ On macOS with Xcode command-line tools and the repository's Boost dependency:
 ./tools/renderer2d-join-profile/run.sh timing /tmp/siv8-join-timing
 ./tools/renderer2d-join-profile/run.sh allocations /tmp/siv8-join-allocations
 ./tools/renderer2d-join-profile/run.sh debug /tmp/siv8-join-debug
+./tools/renderer2d-join-profile/run.sh frames-timing /tmp/siv8-frame-timing
+./tools/renderer2d-join-profile/run.sh frames-allocations /tmp/siv8-frame-allocations
+./tools/renderer2d-join-profile/run.sh frames-debug /tmp/siv8-frame-debug
 /tmp/siv8-join-timing/join-profile inspect
 /tmp/siv8-join-timing/join-profile scan 500
 ```
@@ -32,6 +35,11 @@ It is a correctness probe, not a benchmark. The `debug` script mode compiles eve
 source with `-O0 -g -DDEBUG=1` and
 `-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG`, then runs `scan 500`.
 This enables libc++'s strict-weak-ordering checks without mixing engine libraries.
+`frames-timing` and `frames-allocations` run the `frames` subcommand for separate
+inner/outer widths; `frames-debug` runs `scan-frames 500`. The latter also validates
+multi-polygon results after clipping/union. Filenames use the selected mode,
+such as `frames-timing.csv`. These cases link the polygon correction helper and
+its hash dependency from production sources as well.
 Remove an output directory when its artifacts are no longer needed.
 
 [profile.cpp](../../tools/renderer2d-join-profile/profile.cpp) measures:
@@ -153,3 +161,38 @@ The large common-case CPU reduction supports keeping this bounded mesh path.
 Extending it to concave/crossing rings or collapsed insets needs workload
 frequency evidence and topology resolution; the present timings do not justify
 removing the fallback or replacing polygon-returning geometric operations.
+
+## Inner/outer widths
+
+The `frames` cases compare the former `stretched((outer-inner)/2)` plus ordinary
+closed strip with Bevel's direct mesh. Inputs are
+`{{40,30},{280,50},{260,240}}` and
+`{{40,30},{280,50},{260,240},{60,220}}`, raster scale 1, on the same Apple M2 /
+Clang configuration described above. Both one-sided and asymmetric frames use
+the original vertices in the new path. Timings include geometry and destination
+writes, and exclude GPU execution. The former strip can differ in corner shape;
+this is a migration cost comparison, not an identical-output benchmark.
+
+| Shape | Inner / outer | Former strip (µs) | Bevel direct (µs) | Forced fallback (µs) |
+| --- | --- | ---: | ---: | ---: |
+| Triangle | 0 / 20 | 0.182 | 0.046 | 19.55 |
+| Triangle | 20 / 0 | 0.054 | 0.035 | 19.36 |
+| Triangle | 4 / 16 | 0.104 | 0.039 | 45.65 |
+| Triangle | 16 / 4 | 0.110 | 0.039 | 46.03 |
+| Quad | 0 / 20 | 0.065 | 0.041 | 20.21 |
+| Quad | 20 / 0 | 0.056 | 0.041 | 20.00 |
+| Quad | 4 / 16 | 0.066 | 0.041 | 49.17 |
+| Quad | 16 / 4 | 0.066 | 0.041 | 48.72 |
+
+All measured direct cases, including Round and Miter, have zero temporary heap
+allocations. Bevel fallback requests 228–499 allocations / 63,598–142,384 bytes;
+it includes filled-region correction, stroke buffer, clipping/union, and
+triangulation. Two unequal nonzero sides need more topology work than one side.
+The measurements force fallback on ordinary convex inputs; they do not imply
+those shapes actually fall back. Common-shape direct eligibility is covered by
+the [geometry tests](../../Test/Test_Renderer2DJoinStyle.cpp).
+
+Round direct timings are 0.170–0.247 µs when the outer radius is positive, and
+0.034–0.041 µs for inward-only convex frames, whose exterior follows the original
+straight edges. Miter direct timings are 0.035–0.041 µs. Optimizing fallback
+further should depend on real workload frequency rather than these forced ratios.

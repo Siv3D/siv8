@@ -49,7 +49,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
-| Triangle, Quad | Fill, centered frames with JoinStyle, inner/outer frames | Vertex colors, patterns; Image offset frames use boundary distance |
+| Triangle, Quad | Fill, centered and inner/outer frames with JoinStyle | Vertex colors, patterns |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
@@ -98,7 +98,7 @@ Quads and wide strokes whose interior hole disappears. Adjacent duplicate points
 and a repeated closing point are omitted; fewer than three remaining points draw
 nothing. Collinear continuations and reversals add no Bevel/Miter corner, leaving
 flat extremities for a collapsed line. Round retains its disks at those vertices.
-The inner/outer-width overloads below use their own distance-band contract.
+The inner/outer-width overloads below clip each side against the original filled region.
 
 Bevel and Miter use pixel centers without AA, or a 4x4 sample grid with AA.
 The small convex pieces are intersected with each sample row and their intervals
@@ -114,49 +114,52 @@ outside those bounds and stop edge traversal after the two convex intersections.
 No-AA needs no temporary heap storage; AA allocates one byte row spanning the
 clipped bounds and only converts and clears touched intervals. Offset-line and
 polygon geometry stays in double precision. GPU meshes and Boost buffer are not
-involved. Extending the same public choice to arbitrary LineStrings or one-sided
-frames is separate API work, tracked in [TODO](../../TODO.md).
+involved. Extending the same public choice to arbitrary LineStrings is separate API work,
+tracked in [TODO](../../TODO.md).
 
 ## Triangle and Quad inner/outer frames
 
-Specify the two widths after the destination:
+Specify the two widths after the destination, optionally preceded by JoinStyle:
 
 ```cpp
-triangle.paintFrame(image, 6.0, 0.0, color); // Inward only.
-quad.overwriteFrame(image, 2.0, 8.0, color);
+triangle.paintFrame(image, 6.0, 0.0, color); // Inward only, Bevel.
+quad.overwriteFrame(image, JoinStyle::Round, 2.0, 8.0, color);
+quad.drawFrame(2.0, 8.0, ColorF{color}, JoinStyle::Round);
 ```
 
-The new overloads measure distance to the original contour and use the same
-even-odd interior as fills. They handle either winding, concave and crossed Quads,
-and widths that consume the interior. Outward corners are round; concave corners
-can produce rounded inward boundaries. Each pixel is composited once, including
-crossings and overlapping wide bands. Negative widths, two zero widths, and
-contours with no interior do not draw. Adjacent duplicate vertices and collinear
-backtracking are removed before measuring boundary distance.
+Both Image and GPU default to Bevel. Widths refer to the original contour;
+inside means the even-odd filled region, independently of winding. Concave and
+crossed Quads and widths that consume the entire interior are supported.
+Negative widths, two zero widths, and contours with no interior do not draw.
+Duplicate vertices and collinear backtracking are removed before framing the
+filled contour. The normalization is shared with the GPU fallback.
 
-AA uses the difference between the expanded and contracted distance coverage,
-rounded once after subtraction. This preserves subpixel widths. It is an
-approximation at corners, crossings, and tiny remaining holes. The fill's 4x4 AA
-and the explicit Round centered frame's rectangle/disk AA have different approximations.
-Without AA, pixel-center distances include both band boundaries. At exact edge
-ties this can differ from the fill's half-open spans, even when the inward band
-consumes the entire interior.
-The single-width overload uses Bevel; even with equal inner/outer widths, these
-overloads have different corner geometry and AA. The two-width GPU overloads
-still use stretched geometry and the ordinary line-strip builder; their join and
-collapsed-inset behavior are separate work.
+Geometrically, form a centered joined stroke with radius `innerThickness` and
+keep its part inside the original region. Form another with radius
+`outerThickness` and keep its part outside. Their union is the frame. This rule
+also defines joins at concave corners and crossed contours, without moving the
+original vertices. Each pixel is composited once. Equal positive widths give the
+centered stroke's region for a contour that needs no normalization; AA need not
+match across rasterizers or between the two Round entry points.
 
-The rasterizer caches edge geometry and row intervals in fixed-size storage and
-reuses one byte coverage row. Conservative rectangles around the edges bound
-candidate spans; merging those spans skips the empty center and prevents repeated
-compositing. Edge directions are canonicalized so reversing winding uses the same
-distance arithmetic. The implementation is shared by Triangle and Quad without
-changing the common centered-stroke path.
+Image Bevel/Miter reuse the centered frame's edge/corner construction and 4x4
+sample scan converter. Sample spans are clipped against the original contour's
+row intersections, then merged before writing. Both-width geometry fits fixed
+stack arrays; no-AA uses no temporary heap allocation, and AA uses one byte row.
+Equal widths reuse the centered scan without clipping or duplicate geometry.
 
-GPU inner/outer drawing moves vertices with `stretched()` before drawing a
-stroke. It does not define the CPU path's winding, concavity, or collapse behavior.
-Selectable joins on these one-sided frames are separate work; the centered
-JoinStyle overload does not change their corner construction.
+Explicit Round retains the distance-band rasterizer: signed boundary distance
+is negative inside, and AA subtracts contracted coverage from expanded coverage
+before rounding once. This preserves subpixel band widths, but approximates
+corners, crossings, and small remaining holes. Without AA, pixel-center distance
+includes both band boundaries. Exact edge ties can therefore differ from a
+fill's half-open spans, even when the inward band consumes the whole interior.
+The formerly styleless rounded behavior is available by selecting Round.
+
+The [GPU implementation](../renderer2d/gpu-joins.md) offsets the original convex
+ring directly using the two widths. Unsupported topology uses joined strokes
+clipped against the original region and unions them before triangulation.
+Boundary samples and Round subdivision need not match Image AA.
 
 ## Open stroke caps
 
@@ -450,9 +453,12 @@ independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
 invalid arguments, and one-time compositing at knots, seams, and intersections.
 [Triangle/Quad frame tests](../../Test/Test_ImagePolygonFrame.cpp) cover independent
 boundary distances, winding, one-sided bands, collapsed geometry, compositing,
-and clipping. [Centered join tests](../../Test/Test_ImageJoinStyle.cpp) use an
+and clipping. [JoinStyle tests](../../Test/Test_ImageJoinStyle.cpp) use an
 independent pointwise half-plane oracle, randomized contours, winding/start-point
-invariance, acute and nearly straight corners, compositing, clipping, equality between omitted style and explicit Bevel, and explicit Round compatibility. ImageDraw also compares clipped strokes against crops of larger images, including
+invariance, acute and nearly straight corners, compositing, clipping, and
+inner/outer spans clipped by an independent even-odd test. Both frame forms
+check equality between omitted style and explicit Bevel, and explicit Round
+compatibility. ImageDraw also compares clipped strokes against crops of larger images, including
 dense duplicate points, wide overlapping parts, mixed caps, and closed contours.
 Keep conversion-specific checks in the curve tests and common raster/compositing
 checks in ImageDraw.
@@ -488,11 +494,36 @@ Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
 
-`ImagePolygonFrame.Benchmark` compares the default Bevel centered stroke (mode 0),
-equal inner/outer widths (1), inward-only (2), and outward-only (3). It covers
+`ImagePolygonFrame.Benchmark` measures centered strokes (mode 0), equal inner/outer
+widths (1), inward-only (2), and outward-only (3), for Bevel, Round, and Miter. It covers
 Triangle, convex/concave/crossed Quad, 32/256/1024-pixel images, widths 1/8/32,
 and both AA settings. The different coverage approximations are not interchangeable
 reference images; mode 0 is a performance control.
+
+An inner/outer run on Apple M2, macOS 26.6.2, Apple Clang 21.0.0, Release,
+seven nanobench epochs, used the same reused RGBA destination and source as the
+centered measurement below. Representative AA times are µs per draw:
+
+| Image / shape | Inner / outer | Round distance band | Bevel | Miter |
+| --- | --- | ---: | ---: | ---: |
+| 32 / Triangle | 8 / 0 | 7.35 | 8.19 | 8.23 |
+| 32 / Triangle | 0 / 8 | 10.68 | 11.79 | 12.01 |
+| 256 / Triangle | 4 / 4 | 72.24 | 62.07 | 61.08 |
+| 256 / Triangle | 8 / 0 | 100.28 | 72.04 | 72.79 |
+| 256 / Triangle | 0 / 8 | 107.52 | 78.83 | 80.23 |
+| 256 / convex Quad | 4 / 4 | 91.93 | 68.05 | 66.71 |
+| 256 / convex Quad | 8 / 0 | 120.97 | 79.88 | 79.24 |
+| 256 / convex Quad | 0 / 8 | 137.76 | 86.22 | 86.26 |
+
+This Round column measures the two-width distance band, not the centered
+rectangle/disk rasterizer in the next table. Bevel's equal-width case reuses the
+centered scan; one-sided cases clip each sample row to the original interior.
+Small inward/outward Triangle AA cases can cost about 10–11% more than the old
+Round band, while the shown 256-pixel cases cost less. With AA disabled, the
+32-pixel inward Triangle is 2.26 µs for Bevel versus 5.27 µs for Round, and the
+256-pixel outward convex Quad is 27.77 versus 111.57 µs. Shapes and coverage differ,
+so these are workload costs, not equivalent-output optimization ratios. This
+matrix is the baseline for further AA work, including small one-sided frames.
 
 `ImageJoinStyle.Benchmark` compares the style-less Bevel overload (`omitted`)
 and explicit Bevel, Round, and Miter in the same run. Labels use the style names

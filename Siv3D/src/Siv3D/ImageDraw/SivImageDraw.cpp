@@ -17,6 +17,7 @@
 # include <Siv3D/LineString.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
 # include "../Geometry2D/EllipseGeometry.hpp"
+# include "../Geometry2D/PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -4246,9 +4247,10 @@ namespace s3d
 			}
 		};
 
-		template <bool Antialias>
+		template <bool Antialias, bool Split = false>
 		void DrawJoinedFramePolygons(const ImageView view, const std::span<const StrokeCornerPolygon> polygons,
-			const BoundsD& bounds, const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
+			const BoundsD& bounds, const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha,
+			const std::span<const Vec2> contour = {}, const size_t innerCount = 0)
 		{
 			// Clip in shape coordinates before converting unlimited miter bounds to pixels.
 			const int32 x0 = FloorToInt(Clamp(bounds.minX, 0.0, static_cast<double>(view.width)));
@@ -4262,21 +4264,59 @@ namespace s3d
 			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
 			for (int32 y = y0; y < y1; ++y)
 			{
-				SpanI pixelSpans[32]; // At most eight convex polygons on each of four sample rows.
+				constexpr size_t maxSpans = (Split ? 40 : 8); // 8 inner parts x 2 intervals + 8 outer parts x 3 intervals.
+				SpanI pixelSpans[maxSpans * samples];
 				size_t pixelSpanCount = 0;
 				Color* row = (view.data + static_cast<size_t>(y) * view.stride);
 				for (int32 sy = 0; sy < samples; ++sy)
 				{
 					const double py = (y + (sy + 0.5) / samples);
-					SpanI spans[8];
+					SpanI spans[maxSpans];
 					size_t count = 0;
-					for (const auto& polygon : polygons)
+					int32 crossings[4];
+					size_t crossingCount = 0;
+					if constexpr (Split)
+					{
+						for (size_t i = 0; i < contour.size(); ++i)
+						{
+							Vec2 from = contour[i], to = contour[(i + 1) % contour.size()];
+							if (to.y < from.y) std::swap(from, to);
+							if ((from.y <= py) && (py < to.y))
+							{
+								const double x = from.x + (to.x - from.x) * (py - from.y) / (to.y - from.y);
+								crossings[crossingCount++] = CeilToInt(Clamp(x, double(x0), double(x1)) * samples - 0.5);
+							}
+						}
+						std::sort(crossings, crossings + crossingCount);
+					}
+					for (size_t part = 0; part < polygons.size(); ++part)
 					{
 						double left, right;
-						if (!polygon.spanAt(py, left, right)) continue;
+						if (!polygons[part].spanAt(py, left, right)) continue;
 						const int32 begin = CeilToInt(Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
 						const int32 end = CeilToInt(Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
-						if (begin < end) spans[count++] = { begin, end };
+						if constexpr (Split)
+						{
+							const auto append = [&](const int32 l, const int32 r)
+							{
+								const int32 clippedBegin = Max(begin, l), clippedEnd = Min(end, r);
+								if (clippedBegin < clippedEnd) spans[count++] = {clippedBegin, clippedEnd};
+							};
+							if (part < innerCount)
+							{
+								for (size_t k = 0; k + 1 < crossingCount; k += 2) append(crossings[k], crossings[k + 1]);
+							}
+							else
+							{
+								int32 l = x0 * samples;
+								for (size_t k = 0; k + 1 < crossingCount; k += 2)
+								{
+									append(l, crossings[k]); l = crossings[k + 1];
+								}
+								append(l, x1 * samples);
+							}
+						}
+						else if (begin < end) spans[count++] = { begin, end };
 					}
 					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
 					{
@@ -4302,32 +4342,12 @@ namespace s3d
 			}
 		}
 
-		template <size_t N>
-		void DrawSmallJoinedFrame(Image& image, const Vec2 (&input)[N], const JoinStyle joinStyle,
-			const double thickness, const Color color, const ImagePixel::BlendMode blendMode,
-			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
+		[[nodiscard]]
+		size_t MakeJoinedFramePolygons(const std::span<const Vec2> points, const JoinStyle joinStyle,
+			const double half, StrokeCornerPolygon* polygons, BoundsD& bounds)
 		{
-			static_assert((N == 3) || (N == 4));
-			if (joinStyle == JoinStyle::Round)
-			{
-				ImageDraw::ClosedLineString(image, input, thickness, color, blendMode, enableAntialiasing, dstAlpha);
-				return;
-			}
-			if (image.isEmpty() || !(0.0 < thickness)) return;
-
-			Vec2 points[N];
-			size_t count = 0;
-			for (const Vec2& p : input)
-			{
-				if ((count == 0) || !IsSamePoint(points[count - 1], p)) points[count++] = p;
-			}
-			if ((1 < count) && IsSamePoint(points[0], points[count - 1])) --count;
-			if (count < 3) return;
-
-			StrokeCornerPolygon polygons[N * 2];
+			const size_t count = points.size();
 			size_t polygonCount = 0;
-			BoundsD bounds;
-			const double half = (thickness * 0.5);
 			const auto before = [](const Vec2 a, const Vec2 b) { return (a.y < b.y) || ((a.y == b.y) && (a.x < b.x)); };
 			for (size_t i = 0; i < count; ++i)
 			{
@@ -4368,6 +4388,34 @@ namespace s3d
 					polygons[polygonCount++].set(corner, bounds);
 				}
 			}
+			return polygonCount;
+		}
+
+		template <size_t N>
+		void DrawSmallJoinedFrame(Image& image, const Vec2 (&input)[N], const JoinStyle joinStyle,
+			const double thickness, const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
+		{
+			static_assert((N == 3) || (N == 4));
+			if (joinStyle == JoinStyle::Round)
+			{
+				ImageDraw::ClosedLineString(image, input, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			if (image.isEmpty() || !(0.0 < thickness)) return;
+
+			Vec2 points[N];
+			size_t count = 0;
+			for (const Vec2& p : input)
+			{
+				if ((count == 0) || !IsSamePoint(points[count - 1], p)) points[count++] = p;
+			}
+			if ((1 < count) && IsSamePoint(points[0], points[count - 1])) --count;
+			if (count < 3) return;
+
+			StrokeCornerPolygon polygons[N * 2];
+			BoundsD bounds;
+			const size_t polygonCount = MakeJoinedFramePolygons({points, count}, joinStyle, thickness * 0.5, polygons, bounds);
 			const ImageView view = MakeImageView(image);
 			const std::span<const StrokeCornerPolygon> parts{ polygons, polygonCount };
 			if (enableAntialiasing == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
@@ -4828,6 +4876,49 @@ namespace s3d
 			}
 		}
 
+		template <size_t N>
+		void DrawSmallPolygonFrame(const ImageView view, const Vec2 (&input)[N], double innerThickness,
+			double outerThickness, Color color, ImagePixel::BlendMode blendMode,
+			EnableAntialiasing enableAntialiasing, ImageDraw::DstAlpha dstAlpha);
+
+		template <size_t N>
+		void DrawSmallJoinedPolygonFrame(Image& image, const Vec2 (&input)[N], const JoinStyle joinStyle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing aa, const ImageDraw::DstAlpha dstAlpha)
+		{
+			if (joinStyle == JoinStyle::Round)
+			{
+				DrawSmallPolygonFrame(MakeImageView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
+				return;
+			}
+			if (image.isEmpty() || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((blendMode == ImagePixel::BlendMode::SourceOver) && (color.a == 0))) return;
+			Vec2 points[N];
+			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
+			if (count == 0) return;
+			const std::span<const Vec2> contour{points, count};
+			StrokeCornerPolygon polygons[N * 4];
+			BoundsD bounds;
+			if (innerThickness == outerThickness)
+			{
+				const size_t polygonCount = MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
+				const std::span<const StrokeCornerPolygon> parts{polygons, polygonCount};
+				const ImageView view = MakeImageView(image);
+				if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
+				else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
+				return;
+			}
+			const size_t innerCount = (innerThickness == 0.0) ? 0
+				: MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
+			const size_t outerCount = (outerThickness == 0.0) ? 0
+				: MakeJoinedFramePolygons(contour, joinStyle, outerThickness, polygons + innerCount, bounds);
+			const std::span<const StrokeCornerPolygon> parts{polygons, innerCount + outerCount};
+			const ImageView view = MakeImageView(image);
+			if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
+			else DrawJoinedFramePolygons<false, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
+		}
+
 		// Triangle / Quad offsets use the original even-odd interior. Moving vertices
 		// first cannot preserve concave corners, crossings, or a collapsing inner hole.
 		template <size_t N>
@@ -4850,37 +4941,8 @@ namespace s3d
 			}
 
 			Vec2 points[N];
-			size_t count = 0;
-			for (const Vec2 p : input)
-			{
-				if ((count == 0) || (points[count - 1] != p)) points[count++] = p;
-			}
-			if ((1 < count) && (points[0] == points[count - 1])) --count;
-			if (count < 3) return;
-			if constexpr (N == 4)
-			{
-				if (count == 4)
-				{
-					// Opposite repeated vertices retrace both edges and enclose no region.
-					if ((points[0] == points[2]) || (points[1] == points[3])) return;
-					for (size_t i = 0; i < count; ++i)
-					{
-						if ((points[i] - points[(i + 3) % 4]).cross(points[(i + 1) % 4] - points[i]) == 0.0)
-						{
-							// Remove a straight-through vertex or a retraced collinear spur.
-							for (size_t j = i; (j + 1) < count; ++j) points[j] = points[j + 1];
-							--count;
-							break;
-						}
-					}
-				}
-			}
-			bool hasInterior = false;
-			for (size_t i = 2; i < count; ++i)
-			{
-				hasInterior |= ((points[1] - points[0]).cross(points[i] - points[0]) != 0.0);
-			}
-			if (!hasInterior) return;
+			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
+			if (count == 0) return;
 
 			struct Edge
 			{
@@ -5760,8 +5822,22 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
+			TriangleFrame(image, triangle, JoinStyle::Bevel, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			const JoinStyle joinStyle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
 			const Vec2 points[]{ triangle.p0, triangle.p1, triangle.p2 };
-			DrawSmallPolygonFrame(MakeImageView(image), points, innerThickness, outerThickness,
+			DrawSmallJoinedPolygonFrame(image, points, joinStyle, innerThickness, outerThickness,
 				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
@@ -5822,8 +5898,22 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
+			QuadFrame(image, quad, JoinStyle::Bevel, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			const JoinStyle joinStyle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
 			const Vec2 points[]{ quad.p0, quad.p1, quad.p2, quad.p3 };
-			DrawSmallPolygonFrame(MakeImageView(image), points, innerThickness, outerThickness,
+			DrawSmallJoinedPolygonFrame(image, points, joinStyle, innerThickness, outerThickness,
 				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 

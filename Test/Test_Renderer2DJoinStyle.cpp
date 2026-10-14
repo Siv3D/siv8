@@ -113,6 +113,14 @@ TEST_CASE("Renderer2D.join_style_transparency_and_winding")
 	}
 }
 
+TEST_CASE("Renderer2D.join_style_inner_outer_collapsed_regression")
+{
+	const Quad square{80, 60, 240, 60, 240, 220, 80, 220};
+	const auto expected = CaptureJoin([&] { Rect{80, 60, 160, 160}.draw(ColorF{1, 0.5}); });
+	const auto actual = CaptureJoin([&] { square.drawFrame(200, 0, ColorF{1, 0.5}); });
+	CheckBoundaryPixels(actual, expected);
+}
+
 namespace
 {
 	struct JoinMesh
@@ -123,7 +131,7 @@ namespace
 		uint32 requests = 0;
 	};
 
-	JoinMesh BuildJoin(const Array<Vec2>& points, const double width, const JoinStyle style, const float scale = 1, const bool fail = false)
+	JoinMesh BuildJoin(const Array<Vec2>& points, const Vec2 widths, const JoinStyle style, const float scale = 1, const bool fail = false)
 	{
 		JoinMesh result;
 		const auto allocate = [&](uint16 vertices, uint32 indices)
@@ -134,8 +142,13 @@ namespace
 			result.indices.resize(indices);
 			return Vertex2DBufferPointer{ result.vertices.data(), result.indices.data(), 37 };
 		};
-		result.count = Vertex2DBuilder::BuildClosedLineString(allocate, points, style, width, Float4{1, 0.25f, 0.5f, 0.5f}, scale);
+		result.count = Vertex2DBuilder::BuildClosedLineString(allocate, points, style, widths.x, widths.y, Float4{1, 0.25f, 0.5f, 0.5f}, scale);
 		return result;
+	}
+
+	JoinMesh BuildJoin(const Array<Vec2>& points, const double width, const JoinStyle style, const float scale = 1, const bool fail = false)
+	{
+		return BuildJoin(points, Vec2{width * 0.5, width * 0.5}, style, scale, fail);
 	}
 
 	// Independent convex clipping oracle: positive intersection area means the
@@ -602,4 +615,119 @@ TEST_CASE("Renderer2D.join_style_round_fallback_scaling")
 			});
 			CHECK(direct == scaled);
 		}
+}
+
+TEST_CASE("Renderer2D.join_style_inner_outer_regions")
+{
+	const Array<Array<Vec2>> shapes{
+		{{80, 60}, {240, 80}, {130, 210}},
+		{{80, 140}, {240, 120}, {240, 160}},
+		{{80, 60}, {240, 60}, {240, 220}, {80, 220}},
+		{{80, 60}, {240, 80}, {150, 110}, {100, 210}},
+		{{80, 60}, {240, 210}, {80, 210}, {240, 60}},
+	};
+	const ColorF ink{1, 0.5};
+	const auto reference = CaptureJoin([&] { Rect{0, 0, 32, 32}.draw(ink); });
+	const uint32 single = reference[16][16].r;
+	for (size_t i = 0; i < shapes.size(); ++i)
+		for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+			for (const Vec2 widths : {Vec2{0, 12}, Vec2{12, 0}, Vec2{4, 16}, Vec2{160, 8}})
+			{
+				CAPTURE(i, style, widths);
+				const auto& p = shapes[i];
+				const auto check = [&](const auto& shape, const auto& reverse)
+				{
+					const auto actual = CaptureJoin([&] { shape.drawFrame(widths.x, widths.y, ink, style); });
+					const auto reversed = CaptureJoin([&] { reverse.drawFrame(widths.x, widths.y, ink, style); });
+					const auto fallback = CaptureJoin([&] { DrawSmallPolygonFrameFallback(p, style, widths.x, widths.y, ink); });
+					CheckBoundaryPixels(actual, reversed);
+					CheckBoundaryPixels(actual, fallback);
+					Image expected{actual.size(), Palette::Black};
+					shape.overwriteFrame(expected, style, widths.x, widths.y, Color{single});
+					// CPU distance AA and GPU chord/MSAA coverage differ at corners.
+					// Compare uniform full/empty regions away from the AA boundary.
+					// Pixel-center masks miss subpixel wedges at acute tips and holes.
+					size_t interiorErrors = 0;
+					for (int y = 1; y + 1 < expected.height(); ++y)
+						for (int x = 1; x + 1 < expected.width(); ++x)
+						{
+							bool uniform = (expected[y][x].r == 0 || expected[y][x].r == single);
+							for (int dy = -1; dy <= 1; ++dy)
+								for (int dx = -1; dx <= 1; ++dx) uniform &= (expected[y + dy][x + dx].r == expected[y][x].r);
+							interiorErrors += uniform && (Abs(int(actual[y][x].r) - expected[y][x].r) > 1);
+						}
+					CHECK(interiorErrors == 0);
+					uint32 maximum = 0;
+					for (const Color pixel : actual) maximum = Max(maximum, uint32(pixel.r));
+					CHECK(maximum <= single + 1);
+				};
+				if (p.size() == 3) check(Triangle{p[0], p[1], p[2]}, Triangle{p[2], p[1], p[0]});
+				else check(Quad{p[0], p[1], p[2], p[3]}, Quad{p[3], p[2], p[1], p[0]});
+			}
+}
+
+TEST_CASE("Renderer2D.join_style_inner_outer_common_meshes")
+{
+	const double h = (100 * std::sqrt(3.0));
+	const Array<Array<Vec2>> shapes{
+		{{-100, -h/3}, {100, -h/3}, {0, 2*h/3}},
+		{{-120, -60}, {120, -60}, {120, 60}, {-120, 60}},
+		{{-80, -60}, {80, -60}, {120, 60}, {-120, 60}},
+		{{-120, -60}, {80, -60}, {120, 60}, {-80, 60}},
+		{{0, -60}, {100, 0}, {0, 60}, {-100, 0}},
+	};
+	for (size_t i = 0; i < shapes.size(); ++i)
+		for (int degrees = 0; degrees < 360; degrees += 15)
+			for (const bool reverse : {false, true})
+				for (const Vec2 widths : {Vec2{0, 20}, Vec2{20, 0}, Vec2{4, 16}, Vec2{16, 4}, Vec2{40, 200}})
+					for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+					{
+						CAPTURE(i, degrees, reverse, widths, style);
+						auto points = shapes[i].map([&](Vec2 p) { return p.rotated(Math::ToRadians(degrees)) + Vec2{320, 240}; });
+						if (reverse) points.reverse();
+						const auto mesh = BuildJoin(points, widths, style);
+						REQUIRE(mesh.count.has_value());
+						CHECK(mesh.requests == 1);
+						CHECK(*mesh.count > 0);
+						if (degrees == 0) CheckMesh(mesh);
+					}
+}
+
+TEST_CASE("Renderer2D.join_style_inner_outer_defaults_patterns_and_no_ops")
+{
+	const ColorF ink{1, 0.5};
+	const PatternParameters pattern = Pattern::PolkaDot{.primary = ink, .background = ColorF{0.3, 0.8, 1, 0.5}};
+	const auto blank = CaptureJoin([] {});
+	const auto check = [&](const auto& shape)
+	{
+		for (const Vec2 widths : {Vec2{4, 16}, Vec2{160, 0}})
+		{
+			const auto solid = CaptureJoin([&] { shape.drawFrame(widths.x, widths.y, ink); });
+			const auto explicitSolid = CaptureJoin([&] { shape.drawFrame(widths.x, widths.y, ink, JoinStyle::Bevel); });
+			CHECK(solid == explicitSolid);
+			const auto omitted = CaptureJoin([&] { shape.drawFrame(widths.x, widths.y, pattern); });
+			const auto explicitPattern = CaptureJoin([&] { shape.drawFrame(widths.x, widths.y, pattern, JoinStyle::Bevel); });
+			CHECK(omitted == explicitPattern);
+			const auto rollover = CaptureJoin([&]
+			{
+				for (int i = 0; i < 16382; ++i) RectF{-10, -10, 1, 1}.draw();
+				shape.drawFrame(widths.x, widths.y, pattern);
+			});
+			CHECK(rollover == omitted);
+		}
+		for (const auto style : {JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter})
+		{
+			const auto noOp = CaptureJoin([&]
+			{
+				shape.drawFrame(0, 0, ink, style);
+				shape.drawFrame(-1, 4, ink, style);
+				shape.drawFrame(4, -1, pattern, style);
+				Triangle{80, 80, 120, 120, 160, 160}.drawFrame(4, 8, ink, style);
+				Quad{80, 80, 120, 80, 80, 80, 80, 120}.drawFrame(4, 8, pattern, style);
+			});
+			CHECK(noOp == blank);
+		}
+	};
+	check(Triangle{80, 60, 240, 80, 130, 210});
+	check(Quad{80, 60, 240, 210, 80, 210, 240, 60});
 }
