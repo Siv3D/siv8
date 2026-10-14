@@ -336,4 +336,3 @@ study does not change join/cap construction, and centerline refinement cannot
 promise to remove those artifacts. The captured animation sequences and
 representative frames complement the sampled metrics; they are not a complete
 perceptual flicker test across display sizes and frame rates.
-

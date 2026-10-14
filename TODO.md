@@ -15,10 +15,12 @@
 
 今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。
 `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。
+再開時は継続検証を優先する。機能拡張・追加最適化の候補は、具体的な用途や測定結果に基づいて別途着手する。
 
 ### 継続検証
 
-- **Windows**。Image 描画全体の自動テストと Release ベンチマークを実行する。塗りつぶしでは穴・凹形状・交差・AA・半透明合成・クリッピングを含む [ImageDraw テスト](Test/Test_ImageDraw.cpp)、枠では [JoinStyle](Test/Test_ImageJoinStyle.cpp) と [内外幅指定](Test/Test_ImagePolygonFrame.cpp)を確認する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。曲線分割と GPU は [Windows validation for curve drawing](#windows-validation-for-curve-drawing)、GPU の枠は [GPU JoinStyle ガイド](docs/renderer2d/gpu-joins.md)を参照。
+- **Windows / Image**。Image 描画全体の自動テストと Release ベンチマークを実行する。穴・凹形状・交差・AA・半透明合成・クリッピングを含む [ImageDraw テスト](Test/Test_ImageDraw.cpp)、[JoinStyle](Test/Test_ImageJoinStyle.cpp)、[内外幅指定](Test/Test_ImagePolygonFrame.cpp)、[共通参照ヘルパー](Test/Test_ImageDrawingTestHelper.cpp)を確認する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。曲線分割と Bezier / Spline は [Windows validation for curve drawing](#windows-validation-for-curve-drawing)を参照。
+- **Windows / D3D11**。[Circle arc](Test/Test_Renderer2DCircleArc.cpp) の Square 線端・ゼロ角度・全周・描画バッチと、[Ellipse pie](Test/Test_Renderer2DEllipsePie.cpp) の正負の全周角度を確認する。単色だけでなくグラデーション・パターンの経路も対象とする。Triangle / Quad の枠は [Renderer2D / Triangle・Quad の JoinStyle](#renderer2d--trianglequad-の-joinstyle)にまとめた検証を行う。
 - **手動確認**。[共通ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle も含め、実際に操作・確認した条件を記録する。自動テストやサンプルの構文検査と区別する。
 
 ### 次に機能拡張する場合の推奨順
