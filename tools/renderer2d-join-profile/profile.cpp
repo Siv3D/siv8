@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	if (argc > 1 && std::string{ argv[1] } == "scan")
 	{
 		std::minstd_rand rng{ 20261014 };
-		size_t cases = 0, multi = 0, empty = 0;
+		size_t cases = 0, multi = 0, empty = 0, invalid = 0;
 		const size_t limit = (argc > 2 ? std::stoul(argv[2]) : 500);
 		for (size_t i = 0; i < limit; ++i)
 		{
@@ -100,6 +100,12 @@ int main(int argc, char** argv)
 					const auto polygon = MakeBuffer(points, style, width);
 					++cases;
 					empty += polygon.empty();
+					std::string reason;
+					if (not boost::geometry::is_valid(polygon, reason))
+					{
+						++invalid;
+						std::cout << "invalid,case=" << i << ",width=" << width << ",style=" << static_cast<int>(style) << ",reason=" << reason << '\n';
+					}
 					if (polygon.size() > 1)
 					{
 						++multi;
@@ -107,8 +113,8 @@ int main(int argc, char** argv)
 					}
 				}
 		}
-		std::cout << "scan,cases=" << cases << ",empty=" << empty << ",multi=" << multi << '\n';
-		return 0;
+		std::cout << "scan,cases=" << cases << ",empty=" << empty << ",multi=" << multi << ",invalid=" << invalid << '\n';
+		return invalid ? 1 : 0;
 	}
 	if (argc > 1)
 	{
@@ -152,7 +158,7 @@ int main(int argc, char** argv)
 				? Array<Vec2>{ { 40, 30 }, { 280, 50 }, { 120, 240 }, { 40, 30 }, { 280, 50 } }
 				: Array<Vec2>{ { 40, 30 }, { 280, 50 }, { 260, 240 }, { 60, 220 }, { 40, 30 }, { 280, 50 } };
 			const std::string id = std::to_string(n) + "/" + std::to_string(static_cast<int>(thickness));
-			Measure(id + "/Default", [&]
+			Measure(id + "/Default-array", [&]
 			{
 				const Array<Vec2> input = points;
 				const auto count = Vertex2DBuilder::BuildLineString(allocate, LineCap::Square, LineCap::Square,
@@ -197,10 +203,11 @@ int main(int argc, char** argv)
 					Escape(count); Escape(vertices); Escape(indices);
 				});
 				std::cerr << label << "/mesh,vertices=" << vertexCount << ",indices=" << indexCount << '\n';
-				Measure(label + "/old-total", [&]
+				Measure(label + "/fallback-total", [&]
 				{
-					const Array<Vec2> input = points;
-					const auto out = MakeBuffer(input, style, thickness);
+					std::array<Vec2, 6> input;
+					std::copy(points.begin(), points.end(), input.begin());
+					const auto out = MakeBuffer(std::span<const Vec2>{ input.data(), points.size() }, style, thickness);
 					const auto tris = MakeTriangleIndices(std::span<const Vec2>{ out[0].outer() }, out[0].inners());
 					const auto verts = MakeVertices(out[0].outer(), out[0].inners());
 					const auto count = Vertex2DBuilder::BuildPolygon(allocate, verts, tris, color);

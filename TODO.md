@@ -89,8 +89,7 @@
 ## Renderer2D / Triangle・Quad の JoinStyle
 
 - Windows / D3D11 で [JoinStyle 専用テスト](Test/Test_Renderer2DJoinStyle.cpp) と全自動テストを実行し、[手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。macOS でのプロジェクト構文検証を Windows の実行検証とはみなさない。
-- 凹形状・自己交差・内側輪郭の消失は Boost buffer に残す。拡張する場合は非重複な領域分割と使用頻度を先に評価する。fallback の Round は旧分割のままなので、拡大表示での品質と経路切り替え時の輪郭差を改善する段階を別途検討する。
-- Boost 1.88 の旧 buffer 経路で、`Quad{{61,93},{22,119},{7,208},{221,152}}` の幅 160 / Bevel に対する libc++ の strict-weak-ordering アサートを切り分ける。検査用の Debug ライブラリをリンクした実験では `sort_by_side::side_sorter::apply()` 内で再現した。通常の最適化された分離ツールではこの入力を含む走査が完了するため、Debug 条件での再現と出力の妥当性を分けて検証する。今回のメッシュはこの太い枠を fallback に戻すので、既存問題は解消していない。
+- 凹形状・自己交差・内側輪郭の消失は Boost buffer に残す。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
 - 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
 
 ## Renderer2D / 組み込みシェーダ最適化

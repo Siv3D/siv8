@@ -2,7 +2,7 @@
 
 `Triangle::drawFrame(thickness, fill, JoinStyle)` and the corresponding Quad
 operation use a direct mesh for strictly convex rings whose inset edges all
-remain forward-facing. Other topology uses the existing polygon buffer and
+remain forward-facing. Other topology uses polygon buffer and
 Earcut path. The inner/outer-thickness overloads, Image painting, polygon buffer
 APIs, and ordinary LineString/Bezier/Spline drawing are separate operations.
 
@@ -11,8 +11,10 @@ meaning of the styles. Bevel preserves the historical 60-degree clipped-miter
 shape, including the radius-distance clipping plane. Miter retains unlimited
 extension. Both input windings are supported. Round uses the shared Renderer2D
 circle-pie quality calculation with raster scale, radius, and corner angle in
-the direct path. Tessellation and boundary pixels can differ from the buffer
-path. The fallback still uses its original scale-independent subdivision.
+both the direct and fallback paths. Raster scale includes the scene-resolution
+scale as well as local/camera transforms. The policy still changes subdivision
+in discrete steps as radius or angle changes; it does not promise identical
+boundary pixels or monotonic pixel coverage at every quality threshold.
 
 ## Topology and ownership
 
@@ -51,20 +53,48 @@ corners, and work in Float2. Those operations change explicit unlimited-miter
 geometry, so the small convex-ring calculation does not use them. Arc quality
 and buffer allocation/writing conventions are shared instead.
 
+## Fallback robustness
+
+The buffer input uses a local span view whose Boost strategy selects adaptive
+exact orientation predicates (`side_robust` with `fp_equals_policy`). The default
+approximate collinearity relation is not transitive and can violate the angular
+sort comparator's strict-weak-ordering requirement when overlapping pieces meet.
+The regression quad `{{61,93},{22,119},{7,208},{221,152}}`, width 160, Bevel,
+reproduces the assertion with uniformly compiled Debug sources and libc++'s
+strict-order checks. Exact orientation resolves the assertion without disabling
+checks or changing vendor code. The specialized input type confines the strategy
+to this GPU fallback; polygon-returning geometry and Image are unaffected.
+
+Before Earcut, an in-place pass removes roundoff-sized collinear kinks left by
+buffer intersections. Its area bound is 32 double epsilons times the larger
+adjacent squared edge length, with reversals preserved. This is independent of
+the exact predicate used for sorting. Keeping those redundant points can produce
+sliver triangles and a doubly blended MSAA boundary sample. The cleanup adds no
+allocation and does not affect the direct mesh or Default path.
+
+The independent regression oracle clips half-planes for the offset edges and
+acute-corner bisectors. It checks the filled footprint after the inset disappears,
+including cyclic starting points and reversed winding. The isolated Debug scan
+also exercises varied, repeated, crossing, and thick three/four-point inputs.
+This is bounded evidence, not a proof of robustness for every floating-point input.
+
 ## Validation
 
 [Test_Renderer2DJoinStyle.cpp](../../Test/Test_Renderer2DJoinStyle.cpp) covers
 index offsets, colors, winding, independent triangle-intersection area checks,
 analytic miter area, deterministic varied topology, rejected geometry, buffer
 failure, the Bevel threshold, Round radial/chord error under scaling, translucent
-pixels, patterns, batch rollover, and exact fallback/Default comparisons.
+pixels, patterns, batch rollover, and forced-fallback/Default comparisons. Dedicated checks cover inset-collapse
+transitions, a quad losing only one inset edge, fallback zoom invariance, and the
+wide-Bevel sorting regression.
 
 Two triangulations of the same straight boundary may round differently at an
 MSAA sample. The old/new solid comparison allows differences above 1/255 only
 within a one-pixel boundary neighborhood in **both** images. Separate overlap
 and alpha checks reject duplicated coverage; this tolerance does not permit
-interior seams. Round quality is checked against the circle, rather than treating
-old subdivision vertices as the ideal shape.
+interior seams. Round quality is checked against the circle. Transition tests choose widths
+away from ordinary arc-quality thresholds, so they isolate the drawing-path
+change from an unrelated change in subdivision count.
 
 Run the host workflow from the [development guide](../development/README.md),
 using `--test-case=Renderer2D.join_style*` for focused macOS iteration, followed
@@ -89,5 +119,5 @@ Do not generalize the direct path based on convexity alone or handle thick and
 concave rings by overlapping rectangles/fans. They need topology resolution.
 The current fallback remains useful; replacement needs evidence that these
 cases are frequent enough to justify it. A public LineString JoinStyle API is
-a separate design stage. Pending platform validation and fallback quality work
+a separate design stage. Pending platform validation and broader workload measurements
 are tracked in [TODO.md](../../TODO.md).

@@ -9,14 +9,44 @@
 //
 //-----------------------------------------------
 
+# include <limits>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Number.hpp>
 # include <Siv3D/LineCap.hpp>
-# include <Siv3D/LineString.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+
+// A local view opts only this GPU fallback into exact orientation predicates.
+// Epsilon-collinearity is not transitive and can invalidate Boost's angular sort
+// when coincident pieces of a closed stroke meet at a cluster.
+namespace s3d::detail
+{
+	struct ClosedStrokeView : std::span<const Vec2>
+	{
+		using std::span<const Vec2>::span;
+		using const_iterator = iterator;
+	};
+}
+
+BOOST_GEOMETRY_REGISTER_LINESTRING(s3d::detail::ClosedStrokeView)
+
+namespace boost::geometry::strategies::buffer::services
+{
+	template <>
+	struct default_strategy<s3d::detail::ClosedStrokeView, cartesian_tag>
+	{
+		struct type : strategies::buffer::cartesian<>
+		{
+			static auto side()
+			{
+				return strategy::side::side_robust<void, strategy::side::fp_equals_policy>{};
+			}
+		};
+	};
+}
 
 namespace s3d
 {
@@ -92,16 +122,77 @@ namespace s3d
 			}
 		};
 
-		[[nodiscard]]
-		static boost::geometry::model::multi_polygon<CwOpenPolygon> MakeBuffer(const LineString& points, const JoinStyle joinStyle, const double thickness)
+		// Match direct GPU joins even when buffer topology resolution is required.
+		class JoinRound
 		{
+		public:
+
+			explicit JoinRound(const float scale) : m_scale{ scale } {}
+
+			template <class Point, class DistanceType, class RangeOut>
+			bool apply(const Point&, const Point& vertex, const Point& perp1, const Point& perp2,
+				const DistanceType& distance, RangeOut& output) const
+			{
+				if (boost::geometry::equal_to<Point>{}(perp1, perp2)) return false;
+				const Vec2 center{ boost::geometry::get<0>(vertex), boost::geometry::get<1>(vertex) };
+				const Vec2 from{ boost::geometry::get<0>(perp1) - center.x, boost::geometry::get<1>(perp1) - center.y };
+				const Vec2 to{ boost::geometry::get<0>(perp2) - center.x, boost::geometry::get<1>(perp2) - center.y };
+				double sweep = std::atan2(-from.cross(to), from.dot(to));
+				if (sweep < 0.0) sweep += Math::TwoPi;
+				const double radius = Abs(distance);
+				const auto count = Vertex2DBuilder::CalculateCirclePieQuality(static_cast<float>(radius) * m_scale, static_cast<float>(sweep));
+				const double start = std::atan2(from.y, from.x), step = (sweep / (count - 1));
+				output.push_back(perp1);
+				for (uint16 i = 1; i + 1 < count; ++i)
+				{
+					const double angle = (start - step * i);
+					output.push_back(center + Vec2{ std::cos(angle), std::sin(angle) } * radius);
+				}
+				output.push_back(perp2);
+				return true;
+			}
+
+			template <class NumericType>
+			static NumericType max_distance(const NumericType& distance) { return distance; }
+
+		private:
+
+			float m_scale;
+		};
+
+		template <class Ring>
+		void RemoveCollinearStrokePoints(Ring& ring)
+		{
+			// Buffer intersections can leave roundoff-sized kinks on straight
+			// edges. Earcut can turn them into slivers that overlap after GPU
+			// rasterization. Remove only double-roundoff collinearity, in place.
+			const size_t count = ring.size();
+			if (count < 3) return;
+			const Vec2 first = ring.front();
+			Vec2 previous = ring.back();
+			size_t dst = 0;
+			for (size_t i = 0; i < count; ++i)
+			{
+				const Vec2 current = ring[i], next = ((i + 1 < count) ? ring[i + 1] : first);
+				const Vec2 a = current - previous, b = next - current;
+				const double tolerance = (32 * std::numeric_limits<double>::epsilon() * Max(a.lengthSq(), b.lengthSq()));
+				if ((Abs(a.cross(b)) > tolerance) || (a.dot(b) < 0.0)) ring[dst++] = current;
+				previous = current;
+			}
+			ring.resize(dst);
+		}
+
+		[[nodiscard]]
+		static boost::geometry::model::multi_polygon<CwOpenPolygon> MakeBuffer(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const float scale = 1.0f)
+		{
+			const detail::ClosedStrokeView stroke{ points.data(), points.size() };
 			const double halfThickness = (thickness * 0.5);
 			const boost::geometry::strategy::buffer::distance_symmetric<double> distanceStrategy{ halfThickness };
 			boost::geometry::model::multi_polygon<CwOpenPolygon> polygon;
 
 			if (joinStyle == JoinStyle::Bevel)
 			{
-				boost::geometry::buffer(points, polygon,
+				boost::geometry::buffer(stroke, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
 					JoinDefaultSymmetric{},
@@ -110,16 +201,16 @@ namespace s3d
 			}
 			else if (joinStyle == JoinStyle::Round)
 			{
-				boost::geometry::buffer(points, polygon,
+				boost::geometry::buffer(stroke, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
-					boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(thickness) },
+					JoinRound{ scale },
 					boost::geometry::strategy::buffer::end_flat{},
 					boost::geometry::strategy::buffer::point_square{});
 			}
 			else // JoinStyle::Miter
 			{
-				boost::geometry::buffer(points, polygon,
+				boost::geometry::buffer(stroke, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
 					boost::geometry::strategy::buffer::join_miter{ Largest<double> },
@@ -127,6 +218,11 @@ namespace s3d
 					boost::geometry::strategy::buffer::point_square{});
 			}
 
+			for (auto& part : polygon)
+			{
+				RemoveCollinearStrokePoints(part.outer());
+				for (auto& hole : part.inners()) RemoveCollinearStrokePoints(hole);
+			}
 			return polygon;
 		}
 	}
@@ -136,7 +232,8 @@ namespace s3d
 		template <class Fill>
 		void DrawFallback(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness, const Fill& fill)
 		{
-			const auto polygon = MakeBuffer(LineString{ points.begin(), points.end() }, joinStyle, thickness);
+			const float scale = ((joinStyle == JoinStyle::Round) ? SIV3D_ENGINE(Renderer2D)->getRasterScaling() : 1.0f);
+			const auto polygon = MakeBuffer(points, joinStyle, thickness, scale);
 			if (polygon.empty()) return;
 			DrawTriangles(polygon[0].outer(), polygon[0].inners(), fill);
 		}

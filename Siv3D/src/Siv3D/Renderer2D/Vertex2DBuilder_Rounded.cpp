@@ -49,13 +49,7 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]]
-		constexpr Vertex2D::IndexType CalculateCirclePieQuality(const float r, const float angle)
-		{
-			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
-			const float angleDelta = (Math::TwoPiF / baseQuality);
-			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
-		}
+		using Vertex2DBuilder::CalculateCirclePieQuality;
 
 		[[nodiscard]]
 		static Float2 CalculateEllipseNormal(
@@ -1128,6 +1122,13 @@ namespace s3d
 
 	namespace Vertex2DBuilder
 	{
+		Vertex2D::IndexType CalculateCirclePieQuality(const float r, const float angle) noexcept
+		{
+			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
+			const float angleDelta = (Math::TwoPiF / baseQuality);
+			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	BuildLine

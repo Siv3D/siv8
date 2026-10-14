@@ -256,6 +256,8 @@ namespace s3d
 
 		virtual float getRMSScaling() const noexcept = 0;
 
+		virtual float getRasterScaling() const noexcept = 0;
+
 
 
 		virtual const Texture& getShadowTexture() const noexcept = 0;

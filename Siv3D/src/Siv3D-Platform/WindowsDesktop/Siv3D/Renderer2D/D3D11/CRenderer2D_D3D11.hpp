@@ -528,6 +528,8 @@ namespace s3d
 
 		float getRMSScaling() const noexcept override;
 
+		float getRasterScaling() const noexcept override { return m_commandManager.getCurrentRasterScaling(); }
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	getShadowTexture

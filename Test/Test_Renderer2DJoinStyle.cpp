@@ -46,6 +46,32 @@ namespace
 		result << points[0] << points[1];
 		return result;
 	}
+
+	void CheckBoundaryPixels(const Image& actual, const Image& expected)
+	{
+		// Different triangulations can round an edge across an MSAA sample.
+		// Differences above 1/255 must be
+		// confined to a one-pixel boundary neighborhood in both images.
+		for (int y = 1; y + 1 < actual.height(); ++y)
+			for (int x = 1; x + 1 < actual.width(); ++x)
+			{
+				if (Abs(static_cast<int>(actual[y][x].r) - expected[y][x].r) <= 1) continue;
+				int amin = 255, amax = 0, emin = 255, emax = 0;
+				for (int dy = -1; dy <= 1; ++dy)
+					for (int dx = -1; dx <= 1; ++dx)
+					{
+						amin = Min(amin, static_cast<int>(actual[y + dy][x + dx].r));
+						amax = Max(amax, static_cast<int>(actual[y + dy][x + dx].r));
+						emin = Min(emin, static_cast<int>(expected[y + dy][x + dx].r));
+						emax = Max(emax, static_cast<int>(expected[y + dy][x + dx].r));
+					}
+				CAPTURE(x, y, static_cast<int>(actual[y][x].r), static_cast<int>(expected[y][x].r), amin, amax, emin, emax);
+				CHECK(amin < amax);
+				CHECK(emin < emax);
+				CHECK((emin <= actual[y][x].r && actual[y][x].r <= emax));
+				CHECK((amin <= expected[y][x].r && expected[y][x].r <= amax));
+			}
+	}
 }
 
 TEST_CASE("Renderer2D.join_style_reference_pixels")
@@ -65,27 +91,7 @@ TEST_CASE("Renderer2D.join_style_reference_pixels")
 				CAPTURE(shape.size(), static_cast<int>(style), width);
 				const auto expected = CaptureJoin([&] { DrawClosedLineStringFallback(Closed(shape), style, width, ColorF{1, 0.5}); });
 				const auto actual = CaptureJoin([&] { DrawFrame(shape, width, ColorF{1, 0.5}, style); });
-				// Different triangulations can round an edge across an MSAA sample.
-				// Round also changes tessellation. Differences above 1/255 must be
-				// confined to a one-pixel boundary neighborhood in both images.
-				for (int y = 1; y + 1 < actual.height(); ++y)
-					for (int x = 1; x + 1 < actual.width(); ++x)
-					{
-						if (Abs(static_cast<int>(actual[y][x].r) - expected[y][x].r) <= 1) continue;
-						int amin = 255, amax = 0, emin = 255, emax = 0;
-						for (int dy = -1; dy <= 1; ++dy)
-							for (int dx = -1; dx <= 1; ++dx)
-							{
-								amin = Min(amin, static_cast<int>(actual[y + dy][x + dx].r));
-								amax = Max(amax, static_cast<int>(actual[y + dy][x + dx].r));
-								emin = Min(emin, static_cast<int>(expected[y + dy][x + dx].r));
-								emax = Max(emax, static_cast<int>(expected[y + dy][x + dx].r));
-							}
-						CHECK(amin < amax);
-						CHECK(emin < emax);
-						CHECK((emin <= actual[y][x].r && actual[y][x].r <= emax));
-						CHECK((amin <= expected[y][x].r && expected[y][x].r <= amax));
-					}
+				CheckBoundaryPixels(actual, expected);
 			}
 }
 
@@ -355,7 +361,7 @@ TEST_CASE("Renderer2D.join_style_deterministic_topologies")
 	CHECK(rejected > 100);
 }
 
-TEST_CASE("Renderer2D.join_style_fallback_unchanged")
+TEST_CASE("Renderer2D.join_style_fallback_matches_reference")
 {
 	const Array<Array<Vec2>> shapes{
 		{{80,60}, {240,80}, {150,110}, {100,210}},
@@ -374,4 +380,137 @@ TEST_CASE("Renderer2D.join_style_fallback_unchanged")
 				const auto actual = CaptureJoin([&] { DrawFrame(shape, width, ColorF{1,0.5}, style); });
 				CHECK(actual == expected);
 			}
+}
+
+TEST_CASE("Renderer2D.join_style_round_transition")
+{
+	// Both the whole inset and a single short inset edge can terminate the mesh path.
+	// These widths avoid unrelated arc-quality step thresholds.
+	const Array<Array<Vec2>> shapes{
+		{{-10.5,-10.5}, {10.5,-10.5}, {10.5,10.5}, {-10.5,10.5}},
+		{{-30,-20}, {30,-20}, {30,-10}, {-30,20}},
+		{{-16,-12}, {16,-12}, {0,20}},
+	};
+	for (size_t i = 0; i < shapes.size(); ++i)
+	{
+		const auto& shape = shapes[i];
+		double low = 0.1, high = 100;
+		for (int k = 0; k < 40; ++k)
+		{
+			const double mid = (low + high) * 0.5;
+			if (BuildJoin(shape, mid, JoinStyle::Round).count) low = mid;
+			else high = mid;
+		}
+		for (const float scale : {1.0f, 4.0f, 8.0f})
+			for (const bool reverse : {false, true})
+			{
+				CAPTURE(i, scale, reverse, low, high);
+				const auto points = reverse ? shape.reversed() : shape;
+				const double beforeWidth = low - 0.001, afterWidth = high + 0.001;
+				REQUIRE(BuildJoin(points, beforeWidth, JoinStyle::Round, scale).count.has_value());
+				REQUIRE_FALSE(BuildJoin(points, afterWidth, JoinStyle::Round, scale).count.has_value());
+				const auto capture = [&](const double width)
+				{
+					return CaptureJoin([&]
+					{
+						const Transformer2D transform{Mat3x2::Scale(scale).translated(400,300)};
+						DrawFrame(points, width, ColorF{1,0.5}, JoinStyle::Round);
+					});
+				};
+				const auto before = capture(beforeWidth), after = capture(afterWidth);
+				size_t receding = 0;
+				for (int y = 0; y < before.height(); ++y)
+					for (int x = 0; x < before.width(); ++x)
+						if (before[y][x].r > after[y][x].r + 1) ++receding;
+				CHECK(receding == 0);
+			}
+	}
+}
+
+TEST_CASE("Renderer2D.join_style_wide_bevel_regression")
+{
+	// This closed stroke formerly failed libc++'s strict-weak-ordering check
+	// in Boost's cluster sorting. Its inset has disappeared at width 160.
+	const Array<Vec2> shape{{61,93}, {22,119}, {7,208}, {221,152}};
+	constexpr double radius = 80;
+
+	// Independent oracle: intersect the outward support half-planes, then the
+	// bisector clipping planes for angles below 60 degrees. No Boost stroke
+	// construction, join mesh, or tolerance-based angular sorting is used here.
+	Array<Vec2> outline{{-1000,-1000}, {1000,-1000}, {1000,1000}, {-1000,1000}};
+	const auto clip = [&](const Vec2 normal, const double offset)
+	{
+		Array<Vec2> result;
+		for (size_t i = 0; i < outline.size(); ++i)
+		{
+			const Vec2 p = outline[i], q = outline[(i + 1) % outline.size()];
+			const double dp = p.dot(normal) - offset, dq = q.dot(normal) - offset;
+			if (dp <= 0) result << p;
+			if ((dp < 0 && dq > 0) || (dp > 0 && dq < 0)) result << (p + (q - p) * (dp / (dp - dq)));
+		}
+		outline = std::move(result);
+	};
+	std::array<Vec2, 4> normals;
+	for (size_t i = 0; i < 4; ++i)
+	{
+		const Vec2 d = (shape[(i + 1) % 4] - shape[i]).normalized();
+		normals[i] = Vec2{-d.y, d.x}; // this input is counterclockwise in screen coordinates
+		clip(normals[i], shape[i].dot(normals[i]) + radius);
+	}
+	for (size_t i = 0; i < 4; ++i)
+	{
+		const Vec2 a = normals[(i + 3) % 4], b = normals[i];
+		if (a.dot(b) < -0.5)
+		{
+			const Vec2 bisector = (a + b).normalized();
+			clip(bisector, shape[i].dot(bisector) + radius);
+		}
+	}
+	REQUIRE(outline.size() == 5);
+	const Polygon expectedPolygon{outline};
+	REQUIRE(expectedPolygon.area() == Catch::Approx(79956.8081345733).margin(0.000001));
+	const auto expected = CaptureJoin([&]
+	{
+		const Transformer2D transform{Mat3x2::Translate(160,80)};
+		expectedPolygon.draw(ColorF{1,0.5});
+	});
+	for (const bool reverse : {false, true})
+		for (size_t start = 0; start < 4; ++start)
+		{
+			CAPTURE(reverse, start);
+			Array<Vec2> points;
+			for (size_t i = 0; i < 4; ++i) points << shape[(start + i) % 4];
+			if (reverse) points.reverse();
+			REQUIRE_FALSE(BuildJoin(points, radius * 2, JoinStyle::Bevel).count.has_value());
+			const auto actual = CaptureJoin([&]
+			{
+				const Transformer2D transform{Mat3x2::Translate(160,80)};
+				DrawFrame(points, radius * 2, ColorF{1,0.5}, JoinStyle::Bevel);
+			});
+			CheckBoundaryPixels(actual, expected);
+		}
+}
+
+TEST_CASE("Renderer2D.join_style_round_fallback_scaling")
+{
+	const Array<Array<Vec2>> shapes{
+		{{80,60}, {240,80}, {150,110}, {100,210}}, // concave
+		{{80,60}, {240,210}, {80,210}, {240,60}}, // crossing
+		{{80,60}, {240,80}, {130,210}}, // collapsed inset
+	};
+	for (const auto& shape : shapes)
+		for (const bool reverse : {false, true})
+		{
+			const auto points = reverse ? shape.reversed() : shape;
+			REQUIRE_FALSE(BuildJoin(points, 180, JoinStyle::Round).count.has_value());
+			const auto direct = CaptureJoin([&] { DrawFrame(points, 180, ColorF{1,0.5}, JoinStyle::Round); });
+			const auto scaled = CaptureJoin([&]
+			{
+				Array<Vec2> small;
+				for (const auto p : points) small << p * 0.25;
+				const Transformer2D transform{Mat3x2::Scale(4)};
+				DrawFrame(small, 45, ColorF{1,0.5}, JoinStyle::Round);
+			});
+			CHECK(direct == scaled);
+		}
 }
