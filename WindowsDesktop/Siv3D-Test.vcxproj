@@ -362,5 +362,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Test_Spline2D.cpp" />
+    <ClCompile Include="..\Test\Test_Spline2DImage.cpp" />
   </ItemGroup>
 </Project>

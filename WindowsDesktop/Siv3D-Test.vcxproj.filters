@@ -596,5 +596,8 @@
     <ClCompile Include="..\Test\Test_Spline2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Spline2DImage.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

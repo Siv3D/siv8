@@ -9,7 +9,7 @@
 
 ## Windows validation for curve drawing
 
-- Bezier2 / Bezier3 / Spline2D の適応分割と Bezier の paint / overwrite について、[検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と D3D11 での結果を確認する。
+- Bezier2 / Bezier3 / Spline2D の適応分割と Bezier / Spline の paint / overwrite について、[検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と D3D11 での結果を確認する。
 
 ## 2D 図形の Image 書き込み
 
@@ -17,15 +17,14 @@
 
 `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。推奨する実装・検討順は次のとおり。
 
-1. **Spline2D の直接 `paint()` / `overwrite()`**。既存の `toLineStringAdaptive()` と開閉 LineString の Image 描画を接続し、経路全体を一度に合成する。Image ピクセル単位の `targetError` と区間ごとの `maxSegmentsPerCurve` を引き継ぎ、開いた経路の線端指定、閉じた経路への線端指定の扱い、空・退化経路の仕様を決める。接続点・閉じ目・自己交差の半透明合成、分割上限、描画変換からの独立性を検証する。少数／多数の短い区間で、変換込みと変換済み LineString の描画を分けて計測する。
-2. **共通ストローク処理の確保・コピー・走査コストの計測**。Bezier / Spline ごとの別実装を増やす前に、ImageDraw の点列整形、重複点除去、primitive 構築、AA coverage の費用を切り分ける。LineString のキャッシュで省ける分割費用と、描画時の作業領域を区別する。多数の短い曲線、長い経路、クリッピング、細線／太線、AA の有無で効果を確認してから最適化し、既存の単純な線・Flat 経路の速度も維持する。公開の再利用コンテキストは必要性を測ってから判断する。
-3. **Triangle / Quad の枠の不足機能**。内側／外側の太さ指定と `JoinStyle` 指定は別段階で追加を検討する。Miter の上限、既定の結合形状、凹・交差 Quad と退化時の領域を先に決め、共通ストローク処理へ置く部分を整理する。
-4. **破線・LineStyle**。まず Line の最小 API と位相・端点・短い区間の仕様を決め、必要に応じて図形の枠や曲線へ広げる。曲線の分割点配置に依存しない長さ基準と、閉じ目・線端が重なるときの合成を検討する。
-5. **用途に応じた追加候補**。変換付き描き込み、wireframe、グラデーション・頂点色・パターン・影は個別に採否と費用を評価する。Shape2D の添字付き三角形の描画は既存の輪郭塗りとは別 API として検討し、単色描画の共通経路へ一律に費用を加えない。
+1. **共通ストローク処理の確保・コピー・走査コストの計測**。Bezier / Spline ごとの別実装を増やす前に、ImageDraw の点列整形、重複点除去、primitive 構築、AA coverage の費用を切り分ける。LineString のキャッシュで省ける分割費用と、描画時の作業領域を区別する。多数の短い曲線、長い経路、クリッピング、細線／太線、AA の有無で効果を確認してから最適化し、既存の単純な線・Flat 経路の速度も維持する。公開の再利用コンテキストは必要性を測ってから判断する。
+2. **Triangle / Quad の枠の不足機能**。内側／外側の太さ指定と `JoinStyle` 指定は別段階で追加を検討する。Miter の上限、既定の結合形状、凹・交差 Quad と退化時の領域を先に決め、共通ストローク処理へ置く部分を整理する。
+3. **破線・LineStyle**。まず Line の最小 API と位相・端点・短い区間の仕様を決め、必要に応じて図形の枠や曲線へ広げる。曲線の分割点配置に依存しない長さ基準と、閉じ目・線端が重なるときの合成を検討する。
+4. **用途に応じた追加候補**。変換付き描き込み、wireframe、グラデーション・頂点色・パターン・影は個別に採否と費用を評価する。Shape2D の添字付き三角形の描画は既存の輪郭塗りとは別 API として検討し、単色描画の共通経路へ一律に費用を加えない。
 
 検証として残る項目:
 
-- [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。Bezier の品質・分割上限の切り替えも含め、自動テストとサンプルの構文検査とは分けて記録する。
+- [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端の切り替えも含め、自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の Image 描画全体の自動テストと Release ベンチマークを実行する。曲線分割と GPU の検証は上記の [Windows validation for curve drawing](#windows-validation-for-curve-drawing) にまとめる。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`

@@ -216,6 +216,8 @@ TEST_CASE("CurveAdaptive.RendererStateDoesNotAffectGeometryOrImage")
 	const auto qLine = q.toLineStringAdaptive(), cLine = c.toLineStringAdaptive(), pathLine = path.toLineStringAdaptive();
 	Image before{ 80, 80, Palette::Black }, after = before;
 	q.paint(before, 5, Palette::White); c.overwrite(before, 2, Palette::Red);
+	path.paint(before, LineCap::Flat, LineCap::Round, 4, Color{ 200, 100, 50, 127 });
+	path.overwrite(before, 1, Color{ 50, 100, 200, 127 });
 	{
 		const SceneScope scene;
 		Scene::Configure(SceneConfig::Fixed({ 320, 240 }, SceneResolution::Display));
@@ -226,6 +228,8 @@ TEST_CASE("CurveAdaptive.RendererStateDoesNotAffectGeometryOrImage")
 		CHECK(c.toLineStringAdaptive() == cLine);
 		CHECK(path.toLineStringAdaptive() == pathLine);
 		q.paint(after, 5, Palette::White); c.overwrite(after, 2, Palette::Red);
+		path.paint(after, LineCap::Flat, LineCap::Round, 4, Color{ 200, 100, 50, 127 });
+		path.overwrite(after, 1, Color{ 50, 100, 200, 127 });
 	}
 	CHECK(before == after);
 }

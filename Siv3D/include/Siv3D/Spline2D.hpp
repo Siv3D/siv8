@@ -8,6 +8,7 @@
 # pragma once
 # include "Bezier.hpp"
 # include "LineString.hpp"
+# include "LineCap.hpp"
 # include "Optional.hpp"
 # include "CatmullRomParameterization.hpp"
 # include "SplineClosestPoint2D.hpp"
@@ -126,6 +127,106 @@ namespace s3d
 		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合。destination は変更しません。
 		/// @remark 空の経路なら destination を空にします。その他の条件と結果は、値を返す overload と共通です。
 		void toLineStringAdaptive(LineString& destination, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		/// @remark 開いた経路の線端は Round です。線の太さは 1 です。
+		const Spline2D& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		/// @remark 開いた経路の線端は Round です。
+		const Spline2D& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 両端の線端形状。閉じた経路では無視します。
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		const Spline2D& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に描き込みます。
+		/// @anchor spline2d_image_writing
+		/// @param dst 描き込み先の画像
+		/// @param startCap 始点の線端形状。閉じた経路では無視します。
+		/// @param endCap 終点の線端形状。閉じた経路では無視します。
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合。dst は変更しません。
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。描画の変換状態は反映しません。
+		/// @remark 経路の接続部と自己交差をまとめて描き込み、閉じた経路の継ぎ目も接続します。
+		/// @remark 分割後の点が開いた経路で 2 個未満、閉じた経路で 3 個未満の場合は何も描きません。
+		const Spline2D& paint(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に上書きします。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		/// @remark 開いた経路の線端は Round です。線の太さは 1 です。
+		const Spline2D& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に上書きします。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		/// @remark 開いた経路の線端は Round です。
+		const Spline2D& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に上書きします。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 両端の線端形状。閉じた経路では無視します。
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		const Spline2D& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 経路を適応分割して Image に上書きします。
+		/// @param dst 描き込み先の画像
+		/// @param startCap 始点の線端形状。閉じた経路では無視します。
+		/// @param endCap 終点の線端形状。閉じた経路では無視します。
+		/// @param thickness 線の太さ。0 以下では描き込みません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @return *this
+		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
+		const Spline2D& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
 		/// @brief 曲線を適応分割して描画します。
 		/// @param thickness 線の太さ。絶対値を使用します。

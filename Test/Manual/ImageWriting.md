@@ -18,7 +18,7 @@ acceptance criterion.
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
    full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
    checks, select arc mode and a full sweep, then vary **A** and **T**.
-   Press **S** to cycle the shape, stroke, and arrow pages. The stroke page has
+   Press **S** to cycle the shape, stroke, arrow, and spline pages. The stroke page has
    Line, LineString, Bezier2, Bezier3, and a short Line. On this page, **J** and **K** independently cycle the
    start and end caps through Flat / Round / Square. **D** changes the last Line
    length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
@@ -27,6 +27,11 @@ acceptance criterion.
    On the arrow page, **J** selects the
    tail cap, **T** cycles the shaft width, and **D** changes the short arrow.
    The columns show horizontal, diagonal, short, clipped, and zero-length arrows.
+   On the spline page, **J** / **K** select CPU end caps, **T** changes width,
+   **Q** changes quality, and **B** switches between 256 and one segment per cubic.
+   Its columns are open, closed, self-crossed with a collapsed interval, clipped,
+   and all-coincident paths. Native GPU Spline drawing retains Square ends;
+   **J** / **K** do not affect that row.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -75,6 +80,12 @@ acceptance criterion.
   than the line is long. The zero-length CPU Line draws a centered square if either cap is Square, a
   disk if either remaining cap is Round, and nothing for Flat/Flat. GPU collapsed
   caps may differ because they retain a start/end orientation.
+- On the spline page, open endpoints use the selected caps. Closed paths ignore
+  caps and join the closing seam. The collapsed interval at the crossing path's
+  knot must not add a cap or dark spot. CPU knots, intersections, and the seam
+  composite once; inspect both alpha rows. A budget of one retains internal knots
+  and draws their chords. The all-coincident CPU path draws nothing for all caps.
+  GPU rendering can differ at joins, intersections, and degenerate paths.
 - On the arrow page, Flat ends at the starting point, Square extends backward by
   half the shaft width, and Round adds an outward semicircle. The tip stays sharp
   even for short arrows with wide shafts. The head shrinks proportionally when it
@@ -117,7 +128,7 @@ void Main()
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
 	constexpr double PieStart = Math::Pi / 6;
 	int32 page = 0;
-	const Array<String> pages{ U"shapes", U"strokes", U"arrows" };
+	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines" };
 	const Array<double> arrowWidths{ 0.6, 6.5, 24.5 };
 	size_t startCapIndex = 0, endCapIndex = 1;
 	const Line strokeLine{ 30.25, 30.75, 160.25, 96.75 };
@@ -138,6 +149,22 @@ void Main()
 		if (kind == 3) return Line{ -4.25, 30.75, 160.25, 96.75 };
 		return Line{ 96.25, 64.75, 96.25, 64.75 };
 	};
+	const auto straight = [](const Vec2 a, const Vec2 b)
+	{
+		return Bezier3::FromHermite(a, b - a, b, b - a);
+	};
+	const Array<Vec2> splineKnots{ { 24.25, 90.75 }, { 60.25, 24.75 }, { 120.25, 96.75 }, { 168.25, 36.75 } };
+	const Array<Spline2D> splines{
+		Spline2D::FromCatmullRom(splineKnots),
+		Spline2D::FromCatmullRom(splineKnots, CloseRing::Yes),
+		Spline2D::FromBezierSegments(Array<Bezier3>{
+			straight({ 30.25, 30.75 }, { 160.25, 96.75 }),
+			straight({ 160.25, 96.75 }, { 160.25, 96.75 }),
+			straight({ 160.25, 96.75 }, { 30.25, 96.75 }),
+			straight({ 30.25, 96.75 }, { 160.25, 30.75 }),
+			straight({ 160.25, 30.75 }, { 30.25, 30.75 }) }, CloseRing::Yes),
+		Spline2D::FromCatmullRom(Array<Vec2>{ { -12.25, 24.75 }, { 40.25, 100.75 }, { 100.25, 16.75 }, { 200.25, 90.75 } }),
+		Spline2D::FromBezierSegments(Array<Bezier3>{ straight({ 96.25, 64.75 }, { 96.25, 64.75 }) }) };
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -147,6 +174,16 @@ void Main()
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
 		const EnableAntialiasing antialiasing{ aa };
+		if (page == 3)
+		{
+			const auto& path = splines[kind];
+			const double width = arrowWidths[arcThicknessIndex];
+			if (paint) path.paint(image, arcCaps[startCapIndex], arcCaps[endCapIndex], width, ink,
+				antialiasing, curveQuality[curveQualityIndex], curveLimited ? 1 : 256);
+			else path.overwrite(image, arcCaps[startCapIndex], arcCaps[endCapIndex], width, ink,
+				antialiasing, curveQuality[curveQualityIndex], curveLimited ? 1 : 256);
+			return;
+		}
 		if (page == 2)
 		{
 			const Line line = arrowLine(kind);
@@ -249,7 +286,7 @@ void Main()
 		if (KeyQ.down()) { curveQualityIndex = (curveQualityIndex + 1) % curveQuality.size(); dirty = true; }
 		if (KeyB.down()) { curveLimited = !curveLimited; dirty = true; }
 		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
-		if (KeyS.down()) { page = (page + 1) % 3; dirty = true; }
+		if (KeyS.down()) { page = (page + 1) % 4; dirty = true; }
 		if (KeyJ.down()) { startCapIndex = (startCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyK.down()) { endCapIndex = (endCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyA.down()) { aa = !aa; dirty = true; }
@@ -275,8 +312,10 @@ void Main()
 			dirty = false;
 		}
 		if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
+		else if (page == 3) font(U"S: splines   A: AA = {}   Q: target = {}px   B: per-curve budget = {} (GPU caps: Square)"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 1 : 256)).draw(20, 12);
 		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
 		if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
+		else if (page == 3) font(U"J: start = {}   K: end = {}   T: width = {}    open / closed / crossed / clipped / point"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], arrowWidths[arcThicknessIndex])).draw(20, 32);
 		else if (page == 2) font(U"J: tail = {}   T: width = {}    horizontal / diagonal / D: {} / clipped / zero"_fmt(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
 		const Array<String> labels{ U"paint", U"overwrite", U"paint alpha", U"overwrite alpha", U"GPU draw" };
@@ -288,6 +327,11 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
+				else if (page == 3)
+				{
+					const Transformer2D transform{ Mat3x2::Translate(pos) };
+					splines[kind].draw(arrowWidths[arcThicknessIndex], ink, curveQuality[curveQualityIndex], curveLimited ? 1 : 256);
+				}
 				else if (page == 2)
 				{
 					arrowLine(kind).movedBy(pos).drawArrow(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], SizeF{ 30, 36 }, ink);

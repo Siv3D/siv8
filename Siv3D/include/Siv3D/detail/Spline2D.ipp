@@ -29,6 +29,36 @@ namespace s3d
 		return { m_segments.data(), m_segments.size() };
 	}
 
+	inline const Spline2D& Spline2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return paint(dst, LineCap::Round, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	inline const Spline2D& Spline2D::paint(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return paint(dst, LineCap::Round, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	inline const Spline2D& Spline2D::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	inline const Spline2D& Spline2D::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return overwrite(dst, LineCap::Round, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	inline const Spline2D& Spline2D::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return overwrite(dst, LineCap::Round, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	inline const Spline2D& Spline2D::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
 	inline void Spline2D::clear() noexcept
 	{
 		m_segments.clear();

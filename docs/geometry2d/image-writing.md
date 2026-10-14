@@ -56,7 +56,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | Fixed-subdivision `draw()`; adaptive GPU quality includes renderer transforms and render-target resolution |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
-| Spline2D | Adaptive conversion to LineString; no direct image-writing methods | `draw()` handles open / closed paths; Image callers select the corresponding LineString method |
+| Spline2D | Adaptive open / closed stroke, independent open end caps, per-curve quality/budget controls | GPU quality includes renderer transforms and render-target resolution; open GPU paths use Square caps |
 
 MultiPolygon draws members in order, so overlapping members compose repeatedly.
 Polygon frames combine the outer contour and all holes using maximum stroke
@@ -78,8 +78,8 @@ Vec2 array. Internal stroke construction still owns reusable working storage.
 
 ## Open stroke caps
 
-`Line`, `LineString`, `Bezier2`, and `Bezier3` accept independent caps after the
-image argument, matching the order of their `draw()` overloads:
+`Line`, `LineString`, `Bezier2`, `Bezier3`, and open `Spline2D` paths accept
+independent caps after the image argument:
 
 ```cpp
 line.paint(image, LineCap::Flat, LineCap::Round, 8.0, Color{ 220, 60, 130, 113 });
@@ -106,7 +106,7 @@ curve.overwrite(image, 6, Palette::White, EnableAntialiasing::No, 0.75, 128);
 A zero-length Line, or an open LineString of at least two coincident points,
 uses the union of the two cap regions: Square yields a centered square, otherwise
 Round yields a disk, and two Flat caps draw nothing. Empty and one-point
-LineStrings draw nothing. A Bezier whose control points all coincide also draws
+LineStrings draw nothing. A Bezier or Spline whose control points all coincide also draws
 nothing because adaptive conversion produces one point. These collapsed cases
 have no tangent direction.
 
@@ -120,15 +120,30 @@ the neighboring round join already covers the inward part of an endpoint disk.
 
 ## Reusing sampled curves
 
-Bezier adaptive conversion, adaptive GPU drawing, and Bezier Image writing share
-the [curve tessellation kernel](bezier-drawing.md). Image quality/budget controls
-are already available; they do not need a second implementation in ImageDraw.
+Bezier and Spline adaptive conversion, GPU drawing, and Image writing share
+the [curve tessellation kernel](bezier-drawing.md). The Image methods pass the
+sampled path to the common stroke rasterizer.
 Fixed-subdivision `draw()` remains a separate GPU family. Image callers needing
 uniform parameter subdivisions can use `toLineString(subdivisions)` and paint
 that result.
 
-Spline2D already provides the same adaptive conversion with a budget per cubic
-interval. It currently has no direct `paint()` / `overwrite()` methods:
+Spline2D directly writes its whole path with automatic closure from `isClosed()`.
+Open paths default to Round caps; a closed path joins its seam and ignores caps.
+The quality arguments follow the AA switch, with defaults of 0.5 Image pixels and
+256 segments **per Bezier3 interval**. They are independent of renderer state.
+
+```cpp
+path.paint(image, 6.0, color);
+path.overwrite(image, LineCap::Round, LineCap::Flat, 6.0, color,
+    EnableAntialiasing::Yes, 0.25, 128);
+```
+
+A budget of one keeps only interval endpoints, including internal knots.
+After sampling, fewer than two points in an open path or three in a closed path
+draw nothing. This includes an all-coincident path and a closed straight
+out-and-back path reduced to two points.
+
+For repeated drawing, sample explicitly and retain the result:
 
 ```cpp
 LineString outline;
@@ -293,8 +308,12 @@ invoke the more expensive per-pixel Ellipse boundary-distance solver.
 [Test_ImageDraw.cpp](../../Test/Test_ImageDraw.cpp) owns the automated shape
 matrix, independent compositing and sampling references, and opt-in benchmarks.
 [Curve integration tests](../../Test/Test_CurveAdaptive.cpp) cover Bezier Image
-quality, segment budgets, caps, default overloads, and renderer-state independence;
-keep conversion-specific checks there and common raster/compositing checks in ImageDraw.
+quality, segment budgets, caps, default overloads, and renderer-state independence.
+[Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover open/closed paths,
+independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
+invalid arguments, and one-time compositing at knots, seams, and intersections.
+Keep conversion-specific checks in the curve tests and common raster/compositing
+checks in ImageDraw.
 The [manual gallery](../../Test/Manual/ImageWriting.md) compares CPU and GPU
 appearance and exposes alpha as grayscale. Automated coverage comparisons do not
 replace this visual check.
@@ -308,6 +327,8 @@ Run from the repository root on macOS, outside the sandbox:
 ```sh
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImageDraw.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
+./macOS/run-tests.sh '--test-case=~[benchmark]Spline2DImage.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Spline2DImage.Benchmark'
 ./macOS/run-tests.sh
 ```
 
@@ -320,6 +341,15 @@ Ellipse pies, Circle segments, and SuperEllipse fills use the same accumulator.
 Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
+
+`Spline2DImage.Benchmark` separates reusable conversion, the direct Image API,
+explicit conversion followed by LineString drawing, and drawing a cached outline.
+It covers few/many short intervals, open/closed paths, 64/256-pixel images,
+thin/wide strokes, both AA modes, and paint/overwrite. Direct and explicit calls
+include tessellation and its temporary output; cached drawing excludes it but
+still includes rasterizer working storage. Path construction and destination
+allocation are outside timing. Compare per-case timings; the point count alone
+does not describe the cost of a long path.
 
 Benchmarks reuse allocated destination images and prebuilt geometry. They include
 public API rasterization, compositing, and internal temporary allocations, but

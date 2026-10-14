@@ -222,6 +222,38 @@ namespace s3d
 			static_cast<uint32>(maxSegmentsPerCurve), [](const auto& source) -> const auto& { return source; });
 	}
 
+	const Spline2D& Spline2D::paint(Image& dst, const LineCap startCap, const LineCap endCap,
+		const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing,
+		const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		const LineString outline = toLineStringAdaptive(targetError, maxSegmentsPerCurve);
+		if (isClosed())
+		{
+			outline.paintClosed(dst, thickness, color, enableAntialiasing);
+		}
+		else
+		{
+			outline.paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		}
+		return *this;
+	}
+
+	const Spline2D& Spline2D::overwrite(Image& dst, const LineCap startCap, const LineCap endCap,
+		const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing,
+		const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		const LineString outline = toLineStringAdaptive(targetError, maxSegmentsPerCurve);
+		if (isClosed())
+		{
+			outline.overwriteClosed(dst, thickness, color, enableAntialiasing);
+		}
+		else
+		{
+			outline.overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		}
+		return *this;
+	}
+
 	const Spline2D& Spline2D::draw(const double thickness, const ColorF& color, const double targetError, const int32 maxSegmentsPerCurve) const
 	{
 		ValidateTessellation(targetError, maxSegmentsPerCurve);

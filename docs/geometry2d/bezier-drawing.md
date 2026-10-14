@@ -72,13 +72,15 @@ in [Image writing](image-writing.md). A caller drawing a static curve repeatedly
 can retain the converted LineString to avoid generating it each time.
 
 For `Spline2D`, the budget is named **`maxSegmentsPerCurve`** and applies to each
-Bezier3 interval, not to the entire path. Defaults are 0.5 and 256. With a budget
+Bezier3 interval, not to the entire path, including `paint()` / `overwrite()`.
+Image calls measure quality in Image pixels and follow the path's open/closed state.
+Defaults are 0.5 and 256. With a budget
 of one, only interval endpoints remain. Conversion keeps every distinct knot;
 a closed result omits the repeated final point. See [Spline paths](splines.md)
 for drawing and caching examples.
 
 The v0.8.0 implementation scope is complete: adaptive Bezier and Spline
-conversion, GPU drawing, and Bezier Image writing use the shared kernel.
+conversion, GPU drawing, and Bezier/Spline Image writing use the shared kernel.
 Fixed-subdivision APIs, arc-length measurement, Walkers, and geometric queries
 have separate algorithms and do not require this tessellation change.
 Outstanding Windows validation is tracked separately in
@@ -90,7 +92,9 @@ collinear reversals, sampled count continuity, all cap combinations, degenerate
 curves, default overloads, and the public render path at different scene
 resolutions. The [integration tests](../../Test/Test_CurveAdaptive.cpp) add conversion storage,
 Spline composition and drawing, Image quality and caps, and renderer-state
-independence. The larger [study](../../Test/Test_BezierTessellation.cpp) is opt-in.
+independence. [Spline Image tests](../../Test/Test_Spline2DImage.cpp) add direct
+Image calls, open/closed cap handling, and compositing at knots and intersections.
+The larger [study](../../Test/Test_BezierTessellation.cpp) is opt-in.
 
 ## What the comparison measures
 
@@ -254,6 +258,11 @@ quadratic cases range from about 15% faster to 1.4% slower; cubic cases are abou
 tessellation, rasterization, and compositing are included. Calls reuse and
 repeatedly composite into the destination. These results apply to this corpus,
 not all clipping, coverage, or image sizes.
+
+The separate `Spline2DImage.Benchmark` compares direct Image calls with explicit
+conversion plus LineString drawing and a cached outline, alongside reusable
+conversion alone. See [Image validation and measurement](image-writing.md#validation-and-measurement)
+for its workload and commands.
 
 ## Changes during deformation
 

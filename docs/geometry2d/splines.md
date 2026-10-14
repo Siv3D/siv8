@@ -85,6 +85,19 @@ path.draw(3, Palette::White);              // Default quality in render pixels
 path.draw(3, Palette::White, 0.75, 128);    // Target and per-curve segment budget
 ```
 
+`paint()` and `overwrite()` use the same subdivision in Image coordinates and
+select the open or closed stroke from the path itself. Open paths default to
+Round ends and accept independent caps; closed paths ignore the caps.
+
+```cpp
+path.paint(image, 6, Palette::White);
+path.overwrite(image, LineCap::Flat, LineCap::Round, 6, Color{ 220, 60, 130, 113 },
+    EnableAntialiasing::Yes, 0.25, 128);
+```
+
+See [Image writing](image-writing.md#reusing-sampled-curves) for compositing,
+degenerate paths, and caching an outline for repeated Image draws.
+
 For unchanged paths, retain a polyline when its coordinate-space quality is
 appropriate for the drawing scale. Use `drawClosed()` for a closed path:
 
@@ -120,6 +133,10 @@ and flattening operations in [Test_Bezier.cpp](../../Test/Test_Bezier.cpp).
 closure, per-curve budgets, reusable conversion, transformed drawing, and scene
 resolution. Their opt-in `CurveAdaptive.Benchmark` compares density and legacy
 conversion for paths of different lengths and includes Bezier Image writing.
+[Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover direct paint/overwrite,
+closure, caps, budgets, empty paths, and compositing. The opt-in
+`Spline2DImage.Benchmark` separates conversion and rasterization costs; the
+[Image gallery](../../Test/Manual/ImageWriting.md) checks their appearance.
 
 The [interactive path gallery](../../Test/Manual/Spline2D.md) demonstrates
 interpolation, nearest-point editing, constant-speed travel, and equal-distance
