@@ -13,6 +13,7 @@
 # include <limits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/JoinStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/QuarterArcTable.hpp>
 
@@ -48,13 +49,7 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]]
-		constexpr Vertex2D::IndexType CalculateCirclePieQuality(const float r, const float angle)
-		{
-			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
-			const float angleDelta = (Math::TwoPiF / baseQuality);
-			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
-		}
+		using Vertex2DBuilder::CalculateCirclePieQuality;
 
 		[[nodiscard]]
 		static Float2 CalculateEllipseNormal(
@@ -360,13 +355,15 @@ namespace s3d
 			return indexCount;
 		}
 
+		template <bool SquareCaps>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildFlatCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		static Vertex2D::IndexType BuildCircleArcStrip(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const float rOuter = (rInner + thickness);
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
-			const Vertex2D::IndexType VertexCount = (Quality * 2);
-			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 6);
+			const Vertex2D::IndexType Quality = ((SquareCaps && (angle == 0.0f)) ? 1 : CalculateCirclePieQuality((rOuter * scale), Abs(angle)));
+			const Vertex2D::IndexType PairCount = (Quality + (SquareCaps ? 2 : 0));
+			const Vertex2D::IndexType VertexCount = (PairCount * 2);
+			const Vertex2D::IndexType IndexCount = ((PairCount - 1) * 6);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -378,8 +375,8 @@ namespace s3d
 				const float centerX = center.x;
 				const float centerY = center.y;
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
-				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = pVertex;
+				const float radDelta = ((SquareCaps && (Quality == 1)) ? 0.0f : (Abs(angle) / (Quality - 1)));
+				Vertex2D* pDst = (pVertex + (SquareCaps ? 2 : 0));
 
 				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
@@ -390,13 +387,40 @@ namespace s3d
 				}
 			}
 
+			if constexpr (SquareCaps)
+			{
+				// Share the cap/body edges and reserve the whole strip in one allocation.
+				// Rotating the radial half-width gives the endpoint tangent extension.
+				const Float2 startHalfWidth = ((pVertex[3].pos - pVertex[2].pos) * 0.5f);
+				const Float2 endHalfWidth = ((pVertex[VertexCount - 3].pos - pVertex[VertexCount - 4].pos) * 0.5f);
+				const Float2 startExtension{ startHalfWidth.y, -startHalfWidth.x };
+				const Float2 endExtension{ -endHalfWidth.y, endHalfWidth.x };
+				pVertex[0].pos = (pVertex[2].pos + startExtension);
+				pVertex[1].pos = (pVertex[3].pos + startExtension);
+				pVertex[VertexCount - 2].pos = (pVertex[VertexCount - 4].pos + endExtension);
+				pVertex[VertexCount - 1].pos = (pVertex[VertexCount - 3].pos + endExtension);
+			}
+
 			if (colorType == ColorFillDirection::LeftRight)
 			{
-				const Float4 startColor = ((angle < 0.0f) ? color1 : color0);
-				const Float4 endColor = ((angle < 0.0f) ? color0 : color1);
-				const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
+				Float4 startColor = ((angle < 0.0f) ? color1 : color0);
+				Float4 endColor = ((angle < 0.0f) ? color0 : color1);
+				if constexpr (SquareCaps)
+				{
+					pVertex[0].color = pVertex[1].color = startColor;
+					pVertex[VertexCount - 2].color = pVertex[VertexCount - 1].color = endColor;
+					const float halfThickness = (thickness * 0.5f);
+					const float length = ((rInner + halfThickness) * Abs(angle) + thickness);
+					const float offset = ((Quality == 1) ? 0.5f : (halfThickness / length));
+					const Float4 arcStart = startColor.lerp(endColor, offset);
+					endColor = startColor.lerp(endColor, (1.0f - offset));
+					startColor = arcStart;
+					pVertex += 2;
+				}
+				const Float4 colorDelta = ((SquareCaps && (Quality == 1)) ? Float4{ 0, 0, 0, 0 }
+					: ((endColor - startColor) / static_cast<float>(Quality - 1)));
 
-				for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
 					const Float4 color = (startColor + (colorDelta * i));
 					(pVertex++)->color = color;
@@ -412,7 +436,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			for (Vertex2D::IndexType i = 0; i < (PairCount - 1); ++i)
 			{
 				for (Vertex2D::IndexType k = 0; k < 6; ++k)
 				{
@@ -1098,6 +1122,13 @@ namespace s3d
 
 	namespace Vertex2DBuilder
 	{
+		Vertex2D::IndexType CalculateCirclePieQuality(const float r, const float angle) noexcept
+		{
+			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
+			const float angleDelta = (Math::TwoPiF / baseQuality);
+			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	BuildLine
@@ -1610,19 +1641,24 @@ namespace s3d
 
 		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			if (lineCap == LineCap::Round)
+			// Keep the default Flat path free of cap geometry and gradient work.
+			if (lineCap != LineCap::Flat)
 			{
-				return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
-			}
-			else
-			{
-				if (angle == 0.0f)
+				if (lineCap == LineCap::Round)
 				{
-					return 0;
+					return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 				}
-
-				return BuildFlatCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
+				if (Abs(angle) < Math::TwoPiF)
+				{
+					return BuildCircleArcStrip<true>(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
+				}
 			}
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+			// A full Square arc has no endpoints to extend.
+			return BuildCircleArcStrip<false>(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3335,6 +3371,141 @@ namespace s3d
 
 			return BuildLineStringStrip(bufferCreator, prepared.points, (thickness * 0.5f), true,
 				[&color](size_t) { return color; });
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	TryBuildSmallConvexFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<uint32> TryBuildSmallConvexFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+			const JoinStyle joinStyle, const double thickness, const Float4& color, const float scale)
+		{
+			return TryBuildSmallConvexFrame(bufferCreator, points, joinStyle, thickness * 0.5, thickness * 0.5, color, scale);
+		}
+
+		Optional<uint32> TryBuildSmallConvexFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points,
+			const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Float4& color, const float scale)
+		{
+			// The input is a unique 3/4-point ring. Rejected geometry is handled by the
+			// polygon buffer path, before any renderer storage or commands are reserved.
+			const size_t n = points.size();
+			if (((n != 3) && (n != 4)) || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((joinStyle != JoinStyle::Bevel) && (joinStyle != JoinStyle::Miter) && (joinStyle != JoinStyle::Round)))
+			{
+				return none;
+			}
+
+			struct Corner
+			{
+				Vec2 inner;
+				Vec2 miter;
+				Vec2 first;
+				Vec2 last;
+				double sweep = 0;
+				uint16 count = 1;
+				uint16 start = 0;
+			};
+			std::array<Vec2, 4> directions, normals;
+			std::array<Corner, 4> corners;
+			const double orientation = (((points[1] - points[0]).cross(points[2] - points[1]) > 0.0) ? 1.0 : -1.0);
+			const double radius = outerThickness;
+			for (size_t i = 0; i < n; ++i)
+			{
+				const Vec2 edge = (points[(i + 1) % n] - points[i]);
+				const double length = edge.length();
+				if (not (0.0 < length)) return none;
+				directions[i] = (edge / length);
+				normals[i] = Vec2{ directions[i].y, -directions[i].x } * orientation;
+			}
+
+			uint16 vertexCount = static_cast<uint16>(n);
+			for (size_t i = 0; i < n; ++i)
+			{
+				const size_t prev = ((i + n - 1) % n);
+				const double turn = (directions[prev].cross(directions[i]) * orientation);
+				const double dot = directions[prev].dot(directions[i]);
+				// Strict convexity excludes duplicate/collinear corners, concave quads,
+				// and crossing quads. A reversal has no offset-line intersection.
+				if ((not (0.0 < turn)) || (not (0.0 < (1.0 + dot)))) return none;
+				auto& corner = corners[i];
+				const Vec2 bisector = ((normals[prev] + normals[i]) / (1.0 + dot));
+				corner.miter = (bisector * radius);
+				corner.inner = (points[i] - bisector * innerThickness);
+				corner.first = corner.last = (points[i] + corner.miter);
+				// Keep 60-degree corners on the miter side despite rotation roundoff.
+				if ((0.0 < radius) && (joinStyle == JoinStyle::Bevel) && (dot < (-0.5 - 1e-12)))
+				{
+					// Historical Siv3D bevel: below 60 degrees, clip the miter by a
+					// line at radius along the outward bisector (not a simple bevel).
+					const double cosine = std::sqrt((1.0 + dot) * 0.5);
+					const double t = (cosine / (1.0 + cosine));
+					corner.first = (points[i] + normals[prev] * (radius * (1.0 - t)) + corner.miter * t);
+					corner.last = (points[i] + normals[i] * (radius * (1.0 - t)) + corner.miter * t);
+					corner.count = 2;
+				}
+				else if ((0.0 < radius) && (joinStyle == JoinStyle::Round))
+				{
+					corner.first = (points[i] + normals[prev] * radius);
+					corner.last = (points[i] + normals[i] * radius);
+					corner.sweep = std::atan2(turn, dot);
+					corner.count = CalculateCirclePieQuality(static_cast<float>(radius) * scale, static_cast<float>(corner.sweep));
+				}
+				corner.start = vertexCount;
+				vertexCount += corner.count;
+			}
+
+			for (size_t i = 0; i < n; ++i)
+			{
+				// Convexity alone is insufficient: every inset edge must still run
+				// forward. This rejects a vanished hole or a quad whose short inset
+				// edge has disappeared even though another part of the hole remains.
+				if (not (0.0 < (corners[(i + 1) % n].inner - corners[i].inner).dot(directions[i]))) return none;
+			}
+
+			const uint32 indexCount = (3u * vertexCount);
+			const auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
+			if (not pVertex) return 0; // Handled: an allocation failure must not trigger fallback.
+
+			for (size_t i = 0; i < n; ++i)
+			{
+				pVertex[i].pos = corners[i].inner;
+				pVertex[corners[i].start].pos = corners[i].first;
+				pVertex[corners[i].start + corners[i].count - 1].pos = corners[i].last;
+				if ((1 < corners[i].count) && (joinStyle == JoinStyle::Round))
+				{
+					const auto& corner = corners[i];
+					const Vec2 normal = normals[(i + n - 1) % n];
+					const double start = std::atan2(normal.y, normal.x);
+					const double step = (orientation * corner.sweep / (corner.count - 1));
+					for (uint16 k = 1; k + 1 < corner.count; ++k)
+					{
+						const double angle = (start + step * k);
+						pVertex[corner.start + k].pos = (points[i] + Vec2{ std::cos(angle), std::sin(angle) } * radius);
+					}
+				}
+			}
+			for (uint16 i = 0; i < vertexCount; ++i) pVertex[i].color = color;
+
+			auto* dst = pIndex;
+			const auto triangle = [&](const uint16 a, const uint16 b, const uint16 c)
+			{
+				*dst++ = (indexOffset + a);
+				*dst++ = (indexOffset + ((orientation > 0.0) ? b : c));
+				*dst++ = (indexOffset + ((orientation > 0.0) ? c : b));
+			};
+			for (uint16 i = 0; i < n; ++i)
+			{
+				const uint16 next = static_cast<uint16>((i + 1) % n);
+				const auto& corner = corners[i];
+				const uint16 last = (corner.start + corner.count - 1);
+				triangle(i, last, corners[next].start);
+				triangle(i, corners[next].start, next);
+				for (uint16 k = 1; k < corner.count; ++k) triangle(i, (corner.start + k - 1), (corner.start + k));
+			}
+			return indexCount;
 		}
 
 		////////////////////////////////////////////////////////////////

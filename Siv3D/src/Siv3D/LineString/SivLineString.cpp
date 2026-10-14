@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -844,7 +844,12 @@ namespace s3d
 
 	const LineString& LineString::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 
@@ -909,7 +914,12 @@ namespace s3d
 
 	const LineString& LineString::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 

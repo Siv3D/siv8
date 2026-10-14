@@ -547,8 +547,23 @@ namespace s3d
 
 	const Quad& Quad::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[4] = { p0, p1, p2, p3 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return paintFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Quad& Quad::paintFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::QuadFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	const Quad& Quad::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, JoinStyle::Bevel, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Quad& Quad::paintFrame(Image& dst, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::QuadFrame(dst, *this, joinStyle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -560,8 +575,23 @@ namespace s3d
 
 	const Quad& Quad::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[4] = { p0, p1, p2, p3 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return overwriteFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Quad& Quad::overwriteFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::QuadFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	const Quad& Quad::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, JoinStyle::Bevel, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Quad& Quad::overwriteFrame(Image& dst, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::QuadFrame(dst, *this, joinStyle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -598,34 +628,29 @@ namespace s3d
 
 	const Quad& Quad::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, color);
+		const Vec2 points[] = { p0, p1, p2, p3, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, color);
 		return *this;
 	}
 
-	const Quad& Quad::drawFrame(double innerThickness, double outerThickness, const ColorF& color) const
+	const Quad& Quad::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color, const JoinStyle joinStyle) const
 	{
-		const double offset = ((outerThickness - innerThickness) * 0.5);
-		const Quad t = stretched(offset);
-		const std::array<Vec2, 4> points = { t.p0, t.p1, t.p2, t.p3 };
-
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Flat, LineCap::Flat, points, none,
-			static_cast<float>(innerThickness + outerThickness), (outerThickness == 0.0), CloseRing::Yes, color.toFloat4());
+		const Vec2 points[] = { p0, p1, p2, p3 };
+		DrawSmallPolygonFrame(points, joinStyle, innerThickness, outerThickness, color);
 		return *this;
 	}
 
 	const Quad& Quad::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, pattern);
+		const Vec2 points[] = { p0, p1, p2, p3, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, pattern);
 		return *this;
 	}
 
-	const Quad& Quad::drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const
+	const Quad& Quad::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
-		const double offset = ((outerThickness - innerThickness) * 0.5);
-		const Quad t = stretched(offset);
-		const std::array<Vec2, 4> points = { t.p0, t.p1, t.p2, t.p3 };
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Flat, LineCap::Flat, points, none,
-			static_cast<float>(innerThickness + outerThickness), (outerThickness == 0.0), CloseRing::Yes, pattern);
+		const Vec2 points[] = { p0, p1, p2, p3 };
+		DrawSmallPolygonFrame(points, joinStyle, innerThickness, outerThickness, pattern);
 		return *this;
 	}
 

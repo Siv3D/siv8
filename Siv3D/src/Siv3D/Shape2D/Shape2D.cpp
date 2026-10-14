@@ -944,15 +944,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
-	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -964,13 +964,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::overwrite(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -982,13 +982,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::paintFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -1000,13 +1000,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::overwriteFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

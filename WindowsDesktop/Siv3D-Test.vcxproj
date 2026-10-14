@@ -90,6 +90,7 @@
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
+    <ClCompile Include="..\Test\Test_ImageDraw.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
@@ -134,6 +135,11 @@
     <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_Bezier.cpp" />
+    <ClCompile Include="..\Test\Test_BezierTessellation.cpp" />
+    <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp" />
+    <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
+    <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
+    <ClInclude Include="..\Test\BezierTessellationLegacy.hpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
@@ -185,6 +191,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DJoinStyle.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -219,6 +228,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImageDrawingTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
     <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
@@ -354,5 +364,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Test_Spline2D.cpp" />
+    <ClCompile Include="..\Test\Test_Spline2DImage.cpp" />
+    <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp" />
+    <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp" />
+    <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp" />
   </ItemGroup>
 </Project>

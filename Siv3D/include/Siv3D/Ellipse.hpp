@@ -881,6 +881,38 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintPie
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の扇形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 中心から見た開始方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_ellipse_pie "楕円の扇形の描画"
+		const Ellipse& paintPie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwritePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の扇形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 中心から見た開始方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_ellipse_pie "楕円の扇形の描画"
+		const Ellipse& overwritePie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////
@@ -1006,14 +1038,14 @@ namespace s3d
 
 		/// @brief 楕円の扇形を描きます。
 		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
-		/// @param angle 扇形の角度（ラジアン）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り。絶対値が 2π 以上なら楕円全体）
 		/// @param color 扇形の色
 		/// @return *this
 		const Ellipse& drawPie(double startAngle, double angle, const ColorF& color = Palette::White) const;
 
 		/// @brief 楕円の扇形を描きます。
 		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
-		/// @param angle 扇形の角度（ラジアン）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り。絶対値が 2π 以上なら楕円全体）
 		/// @param innerColor 扇の中心部分の色
 		/// @param outerColor 扇の外側部分の色
 		/// @return *this
@@ -1021,7 +1053,7 @@ namespace s3d
 
 		/// @brief 楕円の扇形を描きます。
 		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
-		/// @param angle 扇形の角度（ラジアン）
+		/// @param angle 扇形の角度（ラジアン、正は時計回り、負は反時計回り。絶対値が 2π 以上なら楕円全体）
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Ellipse& drawPie(double startAngle, double angle, const PatternParameters& pattern) const;

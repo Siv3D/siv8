@@ -601,8 +601,23 @@ namespace s3d
 
 	const Triangle& Triangle::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[3] = { p0, p1, p2 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return paintFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::paintFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	const Triangle& Triangle::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, JoinStyle::Bevel, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::paintFrame(Image& dst, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -614,8 +629,23 @@ namespace s3d
 
 	const Triangle& Triangle::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		const Vec2 points[3] = { p0, p1, p2 };
-		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return overwriteFrame(dst, JoinStyle::Bevel, thickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const JoinStyle joinStyle, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, JoinStyle::Bevel, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, joinStyle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -652,41 +682,29 @@ namespace s3d
 
 	const Triangle& Triangle::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, color);
+		const Vec2 points[] = { p0, p1, p2, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, color);
 		return *this;
 	}
 
 	const Triangle& Triangle::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
-		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, pattern);
+		const Vec2 points[] = { p0, p1, p2, p0, p1 };
+		DrawClosedLineString(points, joinStyle, thickness, pattern);
 		return *this;
 	}
 
-	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
+	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color, const JoinStyle joinStyle) const
 	{
-		const double offset = (outerThickness - innerThickness) * 0.5;
-		const Triangle t = stretched(offset);
-
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			std::span<const Vec2>(&t.p0, 3), none,
-			Abs(static_cast<float>(innerThickness + outerThickness)),
-			(outerThickness == 0.0), CloseRing::Yes,
-			color.toFloat4());
-
+		const Vec2 points[] = { p0, p1, p2 };
+		DrawSmallPolygonFrame(points, joinStyle, innerThickness, outerThickness, color);
 		return *this;
 	}
 
-	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
-		const double offset = (outerThickness - innerThickness) * 0.5;
-		const Triangle t = stretched(offset);
-
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			std::span<const Vec2>(&t.p0, 3), none,
-			Abs(static_cast<float>(innerThickness + outerThickness)),
-			(outerThickness == 0.0), CloseRing::Yes,
-			pattern);
-
+		const Vec2 points[] = { p0, p1, p2 };
+		DrawSmallPolygonFrame(points, joinStyle, innerThickness, outerThickness, pattern);
 		return *this;
 	}
 

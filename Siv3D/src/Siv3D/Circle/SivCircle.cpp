@@ -514,6 +514,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Circle& Circle::paintArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, lineCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	overwriteArc
@@ -523,6 +529,60 @@ namespace s3d
 	const Circle& Circle::overwriteArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::CircleArc(dst, *this, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	const Circle& Circle::overwriteArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, lineCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintSegment(Image& dst, const double arcMidpointAngle, const double height, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegment(dst, *this, arcMidpointAngle, height, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteSegment(Image& dst, const double arcMidpointAngle, const double height, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegment(dst, *this, arcMidpointAngle, height, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintSegmentFromAngles
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintSegmentFromAngles(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegmentFromAngles(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteSegmentFromAngles
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteSegmentFromAngles(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleSegmentFromAngles(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

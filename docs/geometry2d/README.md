@@ -5,11 +5,24 @@ API contracts live in the public headers, including
 [distance queries](../../Siv3D/include/Siv3D/Geometry2D/Distance.hpp), and
 [boundary distance queries](../../Siv3D/include/Siv3D/Geometry2D/SignedDistance.hpp).
 
+## Image writing
+
+[Writing 2D shapes to Image](image-writing.md) covers compositing, the CPU/GPU
+API inventory, validation, and reproducible performance measurements.
+
 ## Spline paths
 
 [Spline paths](splines.md) explains reusable curves, distance-based movement,
 ownership, drawing buffers, and the interactive gallery for `Spline2D` and
 `Spline2DMeasure`.
+
+## Bezier drawing
+
+[Adaptive curve drawing](bezier-drawing.md) explains quality units, segment
+budgets, transform handling, and the density placement shared by Bezier2,
+Bezier3, Spline2D, and Bezier Image writing. It
+records the comparison with recursive subdivision and Wang's formula and links
+to the reproducible renderer gallery and benchmarks.
 
 ## Continuing a ray after contact
 

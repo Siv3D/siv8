@@ -9467,9 +9467,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Bezier3\Bezier3ArcLength.hpp">
       <Filter>src\Siv3D\Bezier3</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\Bezier3\Bezier3Flatten.hpp">
-      <Filter>src\Siv3D\Bezier3</Filter>
-    </ClInclude>
     <ClCompile Include="..\Siv3D\src\Siv3D\Spline2D\SivSpline2D.cpp">
       <Filter>src\Siv3D\Spline2D</Filter>
     </ClCompile>
@@ -9489,5 +9486,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3ArcLengthTable.hpp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierTessellation.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\SivRenderer2D_Bezier.cpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

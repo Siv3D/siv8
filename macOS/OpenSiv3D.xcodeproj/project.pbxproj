@@ -101,6 +101,9 @@
 		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
+		D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */; };
+		E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */; };
+		EAC19A7085F349D199B20001 /* Test_Renderer2DJoinStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC19A7085F349D199B20002 /* Test_Renderer2DJoinStyle.cpp */; };
 		C94BD36A8015474EA6324EE1 /* Halftone.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C94BD36A8015474EA6324EE2 /* Halftone.hpp */; };
 		CB18F53A72B24D0B9103E402 /* Test_TestEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */; };
 		CB2DC0DE0000000000000002 /* ScopedConstantBuffer2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CB2DC0DE0000000000000001 /* ScopedConstantBuffer2D.hpp */; };
@@ -117,7 +120,11 @@
 		95D49E74CAF04733BBFE5C42 /* Test_SceneMSAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60222ED4C864488A0709353 /* Test_SceneMSAA.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFF6D08B7B38B09297509A8 /* Test_TestFramework.cpp */; };
 		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
+		DB9BFD5CE53F46B2B131CF39 /* BezierTessellation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 063CC4C1197F4F1191CFC0A8 /* BezierTessellation.hpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
+		B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */; };
+		6064B044D57A48688C26F31A /* Test_BezierDrawAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */; };
+		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */; };
@@ -1000,6 +1007,7 @@
 		F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B392BB69C1800222F45 /* Image.hpp */; };
 		F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B3B2BB69C2800222F45 /* Image.ipp */; };
 		F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */; };
+		C849A87D82B44BC197A390A1 /* Test_ImageDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */; };
 		F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3F2BB69C8200222F45 /* SivImage.cpp */; };
 		F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B422BB69CA900222F45 /* BigFloat.hpp */; };
 		F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B442BB69D8500222F45 /* BigFloat.ipp */; };
@@ -3113,6 +3121,7 @@
 		F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CEE2C9AB1D500290998 /* SivEllipse.cpp */; };
 		F9D41CF32C9FCDC300290998 /* SivRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CF12C9FCDC300290998 /* SivRoundRect.cpp */; };
 		F9D41CF62C9FCDE900290998 /* Vertex2DBuilder_Rounded.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CF42C9FCDE800290998 /* Vertex2DBuilder_Rounded.cpp */; };
+		C54151EFDAAC4974BDF7C102 /* SivRenderer2D_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E17BAF5050264D40B1FE0B68 /* SivRenderer2D_Bezier.cpp */; };
 		F9D41CF72C9FCDE900290998 /* Vertex2DBuilder_StraightEdged.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CF52C9FCDE800290998 /* Vertex2DBuilder_StraightEdged.cpp */; };
 		F9D41CF92C9FD7F200290998 /* OffsetCircular.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */; };
 		F9D41CFB2C9FD81F00290998 /* OffsetCircular.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CFA2C9FD81F00290998 /* OffsetCircular.ipp */; };
@@ -3362,10 +3371,13 @@
 		3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 54ADA66A6B90504E884E75A4 /* Spline2D.hpp */; };
 		5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */; };
 		D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */; };
-		8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */; };
 		80C6B809C0C15293B1B86674 /* SivSpline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */; };
 		5435E1B72EC85F4384FF1602 /* SivSpline2DMeasure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */; };
 		BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */; };
+		9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F412C2A96A7D492A954FFCA0 /* Test_Spline2DImage.cpp */; };
+		CE0A117E82E1402D8D90D4B3 /* Test_ImagePolygonFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1B5E88E9D7C0496395C0F8D3 /* Test_ImagePolygonFrame.cpp */; };
+		F9D26B80DAE4479EBB8C8CA7 /* Test_ImageDrawingTestHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD5DE10CC8DE427E939B73CE /* Test_ImageDrawingTestHelper.cpp */; };
+		5C02AD14871C4C2DAEA6AFB0 /* Test_ImageJoinStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59055083B5324B3888A5262A /* Test_ImageJoinStyle.cpp */; };
 		F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */; };
 		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -3493,6 +3505,9 @@
 		BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Transformer2D.cpp; sourceTree = "<group>"; };
 		C224C34DFA94D88428B6C2F2 /* SivScopedQuadWarp2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedQuadWarp2D.cpp; sourceTree = "<group>"; };
 		C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleDashedFrame.cpp; sourceTree = "<group>"; };
+		D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEllipsePie.cpp; sourceTree = "<group>"; };
+		E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleArc.cpp; sourceTree = "<group>"; };
+		EAC19A7085F349D199B20002 /* Test_Renderer2DJoinStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DJoinStyle.cpp; sourceTree = "<group>"; };
 		C94BD36A8015474EA6324EE2 /* Halftone.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Halftone.hpp; sourceTree = "<group>"; };
 		C983F9CE786B5AC23850C05D /* catch_amalgamated.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = catch_amalgamated.cpp; sourceTree = "<group>"; };
 		CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TestEnvironment.cpp; sourceTree = "<group>"; };
@@ -3509,7 +3524,13 @@
 		D5B0EAB9AC15900C4E381717 /* Test_Mesh3DUV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DUV.cpp; sourceTree = "<group>"; };
 		D845EB69276147C8B56FC102 /* Wave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wave.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A411 /* BezierGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BezierGeometry.hpp; sourceTree = "<group>"; };
+		063CC4C1197F4F1191CFC0A8 /* BezierTessellation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellation.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
+		B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierTessellation.cpp; sourceTree = "<group>"; };
+		DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierDrawAdaptive.cpp; sourceTree = "<group>"; };
+		67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CurveAdaptive.cpp; sourceTree = "<group>"; };
+		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
+		B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationLegacy.hpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
 		9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneHighResolution.cpp; sourceTree = "<group>"; };
 		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
@@ -4463,6 +4484,7 @@
 		F9528B392BB69C1800222F45 /* Image.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		F9528B3B2BB69C2800222F45 /* Image.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.ipp; sourceTree = "<group>"; };
 		F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Image.cpp; sourceTree = "<group>"; };
+		C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageDraw.cpp; sourceTree = "<group>"; };
 		F9528B3F2BB69C8200222F45 /* SivImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage.cpp; sourceTree = "<group>"; };
 		F9528B422BB69CA900222F45 /* BigFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.hpp; sourceTree = "<group>"; };
 		F9528B442BB69D8500222F45 /* BigFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.ipp; sourceTree = "<group>"; };
@@ -6508,6 +6530,7 @@
 		F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DLoft.cpp; sourceTree = "<group>"; };
 		F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DLoft.cpp; sourceTree = "<group>"; };
 		F9A3D31A30A1000000C0DE01 /* Test_Mesh3DNormals.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DNormals.cpp; sourceTree = "<group>"; };
+		167DC5FEDA7F4F9B8028A6C8 /* ImageDrawingTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageDrawingTestHelper.hpp; sourceTree = "<group>"; };
 		F9A3D31B30A1000000C0DE01 /* Mesh3DTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DTestHelper.hpp; sourceTree = "<group>"; };
 		F9A3D31B30A1000000C0DE02 /* WindowSceneTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowSceneTestHelper.hpp; sourceTree = "<group>"; };
 		F9A3D41130A2000000C0DE01 /* Mesh3DCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DCommon.hpp; sourceTree = "<group>"; };
@@ -6623,6 +6646,7 @@
 		F9D41CEE2C9AB1D500290998 /* SivEllipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEllipse.cpp; sourceTree = "<group>"; };
 		F9D41CF12C9FCDC300290998 /* SivRoundRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRoundRect.cpp; sourceTree = "<group>"; };
 		F9D41CF42C9FCDE800290998 /* Vertex2DBuilder_Rounded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vertex2DBuilder_Rounded.cpp; sourceTree = "<group>"; };
+		E17BAF5050264D40B1FE0B68 /* SivRenderer2D_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivRenderer2D_Bezier.cpp; sourceTree = "<group>"; };
 		F9D41CF52C9FCDE800290998 /* Vertex2DBuilder_StraightEdged.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vertex2DBuilder_StraightEdged.cpp; sourceTree = "<group>"; };
 		F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OffsetCircular.hpp; sourceTree = "<group>"; };
 		F9D41CFA2C9FD81F00290998 /* OffsetCircular.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OffsetCircular.ipp; sourceTree = "<group>"; };
@@ -6881,10 +6905,13 @@
 		54ADA66A6B90504E884E75A4 /* Spline2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2D.hpp; sourceTree = "<group>"; };
 		D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2DMeasure.hpp; sourceTree = "<group>"; };
 		A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLength.hpp; sourceTree = "<group>"; };
-		BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Flatten.hpp; sourceTree = "<group>"; };
 		B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2D.cpp; sourceTree = "<group>"; };
 		C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2DMeasure.cpp; sourceTree = "<group>"; };
 		6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spline2D.cpp; sourceTree = "<group>"; };
+		F412C2A96A7D492A954FFCA0 /* Test_Spline2DImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spline2DImage.cpp; sourceTree = "<group>"; };
+		1B5E88E9D7C0496395C0F8D3 /* Test_ImagePolygonFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImagePolygonFrame.cpp; sourceTree = "<group>"; };
+		AD5DE10CC8DE427E939B73CE /* Test_ImageDrawingTestHelper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageDrawingTestHelper.cpp; sourceTree = "<group>"; };
+		59055083B5324B3888A5262A /* Test_ImageJoinStyle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageJoinStyle.cpp; sourceTree = "<group>"; };
 		96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLengthTable.hpp; sourceTree = "<group>"; };
 		983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTextureAllocationFailure.hpp; sourceTree = "<group>"; };
 		2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_SceneAllocationFailure.cpp; sourceTree = "<group>"; };
@@ -7227,6 +7254,7 @@
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
+				C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
 				F90F7A192FA9DB730077F398 /* Test_INI.cpp */,
 				F9A000062FC0000000000001 /* Test_Interpolation.cpp */,
@@ -7248,7 +7276,16 @@
 				F90702C22B9DAEB900383E4D /* Test_NamedParameter.cpp */,
 				F90702C32B9DAEB900383E4D /* Test_Platform.cpp */,
 				D94C71C8E32144768219A413 /* Test_Bezier.cpp */,
+				B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */,
+				DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */,
+				67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */,
+				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
+				B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */,
 				6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */,
+				F412C2A96A7D492A954FFCA0 /* Test_Spline2DImage.cpp */,
+				1B5E88E9D7C0496395C0F8D3 /* Test_ImagePolygonFrame.cpp */,
+				AD5DE10CC8DE427E939B73CE /* Test_ImageDrawingTestHelper.cpp */,
+				59055083B5324B3888A5262A /* Test_ImageJoinStyle.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
@@ -7280,6 +7317,9 @@
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
 				42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */,
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
+				D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */,
+				E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */,
+				EAC19A7085F349D199B20002 /* Test_Renderer2DJoinStyle.cpp */,
 				D17C8F3E20984E4B83160002 /* Test_Renderer2DPipelineState.cpp */,
 				CB2DCAFE0000000000000012 /* Test_ConstantBuffer.cpp */,
 				AFF94ACA4F194DF6A0EF1CA6 /* Test_LineStringIndexCount.cpp */,
@@ -7324,6 +7364,7 @@
 				F9A3D11830A1000000C0DE01 /* Test_Material.cpp */,
 				F90702CD2B9DAEB900383E4D /* Test_Version.cpp */,
 				F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */,
+				167DC5FEDA7F4F9B8028A6C8 /* ImageDrawingTestHelper.hpp */,
 				F9A3D31B30A1000000C0DE01 /* Mesh3DTestHelper.hpp */,
 				F9A3D31B30A1000000C0DE02 /* WindowSceneTestHelper.hpp */,
 				1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */,
@@ -10014,6 +10055,7 @@
 				F93BD7A2300FB1B200B3542E /* SivGeometry2D_Distance.cpp */,
 				70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */,
 				D94C71C8E32144768219A411 /* BezierGeometry.hpp */,
+				063CC4C1197F4F1191CFC0A8 /* BezierTessellation.hpp */,
 				F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */,
 				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
 				0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */,
@@ -11571,6 +11613,7 @@
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
 				F980C47C2C04B3EA00A86B68 /* Vertex2DBufferPointer.hpp */,
 				F9D41CF42C9FCDE800290998 /* Vertex2DBuilder_Rounded.cpp */,
+				E17BAF5050264D40B1FE0B68 /* SivRenderer2D_Bezier.cpp */,
 				F9D41CF52C9FCDE800290998 /* Vertex2DBuilder_StraightEdged.cpp */,
 				F980C47E2C04B3EA00A86B68 /* Vertex2DBuilder.hpp */,
 			);
@@ -13601,7 +13644,6 @@
 			isa = PBXGroup;
 			children = (
 				F99881422F40B51A00C8991D /* SivBezier3.cpp */,
-				BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */,
 				A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */,
 			);
 			path = Bezier3;
@@ -16286,7 +16328,7 @@
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
 				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
-				8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */,
+				DB9BFD5CE53F46B2B131CF39 /* BezierTessellation.hpp in Headers */,
 				D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
@@ -16944,6 +16986,9 @@
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
 				1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */,
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,
+				D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */,
+				E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */,
+				EAC19A7085F349D199B20001 /* Test_Renderer2DJoinStyle.cpp in Sources */,
 				D17C8F3E20984E4B83160001 /* Test_Renderer2DPipelineState.cpp in Sources */,
 				CB2DCAFE0000000000000011 /* Test_ConstantBuffer.cpp in Sources */,
 				5E416ED3BF56463B99B4622C /* Test_LineStringIndexCount.cpp in Sources */,
@@ -17041,7 +17086,14 @@
 				E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */,
 				F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */,
 				D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */,
+				B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */,
+				6064B044D57A48688C26F31A /* Test_BezierDrawAdaptive.cpp in Sources */,
+				E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
+				9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */,
+				CE0A117E82E1402D8D90D4B3 /* Test_ImagePolygonFrame.cpp in Sources */,
+				F9D26B80DAE4479EBB8C8CA7 /* Test_ImageDrawingTestHelper.cpp in Sources */,
+				5C02AD14871C4C2DAEA6AFB0 /* Test_ImageJoinStyle.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,
 				F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */,
 				1D34916E87204B5A936108CE /* Test_Geometry2D_Contains.cpp in Sources */,
@@ -17074,6 +17126,7 @@
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
+				C849A87D82B44BC197A390A1 /* Test_ImageDraw.cpp in Sources */,
 				F9528C522BC029E800222F45 /* Test_MemoryMappedFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -17491,6 +17544,7 @@
 				F99881C62F56CAB700C8991D /* SivDriveInfo.mm in Sources */,
 				F9070DF92B9F175E00383E4D /* CUserAction.cpp in Sources */,
 				F9D41CF62C9FCDE900290998 /* Vertex2DBuilder_Rounded.cpp in Sources */,
+				C54151EFDAAC4974BDF7C102 /* SivRenderer2D_Bezier.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */,
 				F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */,

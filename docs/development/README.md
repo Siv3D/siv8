@@ -320,7 +320,18 @@ For a Debug failure, use `Debug` consistently for the rebuild and runner.
 source or build settings have changed. These manual MSBuild commands do not acquire
 the runner's lock; never run them concurrently with another build or test session.
 
+If a `C1001` diagnostic identifies `HostX86/x64/CL.exe`, try the matching clean
+rebuild above with `/p:PreferredToolArchitecture=x64` to select the 64-bit host
+compiler. Keep the same target, toolset, configuration, and optimization settings.
+Preserve both build logs and run the full suite after a successful rebuild.
+Changing the host compiler and regenerating build artifacts together does not
+isolate which change avoided the failure.
+
 ## Performance experiments
+
+The [Renderer2D JoinStyle benchmark](renderer2d-join-benchmark.md) separates
+polygon buffering, triangulation, vertex conversion, and direct mesh emission
+for Triangle and Quad GPU drawing. It measures CPU work and temporary allocations.
 
 The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compares
 the current Win32 reader with the historical `ifstream` implementation and

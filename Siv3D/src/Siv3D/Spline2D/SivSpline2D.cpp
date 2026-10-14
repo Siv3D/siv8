@@ -9,10 +9,23 @@
 # include <stdexcept>
 # include <Siv3D/Spline2D.hpp>
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
-# include <Siv3D/Bezier3/Bezier3Flatten.hpp>
+# include <Siv3D/Geometry2D/BezierTessellation.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		void ValidateTessellation(const double targetError, const int32 maxSegmentsPerCurve)
+		{
+			if ((targetError <= 0.0) || (maxSegmentsPerCurve < 1) || (4096 < maxSegmentsPerCurve))
+			{
+				throw std::invalid_argument{ "Spline2D: positive targetError and maxSegmentsPerCurve in [1, 4096] required" };
+			}
+		}
+	}
+
 	Spline2D Spline2D::FromCatmullRom(const std::span<const Vec2> points, const CloseRing closeRing,
 		const CatmullRomParameterization parameterization)
 	{
@@ -194,46 +207,58 @@ namespace s3d
 		}
 	}
 
-	LineString Spline2D::toLineStringAdaptive(const double maxError, const int32 maxDepth) const
+	LineString Spline2D::toLineStringAdaptive(const double targetError, const int32 maxSegmentsPerCurve) const
 	{
 		LineString result;
-		toLineStringAdaptive(result, maxError, maxDepth);
+		toLineStringAdaptive(result, targetError, maxSegmentsPerCurve);
 		return result;
 	}
 
-	void Spline2D::toLineStringAdaptive(LineString& destination, const double maxError, const int32 maxDepth) const
+	void Spline2D::toLineStringAdaptive(LineString& destination, const double targetError, const int32 maxSegmentsPerCurve) const
 	{
-		if ((maxError <= 0.0) || (maxDepth < 0) || (20 < maxDepth))
-		{
-			throw std::invalid_argument{ "Spline2D::toLineStringAdaptive(): positive error and depth in [0, 20] required" };
-		}
-		destination.clear();
-		if (isEmpty())
-		{
-			return;
-		}
-		destination.push_back(m_segments.front().p0);
-		for (const Bezier3& curve : m_segments)
-		{
-			detail::AppendBezier3Polyline(destination, curve, (maxError * maxError), maxDepth);
-		}
-		if (m_closed && (destination.size() > 1) && (destination.back() == destination.front()))
-		{
-			destination.pop_back();
-		}
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		detail::BezierTessellation::Workspace workspace;
+		detail::BezierTessellation::FlattenPath(destination, workspace, m_segments, m_closed, targetError,
+			static_cast<uint32>(maxSegmentsPerCurve), [](const auto& source) -> const auto& { return source; });
 	}
 
-	const Spline2D& Spline2D::draw(const double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	const Spline2D& Spline2D::paint(Image& dst, const LineCap startCap, const LineCap endCap,
+		const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing,
+		const double targetError, const int32 maxSegmentsPerCurve) const
 	{
-		const LineString polyline = toLineStringAdaptive(maxError, maxDepth);
+		const LineString outline = toLineStringAdaptive(targetError, maxSegmentsPerCurve);
 		if (isClosed())
 		{
-			polyline.drawClosed(thickness, color);
+			outline.paintClosed(dst, thickness, color, enableAntialiasing);
 		}
 		else
 		{
-			polyline.draw(thickness, color);
+			outline.paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		}
+		return *this;
+	}
+
+	const Spline2D& Spline2D::overwrite(Image& dst, const LineCap startCap, const LineCap endCap,
+		const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing,
+		const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		const LineString outline = toLineStringAdaptive(targetError, maxSegmentsPerCurve);
+		if (isClosed())
+		{
+			outline.overwriteClosed(dst, thickness, color, enableAntialiasing);
+		}
+		else
+		{
+			outline.overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		}
+		return *this;
+	}
+
+	const Spline2D& Spline2D::draw(const double thickness, const ColorF& color, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		SIV3D_ENGINE(Renderer2D)->addSpline(m_segments, isClosed() ? CloseRing::Yes : CloseRing::No,
+			static_cast<float>(thickness), color.toFloat4(), targetError, maxSegmentsPerCurve);
 		return *this;
 	}
 

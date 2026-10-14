@@ -11,6 +11,7 @@
 
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
@@ -250,6 +251,54 @@ namespace s3d
 	bool SuperEllipse::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersects(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::SuperEllipseFrame(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::SuperEllipseFrame(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

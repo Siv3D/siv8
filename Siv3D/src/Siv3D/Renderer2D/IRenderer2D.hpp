@@ -33,6 +33,8 @@ namespace s3d
 	struct Mat3x3;
 	enum class LineCap : uint8;
 	struct PatternParameters;
+	struct Bezier2;
+	struct Bezier3;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -44,6 +46,12 @@ namespace s3d
 		virtual ~ISiv3DRenderer2D() = default;
 
 		virtual void init() = 0;
+
+		// Shared CPU tessellation and reusable storage, independent of the graphics backend.
+		void addBezier(const Bezier2& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
+		void addBezier(const Bezier3& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
+
+		void addSpline(std::span<const Bezier3> curves, CloseRing closeRing, float thickness, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
 
 		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
@@ -145,6 +153,11 @@ namespace s3d
 
 		virtual void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const PatternParameters& pattern) = 0;
 
+		// Returns false only for unsupported topology, before reserving a buffer.
+		virtual bool tryAddSmallConvexFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const Float4& color) = 0;
+
+		virtual bool tryAddSmallConvexFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const PatternParameters& pattern) = 0;
+
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color) = 0;
 
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd) = 0;
@@ -183,6 +196,7 @@ namespace s3d
 		virtual void flush() = 0;
 
 		virtual void setSceneScale(Float2 scale) = 0;
+		virtual Float2 getSceneScale() const noexcept = 0;
 
 
 		virtual Float4 getColorMul() const = 0;
@@ -242,8 +256,14 @@ namespace s3d
 
 		virtual float getRMSScaling() const noexcept = 0;
 
+		virtual float getRasterScaling() const noexcept = 0;
+
 
 
 		virtual const Texture& getShadowTexture() const noexcept = 0;
+
+	private:
+
+		Array<Vec2> m_curvePoints;
 	};
 }
