@@ -137,7 +137,9 @@
     <ClCompile Include="..\Test\Test_Bezier.cpp" />
     <ClCompile Include="..\Test\Test_BezierTessellation.cpp" />
     <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp" />
+    <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
+    <ClInclude Include="..\Test\BezierTessellationLegacy.hpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />

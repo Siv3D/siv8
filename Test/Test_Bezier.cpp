@@ -35,15 +35,14 @@ TEST_CASE("Bezier3.ArcLength.DistanceAndStationaryPoints")
 	CHECK(rotated.computePointAtDistance(extremum).distanceFrom(Vec2{ extremum, 0 }.rotated(0.7)) < 1e-7);
 }
 
-TEST_CASE("Bezier3.Flattening.LoopsAndDepthLimit")
+TEST_CASE("Bezier3.Flattening.LoopsAndSegmentLimit")
 {
 	const Bezier3 loop{ { 0, 0 }, { 100, 100 }, { -100, 100 }, { 0, 0 } };
-	const auto polyline = loop.toLineStringAdaptive(0.1, 12);
+	const auto polyline = loop.toLineStringAdaptive(0.1, 256);
 	CHECK(polyline.size() > 20);
 	CHECK(polyline.front() == loop.p0);
 	CHECK(polyline.back() == loop.p3);
-	CHECK(loop.toLineStringAdaptive(0.1, 0).size() == 1);
-	CHECK(loop.toLineStringAdaptive(0.1, -1).size() == 1);
+	CHECK(loop.toLineStringAdaptive(0.1, 1).size() == 1);
 	const Bezier3 nonlinear{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 100, 0 } };
 	CHECK(nonlinear.toLineStringAdaptive().size() == 2);
 }

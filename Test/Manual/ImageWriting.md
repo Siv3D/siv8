@@ -21,7 +21,10 @@ acceptance criterion.
    Press **S** to cycle the shape, stroke, and arrow pages. The stroke page has
    Line, LineString, Bezier2, Bezier3, and a short Line. On this page, **J** and **K** independently cycle the
    start and end caps through Flat / Round / Square. **D** changes the last Line
-   length between zero, 1.5, and 20 pixels. On the arrow page, **J** selects the
+   length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
+   0.25 / 0.5 / 1.5 pixels; **B** switches its budget between 256 and four segments.
+   The GPU Bezier columns use `drawAdaptive` with the same numeric settings.
+   On the arrow page, **J** selects the
    tail cap, **T** cycles the shaft width, and **D** changes the short arrow.
    The columns show horizontal, diagonal, short, clipped, and zero-length arrows.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
@@ -30,6 +33,11 @@ acceptance criterion.
    writes no files and does not replace the repository test application's Main.
 
 ## Expected results
+
+- Bezier quality and budget controls affect both paint and overwrite, with the
+  same centerline subdivision. Four segments deliberately produces facets.
+  Image quality is in image pixels, while GPU quality includes render resolution;
+  compare at scene-size resolution when inspecting the same numeric target.
 
 - AA edges have intermediate coverage; disabling AA removes intermediate coverage
   from these shape operations. RectF has no AA toggle and is not in this gallery.
@@ -118,6 +126,9 @@ void Main()
 	const Bezier3 cubic{ Vec2{ 30.25, 96.75 }, Vec2{ 170.25, -20.75 }, Vec2{ 20.25, -20.75 }, Vec2{ 160.25, 96.75 } };
 	const Array<double> shortLengths{ 0.0, 1.5, 20.0 };
 	size_t shortLengthIndex = 0;
+	const Array<double> curveQuality{ 0.25, 0.5, 1.5 };
+	size_t curveQualityIndex = 1;
+	bool curveLimited = false;
 	const auto shortLine = [&] { return Line{ 96.25, 64.75, 96.25 + shortLengths[shortLengthIndex], 64.75 }; };
 	const auto arrowLine = [&](const int32 kind)
 	{
@@ -151,10 +162,17 @@ void Main()
 				if (paint) shape.paint(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink, antialiasing);
 				else shape.overwrite(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink, antialiasing);
 			};
+			const auto drawCurve = [&](const auto& shape)
+			{
+				if (paint) shape.paint(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink,
+					antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+				else shape.overwrite(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink,
+					antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+			};
 			if (kind == 0) draw(strokeLine);
 			else if (kind == 1) draw(strokePath);
-			else if (kind == 2) draw(quadratic);
-			else if (kind == 3) draw(cubic);
+			else if (kind == 2) drawCurve(quadratic);
+			else if (kind == 3) drawCurve(cubic);
 			else draw(shortLine());
 			return;
 		}
@@ -228,6 +246,8 @@ void Main()
 
 	while (System::Update())
 	{
+		if (KeyQ.down()) { curveQualityIndex = (curveQualityIndex + 1) % curveQuality.size(); dirty = true; }
+		if (KeyB.down()) { curveLimited = !curveLimited; dirty = true; }
 		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
 		if (KeyS.down()) { page = (page + 1) % 3; dirty = true; }
 		if (KeyJ.down()) { startCapIndex = (startCapIndex + 1) % arcCaps.size(); dirty = true; }
@@ -254,7 +274,8 @@ void Main()
 				}
 			dirty = false;
 		}
-		font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
+		if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
+		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
 		if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else if (page == 2) font(U"J: tail = {}   T: width = {}    horizontal / diagonal / D: {} / clipped / zero"_fmt(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
@@ -277,10 +298,15 @@ void Main()
 					{
 						shape.movedBy(pos).draw(arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink);
 					};
+					const auto drawCurve = [&](const auto& shape)
+					{
+						shape.movedBy(pos).drawAdaptive(arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink,
+							curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+					};
 					if (kind == 0) draw(strokeLine);
 					else if (kind == 1) draw(strokePath);
-					else if (kind == 2) draw(quadratic);
-					else if (kind == 3) draw(cubic);
+					else if (kind == 2) drawCurve(quadratic);
+					else if (kind == 3) drawCurve(cubic);
 					else draw(shortLine());
 				}
 				else if (kind == 0)

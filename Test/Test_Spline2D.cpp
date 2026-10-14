@@ -81,7 +81,7 @@ TEST_CASE("Spline2D.EmptyAndInvalidInput")
 	CHECK_THROWS_AS(empty.toLineStringAdaptive(output, 0), std::invalid_argument);
 	CHECK_THROWS_AS(empty.toLineStringAdaptive(output, -1), std::invalid_argument);
 	CHECK_THROWS_AS(empty.toLineStringAdaptive(output, 1, -1), std::invalid_argument);
-	CHECK_THROWS_AS(empty.toLineStringAdaptive(output, 1, 21), std::invalid_argument);
+	CHECK_THROWS_AS(empty.toLineStringAdaptive(output, 1, 4097), std::invalid_argument);
 	CHECK(output == saved);
 	empty.toLineString(output);
 	CHECK(output.isEmpty());
@@ -200,9 +200,9 @@ TEST_CASE("Spline2D.FlatteningAndStorageReuse")
 	CHECK(output.data() == storage);
 	spline.toLineString(output, -1);
 	CHECK(output.size() == 3);
-	spline.toLineStringAdaptive(output, 0.1, 14);
+	spline.toLineStringAdaptive(output, 0.1, 256);
 	CHECK(output.data() == storage);
-	CHECK(output == spline.toLineStringAdaptive(0.1, 14));
+	CHECK(output == spline.toLineStringAdaptive(0.1, 256));
 	CHECK(output.front() == curves.front().p0);
 	CHECK(output.back() == curves.back().p3);
 	for (const Bezier3& curve : curves)
@@ -212,7 +212,7 @@ TEST_CASE("Spline2D.FlatteningAndStorageReuse")
 			CHECK(PolylineDistance(output, curve.pointAt(i / 1000.0)) <= 0.100001);
 		}
 	}
-	const auto coarse = spline.toLineStringAdaptive(0.1, 0);
+	const auto coarse = spline.toLineStringAdaptive(0.1, 1);
 	CHECK(coarse.size() <= 3);
 	CHECK(output.size() > coarse.size());
 	Spline2D{}.toLineStringAdaptive(output);

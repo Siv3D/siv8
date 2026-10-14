@@ -15,8 +15,8 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
+# include <Siv3D/Geometry2D/BezierTessellation.hpp>
 # include "Bezier3ArcLength.hpp"
-# include "Bezier3Flatten.hpp"
 
 namespace s3d
 {
@@ -189,12 +189,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString Bezier3::toLineStringAdaptive(const double maxError, const int32 maxDepth) const
+	LineString Bezier3::toLineStringAdaptive(const double targetError, const int32 maxSegments) const
 	{
 		LineString result;
-		result.push_back(p0);
-		detail::AppendBezier3Polyline(result, *this, (maxError * maxError), Max(0, maxDepth));
+		toLineStringAdaptive(result, targetError, maxSegments);
 		return result;
+	}
+
+	void Bezier3::toLineStringAdaptive(LineString& destination, const double targetError, const int32 maxSegments) const
+	{
+		assert(0 < targetError);
+		assert(1 <= maxSegments && maxSegments <= 4096);
+		detail::BezierTessellation::Workspace workspace;
+		const detail::BezierTessellation::Curve curve{ *this };
+		detail::BezierTessellation::Flatten(destination, workspace, curve, curve, targetError, static_cast<uint32>(maxSegments));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -431,24 +439,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier3& Bezier3::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::paint(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::paint(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive().paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive(targetError, maxSegments).paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 
@@ -458,24 +466,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier3& Bezier3::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive().overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive(targetError, maxSegments).overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 

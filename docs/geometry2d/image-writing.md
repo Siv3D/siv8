@@ -53,7 +53,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
-| Bezier2, Bezier3 | Adaptive stroke with independent end caps | Explicit subdivision / adaptive quality controls |
+| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | Explicit subdivision / adaptive quality controls |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
 | Spline2D | No direct methods | Open / closed strokes; reuse its sampled LineString for Image |
@@ -90,8 +90,17 @@ A single cap argument still applies to both ends, and omitting it retains Round
 ends for Image writing. Square extends the endpoint by half the stroke width;
 Round adds a rounded end. The caps follow point order, so reversing a path and
 swapping its caps preserves the region. Adjacent duplicate points do not create
-extra ends. Bezier curves retain their adaptive LineString conversion. Open
-LineString joins remain round, and coverage is combined before compositing.
+extra ends. Open LineString joins remain round, and coverage is combined before
+compositing. Bezier Image writing uses the shared [density tessellation](bezier-drawing.md),
+with optional `targetError` and `maxSegments` after the antialiasing argument.
+Defaults are 0.5 Image pixels and 256 segments. The positive finite target is
+approximate, and the segment cap takes priority. Renderer transforms do not
+affect Image quality.
+
+```cpp
+curve.paint(image, 6, Palette::White, EnableAntialiasing::Yes, 0.25, 256);
+curve.overwrite(image, 6, Palette::White, EnableAntialiasing::No, 0.75, 128);
+```
 
 A zero-length Line, or an open LineString of at least two coincident points,
 uses the union of the two cap regions: Square yields a centered square, otherwise

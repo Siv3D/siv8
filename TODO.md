@@ -10,14 +10,12 @@
 ## Bezier2 and Bezier3 adaptive drawing
 
 - [採用方式と検証方法](docs/geometry2d/bezier-drawing.md)に沿って Windows Release で比較と全自動テストを実行し、MSVC と描画 backend の性能差を確認する。GPU 頂点削減の実時間効果が必要な用途では、CPU submission と分けて GPU 時間を計測する。
-- `toLineStringAdaptive()`、Image paint / overwrite、Spline2D への密度方式の適用を検討する。共有 kernel を使い、幾何変換の座標単位、描画先ピクセル単位、既定品質と出力上限の責務を分離する。複数曲線の境界で品質と分割数が変化する挙動も確認する。
 
 ## 2D 図形の Image 書き込み
 
 [設計・API 対応表と検証方法](docs/geometry2d/image-writing.md)を参照。
 
 - `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。追加候補は join、破線、Spline2D、変換・wireframe、グラデーション・パターン・影。個別に API と性能を検討する。
-- Bezier2 / Bezier3 の Image 分割精度は、上記の共有 kernel と品質指定の統合時に検討する。
 - [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の自動テストと Release ベンチマークを実行する。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 

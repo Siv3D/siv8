@@ -73,19 +73,35 @@ allocate memory or rebuild the tables.
 
 ## Drawing and reuse
 
-`path.draw()` is convenient for occasional drawing. For unchanged paths, save
-the result of `toLineStringAdaptive()` and draw that instead. Use `drawClosed()`
-for a closed path. The destination overload preserves the buffer's capacity:
+`path.draw()` uses the shared [density tessellation](bezier-drawing.md) with a
+default target of 0.5 render-target pixels and up to 256 line segments per
+Bezier3 interval. Local, Camera, and scene-resolution scale affect the quality
+metric; QuadWarp and custom vertex shaders do not. All intervals form one stroke,
+so internal knots have joins and a closed path has a joined seam. Drawing reuses
+a renderer-owned vertex buffer.
+
+```cpp
+path.draw(3, Palette::White);              // Default quality in render pixels
+path.draw(3, Palette::White, 0.75, 128);    // Target and per-curve segment budget
+```
+
+For unchanged paths, retain a polyline when its coordinate-space quality is
+appropriate for the drawing scale. Use `drawClosed()` for a closed path:
 
 ```cpp
 LineString outline;
-path.toLineStringAdaptive(outline, 0.5);
+path.toLineStringAdaptive(outline, 0.5, 256);
 // After editing the path, write into the same outline again.
+if (path.isClosed()) outline.drawClosed(3);
+else outline.draw(3);
 ```
 
-The approximation threshold is measured in path coordinates. A large display
-scale may require a smaller threshold. At the maximum subdivision depth, a
-segment can retain more error than requested.
+Conversion measures the target in path coordinates, ignores renderer state, and
+preserves destination capacity. A cached outline may need finer conversion when
+zoomed in. The segment budget takes priority over the target; neither API promises
+a strict error bound. The final argument is a **per-curve segment count**, replacing
+the old recursion depth. `1` preserves only the interval endpoints. Total point
+count grows with path length; GPU drawing has the same size limits as LineString.
 
 Rendering subdivisions are separate from arc length measurements. A geometrically
 straight cubic can still have a nonlinear parameter-to-distance relationship.
@@ -100,6 +116,10 @@ interpolation against an independent evaluator, closure, duplicate knots,
 closest points, storage reuse, distance boundaries, ownership, zero-length
 segments, and round trips. The Bezier regression tests cover the shared numeric
 and flattening operations in [Test_Bezier.cpp](../../Test/Test_Bezier.cpp).
+[Curve integration tests](../../Test/Test_CurveAdaptive.cpp) check shared endpoints,
+closure, per-curve budgets, reusable conversion, transformed drawing, and scene
+resolution. Their opt-in `CurveAdaptive.Benchmark` compares density and legacy
+conversion for paths of different lengths and includes Bezier Image writing.
 
 The [interactive path gallery](../../Test/Manual/Spline2D.md) demonstrates
 interpolation, nearest-point editing, constant-speed travel, and equal-distance

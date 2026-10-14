@@ -108,33 +108,37 @@ namespace s3d
 		/// @remark 空の経路なら destination を空にします。閉じた経路では末尾に始点を重複させません。
 		void toLineString(LineString& destination, int32 subdivisionsPerSegment = 24) const;
 
-		/// @brief 曲がりの大きい部分を細かく分割し、描画用の折れ線を作成します。
-		/// @param maxError 折れ線とのずれの目安。座標と同じ単位の有限の正の値。
-		/// @param maxDepth 区間ごとの最大分割深さ。0～20。0 は各区間の両端だけを使います。
+		/// @brief 各区間を適応分割した折れ線を作成します。
+		/// @param targetError 中心線と折れ線のずれの目標値。座標と同じ単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
 		/// @return 折れ線。空の経路なら空です。閉じた経路では末尾に始点を重複させません。
-		/// @throws std::invalid_argument maxError が 0 以下、または maxDepth が 0～20 の範囲外の場合
-		/// @remark 分割上限に達した部分では maxError を超えるずれが残る場合があります。
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		/// @pre 計算結果を double で表現できること。
+		/// @remark 区間の接続点を保持し、連続する同一点はまとめます。上限 1 は各区間の両端だけを使います。
+		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。描画の変換状態は反映しません。
 		[[nodiscard]]
-		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 10) const;
+		LineString toLineStringAdaptive(double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
-		/// @brief 曲がりに応じて分割した折れ線を、既存の領域へ書き込みます。
+		/// @brief 適応分割した折れ線を、既存の領域へ書き込みます。
 		/// @param destination 結果で置き換える折れ線。確保済みの領域を再利用します。
-		/// @param maxError 折れ線とのずれの目安。座標と同じ単位の有限の正の値。
-		/// @param maxDepth 区間ごとの最大分割深さ。0～20。
-		/// @throws std::invalid_argument maxError が 0 以下、または maxDepth が 0～20 の範囲外の場合。destination は変更しません。
-		/// @remark 空の経路なら destination を空にします。閉じた経路では末尾に始点を重複させません。
-		/// @remark 分割上限に達した部分では maxError を超えるずれが残る場合があります。
-		void toLineStringAdaptive(LineString& destination, double maxError = 0.48, int32 maxDepth = 10) const;
+		/// @param targetError 中心線と折れ線のずれの目標値。座標と同じ単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合。destination は変更しません。
+		/// @remark 空の経路なら destination を空にします。その他の条件と結果は、値を返す overload と共通です。
+		void toLineStringAdaptive(LineString& destination, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
-		/// @brief 曲線を折れ線に変換して描画します。
-		/// @param thickness 線の太さ
+		/// @brief 曲線を適応分割して描画します。
+		/// @param thickness 線の太さ。絶対値を使用します。
 		/// @param color 線の色
-		/// @param maxError 折れ線とのずれの目安。座標と同じ単位の有限の正の値。
-		/// @param maxDepth 最大分割深さ。0～20。
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
 		/// @return *this
-		/// @throws std::invalid_argument maxError が 0 以下、または maxDepth が 0～20 の範囲外の場合
-		/// @remark 同じ曲線を繰り返し描画する場合は、toLineStringAdaptive() の結果を保存して描画すると変換を省けます。
-		const Spline2D& draw(double thickness = 1.0, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 10) const;
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		/// @pre 適用する変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 品質評価には Local、Camera とシーンの解像度倍率を反映します。QuadWarp とカスタム VS は含みません。
+		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
+		/// @remark 区間の接続点を保持し、一つの折れ線として扱います。線端と閉じた経路の扱いは LineString::draw() / drawClosed() と共通です。
+		const Spline2D& draw(double thickness = 1.0, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
 		/// @brief 始点と終点を入れ替え、経路の向きを反転します。
 		/// @return *this

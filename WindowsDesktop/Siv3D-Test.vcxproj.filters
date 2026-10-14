@@ -385,7 +385,13 @@
     <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_CurveAdaptive.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\BezierTessellationLegacy.hpp">
       <Filter>Test</Filter>
     </ClInclude>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">

@@ -26,6 +26,9 @@ SCHEMAS = {
     "benchmark": "degree workload method tolerance median p10 p90",
     "raster": "case method width tolerance difference changed",
     "submission": "method draws median p10 p90 triangles",
+    "integration_points": "case legacy density",
+    "integration_triangles": "case legacy density",
+    "integration_timing": "case method median p10 p90",
 }
 METHODS = ["current", "current-deep", "wang", "density"]
 COLORS = ["#ce7137", "#c4a838", "#477bc7", "#22957d"]
@@ -148,6 +151,14 @@ def main():
     worst = sorted(rows["random"], key=lambda x: x["error"], reverse=True)[:24]
     if worst:
         body += "<h2>Largest sampled errors in the random corpus</h2>" + table(worst, SCHEMAS["random"].split())
+    if rows["integration_points"]:
+        body += "<h2>Spline and Image integration</h2><p>Point counts and CPU times compare the legacy and density implementations. Spline conversion reuses output at target 0.5; Image calls use each method's defaults. Timings include repeated compositing into reused images.</p>" + table(rows["integration_points"], SCHEMAS["integration_points"].split())
+    if rows["integration_triangles"]:
+        body += "<p>Triangles per Spline draw; CPU submission excludes frame update, presentation, and GPU waits.</p>" + table(rows["integration_triangles"], SCHEMAS["integration_triangles"].split())
+    if rows["integration_timing"]:
+        body += "<details><summary>Integration CPU timings (ns / call)</summary>" + table(rows["integration_timing"], SCHEMAS["integration_timing"].split()) + "</details>"
+    if "integration.png" in images:
+        body += '<p>Rows: Bezier2, Bezier3, closed Spline. Columns: dense CPU reference, legacy CPU, density paint, density overwrite, density GPU. Spline CPU columns draw its converted LineString.</p><img src="integration.png" alt="Spline and Image integration comparison">'
     body += "<h2>Native animation captures</h2><p>Each frame was rendered by Siv3D. Play or scrub to compare deformation; no interpolation is added by the report.</p>"
     animations = {}
     for name in images:
@@ -160,7 +171,7 @@ def main():
     if animations:
         body += '<script>const captures=' + json.dumps(animations) + ';const timers={};document.querySelectorAll("[data-slider]").forEach(s=>s.oninput=()=>document.getElementById("animation-"+s.dataset.slider).src=captures[s.dataset.slider][+s.value]);document.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{const g=b.dataset.play;if(timers[g]){clearInterval(timers[g]);delete timers[g];return;}const s=document.querySelector(`[data-slider="${g}"]`);timers[g]=setInterval(()=>{s.value=(+s.value+1)%captures[g].length;s.oninput();},100);});</script>'
     body += "<h2>Native raster captures</h2><p>Rows: dense reference; legacy default (Current 0.48 / depth 5); Wang; production density. Columns: 1, 6, 24 pixel round-capped strokes. Open an image at its native size to judge game-scale appearance.</p>"
-    for filename in (name for name in images if not name.startswith("animation-")):
+    for filename in (name for name in images if not name.startswith("animation-") and name != "integration.png"):
         body += f'<details><summary>{html.escape(filename)}</summary><a href="{filename}"><img loading="lazy" src="{filename}" alt="{html.escape(filename)}"></a></details>'
     body += "<h2>Raw measurements</h2><p>" + " · ".join(f'<a href="{name}.csv">{name}.csv</a>' for name in SCHEMAS) + "</p>"
     document = '<!doctype html><html lang="en"><meta charset="utf-8"><title>Bezier tessellation comparison</title><style>body{max-width:1160px;margin:32px auto;padding:0 24px;font:16px/1.55 system-ui;color:#263441;background:#f7f9fb}h1,h2{color:#182c3a}img{max-width:100%;height:auto}table{border-collapse:collapse;font-size:13px;background:white}th,td{padding:7px 12px;border-bottom:1px solid #dae1e7;text-align:right}th:first-child,td:first-child{text-align:left}details{margin:12px 0;padding:10px;background:white;border:1px solid #dae1e7;border-radius:7px}summary{cursor:pointer;font-weight:600}a{color:#13736a}</style>' + body + '</html>'

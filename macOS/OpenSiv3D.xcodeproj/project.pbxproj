@@ -123,6 +123,7 @@
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
 		B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */; };
 		6064B044D57A48688C26F31A /* Test_BezierDrawAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */; };
+		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */; };
@@ -3369,7 +3370,6 @@
 		3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 54ADA66A6B90504E884E75A4 /* Spline2D.hpp */; };
 		5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */; };
 		D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */; };
-		8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */; };
 		80C6B809C0C15293B1B86674 /* SivSpline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */; };
 		5435E1B72EC85F4384FF1602 /* SivSpline2DMeasure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */; };
 		BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */; };
@@ -3522,7 +3522,9 @@
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierTessellation.cpp; sourceTree = "<group>"; };
 		DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierDrawAdaptive.cpp; sourceTree = "<group>"; };
+		67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CurveAdaptive.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
+		B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationLegacy.hpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
 		9858F990C7FF495F9A06AED9 /* Test_SceneHighResolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneHighResolution.cpp; sourceTree = "<group>"; };
 		49643C3C2FE04377A86D483C /* Test_SceneConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SceneConfig.cpp; sourceTree = "<group>"; };
@@ -6896,7 +6898,6 @@
 		54ADA66A6B90504E884E75A4 /* Spline2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2D.hpp; sourceTree = "<group>"; };
 		D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2DMeasure.hpp; sourceTree = "<group>"; };
 		A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLength.hpp; sourceTree = "<group>"; };
-		BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Flatten.hpp; sourceTree = "<group>"; };
 		B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2D.cpp; sourceTree = "<group>"; };
 		C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2DMeasure.cpp; sourceTree = "<group>"; };
 		6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spline2D.cpp; sourceTree = "<group>"; };
@@ -7266,7 +7267,9 @@
 				D94C71C8E32144768219A413 /* Test_Bezier.cpp */,
 				B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */,
 				DABADD7466FA48E78D13CE6A /* Test_BezierDrawAdaptive.cpp */,
+				67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */,
 				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
+				B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */,
 				6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
@@ -13624,7 +13627,6 @@
 			isa = PBXGroup;
 			children = (
 				F99881422F40B51A00C8991D /* SivBezier3.cpp */,
-				BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */,
 				A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */,
 			);
 			path = Bezier3;
@@ -16310,7 +16312,6 @@
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
 				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
 				DB9BFD5CE53F46B2B131CF39 /* BezierTessellation.hpp in Headers */,
-				8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */,
 				D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
@@ -17069,6 +17070,7 @@
 				D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */,
 				B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */,
 				6064B044D57A48688C26F31A /* Test_BezierDrawAdaptive.cpp in Sources */,
+				E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,
 				F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */,

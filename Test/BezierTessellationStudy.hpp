@@ -8,6 +8,7 @@
 # pragma once
 # include <Siv3D.hpp>
 # include <array>
+# include "BezierTessellationLegacy.hpp"
 # include "../Siv3D/src/Siv3D/Geometry2D/BezierTessellation.hpp"
 
 // Comparison baselines plus the production density kernel.
@@ -105,7 +106,7 @@ namespace s3d::BezierStudy
 		if (method == Method::Current || method == Method::CurrentDeep)
 		{
 			const int32 depth = method == Method::Current ? 5 : 12;
-			out = curve.degree == 2 ? curve.quadratic().toLineStringAdaptive(tolerance, depth) : curve.cubic().toLineStringAdaptive(tolerance, depth);
+			out = curve.degree == 2 ? Legacy::Flatten(curve.quadratic(), tolerance, depth) : Legacy::Flatten(curve.cubic(), tolerance, depth);
 			return;
 		}
 		if (method == Method::Density)

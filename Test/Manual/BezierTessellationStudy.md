@@ -4,12 +4,15 @@ This opt-in automated study compares legacy Bezier2/Bezier3 flattening, a deeper
 legacy baseline, Wang subdivision, and the adopted density placement. It captures
 the actual renderer, measures stroke mesh counts, and produces a local interactive
 report. Density captures and submission timings use the public `drawAdaptive`
-API. The study does not replace a platform Main.cpp.
+API. The study does not replace a platform Main.cpp. The [Spline gallery](Spline2D.md)
+and [Image gallery](ImageWriting.md) cover those integration paths.
 
 The complete executable test program is
 [Test_BezierTessellation.cpp](../Test_BezierTessellation.cpp), with comparison baselines
 and the fixed corpus in
-[BezierTessellationStudy.hpp](../BezierTessellationStudy.hpp). The
+[BezierTessellationStudy.hpp](../BezierTessellationStudy.hpp). The recursive
+baselines are frozen in [BezierTessellationLegacy.hpp](../BezierTessellationLegacy.hpp);
+they do not call the public conversion APIs, which also use density placement. The
 [drawing guide and comparison](../../docs/geometry2d/bezier-drawing.md)
 explain measurement boundaries and known limitations.
 
@@ -149,3 +152,26 @@ void Main()
 	}
 }
 ```
+
+## Integration performance
+
+Select `CurveAdaptive.Benchmark` in the same Release test workflow for Spline
+conversion and Bezier Image writing. It emits `integration_points` (legacy/density point
+counts) and `integration_timing` (median, p10, p90 nanoseconds per call) in the
+`BSTUDY` format. Select `CurveAdaptive.Gallery` for the native integration image.
+Pass these logs alongside the disjoint Bezier study log to the report generator. Spline cases
+have 4, 32, and 128 intervals and reuse destination storage for both algorithms;
+legacy uses depth 10 and both use a 0.5-unit target. Image cases compare legacy
+0.48/depth 5 with density defaults, at sizes 64 and 256, thin/wide strokes, both
+AA modes, and paint/overwrite. Destination images are reused and repeatedly
+composited; construction is outside timing. Every pair has two warmup rounds,
+11 measured rounds, and rotating method order. Results are CPU costs, not GPU
+execution timings or guaranteed speedups.
+
+`CurveAdaptive.SubmissionBenchmark` submits 64 offscreen Spline paths per frame,
+with 4, 32, or 128 intervals. It emits `integration_timing` in nanoseconds per
+path and `integration_triangles` per draw. After eight warmup rounds, 32 measured
+rounds alternate the method order; medians and p10/p90 are exported. Legacy
+conversion allocates the temporary outline used by its former draw path; density
+calls `Spline2D::draw` with its renderer-owned output. Both use target 0.5 and
+6-pixel Square strokes. Frame update, presentation, and GPU waits are excluded.

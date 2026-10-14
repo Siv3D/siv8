@@ -15,6 +15,7 @@
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
+# include <Siv3D/Geometry2D/BezierTessellation.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -313,118 +314,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString Bezier2::toLineStringAdaptive(const double maxError, const int32 maxDepth) const
+	LineString Bezier2::toLineStringAdaptive(const double targetError, const int32 maxSegments) const
 	{
-		LineString polyline;
-		polyline.reserve(33);
+		LineString result;
+		toLineStringAdaptive(result, targetError, maxSegments);
+		return result;
+	}
 
-		polyline.push_back(p0);
-		Vec2 lastPushed = p0;
-
-		const double kNearlyZeroSq = 1e-12;
-		const double maxErrorSq = (maxError * maxError);
-		const int32  depthLimit = Max(0, maxDepth);
-
-		// 平坦度判定の閾値（ (cross^2) <= (4*error^2*|chord|^2) ）
-		const double flatnessK = (4.0 * maxErrorSq);
-
-		// 極短区間（弦＋制御多角形）に対する早期終了の閾値
-		const double shortSegmentSq = (maxErrorSq * 0.25);
-
-		// 直前に追加した点と同一なら追加しない（重複点の抑制）
-		auto PushUnique = [&](const Vec2& p)
-		{
-			if (lastPushed != p)
-			{
-				polyline.push_back(p);
-				lastPushed = p;
-			}
-		};
-
-		auto SubdivideFlatten = [&](auto&& self, const Bezier2& curve, const int32 depth) -> void
-		{
-			const Vec2   chord = (curve.p2 - curve.p0);
-			const double chordLenSq = chord.lengthSq();
-
-			// ケースA: 弦がほぼゼロ長（p0 ≒ p2）
-			// p1 が離れているなら「退化」ではないので分割する。
-			// 3点ともほぼ同一点なら退化として扱う。
-			if (chordLenSq < kNearlyZeroSq)
-			{
-				const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
-				const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
-				const double ctrlSpanSq = Max(p0p1LenSq, p1p2LenSq);
-
-				// 3点ともほぼ同一点なら退化
-				if (ctrlSpanSq < kNearlyZeroSq)
-				{
-					PushUnique(curve.p2);
-					return;
-				}
-
-				// 深さ上限に達しているなら p1 を残して形が潰れないようにする
-				if (depthLimit <= depth)
-				{
-					PushUnique(curve.p1);
-					PushUnique(curve.p2);
-					return;
-				}
-
-				// 弦がほぼゼロなので平坦度判定は不安定：とにかく分割
-				const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
-				const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
-				const Vec2 p012 = ((p01 + p12) * 0.5);
-
-				self(self, Bezier2{ curve.p0,  p01,  p012 }, (depth + 1));
-				self(self, Bezier2{ p012,      p12,  curve.p2 }, (depth + 1));
-				return;
-			}
-
-			// ケースB: 通常の平坦度判定（p1 の弦からのズレを外積で評価）
-			const Vec2   v = (curve.p1 - curve.p0);
-			const double cross = chord.cross(v);
-
-			// |cross| は |chord|×(弦からの距離) に比例するため、二乗で比較する
-			bool acceptSegment = ((cross * cross) <= (flatnessK * chordLenSq));
-
-			if (acceptSegment)
-			{
-				// p1 の射影が弦区間 [p0,p2] に収まることを確認（折り返し/ループ対策）
-				const double dot = v.dot(chord);
-				if ((dot < 0.0) || (chordLenSq < dot))
-				{
-					acceptSegment = false;
-				}
-			}
-
-			// 平坦とみなせる、または深さ上限に達しているなら p2 を採用
-			if (acceptSegment || (depthLimit <= depth))
-			{
-				PushUnique(curve.p2);
-				return;
-			}
-
-			// 追加の早期終了：
-			// 弦だけでなく制御多角形（p0-p1, p1-p2）も極短ならこれ以上分割しない
-			const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
-			const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
-			if ((chordLenSq <= shortSegmentSq) && (p0p1LenSq <= shortSegmentSq) && (p1p2LenSq <= shortSegmentSq))
-			{
-				PushUnique(curve.p2);
-				return;
-			}
-
-			// 分割（De Casteljau 法で t=0.5 の中点分割）
-			const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
-			const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
-			const Vec2 p012 = ((p01 + p12) * 0.5);
-
-			self(self, Bezier2{ curve.p0,  p01,  p012 }, (depth + 1));
-			self(self, Bezier2{ p012,      p12,  curve.p2 }, (depth + 1));
-		};
-
-		SubdivideFlatten(SubdivideFlatten, *this, 0);
-		return polyline;
+	void Bezier2::toLineStringAdaptive(LineString& destination, const double targetError, const int32 maxSegments) const
+	{
+		assert(0 < targetError);
+		assert(1 <= maxSegments && maxSegments <= 4096);
+		detail::BezierTessellation::Workspace workspace;
+		const detail::BezierTessellation::Curve curve{ *this };
+		detail::BezierTessellation::Flatten(destination, workspace, curve, curve, targetError, static_cast<uint32>(maxSegments));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -529,24 +432,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier2& Bezier2::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::paint(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::paint(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive().paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive(targetError, maxSegments).paint(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 
@@ -556,24 +459,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier2& Bezier2::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing, targetError, maxSegments);
 	}
 
-	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
-		toLineStringAdaptive().overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive(targetError, maxSegments).overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 

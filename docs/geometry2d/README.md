@@ -18,8 +18,9 @@ ownership, drawing buffers, and the interactive gallery for `Spline2D` and
 
 ## Bezier drawing
 
-[Adaptive Bezier drawing](bezier-drawing.md) explains pixel-based quality,
-segment budgets, transform handling, and the adopted density placement. It
+[Adaptive curve drawing](bezier-drawing.md) explains quality units, segment
+budgets, transform handling, and the density placement shared by Bezier2,
+Bezier3, Spline2D, and Bezier Image writing. It
 records the comparison with recursive subdivision and Wang's formula and links
 to the reproducible renderer gallery and benchmarks.
 

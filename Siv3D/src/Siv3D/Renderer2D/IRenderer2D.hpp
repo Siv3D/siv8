@@ -51,6 +51,8 @@ namespace s3d
 		void addBezier(const Bezier2& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
 		void addBezier(const Bezier3& curve, LineCap startCap, LineCap endCap, float thickness, const Float4& color, double targetError, int32 maxSegments);
 
+		void addSpline(std::span<const Bezier3> curves, CloseRing closeRing, float thickness, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
+
 		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
 		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
@@ -255,6 +257,6 @@ namespace s3d
 
 	private:
 
-		Array<Vec2> m_bezierPoints;
+		Array<Vec2> m_curvePoints;
 	};
 }

@@ -78,7 +78,6 @@ namespace s3d::detail::BezierTessellation
 	template <class Output>
 	inline void Uniform(Output& out, const Curve& curve, const uint32 n)
 	{
-		out.reserve(n + 1);
 		for (uint32 i = 1; i < n; ++i) PushUnique(out, curve.point(static_cast<double>(i) / n));
 		PushUnique(out, curve.p[curve.degree]);
 	}
@@ -111,23 +110,23 @@ namespace s3d::detail::BezierTessellation
 		}
 	};
 
-	inline DensityPiece MakeDensityPiece(const Bezier2& q, const double tolerance, const double begin, const double end)
+	inline DensityPiece MakeDensityPiece(const Vec2 a, const Vec2 b, const double tolerance, const double begin, const double end)
 	{
 		DensityPiece piece{};
 		piece.uniform = true;
 		piece.begin = begin;
 		piece.end = end;
-		const Vec2 a = q.p1 - q.p0, b = q.p2 - q.p1, difference = a - b;
-		const double cross = (q.p2 - q.p0).cross(difference);
+		const Vec2 difference = a - b, chord = a + b;
+		const double cross = chord.cross(difference);
 		const double dd = difference.lengthSq();
 		// Nearly constant derivatives use a parametric bound.
 		// These are geometric limits for finite curves, not input sanitization.
 		if (dd <= 1e-12 * (a.lengthSq() + b.lengthSq()))
 		{
-			piece.weight = WangCount(Curve{ q }, tolerance);
+			piece.weight = std::sqrt(std::sqrt(dd) / (4 * tolerance));
 			return piece;
 		}
-		if (cross * cross <= 1e-12 * dd * (q.p2 - q.p0).lengthSq())
+		if (cross * cross <= 1e-12 * dd * chord.lengthSq())
 		{
 			// The cross -> 0 limit of the cusp branch below. Cancelling cross
 			// before evaluation avoids a discontinuous fallback to Wang's count.
@@ -222,19 +221,28 @@ namespace s3d::detail::BezierTessellation
 		return count;
 	}
 
+	// Grow geometrically when appending many curves; exact reserves per interval
+	// would repeatedly copy the whole path. Existing capacity is retained.
 	template <class Output>
-	inline void Flatten(Output& out, Workspace& work, const Curve& source, const Curve& curve,
+	inline void ReserveAdditional(Output& out, const uint32 count)
+	{
+		const size_t needed = out.size() + count;
+		if (out.capacity() < needed) out.reserve(Max(needed, out.capacity() * 2));
+	}
+
+	template <class Output>
+	inline void Append(Output& out, Workspace& work, const Curve& source, const Curve& curve,
 		const double tolerance, const uint32 maxSegments)
 	{
 		assert(0 < tolerance);
 		assert(1 <= maxSegments && maxSegments <= 4096);
 		work.pieceCount = 0;
 		work.limited = false;
-		out.clear();
+		const uint32 startCount = (out.isEmpty() || out.back() != source.p[0]) ? 1 : 0;
 		if (ChordSuffices(curve, tolerance))
 		{
-			out.reserve(2);
-			out.push_back(source.p[0]);
+			ReserveAdditional(out, startCount + (source.p[0] != source.p[source.degree]));
+			PushUnique(out, source.p[0]);
 			PushUnique(out, source.p[source.degree]);
 			return;
 		}
@@ -246,14 +254,14 @@ namespace s3d::detail::BezierTessellation
 		if (maxSegments <= extremaCount)
 		{
 			work.limited = true;
-			out.reserve(maxSegments + 1);
-			out.push_back(source.p[0]);
+			ReserveAdditional(out, maxSegments + startCount);
+			PushUnique(out, source.p[0]);
 			Uniform(out, source, maxSegments);
 			return;
 		}
 		if (curve.degree == 2)
 		{
-			work.pieces[0] = MakeDensityPiece(curve.quadratic(), tolerance, 0, 1);
+			work.pieces[0] = MakeDensityPiece(curve.p[1] - curve.p[0], curve.p[2] - curve.p[1], tolerance, 0, 1);
 			work.pieceCount = 1;
 		}
 		else
@@ -276,19 +284,24 @@ namespace s3d::detail::BezierTessellation
 					const double needed = Max(1.0, std::ceil(WangCount(curve, tolerance)));
 					const auto n = static_cast<uint32>(Min(needed, static_cast<double>(maxSegments)));
 					work.limited = maxSegments < needed;
-					out.reserve(n + 1);
-					out.push_back(source.p[0]);
+					ReserveAdditional(out, n + startCount);
+					PushUnique(out, source.p[0]);
 					Uniform(out, source, n);
 					return;
 				}
 				const uint32 count = static_cast<uint32>(needed);
 				const double step = (end - begin) / count;
+				const Vec2 correction = (0.25 * step * step * step) * third;
+				Vec2 derivative = c.derivativeAt(begin);
 				for (uint32 i = 0; i < count; ++i)
 				{
 					const double a = begin + i * step, b = begin + (i + 1) * step;
-					const Vec2 start = c.pointAt(a), finish = c.pointAt(b);
-					const Vec2 control = 0.5 * (start + finish) + (0.25 * step) * (c.derivativeAt(a) - c.derivativeAt(b));
-					work.pieces[work.pieceCount++] = MakeDensityPiece({ start, control, finish }, tolerance * 0.9, a, b);
+					const Vec2 nextDerivative = c.derivativeAt(b);
+					// The endpoint-matching quadratic has legs h/2 * B'(a or b) - h^3/4 * third.
+					// Compute these directly, and share each derivative with the next interval.
+					work.pieces[work.pieceCount++] = MakeDensityPiece((0.5 * step) * derivative - correction,
+						(0.5 * step) * nextDerivative - correction, tolerance * 0.9, a, b);
+					derivative = nextDerivative;
 				}
 			}
 		}
@@ -297,8 +310,8 @@ namespace s3d::detail::BezierTessellation
 		const double needed = Max(1.0, std::ceil(total));
 		work.limited = maxSegments < needed + extremaCount;
 		const uint32 n = static_cast<uint32>(Min(needed, static_cast<double>(maxSegments - extremaCount)));
-		out.reserve(n + extremaCount + 1);
-		out.push_back(source.p[0]);
+		ReserveAdditional(out, n + extremaCount + startCount);
+		PushUnique(out, source.p[0]);
 		uint32 pieceIndex = 0, extremumIndex = 0;
 		double prefix = 0;
 		for (uint32 i = 1; i < n; ++i)
@@ -321,5 +334,28 @@ namespace s3d::detail::BezierTessellation
 		}
 		while (extremumIndex < extremaCount) PushUnique(out, source.point(extrema[extremumIndex++]));
 		PushUnique(out, source.p[source.degree]);
+	}
+
+	template <class Output>
+	inline void Flatten(Output& out, Workspace& work, const Curve& source, const Curve& metric,
+		const double tolerance, const uint32 maxSegments)
+	{
+		out.clear();
+		Append(out, work, source, metric, tolerance, maxSegments);
+	}
+
+	// Shared path composition for geometry conversion and renderer-space quality.
+	// MetricFor is evaluated once per curve and does not own output storage.
+	template <class Output, class MetricFor>
+	inline void FlattenPath(Output& out, Workspace& work, const std::span<const Bezier3> curves,
+		const bool closed, const double tolerance, const uint32 maxSegmentsPerCurve, MetricFor&& metricFor)
+	{
+		out.clear();
+		for (const Bezier3& curve : curves)
+		{
+			const Curve source{ curve };
+			Append(out, work, source, metricFor(source), tolerance, maxSegmentsPerCurve);
+		}
+		if (closed && (1 < out.size()) && (out.front() == out.back())) out.pop_back();
 	}
 }

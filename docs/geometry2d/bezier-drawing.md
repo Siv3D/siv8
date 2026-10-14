@@ -1,7 +1,8 @@
-# Bezier adaptive drawing
+# Adaptive Bezier and Spline drawing
 
-`Bezier2::drawAdaptive` and `Bezier3::drawAdaptive` use density-based vertex
-placement with a default target deviation of **0.5 render-target pixels**.
+`Bezier2`, `Bezier3`, and `Spline2D` share density-based vertex placement
+for adaptive conversion and drawing. GPU drawing uses a default target deviation
+of **0.5 render-target pixels**.
 This balances a game-oriented appearance with vertex count. It avoids the large
 subdivision jumps seen on the tested slow deformations, without per-curve history
 or a temporal cache. Wang subdivision remains an internal bounded fallback.
@@ -32,8 +33,8 @@ representable geometry and intermediate calculations are caller preconditions.
 
 The [manual gallery and study instructions](../../Test/Manual/BezierTessellationStudy.md)
 cover moving curves, quality controls, native captures, plots, and measurements.
-The study's **Current** label means the legacy recursive conversion, preserved
-as a baseline. **Density** uses the adopted kernel, and native captures and
+The study's **Current** label means the legacy recursive conversion, frozen in
+[test support](../../Test/BezierTessellationLegacy.hpp) as a baseline. **Density** uses the adopted kernel, and native captures and
 submission timings call the public drawing API.
 
 ## Implementation boundaries
@@ -47,17 +48,44 @@ D3D11 and Metal provide their scene scale; the tessellation logic is shared.
 The fixed-size workspace is local to each call and does not allocate.
 
 Geometry conversion (`toLineStringAdaptive`) uses curve-coordinate units and
-is independent of renderer state. Its recursive implementation, Image paint /
-overwrite, and Spline2D remain separate from this drawing path. Their future
-integration can reuse the destination-writing kernel without duplicating its
-mathematics. Remaining integration and platform validation are tracked in
+is independent of renderer state. Both Bezier classes and Spline2D provide a
+destination overload that retains allocated storage. Value-returning overloads
+call the same implementation. Connected cubic intervals append directly to one
+output array; capacity grows geometrically, without a temporary array per curve.
+Closure removes the duplicate final endpoint, while retaining internal knots.
+Spline drawing uses one stroke, preserving joins without caps at interval ends.
+
+```cpp
+LineString outline;
+curve.toLineStringAdaptive(outline, 0.5, 256);
+curve.paint(image, 6, Palette::White, EnableAntialiasing::Yes, 0.5, 256);
+curve.overwrite(image, LineCap::Flat, 6, Palette::White,
+                EnableAntialiasing::Yes, 0.25, 256);
+```
+
+`paint` / `overwrite` append quality and budget arguments after the existing
+antialiasing argument. Quality is measured in **Image pixels**, with no Local,
+Camera, scene-resolution, or QuadWarp state. Their default is also 0.5 pixels and
+256 segments. They pass the generated polyline to the existing Image stroke
+rasterizer, so compositing, antialiasing, and cap semantics remain those described
+in [Image writing](image-writing.md). A caller drawing a static curve repeatedly
+can retain the converted LineString to avoid generating it each time.
+
+For `Spline2D`, the budget is named **`maxSegmentsPerCurve`** and applies to each
+Bezier3 interval, not to the entire path. Defaults are 0.5 and 256. With a budget
+of one, only interval endpoints remain. Conversion keeps every distinct knot;
+a closed result omits the repeated final point. See [Spline paths](splines.md)
+for drawing and caching examples. Arc-length measurement is independent of
+rendering subdivision. Platform validation still pending is tracked in
 [TODO.md](../../TODO.md#bezier2-and-bezier3-adaptive-drawing).
 
 Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
 quality, singular transforms, storage reuse, output and workspace limits, near
 collinear reversals, sampled count continuity, all cap combinations, degenerate
 curves, default overloads, and the public render path at different scene
-resolutions. The larger [study](../../Test/Test_BezierTessellation.cpp) is opt-in.
+resolutions. The [integration tests](../../Test/Test_CurveAdaptive.cpp) add conversion storage,
+Spline composition and drawing, Image quality and caps, and renderer-state
+independence. The larger [study](../../Test/Test_BezierTessellation.cpp) is opt-in.
 
 ## What the comparison measures
 
@@ -156,12 +184,12 @@ rotating method order. Every round repeats the corpus 64 times.
 
 | Degree and workload | Current | Wang | Density |
 | --- | ---: | ---: | ---: |
-| Bezier2, reusable output | 149 | 42 | 95 |
-| Bezier2, output plus stroke mesh | 368 | 248 | 292 |
-| Bezier3, reusable output | 353 | 98 | 423 |
-| Bezier3, output plus stroke mesh | 654 | 420 | 697 |
+| Bezier2, reusable output | 145 | 42 | 94 |
+| Bezier2, output plus stroke mesh | 366 | 247 | 292 |
+| Bezier3, reusable output | 343 | 98 | 344 |
+| Bezier3, output plus stroke mesh | 644 | 421 | 616 |
 
-The current public conversion returns a newly allocated LineString even in the
+The legacy Bezier baseline returns a newly allocated LineString even in the
 reuse workload. Candidate timings therefore include the benefit of reusable
 storage; they do not isolate mathematics alone. Fresh-output measurements are
 also exported and retain Wang's speed advantage. The mesh workload includes the
@@ -169,19 +197,58 @@ production stroke builder, reusable mesh buffers, and flattening; it excludes
 renderer command submission and GPU work.
 
 Density saves about 14% of quadratic stroke vertices and 12% of cubic stroke
-vertices at this target. Its mesh workload is about 21% faster for quadratics
-and 7% slower for cubics than current. Wang is about 33–36% faster in that
+vertices at this target. Its mesh workload is about 20% faster for quadratics
+and 4% faster for cubics than current. Wang is about 32–35% faster in that
 workload, but generates more vertices for the ordinary cubic set.
 
 A separate test submits 768 offscreen round-capped strokes per frame through
 the renderer. Density calls the public `drawAdaptive`, including transform setup
 and reusable output; other methods call adaptive conversion and `LineString::draw`.
 It excludes frame update, presentation, and GPU waits. Across two runs, median
-CPU time was 1.57–2.32 µs per curve for current, 1.00–1.71 µs for Wang, and
-1.51–2.38 µs for density. Density was about 4% faster in one run and 2% slower in
-the other. Triangle counts were 31,112, 32,776, and 26,384 respectively. Submission
+CPU time was 2.23–2.25 µs per curve for current, 1.62–1.66 µs for Wang, and
+2.11–2.18 µs for density. Density was about 2–6% faster in these runs. Triangle counts were 31,112, 32,776, and 26,384 respectively. Submission
 timing varies substantially with scheduling; these results do not predict FPS
 or establish a GPU speedup.
+
+## Spline and Image integration costs
+
+The opt-in `CurveAdaptive.Benchmark` measures reusable Spline conversion and
+Bezier Image writing; `CurveAdaptive.SubmissionBenchmark` measures public Spline
+drawing. The [study instructions](../../Test/Manual/BezierTessellationStudy.md#integration-performance)
+describe both and the report exports their raw measurements.
+
+Short Catmull-Rom intervals show a different CPU tradeoff from the larger single
+Beziers above. At target 0.5, with an amplitude-120 sinusoidal knot sequence and
+30-unit horizontal spacing, density reduces point counts by about 23–26%:
+
+| Intervals | Legacy points | Density points | Legacy / density triangles per draw | Legacy / density submission CPU, µs |
+| --- | ---: | ---: | ---: | ---: |
+| 4 | 19 | 14 | 40 / 30 | 2.96–3.99 / 3.53–3.83 |
+| 32 | 134 | 103 | 270 / 208 | 15.21–16.54 / 25.58–25.82 |
+| 128 | 519 | 400 | 1040 / 802 | 54.29–54.53 / 94.34–100.89 |
+
+These are median timings from two Release runs on the same M2 host. Each frame
+submits 64 offscreen paths. The timed region includes conversion, stroke mesh
+construction, and command submission, but excludes frame update and GPU waits.
+The legacy path uses depth 10; both use a 0.5 target. Reusable conversion alone
+costs about 7.2 µs versus 23.9 µs for 128 intervals. The recursive baseline is
+especially cheap for small, nearly straight intervals; reduced vertices do not
+make density universally faster. Keep a converted LineString for unchanged
+paths when its coordinate-space quality suits the intended zoom.
+
+Cubic quadratic-approximation legs are calculated directly from endpoint
+derivatives, sharing a derivative between adjacent intervals. This avoids
+repeated position evaluation while retaining the same approximation and counts.
+The comparison corpus verifies the geometric results separately from timing.
+
+For Bezier Image writing, the 16 combinations per degree (64/256-pixel images,
+thin/wide strokes, AA on/off, paint/overwrite) have median timing reductions of
+about 8% for quadratics and 15% for cubics. Across the two runs, individual
+quadratic cases range from about 15% faster to 1.4% slower; cubic cases are about
+4–25% faster. Image allocation and curve construction are outside timing;
+tessellation, rasterization, and compositing are included. Calls reuse and
+repeatedly composite into the destination. These results apply to this corpus,
+not all clipping, coverage, or image sizes.
 
 ## Changes during deformation
 
