@@ -3345,7 +3345,7 @@ namespace s3d
 			StrokePrimitive primitive,
 			const BoundsD& bounds)
 		{
-			if (!bounds.valid())
+			if (!bounds.valid() || (bounds.maxX < 0.0) || (view.width < bounds.minX))
 			{
 				return;
 			}
@@ -3567,21 +3567,37 @@ namespace s3d
 			return false;
 		}
 
+		template <bool TrimCovered>
 		void AddStrokePrimitiveCoverageToSpan(
 			const StrokePrimitive& primitive,
 			const int32 y,
 			const SpanI& span,
 			uint8* coverage)
 		{
-			const size_t count = static_cast<size_t>(span.x1 - span.x0);
+			// Max coverage cannot increase a full pixel. Keep short spans in the direct
+			// distance loop: searching them costs more than the work it removes.
+			size_t begin = 0;
+			size_t end = static_cast<size_t>(span.x1 - span.x0);
+			if constexpr (TrimCovered)
+			{
+				if (8 <= end)
+				{
+					while ((begin < end) && (coverage[begin] == 255)) ++begin;
+					while ((begin < end) && (coverage[end - 1] == 255)) --end;
+					if (begin == end) return;
+				}
+			}
+			const int32 x0 = span.x0 + static_cast<int32>(begin);
+			coverage += begin;
+			const size_t count = end - begin;
 			switch (primitive.type)
 			{
 			case StrokePrimitiveType::BodyRect:
-				AddOrientedRectCoverageToRange(primitive.rect, y, span.x0, coverage, count);
+				AddOrientedRectCoverageToRange(primitive.rect, y, x0, coverage, count);
 				return;
 
 			case StrokePrimitiveType::RoundDisk:
-				AddCircleCoverageToRange(primitive.center, primitive.radius, y, span.x0, coverage, count);
+				AddCircleCoverageToRange(primitive.center, primitive.radius, y, x0, coverage, count);
 				return;
 			}
 		}
@@ -3642,6 +3658,7 @@ namespace s3d
 			}
 		}
 
+		template <bool TrimCovered>
 		void DrawStrokePrimitivesAA(
 			ImageView view,
 			const std::vector<StrokePrimitive>& primitives,
@@ -3725,11 +3742,18 @@ namespace s3d
 						++end;
 					}
 
-					coverage.assign(static_cast<size_t>(x1 - x0), 0);
+					// Grow geometrically: libc++ assign alone can allocate for every
+					// slightly wider row. Unlike resize + fill, clear each pixel only once.
+					const size_t count = static_cast<size_t>(x1 - x0);
+					if (coverage.capacity() < count)
+					{
+						coverage.reserve(Max(count, coverage.capacity() * 2));
+					}
+					coverage.assign(count, 0);
 					for (size_t i = begin; i < end; ++i)
 					{
 						const StrokeRowSpan& item = supportSpans[i];
-						AddStrokePrimitiveCoverageToSpan(primitives[item.primitiveIndex], y, item.span,
+						AddStrokePrimitiveCoverageToSpan<TrimCovered>(primitives[item.primitiveIndex], y, item.span,
 							coverage.data() + static_cast<size_t>(item.span.x0 - x0));
 					}
 
@@ -3742,6 +3766,7 @@ namespace s3d
 		void DrawStrokePrimitives(
 			ImageView view,
 			const std::vector<StrokePrimitive>& primitives,
+			const double thickness,
 			const Color color,
 			const ImagePixel::BlendMode blendMode,
 			const EnableAntialiasing enableAntialiasing,
@@ -3751,9 +3776,14 @@ namespace s3d
 			{
 				DrawStrokePrimitivesNoAA(view, primitives, color, blendMode, dstAlpha);
 			}
+			else if (thickness < 2.0)
+			{
+				// Thin strokes have little full coverage to skip; avoid per-span searches.
+				DrawStrokePrimitivesAA<false>(view, primitives, color, blendMode, dstAlpha);
+			}
 			else
 			{
-				DrawStrokePrimitivesAA(view, primitives, color, blendMode, dstAlpha);
+				DrawStrokePrimitivesAA<true>(view, primitives, color, blendMode, dstAlpha);
 			}
 		}
 
@@ -3793,6 +3823,27 @@ namespace s3d
 				AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
 			}
 			return;
+			}
+		}
+
+		template <class PointType>
+		void CollectStrokePoints(const PointType* points, const size_t count, const Vec2& offset,
+			const bool closed, std::vector<Vec2>& effectivePoints)
+		{
+			effectivePoints.clear();
+			effectivePoints.reserve(count);
+			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
+			for (size_t i = 1; i < count; ++i)
+			{
+				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
+				if (!IsSamePoint(p, effectivePoints.back()))
+				{
+					effectivePoints.push_back(p);
+				}
+			}
+			if (closed && (1 < effectivePoints.size()) && IsSamePoint(effectivePoints.front(), effectivePoints.back()))
+			{
+				effectivePoints.pop_back();
 			}
 		}
 
@@ -3866,24 +3917,7 @@ namespace s3d
 				return;
 			}
 
-			effectivePoints.clear();
-			effectivePoints.reserve(count);
-			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
-
-			for (size_t i = 1; i < count; ++i)
-			{
-				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
-
-				if (!IsSamePoint(p, effectivePoints.back()))
-				{
-					effectivePoints.push_back(p);
-				}
-			}
-
-			while ((1 < effectivePoints.size()) && IsSamePoint(effectivePoints.front(), effectivePoints.back()))
-			{
-				effectivePoints.pop_back();
-			}
+			CollectStrokePoints(points, count, offset, true, effectivePoints);
 
 			if (effectivePoints.size() < 3)
 			{
@@ -5531,7 +5565,7 @@ namespace s3d
 			std::vector<Vec2> effectivePoints;
 			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness,
 				StrokeJoinStyle::Round, primitives, effectivePoints);
-			DrawStrokePrimitives(view, primitives, color, blendMode, enableAntialiasing, dstAlpha);
+			DrawStrokePrimitives(view, primitives, thickness, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void PolygonFrame(
@@ -5580,7 +5614,7 @@ namespace s3d
 			{
 				append(hole);
 			}
-			DrawStrokePrimitives(view, primitives, color, blendMode, enableAntialiasing, dstAlpha);
+			DrawStrokePrimitives(view, primitives, thickness, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Line(
@@ -5711,18 +5745,7 @@ namespace s3d
 			}
 
 			std::vector<Vec2> effectivePoints;
-			effectivePoints.reserve(points.size());
-			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
-
-			for (size_t i = 1; i < points.size(); ++i)
-			{
-				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
-
-				if (!IsSamePoint(p, effectivePoints.back()))
-				{
-					effectivePoints.push_back(p);
-				}
-			}
+			CollectStrokePoints(points.data(), points.size(), offset, false, effectivePoints);
 
 			if ((effectivePoints.size() == 2) && (startCap != endCap))
 			{
@@ -5736,6 +5759,7 @@ namespace s3d
 			DrawStrokePrimitives(
 				view,
 				primitives,
+				thickness,
 				color,
 				blendMode,
 				enableAntialiasing,
@@ -5788,6 +5812,7 @@ namespace s3d
 			DrawStrokePrimitives(
 				view,
 				primitives,
+				thickness,
 				color,
 				blendMode,
 				enableAntialiasing,

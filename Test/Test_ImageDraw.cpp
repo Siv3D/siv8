@@ -1353,6 +1353,49 @@ TEST_CASE("ImageDraw.round_strokes_match_distance_union")
 			}
 }
 
+TEST_CASE("ImageDraw.stroke_clipping_and_overlapping_coverage")
+{
+	LineString dense;
+	for (int32 i = 0; i < 65; ++i)
+	{
+		const Vec2 point{ 32.25 + i, 32.75 + ((i % 4) * 16) };
+		dense.push_back(point);
+		if ((i % 7) == 0) dense.push_back(point);
+	}
+	// Avoid exact pixel-center ties at the oblique Flat cap when translating.
+	const Array<LineString> paths{ dense,
+		{ Vec2{ 32.25, 32.75 }, Vec2{ 94.25, 96.75 }, Vec2{ 32.25, 96.75 }, Vec2{ 96.25, 32.75 } },
+		{ Vec2{ 32.25, 32.75 }, Vec2{ 32.25, 96.75 }, Vec2{ 32.25, 32.75 } } };
+	for (size_t pathIndex = 0; pathIndex < paths.size(); ++pathIndex)
+		for (const bool closed : { false, true })
+			for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+				for (const double width : { 0.5, 1.5, 2.0, 12.0, 48.0 })
+					for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					{
+						const auto& path = paths[pathIndex];
+						const auto draw = [&](Image& image, const Vec2 offset, const Color color, const bool paint)
+						{
+							const auto mode = paint ? ImagePixel::BlendMode::SourceOver : ImagePixel::BlendMode::Overwrite;
+							if (closed) ImageDraw::ClosedLineString(image, path, offset, width, color, mode, aa);
+							else ImageDraw::LineString(image, path, offset, width, color, mode, aa, cap, LineCap::Round);
+						};
+						Image mask{ 128, 128, Color{ 0, 0 } };
+						draw(mask, Vec2{ 0, 0 }, Palette::White, false);
+						for (const Point origin : { Point{ 0, 32 }, Point{ 96, 32 }, Point{ 32, 0 }, Point{ 32, 96 }, Point{ 48, 48 } })
+							for (const bool paint : { false, true })
+							{
+								CAPTURE(pathIndex, closed, cap, width, bool(aa), origin, paint);
+								Image actual = Background(Size{ 32, 32 }), expected = actual;
+								const Color ink{ 220, 60, 130, 113 };
+								for (int32 y = 0; y < 32; ++y)
+									for (int32 x = 0; x < 32; ++x)
+										expected[y][x] = Composite(ink, expected[y][x], mask[y + origin.y][x + origin.x].a, paint);
+								draw(actual, -Vec2{ origin }, ink, paint);
+								CHECK((actual == expected));
+							}
+					}
+}
+
 TEST_CASE("ImageDraw.superellipse_frame_boundary_approximation")
 {
 	for (const double n : { 0.25, 0.5, 0.98, 1.0, 1.02, 1.5, 2.0, 4.0, 16.0, 32.0 })

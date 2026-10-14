@@ -173,6 +173,60 @@ Fewer tessellation points alone do not guarantee a faster whole draw; the
 include the tradeoff for many short cubic intervals. Pending Image API and
 performance work is ordered in [TODO](../../TODO.md#2d-図形の-image-書き込み).
 
+## Common stroke preparation and coverage
+
+Open and closed strokes share point normalization: apply the offset, remove
+adjacent duplicates, and omit the repeated closing endpoint. They then build
+body rectangles and round joins/caps. Conservative bounds include AA support;
+parts outside the image in either axis are discarded before row events are
+constructed. This avoids scanning off-image parts on every row.
+
+AA combines maximum coverage before compositing. Strokes at least two pixels
+wide skip already-full prefixes and suffixes before evaluating distances, when
+the span contains at least eight pixels.
+A coverage value of 255 cannot increase, so this preserves the byte result.
+Thin strokes select the direct distance loop once per draw; short spans also
+retain that loop because the extra searches can cost more than they save. This optimization belongs to the common multi-part stroke;
+the dedicated Line path keeps its own loops. The row buffer reserves capacity geometrically before `assign()`, avoiding a
+new allocation for every slightly wider merged interval with libc++. Each used
+pixel is cleared once; `resize()` followed by clearing would initialize growing
+ranges twice.
+
+The [isolated phase tool](../../tools/image-stroke-profile/profile.cpp) compiles
+the actual implementation in a standalone process. It adds no profiling hooks to
+the engine. On macOS, run from the repository root:
+
+```sh
+./tools/image-stroke-profile/run.sh timing /tmp/siv8-stroke-timing
+./tools/image-stroke-profile/run.sh allocations /tmp/siv8-stroke-allocations
+```
+
+Each output directory contains the executable and a CSV. The tool covers paths
+of 4, 32, and 128 segments, thin/wide widths, and inside/partially clipped/fully
+outside geometry. Timing uses optimized code and the median of nine repeated
+batches, each calibrated to at least two milliseconds. It measures fresh and
+reused storage for point normalization, primitive construction, and sorted row
+events. `raster` starts from prepared primitives; `whole` also creates points and
+primitives. Both include AA/no-AA and paint/overwrite, with destination storage
+reused across calls. `coverage-only` starts from cached primitive spans and
+clears a full-image byte buffer before evaluating distances; it excludes row
+events, span calculation/sorting, and color compositing. These are controlled
+sub-workloads, not additive percentages of one instrumented draw.
+
+Allocation counts come from a separate build with a replacement ordinary C++
+`operator new`. They count vector allocation requests and requested bytes, not
+peak live memory, allocator metadata, or all process allocations. Reused buffers
+are prepared before counting. The timing build has no allocation counter.
+Use the public Spline, stroke-cap, and Polygon frame benchmarks as well: the
+isolated tool does not measure curve conversion, the dedicated Line path, or
+all closed-contour arrangements.
+
+The phase comparison found point copying and fresh storage substantially cheaper
+than rasterization for the tested long paths. Reusing a sampled LineString remains
+useful, but these results do not justify a public rasterizer context. For future
+changes, measure row span generation, sorting, coverage, and compositing before
+adding retained state or separate curve rasterizers.
+
 ## Arrow tail caps
 
 `Line::paintArrow()` / `overwriteArrow()` accept a `LineCap` after the image to
@@ -312,6 +366,8 @@ quality, segment budgets, caps, default overloads, and renderer-state independen
 [Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover open/closed paths,
 independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
 invalid arguments, and one-time compositing at knots, seams, and intersections.
+ImageDraw also compares clipped strokes against crops of larger images, including
+dense duplicate points, wide overlapping parts, mixed caps, and closed contours.
 Keep conversion-specific checks in the curve tests and common raster/compositing
 checks in ImageDraw.
 The [manual gallery](../../Test/Manual/ImageWriting.md) compares CPU and GPU
