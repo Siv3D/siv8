@@ -4194,6 +4194,102 @@ namespace s3d
 		}
 
 		template <bool Antialias>
+		void FillCappedArrowBySpans(
+			const ImageView view, const Vec2& from, const Vec2& to, const double length,
+			const double width, const SizeF& headSize, const LineCap startCap,
+			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
+		{
+			const double half = (width * 0.5);
+			const Vec2 direction = ((to - from) / length);
+			const Vec2 normal{ direction.y, -direction.x };
+			const double ratio = (Min(headSize.y, length) / headSize.y);
+			const Vec2 base = (to - direction * (headSize.y * ratio));
+			const Vec2 tail = ((startCap == LineCap::Square) ? (from - direction * half) : from);
+			const Vec2 side = (normal * half);
+			const Vec2 headSide = (normal * (half + headSize.x * ratio * 0.5));
+			const Vec2 points[]{ tail + side, base + side, base + headSide, to,
+				base - headSide, base - side, tail - side };
+			BoundsD bounds;
+			for (const Vec2& point : points) bounds.include(point);
+			if (startCap == LineCap::Round) bounds.includeCircle(from, half);
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				// A seven-edge contour has at most three spans; the cap adds one.
+				SpanI pixelSpans[16];
+				size_t pixelSpanCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double py = (y + (sy + 0.5) / samples);
+					SpanI spans[4];
+					size_t spanCount = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const double l = Clamp(left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = CeilToInt(r * samples - 0.5);
+						if (begin < end) spans[spanCount++] = { begin, end };
+					};
+					double intersections[7];
+					size_t intersectionCount = 0;
+					for (size_t i = 0, j = 6; i < 7; j = i++)
+					{
+						const Vec2& p = points[i];
+						const Vec2& q = points[j];
+						if ((p.y > py) != (q.y > py))
+						{
+							intersections[intersectionCount++] = ((q.x - p.x) * (py - p.y) / (q.y - p.y) + p.x);
+						}
+					}
+					std::sort(intersections, intersections + intersectionCount);
+					for (size_t i = 0; (i + 1) < intersectionCount; i += 2)
+					{
+						add(intersections[i], intersections[i + 1]);
+					}
+					if (startCap == LineCap::Round)
+					{
+						const double dy = (py - from.y);
+						const double dxSq = (half * half - dy * dy);
+						if (0.0 <= dxSq)
+						{
+							const double dx = std::sqrt(dxSq);
+							double left = -dx, right = dx;
+							// Only the outward semicircle belongs to the tail, even for very short arrows.
+							if (ClipSectorSpan(left, right, -direction, dy)) add(from.x + left, from.x + right);
+						}
+					}
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, spanCount }))
+					{
+						if constexpr (Antialias)
+						{
+							AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+							pixelSpans[pixelSpanCount++] = { span.x0 / 4, (span.x1 + 3) / 4 };
+						}
+						else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ pixelSpans, pixelSpanCount }))
+					{
+						uint8* values = (coverage.data() + span.x0 - x0);
+						const size_t count = static_cast<size_t>(span.x1 - span.x0);
+						for (size_t i = 0; i < count; ++i) values[i] = static_cast<uint8>((values[i] * 255 + 8) / 16);
+						WriteCoverageSpan(writer, row + span.x0, values, count);
+						std::fill_n(values, count, uint8{ 0 });
+					}
+				}
+			}
+		}
+
+		template <bool Antialias>
 		void FillCircleArcBySpans(
 			const ImageView view, const Circle& circle, const CircleSectorData& sector,
 			const double innerRadius, const double outerRadius, const LineCap lineCap,
@@ -5527,6 +5623,30 @@ namespace s3d
 			else
 			{
 				DrawLineAA(view, from, to, thickness, color, blendMode, startCap, endCap, dstAlpha);
+			}
+		}
+
+		void Arrow(
+			Image& image, const Vec2& from, const Vec2& to, const double width, const SizeF& headSize,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const LineCap startCap, const DstAlpha dstAlpha)
+		{
+			if (startCap == LineCap::Flat)
+			{
+				Fill(image, Shape2D::Arrow(from, to, width, headSize), color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			const ImageView view = MakeImageView(image);
+			if ((view.data == nullptr) || (width <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return;
+			const double length = from.distanceFrom(to);
+			if (length == 0.0) return;
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCappedArrowBySpans<true>(view, from, to, length, width, headSize, startCap, color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCappedArrowBySpans<false>(view, from, to, length, width, headSize, startCap, color, blendMode, dstAlpha);
 			}
 		}
 

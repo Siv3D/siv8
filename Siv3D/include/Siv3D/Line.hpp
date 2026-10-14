@@ -962,20 +962,46 @@ namespace s3d
 		/// @brief 線分をもとに矢印を Image に描き込みます。
 		/// @param dst 描き込み先の Image
 		/// @param width 矢印の線の幅
-		/// @param headSize 矢印の三角形のサイズ
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（同じ値）
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 始点の線端は Flat です。
+		/// @see ImageDraw::Arrow()
 		/// @return *this
 		const Line& paintArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 線分をもとに矢印を Image に描き込みます。
 		/// @param dst 描き込み先の Image
 		/// @param width 矢印の線の幅
-		/// @param headSize 矢印の三角形のサイズ
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（幅, 長さ）
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 始点の線端は Flat です。
+		/// @see ImageDraw::Arrow()
 		/// @return *this
 		const Line& paintArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線分をもとに矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param startCap 始点（尾側）の線端の形状
+		/// @param width 矢印の線の幅
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（同じ値）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::Arrow()
+		/// @return *this
+		const Line& paintArrow(Image& dst, LineCap startCap, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線分をもとに矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param startCap 始点（尾側）の線端の形状
+		/// @param width 矢印の線の幅
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（幅, 長さ）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::Arrow()
+		/// @return *this
+		const Line& paintArrow(Image& dst, LineCap startCap, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -986,20 +1012,46 @@ namespace s3d
 		/// @brief 線分をもとに矢印を Image に上書きします。
 		/// @param dst 上書き先の Image
 		/// @param width 矢印の線の幅
-		/// @param headSize 矢印の三角形のサイズ
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（同じ値）
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 始点の線端は Flat です。
+		/// @see ImageDraw::Arrow()
 		/// @return *this
 		const Line& overwriteArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 線分をもとに矢印を Image に上書きします。
 		/// @param dst 上書き先の Image
 		/// @param width 矢印の線の幅
-		/// @param headSize 矢印の三角形のサイズ
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（幅, 長さ）
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 始点の線端は Flat です。
+		/// @see ImageDraw::Arrow()
 		/// @return *this
 		const Line& overwriteArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線分をもとに矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param startCap 始点（尾側）の線端の形状
+		/// @param width 矢印の線の幅
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（同じ値）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::Arrow()
+		/// @return *this
+		const Line& overwriteArrow(Image& dst, LineCap startCap, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線分をもとに矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param startCap 始点（尾側）の線端の形状
+		/// @param width 矢印の線の幅
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（幅, 長さ）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::Arrow()
+		/// @return *this
+		const Line& overwriteArrow(Image& dst, LineCap startCap, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

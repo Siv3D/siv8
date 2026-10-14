@@ -270,7 +270,17 @@ namespace s3d
 
 	const Line& Line::paintArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		Shape2D::Arrow(*this, width, headSize).paint(dst, color, enableAntialiasing);
+		return paintArrow(dst, LineCap::Flat, width, headSize, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintArrow(Image& dst, const LineCap startCap, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArrow(dst, startCap, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintArrow(Image& dst, const LineCap startCap, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Arrow(dst, start, end, width, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, startCap);
 		return *this;
 	}
 
@@ -287,7 +297,17 @@ namespace s3d
 
 	const Line& Line::overwriteArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		Shape2D::Arrow(*this, width, headSize).overwrite(dst, color, enableAntialiasing);
+		return overwriteArrow(dst, LineCap::Flat, width, headSize, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteArrow(Image& dst, const LineCap startCap, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArrow(dst, startCap, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteArrow(Image& dst, const LineCap startCap, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Arrow(dst, start, end, width, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, startCap);
 		return *this;
 	}
 

@@ -690,6 +690,31 @@ namespace s3d
 			LineCap endCap,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief 始点から終点へ向かう矢印を描画します。
+		/// @param image 描画先画像
+		/// @param from 始点（尾側）
+		/// @param to 終点（先端）
+		/// @param width 矢印の線の幅
+		/// @param headSize 先端で線幅に加える幅と先端の長さ（幅, 長さ）
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param startCap 始点の線端の形状。Square は線幅の半分だけ後方へ延ばし、Round は半円を付けます。
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark 先端の長さが線分より長い場合、headSize を同じ比率で縮小します。
+		/// @remark 始点と終点が同じ、または width、headSize のいずれかの成分が正でない場合は何も描きません。
+		void Arrow(
+			Image& image,
+			const Vec2& from,
+			const Vec2& to,
+			double width,
+			const SizeF& headSize,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			LineCap startCap = LineCap::Flat,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 点列を太さのある連続線として描画します。
 		/// @param image 描画先画像
 		/// @param points 頂点配列

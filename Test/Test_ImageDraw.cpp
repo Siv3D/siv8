@@ -271,6 +271,18 @@ namespace
 					if (paint) shape.paintArrow(image, 5.0, 10.0, color, aa);
 					else shape.overwriteArrow(image, 5.0, 10.0, color, aa);
 				} },
+			{ "Line.arrowRound", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Line{ 5.25, 6.75, 28.5, 24.25 }.movedBy(offset);
+					if (paint) shape.paintArrow(image, LineCap::Round, 5.0, 10.0, color, aa);
+					else shape.overwriteArrow(image, LineCap::Round, 5.0, 10.0, color, aa);
+				} },
+			{ "Line.arrowSquare", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
+				{
+					const auto shape = Line{ 5.25, 6.75, 28.5, 24.25 }.movedBy(offset);
+					if (paint) shape.paintArrow(image, LineCap::Square, 5.0, 10.0, color, aa);
+					else shape.overwriteArrow(image, LineCap::Square, 5.0, 10.0, color, aa);
+				} },
 			{ "Line.doubleArrow", [](Image& image, Color color, bool paint, EnableAntialiasing aa, Vec2 offset)
 				{
 					const auto shape = Line{ 4.25, 6.75, 30.5, 24.5 }.movedBy(offset);
@@ -2550,4 +2562,243 @@ TEST_CASE("ImageDraw.independent_caps_short_flat_boundary")
 			CHECK((actual == reversed));
 			CHECK((actual == repeated));
 		}
+}
+
+TEST_CASE("ImageDraw.benchmark_arrow_caps", "[.benchmark]")
+{
+	ankerl::nanobench::Bench bench;
+	bench.title("Image arrow caps").unit("draw").epochs(11).minEpochIterations(64);
+	for (const int32 size : { 32, 256, 1024 })
+	{
+		const double s = size;
+		const Line line{ 0.2 * s + 0.25, 0.3 * s + 0.75, 0.85 * s, 0.75 * s };
+		Image image{ size, Color{ 40, 70, 100, 255 } };
+		for (const double width : { 1.5, 12.0 })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					const std::string suffix = "/" + std::to_string(size) + (width == 1.5 ? "/thin" : "/wide")
+						+ (aa ? "/AA" : "/noAA") + (paint ? "/paint" : "/overwrite");
+					image.fill(Color{ 40, 70, 100, 255 });
+					bench.run("default" + suffix, [&]
+					{
+						if (paint) line.paintArrow(image, width, SizeF{ s * 0.15, s * 0.2 }, Color{ 211, 83, 147, 113 }, aa);
+						else line.overwriteArrow(image, width, SizeF{ s * 0.15, s * 0.2 }, Color{ 211, 83, 147, 113 }, aa);
+						ankerl::nanobench::doNotOptimizeAway(image.data());
+					});
+					for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+					{
+						const std::string name = (cap == LineCap::Flat ? "Flat" : (cap == LineCap::Round ? "Round" : "Square"));
+						image.fill(Color{ 40, 70, 100, 255 });
+						bench.run(name + suffix, [&]
+						{
+							if (paint) line.paintArrow(image, cap, width, SizeF{ s * 0.15, s * 0.2 }, Color{ 211, 83, 147, 113 }, aa);
+							else line.overwriteArrow(image, cap, width, SizeF{ s * 0.15, s * 0.2 }, Color{ 211, 83, 147, 113 }, aa);
+							ankerl::nanobench::doNotOptimizeAway(image.data());
+						});
+					}
+					image.fill(Color{ 40, 70, 100, 255 });
+					bench.run("Shape2D" + suffix, [&]
+					{
+						const auto shape = Shape2D::Arrow(line, width, SizeF{ s * 0.15, s * 0.2 });
+						if (paint) shape.paint(image, Color{ 211, 83, 147, 113 }, aa);
+						else shape.overwrite(image, Color{ 211, 83, 147, 113 }, aa);
+						ankerl::nanobench::doNotOptimizeAway(image.data());
+					});
+				}
+	}
+}
+
+namespace
+{
+	Image ArrowMask(const Size size, const Line& line, const double width, const SizeF headSize,
+		const LineCap cap, const bool aa)
+	{
+		const double length = line.length();
+		const Vec2 axis = (line.end - line.start) / length;
+		const double half = width * 0.5;
+		const double headLength = Min(length, headSize.y);
+		const double shaftLength = length - headLength;
+		const double headHalfWidth = half + headSize.x * (headLength / headSize.y) * 0.5;
+		Image result{ size, Color{ 0, 0 } };
+		const int32 samples = aa ? 4 : 1;
+		for (int32 y = 0; y < size.y; ++y)
+			for (int32 x = 0; x < size.x; ++x)
+			{
+				int32 count = 0;
+				for (int32 sy = 0; sy < samples; ++sy)
+					for (int32 sx = 0; sx < samples; ++sx)
+					{
+						const Vec2 p = Vec2{ x + (sx + 0.5) / samples, y + (sy + 0.5) / samples } - line.start;
+						const double along = p.dot(axis), across = Abs(p.cross(axis));
+						const bool shaft = (0.0 <= along) && (along < shaftLength) && (across < half);
+						const bool head = (shaftLength <= along) && (along < length)
+							&& (across < headHalfWidth * ((length - along) / headLength));
+						const bool tail = (along <= 0.0) && ((cap == LineCap::Round)
+							? (p.lengthSq() < half * half) : ((-half <= along) && (across < half)));
+						count += (shaft || head || tail);
+					}
+				const uint8 coverage = static_cast<uint8>((count * 255 + samples * samples / 2) / (samples * samples));
+				result[y][x] = Color{ coverage, coverage };
+			}
+		return result;
+	}
+}
+
+TEST_CASE("ImageDraw.arrow_caps_geometry")
+{
+	// Fractional samples avoid ambiguous ties on polygon edges. The oracle uses
+	// local membership tests, independently of the scanline intersections.
+	const Array<Line> lines{
+		Line{ 11.31, 12.79, 27.61, 12.79 }, Line{ 11.31, 12.79, 11.31, 27.61 },
+		Line{ 27.61, 12.79, 11.31, 12.79 }, Line{ 11.31, 27.61, 11.31, 12.79 },
+		Line{ 11.31, 12.79, 27.61, 26.13 }, Line{ 27.61, 26.13, 11.31, 12.79 },
+		Line{ 16.31, 12.79, 16.61, 13.13 }, Line{ 16.31, 12.79, 16.31 + 1e-9, 13.13 },
+		Line{ -6.31, -3.79, 27.61, 26.13 }, Line{ 31.31, 27.79, 51.61, 46.13 },
+		Line{ -60.31, -50.79, -27.61, -26.13 } };
+	for (const auto& line : lines)
+		for (const double width : { 0.6, 5.5, 37.0 })
+			for (const SizeF head : { SizeF{ 9.7, 8.3 }, SizeF{ 32.7, 100.3 } })
+				for (const LineCap cap : { LineCap::Round, LineCap::Square })
+					for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					{
+						CAPTURE(line, width, head, static_cast<int>(cap), static_cast<bool>(aa));
+						Image actual{ 37, 31, Color{ 0, 0 } };
+						line.overwriteArrow(actual, cap, width, head, Palette::White, aa);
+						CHECK(actual == ArrowMask(actual.size(), line, width, head, cap, static_cast<bool>(aa)));
+					}
+}
+
+TEST_CASE("ImageDraw.arrow_caps_flat_compatibility_and_wrappers")
+{
+	for (const Line line : { Line{ 5.25, 6.75, 29.5, 23.25 }, Line{ 15.25, 16.75, 16.75, 16.75 } })
+		for (const double width : { 0.5, 5.0, 24.0 })
+			for (const double head : { 0.5, 9.0, 40.0 })
+				for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+					for (const bool paint : { false, true })
+					{
+						const Color color{ 211, 83, 147, 113 };
+						Image legacy = Background(Size{ 37, 31 });
+						Image implicit = legacy, explicitFlat = legacy;
+						if (paint)
+						{
+							Shape2D::Arrow(line, width, SizeF{ head, head }).paint(legacy, color, aa);
+							CHECK(&line.paintArrow(implicit, width, head, color, aa) == &line);
+							CHECK(&line.paintArrow(explicitFlat, LineCap::Flat, width, SizeF{ head, head }, color, aa) == &line);
+						}
+						else
+						{
+							Shape2D::Arrow(line, width, SizeF{ head, head }).overwrite(legacy, color, aa);
+							CHECK(&line.overwriteArrow(implicit, width, head, color, aa) == &line);
+							CHECK(&line.overwriteArrow(explicitFlat, LineCap::Flat, width, SizeF{ head, head }, color, aa) == &line);
+						}
+						CHECK(implicit == legacy);
+						CHECK(explicitFlat == legacy);
+						for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+						{
+							Image scalar = Background(legacy.size()), vector = scalar;
+							if (paint)
+							{
+								CHECK(&line.paintArrow(scalar, cap, width, head, color, aa) == &line);
+								line.paintArrow(vector, cap, width, SizeF{ head, head }, color, aa);
+							}
+							else
+							{
+								CHECK(&line.overwriteArrow(scalar, cap, width, head, color, aa) == &line);
+								line.overwriteArrow(vector, cap, width, SizeF{ head, head }, color, aa);
+							}
+							CHECK(scalar == vector);
+						}
+					}
+}
+
+TEST_CASE("ImageDraw.arrow_caps_boundaries_and_noop")
+{
+	const Image before = Background(Size{ 37, 31 });
+	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+		{
+			Image image = before;
+			const Line zero{ 16, 15, 16, 15 }, line{ 16, 15, 28, 15 };
+			zero.paintArrow(image, cap, 12, 8, Palette::Red, aa);
+			zero.overwriteArrow(image, cap, 12, 8, Palette::Red, aa);
+			for (const double invalid : { 0.0, -1.0 })
+			{
+				line.paintArrow(image, cap, invalid, 8, Palette::Red, aa);
+				line.overwriteArrow(image, cap, invalid, 8, Palette::Red, aa);
+				for (const SizeF head : { SizeF{ invalid, 8 }, SizeF{ 8, invalid } })
+				{
+					line.paintArrow(image, cap, 12, head, Palette::Red, aa);
+					line.overwriteArrow(image, cap, 12, head, Palette::Red, aa);
+				}
+			}
+			CHECK(image == before);
+			Image empty;
+			line.paintArrow(empty, cap, 12, 8, Palette::Red, aa);
+			line.overwriteArrow(empty, cap, 12, 8, Palette::Red, aa);
+			CHECK(empty.isEmpty());
+
+			// The head covers the whole positive-length part; a Round tail is a
+			// semicircle, not a disk that protrudes past this very short arrow.
+			Image shortArrow{ 37, 31, Color{ 0, 0 } };
+			Line{ 16, 15, 17, 15 }.overwriteArrow(shortArrow, cap, 12, 40, Palette::White, aa);
+			CHECK(shortArrow[15][18] == Color(0, 0));
+			CHECK(shortArrow[15][12].a == (cap == LineCap::Flat ? 0 : 255));
+			CHECK(shortArrow[9][10].a == (cap == LineCap::Square ? 255 : 0));
+		}
+}
+
+TEST_CASE("ImageDraw.arrow_caps_alpha_modes")
+{
+	for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+		for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+			for (const auto mode : { ImagePixel::BlendMode::SourceOver, ImagePixel::BlendMode::Overwrite })
+			{
+				const Line line{ 16.31, 12.79, 16.61, 13.13 };
+				const SizeF head{ 30, 50 };
+				Image mask{ 37, 31, Color{ 0, 0 } };
+				line.overwriteArrow(mask, cap, 17, head, Palette::White, aa);
+				for (const uint32 alpha : { 0u, 113u, 255u })
+					for (const bool opaque : { false, true })
+					{
+						Image before = opaque ? Image{ mask.size(), Color{ 40, 70, 100, 255 } } : Background(mask.size());
+						Image actual = before, expected = before;
+						const Color ink{ 211, 83, 147, alpha };
+						for (size_t i = 0; i < mask.size_bytes() / sizeof(Color); ++i)
+							expected.data()[i] = Composite(ink, before.data()[i], mask.data()[i].a, mode == ImagePixel::BlendMode::SourceOver);
+						ImageDraw::Arrow(actual, line.start, line.end, 17, head, ink, mode, aa, cap,
+							opaque ? ImageDraw::DstAlpha::AssumeOpaque : ImageDraw::DstAlpha::Preserve);
+						CHECK(actual == expected);
+						if (opaque)
+						{
+							Image preserved = before;
+							ImageDraw::Arrow(preserved, line.start, line.end, 17, head, ink, mode, aa, cap);
+							CHECK(actual == preserved);
+						}
+					}
+			}
+}
+
+TEST_CASE("ImageDraw.arrow_caps_join_samples_composite_once")
+{
+	const Color background{ 31, 73, 117, 61 }, ink{ 211, 83, 147, 113 };
+	for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ -1, 0 }, Vec2{ 0, 1 }, Vec2{ 0, -1 } })
+		for (const LineCap cap : { LineCap::Flat, LineCap::Round, LineCap::Square })
+			for (const EnableAntialiasing aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+				for (const bool paint : { false, true })
+				{
+					// Put the tail junction exactly on a pixel center or an AA sample.
+					const Vec2 from{ 16.0 + (aa ? 0.375 : 0.5), 15.0 + (aa ? 0.375 : 0.5) };
+					const Line line{ from, from + direction * 12 };
+					Image actual{ 37, 31, background };
+					if (paint) line.paintArrow(actual, cap, 8, 6, ink, aa);
+					else line.overwriteArrow(actual, cap, 8, 6, ink, aa);
+					if (cap != LineCap::Flat)
+					{
+						CHECK(actual[15][16] == Composite(ink, background, 255, paint));
+					}
+					// The junction with the triangular head is also fully covered.
+					const Point headPixel{ 16 + static_cast<int32>(direction.x * 6), 15 + static_cast<int32>(direction.y * 6) };
+					CHECK(actual[headPixel.y][headPixel.x] == Composite(ink, background, 255, paint));
+				}
 }

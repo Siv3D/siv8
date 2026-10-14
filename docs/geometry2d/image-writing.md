@@ -51,7 +51,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
-| Line | Stroke with independent end caps, arrow, double-headed arrow | Arrow tail cap, gradients and line styles |
+| Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
 | Bezier2, Bezier3 | Adaptive stroke with independent end caps | Explicit subdivision / adaptive quality controls |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
@@ -107,6 +107,30 @@ clipping is restricted to mixed caps whose support can reach the opposite end.
 After removing adjacent duplicate points, a two-point LineString with different
 caps reuses the Line rasterizer. Longer paths retain the common stroke union;
 the neighboring round join already covers the inward part of an endpoint disk.
+
+## Arrow tail caps
+
+`Line::paintArrow()` / `overwriteArrow()` accept a `LineCap` after the image to
+select the tail shape. Calls without it retain Flat tails.
+
+```cpp
+line.paintArrow(image, LineCap::Round, 8.0, SizeF{ 12, 20 }, color);
+```
+
+`headSize` specifies the width added to the shaft and the length of the head.
+When the head would be longer than the line, both components scale down by the
+same ratio. Square extends the tail by half the shaft width. Round adds only the
+outward semicircle, preserving the head even when the arrow is shorter than the
+cap radius. Coincident endpoints draw nothing for every Image cap; GPU Round
+arrows instead draw a disk in this case.
+
+Flat retains the existing Shape2D rasterizer. The other caps use fixed-size
+contour and interval storage: Square extends the two tail vertices, and Round
+unions the contour spans with analytic semicircle spans before compositing.
+No-AA uses pixel centers without temporary heap storage; AA uses one reusable
+4x4 sample-count row. Only touched pixel spans are converted and cleared. The
+new cap paths use double geometry while the legacy Flat contour uses Float2;
+boundary ties can differ when switching caps.
 
 ## Circle frames
 
@@ -250,7 +274,11 @@ exclude image allocation, geometry construction, and validation. The smaller
 circle benchmark separates inside-image and clipped calls. The stroke-cap benchmark
 covers Line, LineString, Bezier2, and Bezier3 with each shared cap, thin/wide
 strokes, both AA modes, and paint/overwrite. It measures existing single-cap
-calls to check the cost of supporting independent ends. The AA Circle frame
+calls to check the cost of supporting independent ends. The arrow-cap benchmark
+covers default calls and explicit Flat / Round / Square tails, image sizes,
+thin/wide shafts, AA modes, and paint/overwrite. It includes internal arrow
+construction, with the previous Shape2D call as a reference in the same run;
+use the default cases for before/after comparisons. The AA Circle frame
 benchmark covers subpixel, thin, and wide rings at small and large sizes, with
 opaque/translucent source colors and paint/overwrite. It includes clipped rings
 and images entirely inside the hole, where no pixel should change. Polygon frame
