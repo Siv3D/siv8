@@ -4646,6 +4646,161 @@ namespace s3d
 			}
 		}
 
+		// Triangle / Quad offsets use the original even-odd interior. Moving vertices
+		// first cannot preserve concave corners, crossings, or a collapsing inner hole.
+		template <size_t N>
+		void DrawSmallPolygonFrame(
+			const ImageView view,
+			const Vec2 (&input)[N],
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			static_assert((N == 3) || (N == 4));
+			if ((view.data == nullptr) || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((blendMode == ImagePixel::BlendMode::SourceOver) && (color.a == 0)))
+			{
+				return;
+			}
+
+			Vec2 points[N];
+			size_t count = 0;
+			for (const Vec2 p : input)
+			{
+				if ((count == 0) || (points[count - 1] != p)) points[count++] = p;
+			}
+			if ((1 < count) && (points[0] == points[count - 1])) --count;
+			if (count < 3) return;
+			if constexpr (N == 4)
+			{
+				if (count == 4)
+				{
+					// Opposite repeated vertices retrace both edges and enclose no region.
+					if ((points[0] == points[2]) || (points[1] == points[3])) return;
+					for (size_t i = 0; i < count; ++i)
+					{
+						if ((points[i] - points[(i + 3) % 4]).cross(points[(i + 1) % 4] - points[i]) == 0.0)
+						{
+							// Remove a straight-through vertex or a retraced collinear spur.
+							for (size_t j = i; (j + 1) < count; ++j) points[j] = points[j + 1];
+							--count;
+							break;
+						}
+					}
+				}
+			}
+			bool hasInterior = false;
+			for (size_t i = 2; i < count; ++i)
+			{
+				hasInterior |= ((points[1] - points[0]).cross(points[i] - points[0]) != 0.0);
+			}
+			if (!hasInterior) return;
+
+			struct Edge
+			{
+				Vec2 from, to, delta;
+				double lengthSq, inverseLengthSq;
+				Vec2 support[4];
+			};
+			Edge edges[N];
+			BoundsD bounds;
+			for (size_t i = 0; i < count; ++i)
+			{
+				Vec2 from = points[i], to = points[(i + 1) % count];
+				// Canonical edge direction keeps rounding independent of contour winding.
+				if ((to.y < from.y) || ((to.y == from.y) && (to.x < from.x))) std::swap(from, to);
+				const Vec2 delta = to - from;
+				edges[i] = { from, to, delta, delta.lengthSq(), (1.0 / delta.lengthSq()), {} };
+				const double length = delta.length();
+				const Vec2 dir = delta / length;
+				const double radius = Max(innerThickness, outerThickness) + 0.5;
+				const OrientedRectBasis basis{ (from + to) * 0.5, dir, Vec2{ -dir.y, dir.x }, length * 0.5, radius };
+				MakeOrientedRectPoints(basis, radius, 0.0, edges[i].support);
+				bounds.include(points[i]);
+			}
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const double support = outerThickness + (aa ? 0.5 : 0.0);
+			int32 x0 = FloorToInt(bounds.minX - support), x1 = CeilToInt(bounds.maxX + support);
+			int32 y0 = FloorToInt(bounds.minY - support), y1 = CeilToInt(bounds.maxY + support);
+			if (!ClipRectI(x0, y0, x1, y1, view.width, view.height)) return;
+
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			std::vector<uint8> coverage(static_cast<size_t>(x1 - x0));
+			for (int32 y = y0; y < y1; ++y)
+			{
+				const double py = y + 0.5;
+				double crossings[N];
+				size_t crossingCount = 0;
+				for (size_t i = 0; i < count; ++i)
+				{
+					const Vec2 from = edges[i].from, to = edges[i].to;
+					if ((from.y <= py) && (py < to.y))
+					{
+						crossings[crossingCount++] = from.x + (to.x - from.x) * (py - from.y) / (to.y - from.y);
+					}
+				}
+				std::sort(crossings, crossings + crossingCount);
+				// A union of conservative edge rectangles bounds the distance band.
+				// Skip the empty center and merge overlaps before any color is applied.
+				SpanI spans[N];
+				size_t spanCount = 0;
+				for (size_t i = 0; i < count; ++i)
+				{
+					int32 begin, end;
+					if (GetConvexPolygonSpanAtY(edges[i].support, 4, y, begin, end))
+					{
+						begin = Max(begin, x0); end = Min(end, x1);
+						if (begin < end) spans[spanCount++] = { begin, end };
+					}
+				}
+				std::sort(spans, spans + spanCount, [](const SpanI& a, const SpanI& b) { return a.x0 < b.x0; });
+				size_t crossing = 0;
+				for (size_t span = 0; span < spanCount;)
+				{
+					const int32 begin = spans[span].x0;
+					int32 end = spans[span++].x1;
+					while ((span < spanCount) && (spans[span].x0 <= end)) end = Max(end, spans[span++].x1);
+					for (int32 x = begin; x < end; ++x)
+					{
+						const Vec2 p{ x + 0.5, py };
+						while ((crossing < crossingCount) && (crossings[crossing] <= p.x)) ++crossing;
+						const bool inside = ((crossing % 2) != 0);
+						double distanceSq = std::numeric_limits<double>::infinity();
+						for (size_t i = 0; i < count; ++i)
+						{
+							const Edge& edge = edges[i];
+							const Vec2 v = p - edge.from;
+							const double along = v.dot(edge.delta);
+							const double beyond = Max(Max(-along, along - edge.lengthSq), 0.0);
+							const double across = v.cross(edge.delta);
+							distanceSq = Min(distanceSq, (across * across + beyond * beyond) * edge.inverseLengthSq);
+						}
+						uint8 value;
+						if (aa)
+						{
+							const double sd = std::sqrt(distanceSq) * (inside ? -1.0 : 1.0);
+							// Equivalent to outer minus inner coverage, with an exact plateau
+							// for subpixel widths instead of cancellation between two ramps.
+							value = ToCoverage(Min(innerThickness + outerThickness,
+								Min(outerThickness + 0.5 - sd, innerThickness + 0.5 + sd)));
+						}
+						else
+						{
+							const double width = (inside ? innerThickness : outerThickness);
+							value = ((distanceSq <= width * width) ? 255 : 0);
+						}
+						coverage[static_cast<size_t>(x - begin)] = value;
+					}
+					WriteCoverageSpan(writer, view.data + static_cast<size_t>(y) * view.stride + begin,
+						coverage.data(), static_cast<size_t>(end - begin));
+				}
+			}
+		}
+
 		template <class PointType>
 		void FillPolygonAA4x4InBounds(
 			const ImageView view,
@@ -5399,6 +5554,21 @@ namespace s3d
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
 		}
 
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ triangle.p0, triangle.p1, triangle.p2 };
+			DrawSmallPolygonFrame(MakeImageView(image), points, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
 		void Fill(
 			Image& image,
 			const Quad& quad,
@@ -5430,6 +5600,21 @@ namespace s3d
 			}
 
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ quad.p0, quad.p1, quad.p2, quad.p3 };
+			DrawSmallPolygonFrame(MakeImageView(image), points, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void FillPolygon(

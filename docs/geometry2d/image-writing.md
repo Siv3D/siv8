@@ -49,7 +49,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns |
 | Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
-| Triangle, Quad | Fill, frame | Vertex colors, patterns, selectable joins and inner/outer frames; image frames use centered round joins |
+| Triangle, Quad | Fill, centered and inner/outer frames | Vertex colors, patterns, selectable joins; Image offset frames use boundary distance |
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
@@ -75,6 +75,45 @@ with `.draw()`. Triangle-union rasterization is separate API work; it is not add
 to the common contour path solely for GPU parity. Shape2D passes Float2 vertices
 to the common rasterizer directly; offset application does not require a mapped
 Vec2 array. Internal stroke construction still owns reusable working storage.
+
+## Triangle and Quad inner/outer frames
+
+Specify the two widths after the destination:
+
+```cpp
+triangle.paintFrame(image, 6.0, 0.0, color); // Inward only.
+quad.overwriteFrame(image, 2.0, 8.0, color);
+```
+
+The new overloads measure distance to the original contour and use the same
+even-odd interior as fills. They handle either winding, concave and crossed Quads,
+and widths that consume the interior. Outward corners are round; concave corners
+can produce rounded inward boundaries. Each pixel is composited once, including
+crossings and overlapping wide bands. Negative widths, two zero widths, and
+contours with no interior do not draw. Adjacent duplicate vertices and collinear
+backtracking are removed before measuring boundary distance.
+
+AA uses the difference between the expanded and contracted distance coverage,
+rounded once after subtraction. This preserves subpixel widths. It is an
+approximation at corners, crossings, and tiny remaining holes. The fill's 4x4 AA
+and the centered frame's rectangle/disk AA have different approximations.
+Without AA, pixel-center distances include both band boundaries. At exact edge
+ties this can differ from the fill's half-open spans, even when the inward band
+consumes the entire interior.
+The existing single-width overload remains on the common round-join stroke path,
+including its behavior for degenerate contours.
+
+The rasterizer caches edge geometry and row intervals in fixed-size storage and
+reuses one byte coverage row. Conservative rectangles around the edges bound
+candidate spans; merging those spans skips the empty center and prevents repeated
+compositing. Edge directions are canonicalized so reversing winding uses the same
+distance arithmetic. The implementation is shared by Triangle and Quad without
+changing the common centered-stroke path.
+
+GPU inner/outer drawing moves vertices with `stretched()` before drawing a
+stroke. It does not define the CPU path's winding, concavity, or collapse behavior.
+Selectable joins are separate work; a miter offset needs a different corner
+construction and limit policy.
 
 ## Open stroke caps
 
@@ -366,7 +405,9 @@ quality, segment budgets, caps, default overloads, and renderer-state independen
 [Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover open/closed paths,
 independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
 invalid arguments, and one-time compositing at knots, seams, and intersections.
-ImageDraw also compares clipped strokes against crops of larger images, including
+[Triangle/Quad frame tests](../../Test/Test_ImagePolygonFrame.cpp) cover independent
+boundary distances, winding, one-sided bands, collapsed geometry, compositing,
+and clipping. ImageDraw also compares clipped strokes against crops of larger images, including
 dense duplicate points, wide overlapping parts, mixed caps, and closed contours.
 Keep conversion-specific checks in the curve tests and common raster/compositing
 checks in ImageDraw.
@@ -383,6 +424,8 @@ Run from the repository root on macOS, outside the sandbox:
 ```sh
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImageDraw.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
+./macOS/run-tests.sh '--test-case=~[benchmark]ImagePolygonFrame.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImagePolygonFrame.Benchmark'
 ./macOS/run-tests.sh '--test-case=~[benchmark]Spline2DImage.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Spline2DImage.Benchmark'
 ./macOS/run-tests.sh
@@ -397,6 +440,12 @@ Ellipse pies, Circle segments, and SuperEllipse fills use the same accumulator.
 Ellipse fill classifies pixels with a bound on normalized radius before
 using the canonical geometry boundary-distance solver near the edge. These
 choices avoid per-pixel edge traversal and interior distance solving.
+
+`ImagePolygonFrame.Benchmark` compares the unchanged centered stroke (mode 0),
+equal inner/outer widths (1), inward-only (2), and outward-only (3). It covers
+Triangle, convex/concave/crossed Quad, 32/256/1024-pixel images, widths 1/8/32,
+and both AA settings. The different coverage approximations are not interchangeable
+reference images; mode 0 is a performance control.
 
 `Spline2DImage.Benchmark` separates reusable conversion, the direct Image API,
 explicit conversion followed by LineString drawing, and drawing a cached outline.

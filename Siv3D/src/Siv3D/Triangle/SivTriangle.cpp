@@ -606,6 +606,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Triangle& Triangle::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	overwriteFrame
@@ -616,6 +622,12 @@ namespace s3d
 	{
 		const Vec2 points[3] = { p0, p1, p2 };
 		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::TriangleFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

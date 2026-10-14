@@ -1086,6 +1086,17 @@ namespace s3d
 		/// @return *this
 		const Triangle& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 三角形の内側と外側の太さを指定して、枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。外側へ張り出す角は丸くなります。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
+		/// @return *this
+		const Triangle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwriteFrame
@@ -1099,6 +1110,17 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const Triangle& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 三角形の内側と外側の太さを指定して、枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param innerThickness 輪郭から内側への太さ
+		/// @param outerThickness 輪郭から外側への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 頂点の回り順にかかわらず、塗りつぶし領域を内側とします。外側へ張り出す角は丸くなります。
+		/// @remark 太さが負、両方の太さが 0、または塗りつぶし領域を持たない場合は何もしません。
+		/// @return *this
+		const Triangle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -17,13 +17,13 @@
 
 `.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。推奨する実装・検討順は次のとおり。
 
-1. **Triangle / Quad の枠の不足機能**。内側／外側の太さ指定と `JoinStyle` 指定は別段階で追加を検討する。Miter の上限、既定の結合形状、凹・交差 Quad と退化時の領域を先に決め、共通ストローク処理へ置く部分を整理する。
+1. **Triangle / Quad の枠の `JoinStyle` 指定**。Miter の上限、既定の結合形状、凹・交差 Quad と退化時の領域を先に決め、LineString などにも共通化できる角の構築を整理する。GPU の `stretched()` による内外枠は頂点順・凹・交差・つぶれた形状の扱いを別途検討する。
 2. **破線・LineStyle**。まず Line の最小 API と位相・端点・短い区間の仕様を決め、必要に応じて図形の枠や曲線へ広げる。曲線の分割点配置に依存しない長さ基準と、閉じ目・線端が重なるときの合成を検討する。
 3. **用途に応じた追加候補**。変換付き描き込み、wireframe、グラデーション・頂点色・パターン・影は個別に採否と費用を評価する。Shape2D の添字付き三角形の描画は既存の輪郭塗りとは別 API として検討し、単色描画の共通経路へ一律に費用を加えない。
 
 検証として残る項目:
 
-- [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端の切り替えも含め、自動テストとサンプルの構文検査とは分けて記録する。
+- [手動ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を目視確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠の切り替えも含め、自動テストとサンプルの構文検査とは分けて記録する。
 - Windows の Image 描画全体の自動テストと Release ベンチマークを実行する。曲線分割と GPU の検証は上記の [Windows validation for curve drawing](#windows-validation-for-curve-drawing) にまとめる。macOS の結果から SIMD / コンパイラ差や性能を推定しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`

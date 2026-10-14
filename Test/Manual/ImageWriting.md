@@ -18,7 +18,7 @@ acceptance criterion.
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
    full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
    checks, select arc mode and a full sweep, then vary **A** and **T**.
-   Press **S** to cycle the shape, stroke, arrow, and spline pages. The stroke page has
+   Press **S** to cycle the shape, stroke, arrow, spline, and polygon-frame pages. The stroke page has
    Line, LineString, Bezier2, Bezier3, and a short Line. On this page, **J** and **K** independently cycle the
    start and end caps through Flat / Round / Square. **D** changes the last Line
    length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
@@ -32,6 +32,10 @@ acceptance criterion.
    Its columns are open, closed, self-crossed with a collapsed interval, clipped,
    and all-coincident paths. Native GPU Spline drawing retains Square ends;
    **J** / **K** do not affect that row.
+   On the polygon-frame page, **F** selects balanced / inward / outward widths,
+   **T** cycles total width through 0.5 / 8 / 80 pixels, and **B** reverses winding.
+   Columns show Triangle, a clipped convex Quad, concave Quad, crossed Quad, and
+   a collinear Quad. The degenerate GPU column is omitted.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -92,6 +96,13 @@ acceptance criterion.
   is longer than the line. Check the tail/body and shaft/head junctions for seams
   and darkening in both alpha rows. Zero-length CPU arrows draw nothing for every
   cap; GPU Round arrows draw a disk at that point.
+- On the polygon-frame page, inward-only bands remain inside the original
+  contour except for AA at the boundary; outward-only bands remain outside.
+  Rounded outward corners and crossed lobes must not darken at overlaps. Wide
+  inward bands consume the interior without flipping it or creating new islands.
+  **B** preserves the CPU result. The collinear CPU contour draws nothing.
+  GPU offset frames can differ for reversed, concave, crossed, or collapsed
+  geometry; this page is not a pixel-parity check.
 - Paint raises background alpha. Overwrite replaces alpha in fully covered
   pixels. Both preserve pixels outside the shape. The grayscale views distinguish
   these effects from ordinary display blending.
@@ -128,7 +139,7 @@ void Main()
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
 	constexpr double PieStart = Math::Pi / 6;
 	int32 page = 0;
-	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines" };
+	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines", U"polygon frames" };
 	const Array<double> arrowWidths{ 0.6, 6.5, 24.5 };
 	size_t startCapIndex = 0, endCapIndex = 1;
 	const Line strokeLine{ 30.25, 30.75, 160.25, 96.75 };
@@ -165,6 +176,26 @@ void Main()
 			straight({ 160.25, 30.75 }, { 30.25, 30.75 }) }, CloseRing::Yes),
 		Spline2D::FromCatmullRom(Array<Vec2>{ { -12.25, 24.75 }, { 40.25, 100.75 }, { 100.25, 16.75 }, { 200.25, 90.75 } }),
 		Spline2D::FromBezierSegments(Array<Bezier3>{ straight({ 96.25, 64.75 }, { 96.25, 64.75 }) }) };
+	const Array<Quad> frameQuads{
+		Quad{ -8.25, 18.75, 164.25, 28.75, 172.25, 106.75, 20.25, 100.75 },
+		Quad{ 24.25, 18.75, 168.25, 24.75, 84.25, 58.75, 40.25, 110.75 },
+		Quad{ 24.25, 18.75, 168.25, 106.75, 24.25, 106.75, 168.25, 18.75 },
+		Quad{ 24.25, 64.75, 72.25, 64.75, 168.25, 64.75, 120.25, 64.75 } };
+	const auto frameTriangle = [&]
+	{
+		const Triangle t{ 24.25, 106.75, 96.25, 18.75, 168.25, 106.75 };
+		return curveLimited ? Triangle{ t.p2, t.p1, t.p0 } : t;
+	};
+	const auto frameQuad = [&](int32 kind)
+	{
+		const Quad q = frameQuads[kind - 1];
+		return curveLimited ? Quad{ q.p3, q.p2, q.p1, q.p0 } : q;
+	};
+	const auto frameWidths = [&]
+	{
+		const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
+		return superEllipseMode == 1 ? Vec2{ width, 0 } : (superEllipseMode == 2 ? Vec2{ 0, width } : Vec2{ width / 2, width / 2 });
+	};
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -174,6 +205,18 @@ void Main()
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
 		const EnableAntialiasing antialiasing{ aa };
+		if (page == 4)
+		{
+			const auto [inner, outer] = frameWidths();
+			const auto draw = [&](const auto& shape)
+			{
+				if (paint) shape.paintFrame(image, inner, outer, ink, antialiasing);
+				else shape.overwriteFrame(image, inner, outer, ink, antialiasing);
+			};
+			if (kind == 0) draw(frameTriangle());
+			else draw(frameQuad(kind));
+			return;
+		}
 		if (page == 3)
 		{
 			const auto& path = splines[kind];
@@ -286,7 +329,7 @@ void Main()
 		if (KeyQ.down()) { curveQualityIndex = (curveQualityIndex + 1) % curveQuality.size(); dirty = true; }
 		if (KeyB.down()) { curveLimited = !curveLimited; dirty = true; }
 		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
-		if (KeyS.down()) { page = (page + 1) % 4; dirty = true; }
+		if (KeyS.down()) { page = (page + 1) % 5; dirty = true; }
 		if (KeyJ.down()) { startCapIndex = (startCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyK.down()) { endCapIndex = (endCapIndex + 1) % arcCaps.size(); dirty = true; }
 		if (KeyA.down()) { aa = !aa; dirty = true; }
@@ -311,10 +354,12 @@ void Main()
 				}
 			dirty = false;
 		}
-		if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
+		if (page == 4) font(U"S: polygon frames   A: AA = {}   F: inner / outer = {}   B: reversed = {}"_fmt(aa, frameWidths(), curveLimited)).draw(20, 12);
+		else if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
 		else if (page == 3) font(U"S: splines   A: AA = {}   Q: target = {}px   B: per-curve budget = {} (GPU caps: Square)"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 1 : 256)).draw(20, 12);
 		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
+		if (page == 4) font(U"T: width   triangle / clipped convex / concave / crossed / collinear (GPU omitted)").draw(20, 32);
+		else if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else if (page == 3) font(U"J: start = {}   K: end = {}   T: width = {}    open / closed / crossed / clipped / point"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], arrowWidths[arcThicknessIndex])).draw(20, 32);
 		else if (page == 2) font(U"J: tail = {}   T: width = {}    horizontal / diagonal / D: {} / clipped / zero"_fmt(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else font(U"C: {}   L: {}   R: {:.2f}   T: {}   P: {}"_fmt(circleModes[circleMode], arcCaps[arcCapIndex], arcSweeps[arcSweepIndex], arcWidths[arcThicknessIndex], ellipseModes[ellipseMode])).draw(20, 32);
@@ -327,6 +372,12 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
+				else if (page == 4)
+				{
+					const auto [inner, outer] = frameWidths();
+					if (kind == 0) frameTriangle().movedBy(pos).drawFrame(inner, outer, ink);
+					else if (kind < 4) frameQuad(kind).movedBy(pos).drawFrame(inner, outer, ink);
+				}
 				else if (page == 3)
 				{
 					const Transformer2D transform{ Mat3x2::Translate(pos) };
