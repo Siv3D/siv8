@@ -420,10 +420,12 @@ namespace s3d
 			return *this;
 		}
 
+		auto* pRenderer = SIV3D_ENGINE(Renderer2D);
 		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
+		const QualityFactor qualityFactor{ (0.5 * pRenderer->getRasterScaling()) };
 
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
+		pRenderer->addLineString(LineCap::Square, LineCap::Square,
+			outer(qualityFactor.toPointsPerCircle(r)), none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			color.toFloat4());
@@ -438,10 +440,12 @@ namespace s3d
 			return *this;
 		}
 
+		auto* pRenderer = SIV3D_ENGINE(Renderer2D);
 		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
+		const QualityFactor qualityFactor{ (0.5 * pRenderer->getRasterScaling()) };
 
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
+		pRenderer->addLineString(LineCap::Square, LineCap::Square,
+			outer(qualityFactor.toPointsPerCircle(r)), none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			pattern);

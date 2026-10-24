@@ -193,6 +193,7 @@
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DSuperEllipse.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DJoinStyle.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp" />
