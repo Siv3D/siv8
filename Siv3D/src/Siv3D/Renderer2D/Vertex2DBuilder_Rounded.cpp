@@ -2102,10 +2102,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float srx = (rx * scale);
-			const float sry = (ry * scale);
-
-			Vertex2D::IndexType Quality = CalculateCirclePieQuality(Max(srx, sry), Abs(angle));
+			Vertex2D::IndexType Quality = CalculateCirclePieQuality((Max(rx, ry) * scale), Abs(angle));
 
 			if (Quality < 2)
 			{
@@ -2136,7 +2133,7 @@ namespace s3d
 				{
 					const float rad = (start + (radDelta * i));
 					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + srx * s), (centerY - sry * c));
+					(pDst++)->pos.set((centerX + rx * s), (centerY - ry * c));
 				}
 			}
 
