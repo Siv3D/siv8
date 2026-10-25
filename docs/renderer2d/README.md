@@ -25,23 +25,29 @@ allocator. Each backend checks the resulting index count before submitting a
 draw. Buffer allocation, base-vertex handling, command batching and GPU execution
 remain backend responsibilities.
 
-The builder implementations share index writers for closed fans, rounded
-rectangles and copying indexed meshes with a base offset. These helpers write
-directly into the reserved buffer; vertex generation and allocation stay in each
-builder. Indexed copies retain a 32-bit element count independently of the
-16-bit vertex indices.
+The builder implementations share index writers for open and closed fans,
+open and closed strips, rounded rectangles and their frames, and copying
+indexed meshes with a base offset. Strip writers preserve each layout's
+triangle winding and the rounded-frame writer retains its four-corner traversal.
+These helpers write directly into the reserved buffer; vertex generation and
+allocation stay in each builder. Indexed copies retain a 32-bit element count
+independently of the 16-bit vertex indices.
 [Test_Vertex2DBuilderIndices.cpp](../../Test/Test_Vertex2DBuilderIndices.cpp) checks
-triangle order, winding, scaled tessellation, destination bounds, large index
-counts and allocation failure.
+triangle order, winding, strip closure, cap/body boundaries, positive and negative
+sweeps, scaled tessellation, destination bounds, large index counts and allocation
+failure.
 
-On macOS, run its opt-in benchmark from the repository root with:
+On macOS, run its opt-in benchmarks from the repository root with:
 
 ```sh
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.indices_cpu_benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.indices_rounded_cpu_benchmark'
 ```
 
-It measures thread CPU time for the affected builders using reusable buffers,
+They measure thread CPU time for the affected builders using reusable buffers,
 at low and high tessellation scales and with small and large index arrays.
+The rounded benchmark covers pies, segments, capped arcs/lines, solid and dashed
+frames, and filled and unfilled circle shadows.
 Each result reports the median and 10th/90th percentiles in nanoseconds per call.
 Compare repeated runs of both revisions on the same idle machine, alternating
 their order. These measurements exclude backend submission and GPU execution.

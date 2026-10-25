@@ -30,7 +30,7 @@ namespace s3d
 		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
 			[[gnu::always_inline]]
 		# endif
-		static inline void WriteClosedFanIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
+		static inline void WriteOpenFanIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < (rimVertexCount - 1); ++i)
 			{
@@ -38,6 +38,14 @@ namespace s3d
 				*pIndex++ = indexOffset + (i + 1);
 				*pIndex++ = indexOffset + (i + 2);
 			}
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteClosedFanIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
+		{
+			WriteOpenFanIndices(pIndex, indexOffset, rimVertexCount);
 
 			*pIndex++ = indexOffset;
 			*pIndex++ = (indexOffset + rimVertexCount);
@@ -131,6 +139,104 @@ namespace s3d
 					*pIndex++ = blFanStartIndex;
 					*pIndex++ = brCenterIndex;
 					*pIndex++ = brFanEndIndex;
+				}
+			}
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteOpenStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
+		{
+			for (Vertex2D::IndexType i = 0; i < (pairCount - 1); ++i)
+			{
+				const Vertex2D::IndexType base = (indexOffset + i * 2);
+				*pIndex++ = base;
+				*pIndex++ = (base + 1);
+				*pIndex++ = (base + 2);
+				*pIndex++ = (base + 2);
+				*pIndex++ = (base + 1);
+				*pIndex++ = (base + 3);
+			}
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteClosedStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
+		{
+			for (Vertex2D::IndexType i = 0; i < pairCount; ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (pairCount * 2));
+				}
+			}
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteRoundRectFrameIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
+		{
+			const Vertex2D::IndexType ArcVertexCount = ((quality + 1) * 2);
+			const Vertex2D::IndexType ArcIndexCount = (quality * 6);
+
+			Vertex2D::IndexType* pDst0 = pIndex;
+			Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
+			Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
+			Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
+
+			const Vertex2D::IndexType trIndexBase = indexOffset;
+			const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
+			const Vertex2D::IndexType blIndexBase = (indexOffset + ArcVertexCount * 2);
+			const Vertex2D::IndexType tlIndexBase = (indexOffset + ArcVertexCount * 3);
+
+			for (Vertex2D::IndexType i = 0; i <= quality; ++i)
+			{
+				const Vertex2D::IndexType i0 = (i * 2);
+				const Vertex2D::IndexType i1 = (i * 2 + 1);
+				const Vertex2D::IndexType i2 = (i * 2 + 2);
+				const Vertex2D::IndexType i3 = (i * 2 + 3);
+
+				*pDst0++ = (trIndexBase + i0);
+				*pDst0++ = (trIndexBase + i2);
+				*pDst0++ = (trIndexBase + i1);
+				*pDst0++ = (trIndexBase + i1);
+				*pDst0++ = (trIndexBase + i2);
+				*pDst0++ = (trIndexBase + i3);
+
+				*pDst1++ = (brIndexBase + i0);
+				*pDst1++ = (brIndexBase + i2);
+				*pDst1++ = (brIndexBase + i1);
+				*pDst1++ = (brIndexBase + i1);
+				*pDst1++ = (brIndexBase + i2);
+				*pDst1++ = (brIndexBase + i3);
+
+				*pDst2++ = (blIndexBase + i0);
+				*pDst2++ = (blIndexBase + i2);
+				*pDst2++ = (blIndexBase + i1);
+				*pDst2++ = (blIndexBase + i1);
+				*pDst2++ = (blIndexBase + i2);
+				*pDst2++ = (blIndexBase + i3);
+
+				if (i < quality)
+				{
+					*pDst3++ = (tlIndexBase + i0);
+					*pDst3++ = (tlIndexBase + i2);
+					*pDst3++ = (tlIndexBase + i1);
+					*pDst3++ = (tlIndexBase + i1);
+					*pDst3++ = (tlIndexBase + i2);
+					*pDst3++ = (tlIndexBase + i3);
+				}
+				else
+				{
+					*pDst3++ = (tlIndexBase + i0);
+					*pDst3++ = trIndexBase;
+					*pDst3++ = (tlIndexBase + i1);
+					*pDst3++ = (tlIndexBase + i1);
+					*pDst3++ = trIndexBase;
+					*pDst3++ = (trIndexBase + 1);
 				}
 			}
 		}
@@ -250,12 +356,7 @@ namespace s3d
 				(pVertex++)->color = color;
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			WriteOpenFanIndices(pIndex, indexOffset, quality);
 		}
 
 		static void EmitRoundCap(const Vertex2DBufferPointer buffer, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const Vertex2D::IndexType quality)
@@ -307,12 +408,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			WriteOpenFanIndices(pIndex, indexOffset, quality);
 		}
 
 		[[nodiscard]]
@@ -437,13 +533,7 @@ namespace s3d
 					}
 				}
 
-				for (Vertex2D::IndexType i = 0; i < (arcQuality - 1); ++i)
-				{
-					for (Vertex2D::IndexType k = 0; k < 6; ++k)
-					{
-						*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
-					}
-				}
+				WriteOpenStripIndices(pIndex, indexOffset, arcQuality);
 			}
 
 			// 本体がない場合も、終端は始端の直後になる。
@@ -555,13 +645,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (PairCount - 1); ++i)
-			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
-				{
-					*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
-				}
-			}
+			WriteOpenStripIndices(pIndex, indexOffset, PairCount);
 
 			return IndexCount;
 		}
@@ -1637,13 +1721,7 @@ namespace s3d
 				(pVertex++)->color = innerColor;
 			}
 
-			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
-			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
-				{
-					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
-				}
-			}
+			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -1718,17 +1796,7 @@ namespace s3d
 			{
 				const Vertex2D::IndexType vertexOffset = (indexOffset + static_cast<Vertex2D::IndexType>(static_cast<size_t>(dashIndex) * Quality * 2));
 
-				for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-				{
-					const Vertex2D::IndexType base = (vertexOffset + i * 2);
-
-					*pIndex++ = base;
-					*pIndex++ = (base + 1);
-					*pIndex++ = (base + 2);
-					*pIndex++ = (base + 2);
-					*pIndex++ = (base + 1);
-					*pIndex++ = (base + 3);
-				}
+				WriteOpenStripIndices(pIndex, vertexOffset, Quality);
 			}
 
 			return IndexCount;
@@ -1786,12 +1854,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			WriteOpenFanIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -1884,12 +1947,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			WriteOpenFanIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -2080,13 +2138,7 @@ namespace s3d
 				(pVertex++)->color = innerColor;
 			}
 
-			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
-			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
-				{
-					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
-				}
-			}
+			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -2237,17 +2289,7 @@ namespace s3d
 						pDst[-1].color = innerColor;
 					}
 
-					for (Vertex2D::IndexType i = 0; i < (dashPointCount - 1); ++i)
-					{
-						const Vertex2D::IndexType base = (vertexOffset + i * 2);
-
-						*pIndex++ = base;
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 2);
-						*pIndex++ = (base + 2);
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 3);
-					}
+					WriteOpenStripIndices(pIndex, vertexOffset, dashPointCount);
 				}
 			}
 
@@ -2307,12 +2349,7 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			WriteOpenFanIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -2681,65 +2718,7 @@ namespace s3d
 				}
 			}
 
-			{
-				Vertex2D::IndexType* pDst0 = pIndex;
-				Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
-				Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
-				Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
-
-				const Vertex2D::IndexType trIndexBase = indexOffset;
-				const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
-				const Vertex2D::IndexType blIndexBase = (indexOffset + ArcVertexCount * 2);
-				const Vertex2D::IndexType tlIndexBase = (indexOffset + ArcVertexCount * 3);
-
-				for (Vertex2D::IndexType i = 0; i <= Quality; ++i)
-				{
-					const Vertex2D::IndexType i0 = (i * 2);
-					const Vertex2D::IndexType i1 = (i * 2 + 1);
-					const Vertex2D::IndexType i2 = (i * 2 + 2);
-					const Vertex2D::IndexType i3 = (i * 2 + 3);
-
-					*pDst0++ = (trIndexBase + i0);
-					*pDst0++ = (trIndexBase + i2);
-					*pDst0++ = (trIndexBase + i1);
-					*pDst0++ = (trIndexBase + i1);
-					*pDst0++ = (trIndexBase + i2);
-					*pDst0++ = (trIndexBase + i3);
-
-					*pDst1++ = (brIndexBase + i0);
-					*pDst1++ = (brIndexBase + i2);
-					*pDst1++ = (brIndexBase + i1);
-					*pDst1++ = (brIndexBase + i1);
-					*pDst1++ = (brIndexBase + i2);
-					*pDst1++ = (brIndexBase + i3);
-
-					*pDst2++ = (blIndexBase + i0);
-					*pDst2++ = (blIndexBase + i2);
-					*pDst2++ = (blIndexBase + i1);
-					*pDst2++ = (blIndexBase + i1);
-					*pDst2++ = (blIndexBase + i2);
-					*pDst2++ = (blIndexBase + i3);
-
-					if (i < Quality)
-					{
-						*pDst3++ = (tlIndexBase + i0);
-						*pDst3++ = (tlIndexBase + i2);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i2);
-						*pDst3++ = (tlIndexBase + i3);
-					}
-					else
-					{
-						*pDst3++ = (tlIndexBase + i0);
-						*pDst3++ = trIndexBase;
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = trIndexBase;
-						*pDst3++ = (trIndexBase + 1);
-					}
-				}
-			}
+			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -2905,65 +2884,7 @@ namespace s3d
 				}
 			}
 
-			{
-				Vertex2D::IndexType* pDst0 = pIndex;
-				Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
-				Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
-				Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
-
-				const Vertex2D::IndexType trIndexBase = indexOffset;
-				const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
-				const Vertex2D::IndexType blIndexBase = (indexOffset + ArcVertexCount * 2);
-				const Vertex2D::IndexType tlIndexBase = (indexOffset + ArcVertexCount * 3);
-
-				for (Vertex2D::IndexType i = 0; i <= Quality; ++i)
-				{
-					const Vertex2D::IndexType i0 = (i * 2);
-					const Vertex2D::IndexType i1 = (i * 2 + 1);
-					const Vertex2D::IndexType i2 = (i * 2 + 2);
-					const Vertex2D::IndexType i3 = (i * 2 + 3);
-
-					*pDst0++ = (trIndexBase + i0);
-					*pDst0++ = (trIndexBase + i2);
-					*pDst0++ = (trIndexBase + i1);
-					*pDst0++ = (trIndexBase + i1);
-					*pDst0++ = (trIndexBase + i2);
-					*pDst0++ = (trIndexBase + i3);
-
-					*pDst1++ = (brIndexBase + i0);
-					*pDst1++ = (brIndexBase + i2);
-					*pDst1++ = (brIndexBase + i1);
-					*pDst1++ = (brIndexBase + i1);
-					*pDst1++ = (brIndexBase + i2);
-					*pDst1++ = (brIndexBase + i3);
-
-					*pDst2++ = (blIndexBase + i0);
-					*pDst2++ = (blIndexBase + i2);
-					*pDst2++ = (blIndexBase + i1);
-					*pDst2++ = (blIndexBase + i1);
-					*pDst2++ = (blIndexBase + i2);
-					*pDst2++ = (blIndexBase + i3);
-
-					if (i < Quality)
-					{
-						*pDst3++ = (tlIndexBase + i0);
-						*pDst3++ = (tlIndexBase + i2);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i2);
-						*pDst3++ = (tlIndexBase + i3);
-					}
-					else
-					{
-						*pDst3++ = (tlIndexBase + i0);
-						*pDst3++ = trIndexBase;
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = (tlIndexBase + i1);
-						*pDst3++ = trIndexBase;
-						*pDst3++ = (trIndexBase + 1);
-					}
-				}
-			}
+			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -3241,17 +3162,7 @@ namespace s3d
 						++pointCount;
 					});
 
-				for (Vertex2D::IndexType q = 0; (q + 1) < pointCount; ++q)
-				{
-					const Vertex2D::IndexType base = (vertexBase + q * 2);
-
-					*pIndexDst++ = base;
-					*pIndexDst++ = (base + 1);
-					*pIndexDst++ = (base + 2);
-					*pIndexDst++ = (base + 2);
-					*pIndexDst++ = (base + 1);
-					*pIndexDst++ = (base + 3);
-				}
+				WriteOpenStripIndices(pIndexDst, vertexBase, pointCount);
 
 				vertexBase += (pointCount * 2);
 			}
@@ -3850,13 +3761,7 @@ namespace s3d
 				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
 			}
 
-			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
-			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
-				{
-					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
-				}
-			}
+			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -3931,13 +3836,7 @@ namespace s3d
 				const Vertex2D::IndexType ringStartIndex = (indexOffset + 1);
 
 				// 外側のリングのインデックス
-				for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
-				{
-					for (Vertex2D::IndexType k = 0; k < 6; ++k)
-					{
-						*pIndex++ = (ringStartIndex + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
-					}
-				}
+				WriteClosedStripIndices(pIndex, ringStartIndex, FullQuality);
 
 				// 内円を中心頂点で埋めるインデックス
 				{

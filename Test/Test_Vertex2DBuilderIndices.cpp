@@ -141,6 +141,72 @@ namespace
 			return Vertex2DBuilder::BuildMesh2D(allocate, vertices, triangles, Float2{ 2, 3 });
 		}
 	}
+
+	enum class RoundedShape
+	{
+		CirclePie, EllipsePie, CircleSegment, ArcFlat, ArcSquare, ArcRoundRadial, ArcRoundAlong,
+		CircleFrame, EllipseFrame, CircleDashed, EllipseDashed, RoundRectDashed,
+		RoundRectFrame, RoundRectFrameTB, RoundRectFrameLR, ShadowFill, ShadowRing,
+		LineRound, ArrowRound, LineStringRound, LineStringGradientRound,
+	};
+	constexpr RoundedShape RoundedShapes[]{ RoundedShape::CirclePie, RoundedShape::EllipsePie, RoundedShape::CircleSegment,
+		RoundedShape::ArcFlat, RoundedShape::ArcSquare, RoundedShape::ArcRoundRadial, RoundedShape::ArcRoundAlong,
+		RoundedShape::CircleFrame, RoundedShape::EllipseFrame, RoundedShape::CircleDashed, RoundedShape::EllipseDashed,
+		RoundedShape::RoundRectDashed, RoundedShape::RoundRectFrame, RoundedShape::RoundRectFrameTB, RoundedShape::RoundRectFrameLR,
+		RoundedShape::ShadowFill, RoundedShape::ShadowRing, RoundedShape::LineRound, RoundedShape::ArrowRound,
+		RoundedShape::LineStringRound, RoundedShape::LineStringGradientRound };
+
+	uint32 BuildRoundedShape(const BufferCreatorFunc& allocate, const RoundedShape shape, const float scale, const float angle = Math::HalfPiF)
+	{
+		using namespace Vertex2DBuilder;
+		const FloatRect inner{ -9.5f, -6.5f, 9.5f, 6.5f };
+		const Vec2 points[]{ { 0, 0 }, { 4, 0 }, { 5, 3 } };
+		switch (shape)
+		{
+		case RoundedShape::CirclePie:
+			return BuildCirclePie(allocate, { 3, 5 }, 1, 0.2f, angle, Red, Blue, scale);
+		case RoundedShape::EllipsePie:
+			return BuildEllipsePie(allocate, { 3, 5 }, 1, 0.5f, 0.2f, angle, Red, Blue, scale);
+		case RoundedShape::CircleSegment:
+			return BuildCircleSegment(allocate, { 3, 5 }, 1, 0.2f, angle, Red, scale);
+		case RoundedShape::ArcFlat:
+		case RoundedShape::ArcSquare:
+		case RoundedShape::ArcRoundRadial:
+		case RoundedShape::ArcRoundAlong:
+			return BuildCircleArc(allocate, ((shape == RoundedShape::ArcFlat) ? LineCap::Flat
+				: ((shape == RoundedShape::ArcSquare) ? LineCap::Square : LineCap::Round)),
+				{ 3, 5 }, 0.75f, 0.2f, angle, 0.5f,
+				((shape == RoundedShape::ArcRoundRadial) ? ColorFillDirection::InOut : ColorFillDirection::LeftRight), Red, Blue, scale);
+		case RoundedShape::CircleFrame:
+			return BuildCircleFrame(allocate, { 3, 5 }, 0.75f, 0.5f, Red, Blue, scale);
+		case RoundedShape::EllipseFrame:
+			return BuildEllipseFrame(allocate, { 3, 5 }, 1, 0.5f, 0.1f, 0.25f, Red, Blue, scale);
+		case RoundedShape::CircleDashed:
+			return BuildCircleDashedFrame(allocate, { 3, 5 }, 0.75f, 0.2f, 0.5f, 0.25f, 8, Red, Blue, scale);
+		case RoundedShape::EllipseDashed:
+			return BuildEllipseDashedFrame(allocate, { 3, 5 }, 1, 0.5f, 0.1f, 0.25f, 0.2f, 0.25f, 8, Red, Blue, scale);
+		case RoundedShape::RoundRectDashed:
+			return BuildRoundRectDashedFrame(allocate, inner, 0.5f, Rect, 1, 0.2f, 0.25f, 8, Red, scale);
+		case RoundedShape::RoundRectFrame:
+			return BuildRoundRectFrame(allocate, inner, 0.5f, Rect, 1, Red, scale);
+		case RoundedShape::RoundRectFrameTB:
+		case RoundedShape::RoundRectFrameLR:
+			return BuildRoundRectFrame(allocate, inner, 0.5f, Rect, 1,
+				((shape == RoundedShape::RoundRectFrameTB) ? ColorFillDirection::TopBottom : ColorFillDirection::LeftRight), Red, Blue, scale);
+		case RoundedShape::ShadowFill:
+		case RoundedShape::ShadowRing:
+			return BuildCircleShadow(allocate, Circle{ 3, 5, 1 }, 0.5f, Red, scale, (shape == RoundedShape::ShadowFill));
+		case RoundedShape::LineRound:
+			return BuildLine(allocate, LineCap::Round, LineCap::Round, { 0, 0 }, { 4, 0 }, 0.5f, { Red, Blue }, scale);
+		case RoundedShape::ArrowRound:
+			return BuildArrow(allocate, LineCap::Round, { 0, 0 }, { 4, 0 }, 0.5f, { 2, 1 }, { Red, Blue }, scale);
+		case RoundedShape::LineStringRound:
+			return BuildLineString(allocate, LineCap::Round, LineCap::Round, points, none, 0.5f, false, CloseRing::No, Red, scale);
+		case RoundedShape::LineStringGradientRound:
+			return BuildLineString(allocate, LineCap::Round, LineCap::Round, points, none, 0.5f, false, Red, Blue, scale);
+		}
+		return 0;
+	}
 }
 
 TEST_CASE("Vertex2DBuilder.indices_closed_fan_order")
@@ -252,6 +318,119 @@ TEST_CASE("Vertex2DBuilder.indices_allocation_failure")
 		CHECK(BuildIndexed(fail, variant, Triangles, FlatIndices) == 0);
 		CHECK(requests == 1);
 	}
+	for (const auto shape : RoundedShapes)
+	{
+		CAPTURE(static_cast<int32>(shape));
+		requests = 0;
+		CHECK(BuildRoundedShape(fail, shape, 512) == 0);
+		CHECK(requests == 1);
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.indices_open_fan_and_strip_order")
+{
+	constexpr Index Pie[]{ 0, 1, 2, 0, 2, 3 };
+	constexpr Index Segment[]{ 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5 };
+	constexpr Index Arc[]{ 0, 1, 2, 2, 1, 3, 2, 3, 4, 4, 3, 5 };
+	constexpr Index SquareArc[]{ 0, 1, 2, 2, 1, 3, 2, 3, 4, 4, 3, 5,
+		4, 5, 6, 6, 5, 7, 6, 7, 8, 8, 7, 9 };
+	constexpr Index RoundArc[]{ 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5,
+		6, 7, 8, 8, 7, 9, 8, 9, 10, 10, 9, 11,
+		12, 13, 14, 12, 14, 15, 12, 15, 16, 12, 16, 17 };
+	constexpr Index RoundLine[]{ 0, 1, 2, 2, 1, 3,
+		4, 5, 6, 4, 6, 7, 4, 7, 8, 4, 8, 9,
+		10, 11, 12, 10, 12, 13, 10, 13, 14, 10, 14, 15 };
+	for (const bool limit : { false, true })
+	{
+		for (const float sign : { -1.0f, 1.0f })
+		{
+			const auto check = [&](const RoundedShape shape, const std::span<const Index> expected)
+			{
+				CAPTURE(static_cast<int32>(shape), sign, limit);
+				CheckIndices(Capture([&](const BufferCreatorFunc& allocate)
+					{ return BuildRoundedShape(allocate, shape, 1, (sign * Math::HalfPiF)); }, limit), expected);
+			};
+			check(RoundedShape::CirclePie, Pie);
+			check(RoundedShape::EllipsePie, Pie);
+			check(RoundedShape::CircleSegment, Segment);
+			check(RoundedShape::ArcFlat, Arc);
+			check(RoundedShape::ArcSquare, SquareArc);
+			check(RoundedShape::ArcRoundRadial, RoundArc);
+			check(RoundedShape::ArcRoundAlong, RoundArc);
+			check(RoundedShape::LineRound, RoundLine);
+		}
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.indices_closed_strip_order")
+{
+	constexpr Index Ring[]{ 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7,
+		6, 8, 7, 7, 8, 9, 8, 10, 9, 9, 10, 11, 10, 12, 11, 11, 12, 13,
+		12, 14, 13, 13, 14, 15, 14, 0, 15, 15, 0, 1 };
+	constexpr Index RoundRectRing[]{ 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7,
+		6, 8, 7, 7, 8, 9, 8, 10, 9, 9, 10, 11, 10, 12, 11, 11, 12, 13,
+		12, 14, 13, 13, 14, 15, 14, 16, 15, 15, 16, 17, 16, 18, 17, 17, 18, 19,
+		18, 20, 19, 19, 20, 21, 20, 22, 21, 21, 22, 23, 22, 0, 23, 23, 0, 1 };
+	for (const bool limit : { false, true })
+	{
+		for (const auto shape : { RoundedShape::CircleFrame, RoundedShape::EllipseFrame, RoundedShape::ShadowRing,
+			RoundedShape::RoundRectFrame, RoundedShape::RoundRectFrameTB, RoundedShape::RoundRectFrameLR })
+		{
+			CAPTURE(static_cast<int32>(shape), limit);
+			const auto mesh = Capture([&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, 1); }, limit);
+			CheckIndices(mesh, ((shape >= RoundedShape::RoundRectFrame) && (shape <= RoundedShape::RoundRectFrameLR))
+				? std::span<const Index>{ RoundRectRing } : std::span<const Index>{ Ring });
+			CheckWindingAndArea(mesh);
+		}
+		// A filled shadow puts the center before the ring and emits the inner fan after it.
+		const auto mesh = Capture([&](const BufferCreatorFunc& allocate)
+			{ return BuildRoundedShape(allocate, RoundedShape::ShadowFill, 1); }, limit);
+		Array<Index> filled;
+		for (const auto index : Ring) filled.push_back(index + 1);
+		constexpr Index Inner[]{ 0, 2, 4, 0, 4, 6, 0, 6, 8, 0, 8, 10, 0, 10, 12, 0, 12, 14, 0, 14, 16, 0, 16, 2 };
+		filled.insert(filled.end(), std::begin(Inner), std::end(Inner));
+		CheckIndices(mesh, filled);
+		CheckWindingAndArea(mesh);
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.indices_rounded_bounds_and_closure")
+{
+	for (const auto shape : RoundedShapes)
+	{
+		for (const float scale : { 1.0f, 8.0f, 512.0f })
+		{
+			CAPTURE(static_cast<int32>(shape), scale);
+			const auto mesh = Capture([&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, scale); }, true);
+			CHECK(mesh.count > 0);
+			CHECK((mesh.count % 3) == 0);
+			const bool roundRect = ((RoundedShape::RoundRectFrame <= shape) && (shape <= RoundedShape::RoundRectFrameLR));
+			if ((shape == RoundedShape::CircleFrame) || (shape == RoundedShape::EllipseFrame) || (shape == RoundedShape::ShadowRing) || roundRect)
+			{
+				const size_t vertices = (mesh.vertices.size() - 2);
+				CHECK(mesh.count == (vertices * 3));
+				CHECK(mesh.indices[mesh.count - 3] == (mesh.offset + vertices - 1));
+				CHECK(mesh.indices[mesh.count - 2] == (mesh.offset + vertices - 1));
+				CHECK(mesh.indices[mesh.count - 1] == mesh.offset);
+				CHECK(mesh.indices[mesh.count] == (mesh.offset + 1));
+				CheckWindingAndArea(mesh);
+			}
+		}
+	}
+
+	// Tiny arcs still have an edge; a zero sweep emits nothing for pies/segments/flat arcs.
+	for (const auto shape : { RoundedShape::CirclePie, RoundedShape::EllipsePie, RoundedShape::ArcFlat })
+	{
+		const auto mesh = Capture([&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, 1, 0.001f); }, true);
+		CHECK(mesh.count == ((shape == RoundedShape::ArcFlat) ? 6 : 3));
+	}
+	for (const auto shape : { RoundedShape::CirclePie, RoundedShape::EllipsePie, RoundedShape::CircleSegment, RoundedShape::ArcFlat })
+	{
+		uint32 requests = 0;
+		const auto fail = [&](uint16, uint32) { ++requests; return Vertex2DBufferPointer{}; };
+		CHECK(BuildRoundedShape(fail, shape, 1, 0) == 0);
+		CHECK(requests == 0);
+	}
 }
 
 # if SIV3D_PLATFORM(MACOS)
@@ -268,7 +447,7 @@ namespace
 	template <class Build>
 	void BenchmarkBuilder(const char* name, const char* parameter, const uint32 value, Build&& build)
 	{
-		std::array<Vertex2D, 512> vertices;
+		std::array<Vertex2D, 1024> vertices;
 		Array<Index> indices(65538);
 		const auto allocate = [&](uint16, uint32)
 		{
@@ -317,6 +496,25 @@ TEST_CASE("Vertex2DBuilder.indices_cpu_benchmark", "[.benchmark]")
 		{
 			BenchmarkBuilder(indexedNames[variant], "triangles", static_cast<uint32>(triangleCount),
 				[&](const BufferCreatorFunc& allocate) { return BuildIndexed(allocate, variant, triangles, indices); });
+		}
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.indices_rounded_cpu_benchmark", "[.benchmark]")
+{
+	const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+	REQUIRE(qos);
+	const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
+	const char* names[]{ "CirclePie", "EllipsePie", "CircleSegment", "ArcFlat", "ArcSquare", "ArcRoundRadial", "ArcRoundAlong",
+		"CircleFrame", "EllipseFrame", "CircleDashed", "EllipseDashed", "RoundRectDashed",
+		"RoundRectFrame", "RoundRectFrameTB", "RoundRectFrameLR", "ShadowFill", "ShadowRing", "LineRound", "ArrowRound",
+		"LineStringRound", "LineStringGradientRound" };
+	for (const auto shape : RoundedShapes)
+	{
+		for (const float scale : { 1.0f, 512.0f })
+		{
+			BenchmarkBuilder(names[static_cast<int32>(shape)], "scale", static_cast<uint32>(scale),
+				[&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, scale); });
 		}
 	}
 }
