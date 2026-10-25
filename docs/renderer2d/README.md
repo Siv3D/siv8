@@ -76,9 +76,13 @@ arc position generation. Callers retain tessellation selection, sweep direction,
 center placement and color interpolation. A templated vertex writer supports
 gradient caps without a runtime callback; position-only paths retain their
 separate color pass. Both paths leave UVs untouched.
+Flat, square and round-capped arcs share writers for their body's inner/outer
+positions, along-arc colors and radial colors. Callers retain cap geometry and
+gradient endpoints; position and color passes write into a single reservation.
 [Test_Vertex2DBuilderArc.cpp](../../Test/Test_Vertex2DBuilderArc.cpp) checks analytic
-positions, chord centers, solid and gradient caps, fan order and destination
-bounds across signed sweeps and tessellation scales. Existing
+positions, chord centers, solid and gradient caps, arc-body gradients, fan and
+strip order, untouched UVs and destination bounds across signed sweeps, zero and
+full sweeps, and tessellation scales. Existing
 [arc tessellation](../../Test/Test_Renderer2DArcTessellation.cpp) and
 [ellipse pie](../../Test/Test_Renderer2DEllipsePie.cpp) tests cover transforms and
 scene render resolution.

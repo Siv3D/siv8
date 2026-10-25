@@ -178,3 +178,80 @@ TEST_CASE("Vertex2DBuilder.arc_vertices_gradient_caps")
 		}
 	}
 }
+
+TEST_CASE("Vertex2DBuilder.arc_vertices_strip")
+{
+	constexpr float Thickness = 8.0f;
+	for (const float innerRadius : { 0.0f, 37.0f })
+	for (const float scale : { 0.0f, 1.0f, 512.0f })
+	for (const float start : { -0.37f, 7.4f })
+	for (const float sweep : { -Math::TwoPiF, -4.3f, -0.003f, 0.0f, 0.003f, Math::PiF, Math::TwoPiF })
+	for (const auto cap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const auto direction : { ColorFillDirection::InOut, ColorFillDirection::LeftRight })
+	for (const Float4 color1 : { Color0, Color1 })
+	{
+		CAPTURE(innerRadius, scale, start, sweep, static_cast<int32>(cap), static_cast<int32>(direction), color1);
+		// Zero-sweep Flat and Round arcs have no body; their behavior is covered separately.
+		if ((sweep == 0.0f) && (cap != LineCap::Square)) continue;
+		const bool square = ((cap == LineCap::Square) && (std::abs(sweep) < Math::TwoPiF));
+		const bool round = (cap == LineCap::Round);
+		const auto mesh = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildCircleArc(allocate, cap, Center, innerRadius, start, sweep, Thickness,
+				direction, Color0, color1, scale);
+		});
+		const size_t points = ((sweep == 0.0f) ? 1
+			: Vertex2DBuilder::CalculateCircleArcQuality((innerRadius + Thickness) * scale, std::abs(sweep)));
+		REQUIRE(mesh.vertices.size() >= (points * 2));
+		const size_t firstVertex = (round ? ((mesh.vertices.size() - points * 2) / 2) : (square ? 2 : 0));
+		if (round) REQUIRE(firstVertex >= 6);
+		const size_t firstIndex = (round ? ((firstVertex - 2) * 3) : (square ? 6 : 0));
+		REQUIRE(mesh.vertices.size() == (points * 2 + firstVertex * 2));
+		REQUIRE(mesh.indices.size() == ((points - 1) * 6 + firstIndex * 2));
+		const double angle = std::abs(double(sweep));
+		const double arcStart = (double(start) + Min(sweep, 0.0f));
+		const double length = ((innerRadius + Thickness * 0.5) * angle);
+		const Float4 startColor = ((sweep < 0.0f) ? color1 : Color0);
+		const Float4 endColor = ((sweep < 0.0f) ? Color0 : color1);
+		for (size_t i = 0; i < points; ++i)
+		{
+			const double u = ((points == 1) ? 0.5 : (double(i) / (points - 1)));
+			const Vec2 radial = Unit(arcStart + angle * u);
+			const auto& inner = mesh.vertices[firstVertex + i * 2];
+			const auto& outer = mesh.vertices[firstVertex + i * 2 + 1];
+			CheckPosition(inner.pos, Vec2{ Center } + radial * innerRadius);
+			CheckPosition(outer.pos, Vec2{ Center } + radial * (innerRadius + Thickness));
+			// Cap extensions participate in the length used for an along-arc gradient.
+			const double t = ((square || round) ? ((Thickness * 0.5 + length * u) / (length + Thickness)) : u);
+			const Float4 along = startColor.lerp(endColor, static_cast<float>(t));
+			CheckColor(inner.color, ((direction == ColorFillDirection::LeftRight) ? along : Color0));
+			CheckColor(outer.color, ((direction == ColorFillDirection::LeftRight) ? along : color1));
+		}
+		// Square cap pairs are part of the same strip; Round caps have separate fans.
+		const size_t stripVertex = (square ? 0 : firstVertex);
+		const size_t stripIndex = (square ? 0 : firstIndex);
+		const size_t pairs = (points + (square ? 2 : 0));
+		for (size_t i = 0; i + 1 < pairs; ++i)
+		{
+			constexpr size_t Offsets[]{ 0, 1, 2, 2, 1, 3 };
+			for (size_t j = 0; j < 6; ++j)
+			{
+				CHECK(mesh.indices[stripIndex + i * 6 + j] == (37 + stripVertex + i * 2 + Offsets[j]));
+			}
+		}
+		if (square)
+		{
+			for (size_t end = 0; end < 2; ++end)
+			{
+				const Vec2 radial = Unit(arcStart + end * angle);
+				const Vec2 extension = (Vec2{ -radial.y, radial.x } * (Thickness * (end ? 0.5 : -0.5)));
+				const size_t vertex = (end ? (mesh.vertices.size() - 2) : 0);
+				CheckPosition(mesh.vertices[vertex].pos, Vec2{ Center } + radial * innerRadius + extension);
+				CheckPosition(mesh.vertices[vertex + 1].pos, Vec2{ Center } + radial * (innerRadius + Thickness) + extension);
+				const Float4 along = (end ? endColor : startColor);
+				CheckColor(mesh.vertices[vertex].color, ((direction == ColorFillDirection::LeftRight) ? along : Color0));
+				CheckColor(mesh.vertices[vertex + 1].color, ((direction == ColorFillDirection::LeftRight) ? along : color1));
+			}
+		}
+	}
+}

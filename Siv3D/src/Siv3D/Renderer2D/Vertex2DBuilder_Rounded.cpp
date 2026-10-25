@@ -760,6 +760,40 @@ namespace s3d
 				[](Vertex2D& vertex, const float x, const float y, float) { vertex.pos.set(x, y); });
 		}
 
+		SIV3D_ALWAYS_INLINE
+		static inline void WriteArcStripPositions(Vertex2D* pDst, const float centerX, const float centerY, const float rInner, const float rOuter,
+			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
+		{
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const float rad = (startAngle + (radDelta * i));
+				const auto [s, c] = FastMath::SinCos(rad);
+				(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
+				(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
+			}
+		}
+
+		SIV3D_ALWAYS_INLINE
+		static inline void WriteArcStripAlongColors(Vertex2D* pDst, const int32 quality, const Float4& startColor, const Float4& colorDelta)
+		{
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const Float4 color = (startColor + (colorDelta * i));
+				(pDst++)->color = color;
+				(pDst++)->color = color;
+			}
+		}
+
+		SIV3D_ALWAYS_INLINE
+		static inline void WriteArcStripRadialColors(Vertex2D* pDst, const size_t pairCount, const Float4& color0, const Float4& color1)
+		{
+			for (size_t i = 0; i < pairCount; ++i)
+			{
+				(pDst++)->color = color0;
+				(pDst++)->color = color1;
+			}
+		}
+
 		// 確保済みの領域に半円を書き込む。領域の確保と品質の決定は呼び出し側が行う。
 		static void EmitRoundCap(const Vertex2DBufferPointer buffer, const Float2& center, const float r, const float startAngle, const Float4& color, const Vertex2D::IndexType quality)
 		{
@@ -921,15 +955,7 @@ namespace s3d
 					const float centerY = center.y;
 					const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 					const float radDelta = (Abs(angle) / (arcQuality - 1));
-					Vertex2D* pDst = pVertex;
-
-					for (Vertex2D::IndexType i = 0; i < arcQuality; ++i)
-					{
-						const float rad = (start + (radDelta * i));
-						const auto [s, c] = FastMath::SinCos(rad);
-						(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
-						(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
-					}
+					WriteArcStripPositions(pVertex, centerX, centerY, rInner, rOuter, start, radDelta, arcQuality);
 				}
 
 				if (colorType == ColorFillDirection::LeftRight)
@@ -937,21 +963,11 @@ namespace s3d
 					const Float4 startColor = ((angle < 0.0f) ? c1 : c0);
 					const Float4 endColor = ((angle < 0.0f) ? c0 : c1);
 					const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((arcVertexCount / 2) - 1));
-
-					for (Vertex2D::IndexType i = 0; i < (arcVertexCount / 2); ++i)
-					{
-						const Float4 color = (startColor + (colorDelta * i));
-						(pVertex++)->color = color;
-						(pVertex++)->color = color;
-					}
+					WriteArcStripAlongColors(pVertex, (arcVertexCount / 2), startColor, colorDelta);
 				}
 				else
 				{
-					for (size_t i = 0; i < arcVertexCount / 2; ++i)
-					{
-						(pVertex++)->color = color0;
-						(pVertex++)->color = color1;
-					}
+					WriteArcStripRadialColors(pVertex, (arcVertexCount / 2), color0, color1);
 				}
 
 				WriteOpenStripIndices(pIndex, indexOffset, arcQuality);
@@ -1006,15 +1022,7 @@ namespace s3d
 				const float centerY = center.y;
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = ((SquareCaps && (Quality == 1)) ? 0.0f : (Abs(angle) / (Quality - 1)));
-				Vertex2D* pDst = (pVertex + (SquareCaps ? 2 : 0));
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const float rad = (start + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
-					(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
-				}
+				WriteArcStripPositions((pVertex + (SquareCaps ? 2 : 0)), centerX, centerY, rInner, rOuter, start, radDelta, Quality);
 			}
 
 			if constexpr (SquareCaps)
@@ -1049,21 +1057,11 @@ namespace s3d
 				}
 				const Float4 colorDelta = ((SquareCaps && (Quality == 1)) ? Float4{ 0, 0, 0, 0 }
 					: ((endColor - startColor) / static_cast<float>(Quality - 1)));
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const Float4 color = (startColor + (colorDelta * i));
-					(pVertex++)->color = color;
-					(pVertex++)->color = color;
-				}
+				WriteArcStripAlongColors(pVertex, Quality, startColor, colorDelta);
 			}
 			else
 			{
-				for (size_t i = 0; i < VertexCount / 2; ++i)
-				{
-					(pVertex++)->color = color0;
-					(pVertex++)->color = color1;
-				}
+				WriteArcStripRadialColors(pVertex, (VertexCount / 2), color0, color1);
 			}
 
 			WriteOpenStripIndices(pIndex, indexOffset, PairCount);
