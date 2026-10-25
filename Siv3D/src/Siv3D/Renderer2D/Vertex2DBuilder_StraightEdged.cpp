@@ -25,9 +25,7 @@ namespace s3d
 
 		template <class SourceIndex>
 		// Retain cursor/base references through inlining to preserve the copy/offset loop.
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void CopyIndicesWithOffset(Vertex2D::IndexType*& pIndex, const std::span<const SourceIndex> source,
 			const uint32 indexCount, const Vertex2D::IndexType& indexOffset)
 		{

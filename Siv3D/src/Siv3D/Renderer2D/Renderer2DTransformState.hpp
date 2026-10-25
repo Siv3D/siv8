@@ -34,18 +34,14 @@ namespace s3d
 		float rasterScaling = 1.0f;
 
 		// Fold these calculations into the command manager without extra calls.
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		void updateAffineTransform() noexcept
 		{
 			affineTransform = (localTransform * cameraTransform);
 			rmsScaling = affineTransform.rmsScaling();
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		void updateRasterScaling() noexcept
 		{
 			rasterScaling = ((sceneScale == Float2{ 1.0f, 1.0f })
@@ -53,9 +49,7 @@ namespace s3d
 				: (affineTransform * Mat3x2::Scale(sceneScale)).rmsScaling());
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		void updateCombinedTransform() noexcept
 		{
 			combinedTransform = (Mat3x3{ affineTransform } * quadWarpTransform);

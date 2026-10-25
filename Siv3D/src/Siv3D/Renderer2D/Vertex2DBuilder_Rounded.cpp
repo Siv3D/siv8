@@ -28,9 +28,7 @@ namespace s3d
 		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
 
 		// Keep index emission in the builder without an extra call per shape.
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteOpenFanIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < (rimVertexCount - 1); ++i)
@@ -41,9 +39,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteClosedFanIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
 		{
 			WriteOpenFanIndices(pIndex, indexOffset, rimVertexCount);
@@ -53,9 +49,7 @@ namespace s3d
 			*pIndex++ = (indexOffset + 1);
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteRoundRectIndices(Vertex2D::IndexType* pIndex, Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
 		{
 			const Vertex2D::IndexType FanOuterVertexCount = (quality + 1);
@@ -144,9 +138,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteOpenStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < (pairCount - 1); ++i)
@@ -161,9 +153,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteClosedStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < pairCount; ++i)
@@ -175,9 +165,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteRoundRectFrameIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
 		{
 			const Vertex2D::IndexType ArcVertexCount = ((quality + 1) * 2);
@@ -243,9 +231,7 @@ namespace s3d
 		}
 
 		template <bool Circular, bool Textured>
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
 			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {})
 		{
@@ -341,9 +327,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteCircleShadowRingVertices(Vertex2D* pDst0, const std::span<const Float2> pCS,
 			const float centerX, const float centerY, const float rInner, const float rOuter, const Vertex2D::IndexType quality, const Float4& color)
 		{
@@ -374,9 +358,7 @@ namespace s3d
 		}
 
 		template <bool Gradient>
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteRoundRectVertices(Vertex2D* const& pVertex, const FloatRect& rect, const float r, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
 		{
 			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
@@ -503,9 +485,7 @@ namespace s3d
 		}
 
 		template <bool Gradient>
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteRoundRectFrameVertices(Vertex2D* const& pVertex, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
 		{
 			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
@@ -759,9 +739,7 @@ namespace s3d
 		}
 
 		template <class VertexWriter>
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteArcVertices(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality, const VertexWriter& writeVertex)
 		{
@@ -774,9 +752,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		static inline void WriteArcPositions(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
 		{

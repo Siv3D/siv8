@@ -80,9 +80,7 @@ namespace s3d
 
 		template <class CommandManager, class EngineShader, class CustomShader>
 		// Keep shader-field address calculations folded into the caller's switch table.
-		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
-			[[gnu::always_inline]]
-		# endif
+		SIV3D_ALWAYS_INLINE
 		inline void SubmitStyledLine(CommandManager& commands, const EngineShader& shaders, const CustomShader& custom, const uint32 indexCount, const LineStyle& style)
 		{
 			if (not custom.vs)
