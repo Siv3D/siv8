@@ -242,6 +242,105 @@ namespace s3d
 			}
 		}
 
+		template <bool Circular, bool Textured>
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
+			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {})
+		{
+			Float4 colorDiff;
+			float centerU, centerV, rU, rV;
+			if constexpr (Textured)
+			{
+				centerU = ((uv.left + uv.right) * 0.5f);
+				centerV = ((uv.top + uv.bottom) * 0.5f);
+				rU = ((uv.right - uv.left) * 0.5f);
+				rV = ((uv.bottom - uv.top) * 0.5f);
+				pVertex[0].set(centerX, centerY, centerU, centerV, color0);
+			}
+			else
+			{
+				pVertex[0].pos.set(centerX, centerY);
+				colorDiff = (color1 - color0);
+			}
+
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + quality);
+			Vertex2D* pDst2 = (pDst1 + quality);
+			Vertex2D* pDst3 = (pDst2 + quality);
+
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const Float2& cs = pCS[i];
+				const float xa = (cs.x * a);
+				const float xb = (Circular ? xa : (cs.x * b));
+				const float ya = (cs.y * a);
+				const float yb = (Circular ? ya : (cs.y * b));
+
+				if constexpr (Textured)
+				{
+					pDst0->set((centerX + xa), (centerY + yb), (centerU + rU * cs.x), (centerV + rV * cs.y), color0);
+					pDst1->set((centerX - ya), (centerY + xb), (centerU - rU * cs.y), (centerV + rV * cs.x), color0);
+					pDst2->set((centerX - xa), (centerY - yb), (centerU - rU * cs.x), (centerV - rV * cs.y), color0);
+					pDst3->set((centerX + ya), (centerY - xb), (centerU + rU * cs.y), (centerV - rV * cs.x), color0);
+				}
+				else
+				{
+					if (colorType == ColorFillDirection::InOut)
+					{
+						pDst0->set((centerX + xa), (centerY + yb), color1);
+						pDst1->set((centerX - ya), (centerY + xb), color1);
+						pDst2->set((centerX - xa), (centerY - yb), color1);
+						pDst3->set((centerX + ya), (centerY - xb), color1);
+					}
+					else if (colorType == ColorFillDirection::TopBottom)
+					{
+						const Float4 c0 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c1 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
+
+						pDst0->set((centerX + xa), (centerY + yb), c0);
+						pDst1->set((centerX - ya), (centerY + xb), c1);
+						pDst2->set((centerX - xa), (centerY - yb), c2);
+						pDst3->set((centerX + ya), (centerY - xb), c3);
+					}
+					else
+					{
+						const Float4 c0 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c1 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
+						const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
+
+						pDst0->set((centerX + xa), (centerY + yb), c0);
+						pDst1->set((centerX - ya), (centerY + xb), c1);
+						pDst2->set((centerX - xa), (centerY - yb), c2);
+						pDst3->set((centerX + ya), (centerY - xb), c3);
+					}
+				}
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			if constexpr (not Textured)
+			{
+				// 中心の色
+				if (colorType == ColorFillDirection::InOut)
+				{
+					pVertex->color = color0;
+				}
+				else
+				{
+					pVertex->color = color0.getMidpoint(color1);
+				}
+			}
+		}
+
 		template <bool Gradient>
 		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
 			[[gnu::always_inline]]
@@ -1893,72 +1992,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float centerX = center.x;
-			const float centerY = center.y;
-			pVertex[0].pos.set(centerX, centerY);
-
-			const Float4 colorDiff = (color1 - color0);
-
-			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-			
-			Vertex2D* pDst0 = &pVertex[1];
-			Vertex2D* pDst1 = (pDst0 + Quality);
-			Vertex2D* pDst2 = (pDst1 + Quality);
-			Vertex2D* pDst3 = (pDst2 + Quality);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				if (colorType == ColorFillDirection::InOut)
-				{
-					pDst0->set((centerX + x), (centerY + y), color1);
-					pDst1->set((centerX - y), (centerY + x), color1);
-					pDst2->set((centerX - x), (centerY - y), color1);
-					pDst3->set((centerX + y), (centerY - x), color1);
-				}
-				else if(colorType == ColorFillDirection::TopBottom)
-				{
-					const Float4 c0 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
-
-					pDst0->set((centerX + x), (centerY + y), c0);
-					pDst1->set((centerX - y), (centerY + x), c1);
-					pDst2->set((centerX - x), (centerY - y), c2);
-					pDst3->set((centerX + y), (centerY - x), c3);
-				}
-				else
-				{
-					const Float4 c0 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
-
-					pDst0->set((centerX + x), (centerY + y), c0);
-					pDst1->set((centerX - y), (centerY + x), c1);
-					pDst2->set((centerX - x), (centerY - y), c2);
-					pDst3->set((centerX + y), (centerY - x), c3);
-				}
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// 中心の色
-			if (colorType == ColorFillDirection::InOut)
-			{
-				pVertex->color = color0;
-			}
-			else
-			{
-				pVertex->color = color0.getMidpoint(color1);
-			}
+			WriteEllipseFanVertices<true, false>(pVertex, center.x, center.y, r, r, Quality, colorType, color0, color1);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -2273,74 +2307,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float centerX = center.x;
-			const float centerY = center.y;
-			pVertex[0].pos.set(centerX, centerY);
-
-			const Float4 colorDiff = (color1 - color0);
-
-			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-			Vertex2D* pDst0 = &pVertex[1];
-			Vertex2D* pDst1 = (pDst0 + Quality);
-			Vertex2D* pDst2 = (pDst1 + Quality);
-			Vertex2D* pDst3 = (pDst2 + Quality);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float xa = (cs.x * a);
-				const float xb = (cs.x * b);
-				const float ya = (cs.y * a);
-				const float yb = (cs.y * b);
-
-				if (colorType == ColorFillDirection::InOut)
-				{
-					pDst0->set((centerX + xa), (centerY + yb), color1);
-					pDst1->set((centerX - ya), (centerY + xb), color1);
-					pDst2->set((centerX - xa), (centerY - yb), color1);
-					pDst3->set((centerX + ya), (centerY - xb), color1);
-				}
-				else if (colorType == ColorFillDirection::TopBottom)
-				{
-					const Float4 c0 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
-
-					pDst0->set((centerX + xa), (centerY + yb), c0);
-					pDst1->set((centerX - ya), (centerY + xb), c1);
-					pDst2->set((centerX - xa), (centerY - yb), c2);
-					pDst3->set((centerX + ya), (centerY - xb), c3);
-				}
-				else
-				{
-					const Float4 c0 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
-
-					pDst0->set((centerX + xa), (centerY + yb), c0);
-					pDst1->set((centerX - ya), (centerY + xb), c1);
-					pDst2->set((centerX - xa), (centerY - yb), c2);
-					pDst3->set((centerX + ya), (centerY - xb), c3);
-				}
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// 中心の色
-			if (colorType == ColorFillDirection::InOut)
-			{
-				pVertex->color = color0;
-			}
-			else
-			{
-				pVertex->color = color0.getMidpoint(color1);
-			}
+			WriteEllipseFanVertices<false, false>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -3495,36 +3462,7 @@ namespace s3d
 				return 0;
 			}
 
-			// 中心
-			const float centerX = static_cast<float>(circle.x);
-			const float centerY = static_cast<float>(circle.y);
-			
-			const float centerU = ((uv.left + uv.right) * 0.5f);
-			const float centerV = ((uv.top + uv.bottom) * 0.5f);
-			const float rU = ((uv.right - uv.left) * 0.5f);
-			const float rV = ((uv.bottom - uv.top) * 0.5f);
-			
-			pVertex[0].set(centerX, centerY, centerU, centerV, color);
-
-			// 周
-			{
-				const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-				Vertex2D* pDst0 = &pVertex[1];
-				Vertex2D* pDst1 = (pDst0 + Quality);
-				Vertex2D* pDst2 = (pDst1 + Quality);
-				Vertex2D* pDst3 = (pDst2 + Quality);
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const Float2& cs = pCS[i];
-					const float x = (cs.x * rf);
-					const float y = (cs.y * rf);
-					(pDst0++)->set((centerX + x), (centerY + y), (centerU + rU * cs.x), (centerV + rV * cs.y), color);
-					(pDst1++)->set((centerX - y), (centerY + x), (centerU - rU * cs.y), (centerV + rV * cs.x), color);
-					(pDst2++)->set((centerX - x), (centerY - y), (centerU - rU * cs.x), (centerV - rV * cs.y), color);
-					(pDst3++)->set((centerX + y), (centerY - x), (centerU + rU * cs.y), (centerV - rV * cs.x), color);
-				}
-			}
+			WriteEllipseFanVertices<true, true>(pVertex, static_cast<float>(circle.x), static_cast<float>(circle.y), rf, rf, Quality, ColorFillDirection::InOut, color, color, uv);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 

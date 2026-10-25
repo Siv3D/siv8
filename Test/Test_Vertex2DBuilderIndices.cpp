@@ -500,6 +500,32 @@ TEST_CASE("Vertex2DBuilder.indices_cpu_benchmark", "[.benchmark]")
 	}
 }
 
+TEST_CASE("Vertex2DBuilder.ellipse_vertices_cpu_benchmark", "[.benchmark]")
+{
+	const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+	REQUIRE(qos);
+	const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
+	const char* names[]{ "CircleSolid", "CircleRadial", "CircleTB", "CircleLR",
+		"EllipseSolid", "EllipseRadial", "EllipseTB", "EllipseLR", "TexturedCircle" };
+	for (int32 variant = 0; variant < 9; ++variant)
+	{
+		const int32 paint = (variant % 4);
+		const auto direction = ((paint == 2) ? ColorFillDirection::TopBottom
+			: (paint == 3) ? ColorFillDirection::LeftRight : ColorFillDirection::InOut);
+		const Float4& rimColor = ((paint == 0) ? Red : Blue);
+		for (const float scale : { 1.0f, 512.0f })
+		{
+			BenchmarkBuilder(names[variant], "scale", static_cast<uint32>(scale), [&](const BufferCreatorFunc& allocate)
+			{
+				using namespace Vertex2DBuilder;
+				if (variant < 4) return BuildCircle(allocate, { 3, 5 }, 1, direction, Red, rimColor, scale);
+				if (variant < 8) return BuildEllipse(allocate, { 3, 5 }, 1, 0.5f, direction, Red, rimColor, scale);
+				return BuildTexturedCircle(allocate, Circle{ 3, 5, 1 }, UV, Red, scale);
+			});
+		}
+	}
+}
+
 TEST_CASE("Vertex2DBuilder.indices_rounded_cpu_benchmark", "[.benchmark]")
 {
 	const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);

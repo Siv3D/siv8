@@ -37,6 +37,18 @@ triangle order, winding, strip closure, cap/body boundaries, positive and negati
 sweeps, scaled tessellation, destination bounds, large index counts and allocation
 failure.
 
+Circle, ellipse and textured-circle fills share a vertex writer for their center
+and four quarter arcs. Compile-time specialization keeps the circle's two radial
+products per sample and writes textured positions, UVs and colors in one pass.
+Untextured fills share radial, vertical and horizontal color interpolation;
+their UV fields remain untouched. Tessellation selection stays in each builder.
+[Test_Vertex2DBuilderEllipse.cpp](../../Test/Test_Vertex2DBuilderEllipse.cpp) checks
+analytic positions and colors, flipped UVs, fan order, destination bounds and
+agreement between circles and equal-axis ellipses, including degenerate axes and
+scaled tessellation. The existing
+[textured-circle tests](../../Test/Test_Renderer2DTexturedCircle.cpp) also cover
+transforms and scene render resolution.
+
 Rounded rectangles also share vertex writers for fills and frames. Solid,
 gradient and textured fills use the same corner traversal; solid and gradient
 frames share the outer/inner traversal. Compile-time specialization omits gradient
@@ -52,12 +64,15 @@ On macOS, run its opt-in benchmarks from the repository root with:
 ```sh
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.indices_cpu_benchmark'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.indices_rounded_cpu_benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.ellipse_vertices_cpu_benchmark'
 ```
 
 They measure thread CPU time for the affected builders using reusable buffers,
 at low and high tessellation scales and with small and large index arrays.
 The rounded benchmark covers pies, segments, capped arcs/lines, solid and dashed
 frames, and filled and unfilled circle shadows.
+The ellipse benchmark covers solid and all gradient directions for circle and
+ellipse fills, plus textured circles, at low and maximum tessellation quality.
 Each result reports the median and 10th/90th percentiles in nanoseconds per call.
 Compare repeated runs of both revisions on the same idle machine, alternating
 their order. These measurements exclude backend submission and GPU execution.
