@@ -9,7 +9,10 @@
 # include <cmath>
 # include "IRenderer2D.hpp"
 # include "SuperEllipseTessellation.hpp"
+# include <Siv3D/Image.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/Resource.hpp>
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Geometry2D/BezierTessellation.hpp>
 
 namespace s3d::detail::SuperEllipseTessellation
@@ -194,5 +197,28 @@ namespace s3d
 	void ISiv3DRenderer2D::addSuperEllipseFrame(const SuperEllipse& shape, const float thickness, const PatternParameters& pattern)
 	{
 		DrawFrame(*this, m_curvePoints, shape, thickness, pattern);
+	}
+
+	std::unique_ptr<Texture> ISiv3DRenderer2D::CreateShadowTexture()
+	{
+		const Image boxShadowImage{ Resource(U"engine/texture/box-shadow/256.png") };
+
+		const Array<Image> boxShadowImageMips =
+		{
+			Image{ Resource(U"engine/texture/box-shadow/128.png") },
+			Image{ Resource(U"engine/texture/box-shadow/64.png") },
+			Image{ Resource(U"engine/texture/box-shadow/32.png") },
+			Image{ Resource(U"engine/texture/box-shadow/16.png") },
+			Image{ Resource(U"engine/texture/box-shadow/8.png") },
+		};
+
+		auto shadowTexture = std::make_unique<Texture>(boxShadowImage, boxShadowImageMips);
+
+		if (shadowTexture->isEmpty())
+		{
+			throw InternalEngineError{ "Failed to create a box-shadow texture" };
+		}
+
+		return shadowTexture;
 	}
 }

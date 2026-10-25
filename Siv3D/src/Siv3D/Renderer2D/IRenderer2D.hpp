@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <memory>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
@@ -265,6 +266,11 @@ namespace s3d
 
 
 		virtual const Texture& getShadowTexture() const noexcept = 0;
+
+	protected:
+
+		[[nodiscard]]
+		static std::unique_ptr<Texture> CreateShadowTexture();
 
 	private:
 

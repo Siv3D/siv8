@@ -12,7 +12,6 @@
 # include "CRenderer2D_Metal.hpp"
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
-# include <Siv3D/Resource.hpp>
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/LineStyle.hpp>
@@ -156,26 +155,7 @@ namespace s3d
 		
 		m_vertexBufferManager.init(m_device);
 
-		// シャドウ画像を作成
-		{
-			const Image boxShadowImage{ Resource(U"engine/texture/box-shadow/256.png") };
-
-			const Array<Image> boxShadowImageMips =
-			{
-				Image{ Resource(U"engine/texture/box-shadow/128.png") },
-				Image{ Resource(U"engine/texture/box-shadow/64.png") },
-				Image{ Resource(U"engine/texture/box-shadow/32.png") },
-				Image{ Resource(U"engine/texture/box-shadow/16.png") },
-				Image{ Resource(U"engine/texture/box-shadow/8.png") },
-			};
-
-			m_shadowTexture = std::make_unique<Texture>(boxShadowImage, boxShadowImageMips);
-
-			if (m_shadowTexture->isEmpty())
-			{
-				throw InternalEngineError{ "Failed to create a box-shadow texture" };
-			}
-		}
+		m_shadowTexture = CreateShadowTexture();
 	}
 
 	////////////////////////////////////////////////////////////////
