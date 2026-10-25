@@ -23,6 +23,22 @@ namespace s3d
 
 		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
 
+		template <class SourceIndex>
+		// Retain cursor/base references through inlining to preserve the copy/offset loop.
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void CopyIndicesWithOffset(Vertex2D::IndexType*& pIndex, const std::span<const SourceIndex> source,
+			const uint32 indexCount, const Vertex2D::IndexType& indexOffset)
+		{
+			std::memcpy(pIndex, source.data(), source.size_bytes());
+
+			for (size_t i = 0; i < indexCount; ++i)
+			{
+				*(pIndex++) += indexOffset;
+			}
+		}
+
 		struct RectFrameDashedQuad
 		{
 			float left;
@@ -703,15 +719,7 @@ namespace s3d
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
 
 			return IndexCount;
 		}
@@ -746,15 +754,7 @@ namespace s3d
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, indices.data(), indices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, indices, IndexCount, indexOffset);
 
 			return IndexCount;
 		}
@@ -799,15 +799,7 @@ namespace s3d
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
 
 			return IndexCount;
 		}
@@ -903,15 +895,7 @@ namespace s3d
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-				
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
 
 			return IndexCount;
 		}

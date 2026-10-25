@@ -25,6 +25,27 @@ allocator. Each backend checks the resulting index count before submitting a
 draw. Buffer allocation, base-vertex handling, command batching and GPU execution
 remain backend responsibilities.
 
+The builder implementations share index writers for closed fans, rounded
+rectangles and copying indexed meshes with a base offset. These helpers write
+directly into the reserved buffer; vertex generation and allocation stay in each
+builder. Indexed copies retain a 32-bit element count independently of the
+16-bit vertex indices.
+[Test_Vertex2DBuilderIndices.cpp](../../Test/Test_Vertex2DBuilderIndices.cpp) checks
+triangle order, winding, scaled tessellation, destination bounds, large index
+counts and allocation failure.
+
+On macOS, run its opt-in benchmark from the repository root with:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Vertex2DBuilder.indices_cpu_benchmark'
+```
+
+It measures thread CPU time for the affected builders using reusable buffers,
+at low and high tessellation scales and with small and large index arrays.
+Each result reports the median and 10th/90th percentiles in nanoseconds per call.
+Compare repeated runs of both revisions on the same idle machine, alternating
+their order. These measurements exclude backend submission and GPU execution.
+
 [Renderer2DDrawSubmission.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DDrawSubmission.hpp)
 shares the subsequent command registration using inline templates for shapes,
 patterns, textures and styled lines. The helpers require a nonzero index count.

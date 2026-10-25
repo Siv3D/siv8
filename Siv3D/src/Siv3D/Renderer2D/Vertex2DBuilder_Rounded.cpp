@@ -26,6 +26,115 @@ namespace s3d
 
 		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
 
+		// Keep index emission in the builder without an extra call per shape.
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteClosedFanIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
+		{
+			for (Vertex2D::IndexType i = 0; i < (rimVertexCount - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = indexOffset + (i + 1);
+				*pIndex++ = indexOffset + (i + 2);
+			}
+
+			*pIndex++ = indexOffset;
+			*pIndex++ = (indexOffset + rimVertexCount);
+			*pIndex++ = (indexOffset + 1);
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteRoundRectIndices(Vertex2D::IndexType* pIndex, Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
+		{
+			const Vertex2D::IndexType FanOuterVertexCount = (quality + 1);
+			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
+			const Vertex2D::IndexType trFanEndIndex		= (trFanStartIndex + quality);
+			const Vertex2D::IndexType brFanStartIndex	= (trFanEndIndex + 1);
+			const Vertex2D::IndexType brFanEndIndex		= (brFanStartIndex + quality);
+			const Vertex2D::IndexType blFanStartIndex	= (brFanEndIndex + 1);
+			const Vertex2D::IndexType blFanEndIndex		= (blFanStartIndex + quality);
+			const Vertex2D::IndexType tlFanStartIndex	= (blFanEndIndex + 1);
+			const Vertex2D::IndexType tlFanEndIndex		= (tlFanStartIndex + quality);
+
+			const Vertex2D::IndexType trCenterIndex = (indexOffset + FanOuterVertexCount * 4);
+			const Vertex2D::IndexType brCenterIndex = (trCenterIndex + 1);
+			const Vertex2D::IndexType blCenterIndex = (trCenterIndex + 2);
+			const Vertex2D::IndexType tlCenterIndex = (trCenterIndex + 3);
+
+			{
+				// tr
+				for (Vertex2D::IndexType i = 0; i < quality; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = (indexOffset + i + 1);
+					*pIndex++ = trCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// br
+				for (Vertex2D::IndexType i = 0; i < quality; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = brCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// bl
+				for (Vertex2D::IndexType i = 0; i < quality; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = blCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// tl
+				for (Vertex2D::IndexType i = 0; i < quality; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = tlCenterIndex;
+				}
+
+				// rectangles
+				{
+					// topRect
+					*pIndex++ = tlFanEndIndex;
+					*pIndex++ = trFanStartIndex;
+					*pIndex++ = tlCenterIndex;
+
+					*pIndex++ = tlCenterIndex;
+					*pIndex++ = trFanStartIndex;
+					*pIndex++ = trCenterIndex;
+
+					// middleRect
+					*pIndex++ = tlFanStartIndex;
+					*pIndex++ = trFanEndIndex;
+					*pIndex++ = blFanEndIndex;
+
+					*pIndex++ = blFanEndIndex;
+					*pIndex++ = trFanEndIndex;
+					*pIndex++ = brFanStartIndex;
+
+					// bottomRect
+					*pIndex++ = blCenterIndex;
+					*pIndex++ = brCenterIndex;
+					*pIndex++ = blFanStartIndex;
+
+					*pIndex++ = blFanStartIndex;
+					*pIndex++ = brCenterIndex;
+					*pIndex++ = brFanEndIndex;
+				}
+			}
+		}
+
 		/// @brief 円の品質を計算します。
 		/// @param r 円の半径
 		/// @return 円の品質
@@ -1466,18 +1575,7 @@ namespace s3d
 				pVertex->color = color0.getMidpoint(color1);
 			}
 
-			{
-				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
-				{
-					*pIndex++ = indexOffset;
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = indexOffset + (i + 2);
-				}
-
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + FullQuality);
-				*pIndex++ = (indexOffset + 1);
-			}
+			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -1885,18 +1983,7 @@ namespace s3d
 				pVertex->color = color0.getMidpoint(color1);
 			}
 
-			{
-				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
-				{
-					*pIndex++ = indexOffset;
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = indexOffset + (i + 2);
-				}
-
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + FullQuality);
-				*pIndex++ = (indexOffset + 1);
-			}
+			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -2281,18 +2368,7 @@ namespace s3d
 				pVertex->color = color0.getMidpoint(color1);
 			}
 
-			{
-				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
-				{
-					*pIndex++ = indexOffset;
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = indexOffset + (i + 2);
-				}
-
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + FullQuality);
-				*pIndex++ = (indexOffset + 1);
-			}
+			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -2308,7 +2384,6 @@ namespace s3d
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
 			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
-			const Vertex2D::IndexType FanTriangleCount		= Quality; // 1 つの扇型の三角形の数
 			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
 			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
 			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
@@ -2372,89 +2447,7 @@ namespace s3d
 				(pDst3++)->set(middleLeftX, topCenterY, color);
 			}
 
-			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
-			const Vertex2D::IndexType trFanEndIndex		= (trFanStartIndex + Quality);
-			const Vertex2D::IndexType brFanStartIndex	= (trFanEndIndex + 1);
-			const Vertex2D::IndexType brFanEndIndex		= (brFanStartIndex + Quality);
-			const Vertex2D::IndexType blFanStartIndex	= (brFanEndIndex + 1);
-			const Vertex2D::IndexType blFanEndIndex		= (blFanStartIndex + Quality);
-			const Vertex2D::IndexType tlFanStartIndex	= (blFanEndIndex + 1);
-			const Vertex2D::IndexType tlFanEndIndex		= (tlFanStartIndex + Quality);
-
-			const Vertex2D::IndexType trCenterIndex = (indexOffset + FanOuterVertexCount * 4);
-			const Vertex2D::IndexType brCenterIndex = (trCenterIndex + 1);
-			const Vertex2D::IndexType blCenterIndex = (trCenterIndex + 2);
-			const Vertex2D::IndexType tlCenterIndex = (trCenterIndex + 3);
-
-			{
-				// tr
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = (indexOffset + i + 1);
-					*pIndex++ = trCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// br
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = brCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// bl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = blCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// tl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = tlCenterIndex;
-				}
-
-				// rectangles
-				{
-					// topRect
-					*pIndex++ = tlFanEndIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = tlCenterIndex;
-
-					*pIndex++ = tlCenterIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = trCenterIndex;
-
-					// middleRect
-					*pIndex++ = tlFanStartIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = blFanEndIndex;
-
-					*pIndex++ = blFanEndIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = brFanStartIndex;
-
-					// bottomRect
-					*pIndex++ = blCenterIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = blFanStartIndex;
-
-					*pIndex++ = blFanStartIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = brFanEndIndex;
-				}
-			}
+			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -2464,7 +2457,6 @@ namespace s3d
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
 			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
-			const Vertex2D::IndexType FanTriangleCount		= Quality; // 1 つの扇型の三角形の数
 			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
 			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
 			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
@@ -2588,89 +2580,7 @@ namespace s3d
 				}
 			}
 
-			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
-			const Vertex2D::IndexType trFanEndIndex		= (trFanStartIndex + Quality);
-			const Vertex2D::IndexType brFanStartIndex	= (trFanEndIndex + 1);
-			const Vertex2D::IndexType brFanEndIndex		= (brFanStartIndex + Quality);
-			const Vertex2D::IndexType blFanStartIndex	= (brFanEndIndex + 1);
-			const Vertex2D::IndexType blFanEndIndex		= (blFanStartIndex + Quality);
-			const Vertex2D::IndexType tlFanStartIndex	= (blFanEndIndex + 1);
-			const Vertex2D::IndexType tlFanEndIndex		= (tlFanStartIndex + Quality);
-
-			const Vertex2D::IndexType trCenterIndex = (indexOffset + FanOuterVertexCount * 4);
-			const Vertex2D::IndexType brCenterIndex = (trCenterIndex + 1);
-			const Vertex2D::IndexType blCenterIndex = (trCenterIndex + 2);
-			const Vertex2D::IndexType tlCenterIndex = (trCenterIndex + 3);
-
-			{
-				// tr
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = (indexOffset + i + 1);
-					*pIndex++ = trCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// br
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = brCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// bl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = blCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// tl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = tlCenterIndex;
-				}
-
-				// rectangles
-				{
-					// topRect
-					*pIndex++ = tlFanEndIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = tlCenterIndex;
-
-					*pIndex++ = tlCenterIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = trCenterIndex;
-
-					// middleRect
-					*pIndex++ = tlFanStartIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = blFanEndIndex;
-
-					*pIndex++ = blFanEndIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = brFanStartIndex;
-
-					// bottomRect
-					*pIndex++ = blCenterIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = blFanStartIndex;
-
-					*pIndex++ = blFanStartIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = brFanEndIndex;
-				}
-			}
+			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
@@ -3779,18 +3689,7 @@ namespace s3d
 				}
 			}
 
-			{
-				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
-				{
-					*pIndex++ = indexOffset;
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = indexOffset + (i + 2);
-				}
-
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + FullQuality);
-				*pIndex++ = (indexOffset + 1);
-			}
+			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
 		}
@@ -3806,7 +3705,6 @@ namespace s3d
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
 			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
-			const Vertex2D::IndexType FanTriangleCount		= Quality; // 1 つの扇型の三角形の数
 			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
 			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
 			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
@@ -3889,89 +3787,7 @@ namespace s3d
 				}
 			}
 
-			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
-			const Vertex2D::IndexType trFanEndIndex		= (trFanStartIndex + Quality);
-			const Vertex2D::IndexType brFanStartIndex	= (trFanEndIndex + 1);
-			const Vertex2D::IndexType brFanEndIndex		= (brFanStartIndex + Quality);
-			const Vertex2D::IndexType blFanStartIndex	= (brFanEndIndex + 1);
-			const Vertex2D::IndexType blFanEndIndex		= (blFanStartIndex + Quality);
-			const Vertex2D::IndexType tlFanStartIndex	= (blFanEndIndex + 1);
-			const Vertex2D::IndexType tlFanEndIndex		= (tlFanStartIndex + Quality);
-
-			const Vertex2D::IndexType trCenterIndex = (indexOffset + FanOuterVertexCount * 4);
-			const Vertex2D::IndexType brCenterIndex = (trCenterIndex + 1);
-			const Vertex2D::IndexType blCenterIndex = (trCenterIndex + 2);
-			const Vertex2D::IndexType tlCenterIndex = (trCenterIndex + 3);
-
-			{
-				// tr
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = (indexOffset + i + 1);
-					*pIndex++ = trCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// br
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = brCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// bl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = blCenterIndex;
-				}
-
-				indexOffset += FanOuterVertexCount;
-
-				// tl
-				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
-				{
-					*pIndex++ = (indexOffset + i);
-					*pIndex++ = indexOffset + (i + 1);
-					*pIndex++ = tlCenterIndex;
-				}
-
-				// rectangles
-				{
-					// topRect
-					*pIndex++ = tlFanEndIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = tlCenterIndex;
-
-					*pIndex++ = tlCenterIndex;
-					*pIndex++ = trFanStartIndex;
-					*pIndex++ = trCenterIndex;
-
-					// middleRect
-					*pIndex++ = tlFanStartIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = blFanEndIndex;
-
-					*pIndex++ = blFanEndIndex;
-					*pIndex++ = trFanEndIndex;
-					*pIndex++ = brFanStartIndex;
-
-					// bottomRect
-					*pIndex++ = blCenterIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = blFanStartIndex;
-
-					*pIndex++ = blFanStartIndex;
-					*pIndex++ = brCenterIndex;
-					*pIndex++ = brFanEndIndex;
-				}
-			}
+			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
 		}
