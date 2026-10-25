@@ -741,6 +741,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addTexturedCirclePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addTexturedCirclePie(const Texture& texture, const Float2& center, const float r, const float startAngle, const float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, uv, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTexturedQuad
 	//
 	////////////////////////////////////////////////////////////////

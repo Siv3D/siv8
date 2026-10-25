@@ -9,6 +9,7 @@
 
 # include "Siv3DTest.hpp"
 # include "../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder.hpp"
+# include <cmath>
 
 namespace
 {
@@ -35,7 +36,7 @@ namespace
 		};
 		const auto count = build(allocate);
 		REQUIRE(count == mesh.indices.size());
-		CHECK(requests == 1);
+		CHECK(requests == (count ? 1 : 0));
 		for (const auto index : mesh.indices)
 		{
 			REQUIRE(37 <= index);
@@ -451,5 +452,240 @@ TEST_CASE("Renderer2D.textured_circle_equal_gradient_matches_diffuse")
 			CHECK(actual.triangles == expected.triangles);
 			CHECK(actual.image == expected.image);
 		}
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_mesh")
+{
+	const Float2 center{ 13, -7 };
+	const Float4 inner = Tint0.toFloat4(), outer = Tint1.toFloat4();
+	for (const float radius : { 0.0f, 1.0f, 32.0f, 512.0f })
+	for (const float scale : { 0.0f, 1.0f, 4.0f })
+	for (const float start : { -0.37f, 7.4f })
+	for (const float sweep : { -Math::TwoPiF, -2.1f, -0.003f, 0.0f, 0.003f, Math::HalfPiF, Math::TwoPiF })
+	for (const FloatRect uv : { FloatRect{ 0, 0, 1, 1 }, FloatRect{ 0.75f, 0.875f, 0.25f, 0.125f } })
+	{
+		CAPTURE(radius, scale, start, sweep, uv);
+		const auto actual = BuildMesh([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildTexturedCirclePie(allocate, center, radius, start, sweep, uv, inner, outer, scale);
+		});
+		const auto expected = BuildMesh([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildCirclePie(allocate, center, radius, start, sweep, inner, outer, scale);
+		});
+		CHECK(actual.indices == expected.indices);
+		REQUIRE(actual.vertices.size() == expected.vertices.size());
+		if (sweep == 0.0f) continue;
+		const size_t intervals = (actual.vertices.size() - 2);
+		REQUIRE(intervals >= 1);
+		CHECK(intervals <= 252);
+		if (std::abs(sweep) == 0.003f) CHECK(intervals == 1);
+		for (size_t i = 0; i < actual.vertices.size(); ++i)
+		{
+			const auto& vertex = actual.vertices[i];
+			CHECK(vertex.pos == expected.vertices[i].pos);
+			CHECK(vertex.color == ((i == 0) ? inner : outer));
+			const double rad = (double(start) + Min(sweep, 0.0f) + std::abs(double(sweep)) * (i ? i - 1 : 0) / intervals);
+			const double u = (i ? (std::sin(rad) * 0.5 + 0.5) : 0.5);
+			const double v = (i ? (-std::cos(rad) * 0.5 + 0.5) : 0.5);
+			CHECK(std::abs(vertex.tex.x - (uv.left + u * (uv.right - uv.left))) < 0.000002);
+			CHECK(std::abs(vertex.tex.y - (uv.top + v * (uv.bottom - uv.top))) < 0.000002);
+		}
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_allocation")
+{
+	uint32 requests = 0;
+	const auto fail = [&](uint16, uint32)
+	{
+		++requests;
+		return Vertex2DBufferPointer{ nullptr, nullptr, 0 };
+	};
+	for (const float sweep : { 0.0f, -0.0f })
+	{
+		CHECK(Vertex2DBuilder::BuildTexturedCirclePie(fail, { 0, 0 }, 32, 0, sweep, { 0, 0, 1, 1 }, Tint0.toFloat4(), Tint1.toFloat4(), 1) == 0);
+	}
+	CHECK(requests == 0);
+	CHECK(Vertex2DBuilder::BuildTexturedCirclePie(fail, { 0, 0 }, 32, 0, 0.2f, { 0, 0, 1, 1 }, Tint0.toFloat4(), Tint1.toFloat4(), 1) == 0);
+	CHECK(requests == 1);
+
+	Vertex2D guard;
+	guard.set(-123, -456, -7, -8, Float4{ -1, -2, -3, -4 });
+	Array<Vertex2D> vertices;
+	Array<Vertex2D::IndexType> indices;
+	const auto allocate = [&](const uint16 vertexCount, const uint32 indexCount)
+	{
+		vertices.assign(vertexCount + size_t{ 2 }, guard);
+		indices.assign(indexCount + size_t{ 2 }, Vertex2D::IndexType{ 65535 });
+		return Vertex2DBufferPointer{ vertices.data() + 1, indices.data() + 1, 37 };
+	};
+	for (const float sweep : { 0.003f, -Math::TwoPiF })
+	{
+		const auto count = Vertex2DBuilder::BuildTexturedCirclePie(allocate, { 0, 0 }, 512, 0, sweep, { 0, 0, 1, 1 }, Tint0.toFloat4(), Tint1.toFloat4(), 4);
+		CHECK(count == indices.size() - 2);
+		for (const auto* vertex : { &vertices.front(), &vertices.back() })
+		{
+			CHECK(vertex->pos == guard.pos);
+			CHECK(vertex->tex == guard.tex);
+			CHECK(vertex->color == guard.color);
+		}
+		CHECK(indices.front() == 65535);
+		CHECK(indices.back() == 65535);
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_overloads_and_angles")
+{
+	const SceneScope scene;
+	const Texture white{ Image{ 2, 2, Palette::White } };
+	REQUIRE(white);
+	for (const double radius : { -32.0, 0.0, 32.0 })
+	for (const auto [start, sweep] : { Vec2{ 0, 0 }, Vec2{ 0, Math::HalfPi }, Vec2{ 0, -Math::HalfPi },
+		Vec2{ 0.4, Math::TwoPi }, Vec2{ -0.7, -3 * Math::Pi }, Vec2{ 7.4, 0.003 }, Vec2{ -1.2, -2.1 }, Vec2{ 0.4, 3 * Math::Pi } })
+	for (const bool gradient : { false, true })
+	{
+		CAPTURE(radius, start, sweep, gradient);
+		const Circle circle{ 240, 140, radius };
+		const auto textured = circle(white);
+		const auto actual = Capture([&]
+		{
+			const Circle& returned = (gradient ? textured.drawPie(start, sweep, Tint0, Tint1) : textured.drawPie(start, sweep, Tint0));
+			CHECK(&returned == &textured.circle);
+			CHECK(textured.circle == circle);
+		});
+		const auto expected = Capture([&] { circle.drawPie(start, sweep, Tint0, (gradient ? Tint1 : Tint0)); });
+		CHECK(actual.triangles == expected.triangles);
+		CheckNear(actual.image, expected.image);
+		if (sweep == 0) CHECK(actual.triangles == 0);
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_uv_and_alpha")
+{
+	const SceneScope scene;
+	const ScopedRenderStates2D sampler{ SamplerState::ClampLinear };
+	Image pixels{ 8, 8 };
+	for (int32 y = 0; y < 8; ++y)
+	for (int32 x = 0; x < 8; ++x)
+	{
+		pixels[y][x] = Color{ uint8(40 + x * 24), uint8(40 + y * 24), uint8(200 - x * 16), uint8(64 + y * 24) };
+	}
+	const Texture texture{ pixels };
+	REQUIRE(texture);
+	const Circle circle{ 240, 140, 80 };
+	for (const FloatRect uv : { FloatRect{ 0, 0, 1, 1 }, FloatRect{ 0.25f, 0.125f, 0.75f, 0.875f },
+		FloatRect{ 0.75f, 0.125f, 0.25f, 0.875f }, FloatRect{ 0.25f, 0.875f, 0.75f, 0.125f } })
+	for (const double sweep : { 2.1, -4.3 })
+	for (const bool gradient : { false, true })
+	{
+		CAPTURE(uv, sweep, gradient);
+		const ColorF outer = (gradient ? Tint1 : Tint0);
+		const auto reference = BuildMesh([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildCirclePie(allocate, circle.center, static_cast<float>(circle.r), 0.4f, static_cast<float>(sweep), Tint0.toFloat4(), outer.toFloat4(), 1);
+		});
+		Mesh2D mesh{ reference.vertices.size(), reference.indices.size() / 3 };
+		mesh.vertices = reference.vertices;
+		for (auto& vertex : mesh.vertices)
+		{
+			vertex.tex.set(
+				static_cast<float>(uv.left + ((vertex.pos.x - circle.x) / (circle.r * 2) + 0.5) * (uv.right - uv.left)),
+				static_cast<float>(uv.top + ((vertex.pos.y - circle.y) / (circle.r * 2) + 0.5) * (uv.bottom - uv.top)));
+		}
+		for (size_t i = 0; i < mesh.indices.size(); ++i)
+		{
+			mesh.indices[i] = TriangleIndex{ static_cast<Vertex2D::IndexType>(reference.indices[i * 3] - 37),
+				static_cast<Vertex2D::IndexType>(reference.indices[i * 3 + 1] - 37), static_cast<Vertex2D::IndexType>(reference.indices[i * 3 + 2] - 37) };
+		}
+		const TexturedCircle textured{ texture, uv, circle };
+		const auto actual = Capture([&]
+		{
+			if (gradient) textured.drawPie(0.4, sweep, Tint0, Tint1);
+			else textured.drawPie(0.4, sweep, Tint0);
+		});
+		const auto expected = Capture([&] { mesh.draw(texture); });
+		CHECK(actual.triangles == expected.triangles);
+		CheckNear(actual.image, expected.image);
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_keeps_texture_position")
+{
+	const SceneScope scene;
+	const Texture texture = MakeTexture();
+	REQUIRE(texture);
+	const auto textured = Circle{ 240, 140, 80 }(texture);
+	const auto clockwise = Capture([&] { textured.drawPie(0, Math::HalfPi); });
+	CHECK(clockwise.image[120][260] == Palette::Green);
+	CHECK(clockwise.image[120][220] == Palette::Black);
+	CHECK(clockwise.image[160][260] == Palette::Black);
+	const auto counterclockwise = Capture([&] { textured.drawPie(0, -Math::HalfPi); });
+	CHECK(counterclockwise.image[120][220] == Palette::Red);
+	CHECK(counterclockwise.image[120][260] == Palette::Black);
+	const auto rotated = Capture([&] { textured.drawPie(Math::HalfPi, Math::HalfPi); });
+	CHECK(rotated.image[160][260] == Palette::Yellow);
+	CHECK(rotated.image[120][260] == Palette::Black);
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_transforms")
+{
+	const SceneScope scene;
+	const Texture white{ Image{ 2, 2, Palette::White } };
+	REQUIRE(white);
+	for (const double sweep : { -0.2, 0.2, Math::TwoPi })
+	for (const auto& [local, camera] : {
+		std::pair{ Mat3x2::Scale(0.5f), Mat3x2::Identity() },
+		std::pair{ Mat3x2::Scale(2.0f, 0.75f), Mat3x2::Rotate(30_deg) },
+		std::pair{ Mat3x2::Scale(4.0f, 1.0f), Mat3x2::Scale(0.25f, 1.0f) } })
+	{
+		CAPTURE(sweep, local, camera);
+		const Transformer2D l{ local, Transformer2D::Target::SetLocal };
+		const Transformer2D c{ camera.translated(240, 140), Transformer2D::Target::SetCamera };
+		const Circle circle{ 0, 0, 32 };
+		const auto actual = Capture([&] { circle(white).drawPie(0.4, sweep, Tint0, Tint1); });
+		const auto expected = Capture([&] { circle.drawPie(0.4, sweep, Tint0, Tint1); });
+		CHECK(actual.triangles == expected.triangles);
+		CheckNear(actual.image, expected.image);
+	}
+}
+
+TEST_CASE("Renderer2D.textured_circle_pie_scene_resolution")
+{
+	const SceneScope scene;
+	const Texture texture = MakeTexture();
+	REQUIRE(texture);
+	const Size logical{ 480, 280 };
+	for (const double radius : { 32.0, 512.0 })
+	for (const double sweep : { -0.2, 0.2, Math::TwoPi })
+	{
+		CAPTURE(radius, sweep);
+		const auto draw = [&]
+		{
+			const Transformer2D local{ Mat3x2::Scale(1.5f).translated(240, 140), Transformer2D::Target::SetLocal };
+			Circle{ 0, 0, radius }(texture).drawPie(0.4, sweep, Tint0, Tint1);
+		};
+		Scene::Configure(SceneConfig::Fixed(logical, SceneResolution::SceneSize));
+		const auto base = Capture(draw);
+		Scene::Configure(SceneConfig::Fixed(logical, SceneResolution::Display));
+		const Size pixels = Scene::RenderResolution();
+		REQUIRE(pixels.x > logical.x);
+		const auto high = Capture(draw);
+		if (radius < 512) CHECK(high.triangles > base.triangles);
+		else
+		{
+			CHECK(high.triangles == base.triangles);
+			CHECK(high.triangles == ((sweep == Math::TwoPi) ? 252 : 9));
+		}
+		Scene::Configure(SceneConfig::Fixed(pixels, SceneResolution::SceneSize));
+		const auto expected = Capture([&]
+		{
+			const Transformer2D camera{ Mat3x2::Scale(Float2{ float(pixels.x) / logical.x, float(pixels.y) / logical.y }),
+				Transformer2D::Target::SetCamera };
+			draw();
+		});
+		CHECK(high.triangles == expected.triangles);
+		CHECK(high.image == expected.image);
 	}
 }

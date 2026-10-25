@@ -36,6 +36,23 @@ check positions, colors, UVs and buffer bounds; the
 overloads, texture and tint alpha, UV cropping/flipping, transforms and scene
 render resolution.
 
+`drawPie(startAngle, angle, diffuse)` draws a sector without changing the texture's
+placement on the full circle. The overload with `innerColor, outerColor` adds a
+center-to-edge tint gradient. This is useful for radial reveals and cooldown UI:
+
+```cpp
+Circle{ 240, 140, 80 }(texture).drawPie(0, Math::TwoPi * progress);
+Circle{ 240, 140, 80 }(texture).drawPie(-30_deg, 120_deg,
+    ColorF{ 1.0, 1.0 }, ColorF{ 1.0, 0.0 });
+```
+
+The sector builder shares subdivision selection, arc sampling and fan indices
+with `Circle::drawPie()`. It writes positions, UVs and colors in one pass using
+that arc's sine/cosine samples; it needs no temporary polygon or additional
+shader. Texture support is selected at compile time. The rendering tests above
+also cover sector angles, fixed texture placement, allocation failure, buffer
+bounds, transforms and scene render resolution.
+
 ## Textured rounded rectangles
 
 [TexturedRoundRect](../../Siv3D/include/Siv3D/TexturedRoundRect.hpp) supports vertical

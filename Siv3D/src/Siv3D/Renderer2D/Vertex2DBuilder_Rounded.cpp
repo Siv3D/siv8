@@ -764,7 +764,7 @@ namespace s3d
 				// Keep the angle in one expression to preserve multiply-add contraction.
 				const float rad = (startAngle + (radDelta * i));
 				const auto [s, c] = FastMath::SinCos(rad);
-				writeVertex(*pDst++, (centerX + rx * s), (centerY - ry * c), (radDelta * i));
+				writeVertex(*pDst++, (centerX + rx * s), (centerY - ry * c), (radDelta * i), s, c);
 			}
 		}
 
@@ -773,7 +773,7 @@ namespace s3d
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
 		{
 			WriteArcVertices(pDst, centerX, centerY, rx, ry, startAngle, radDelta, quality,
-				[](Vertex2D& vertex, const float x, const float y, float) { vertex.pos.set(x, y); });
+				[](Vertex2D& vertex, const float x, const float y, float, float, float) { vertex.pos.set(x, y); });
 		}
 
 		SIV3D_ALWAYS_INLINE
@@ -855,7 +855,7 @@ namespace s3d
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
 					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
-						[&](Vertex2D& vertex, const float x, const float y, const float delta)
+						[&](Vertex2D& vertex, const float x, const float y, const float delta, float, float)
 						{
 							const float f = std::sin(delta);
 							vertex.set(x, y, (c0 + colorDiff * f));
@@ -871,7 +871,7 @@ namespace s3d
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
 					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
-						[&](Vertex2D& vertex, const float x, const float y, const float delta)
+						[&](Vertex2D& vertex, const float x, const float y, const float delta, float, float)
 						{
 							const float f = (std::cos(delta) * -0.5f + 0.5f);
 							vertex.set(x, y, (c0 + colorDiff * f));
@@ -2178,7 +2178,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
+		template <bool Textured>
+		SIV3D_ALWAYS_INLINE
+		static inline Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale, const FloatRect& uv = {})
 		{
 			if (angle == 0.0f)
 			{
@@ -2198,28 +2200,52 @@ namespace s3d
 			const float centerX = center.x;
 			const float centerY = center.y;
 
-			// 中心
-			pVertex[0].pos.set(centerX, centerY);
-
-			// 周
+			if constexpr (Textured)
 			{
+				const float centerU = ((uv.left + uv.right) * 0.5f);
+				const float centerV = ((uv.top + uv.bottom) * 0.5f);
+				const float rU = ((uv.right - uv.left) * 0.5f);
+				const float rV = ((uv.bottom - uv.top) * 0.5f);
+				pVertex[0].set(centerX, centerY, centerU, centerV, innerColor);
+
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = (Abs(angle) / (Quality - 1));
-				WriteArcPositions((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality);
+				WriteArcVertices((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality,
+					[&](Vertex2D& vertex, const float x, const float y, float, const float s, const float c)
+					{
+						vertex.set(x, y, (centerU + rU * s), (centerV - rV * c), outerColor);
+					});
 			}
-
+			else
 			{
-				(pVertex++)->color = innerColor;
+				// 中心
+				pVertex[0].pos.set(centerX, centerY);
 
-				for (size_t i = 1; i < VertexCount; ++i)
+				// 周
 				{
-					(pVertex++)->color = outerColor;
+					const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+					const float radDelta = (Abs(angle) / (Quality - 1));
+					WriteArcPositions((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality);
+				}
+
+				{
+					(pVertex++)->color = innerColor;
+
+					for (size_t i = 1; i < VertexCount; ++i)
+					{
+						(pVertex++)->color = outerColor;
+					}
 				}
 			}
 
 			WriteOpenFanIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			return BuildCirclePie<false>(bufferCreator, center, r, startAngle, angle, innerColor, outerColor, scale);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3493,6 +3519,17 @@ namespace s3d
 		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			return BuildTexturedCircle<true>(bufferCreator, circle, uv, colorType, color0, color1, scale);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildTexturedCirclePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildTexturedCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			return BuildCirclePie<true>(bufferCreator, center, r, startAngle, angle, innerColor, outerColor, scale, uv);
 		}
 
 		////////////////////////////////////////////////////////////////

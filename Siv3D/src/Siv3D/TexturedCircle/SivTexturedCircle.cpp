@@ -108,4 +108,25 @@ namespace s3d
 	{
 		return draw(pos.x, pos.y, leftColor, rightColor);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& TexturedCircle::drawPie(const double startAngle, const double angle, const ColorF& diffuse) const
+	{
+		const Float4 color = diffuse.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addTexturedCirclePie(texture, circle.center, Abs(static_cast<float>(circle.r)),
+			static_cast<float>(startAngle), Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF), uvRect, color, color);
+		return circle;
+	}
+
+	const Circle& TexturedCircle::drawPie(const double startAngle, const double angle, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addTexturedCirclePie(texture, circle.center, Abs(static_cast<float>(circle.r)),
+			static_cast<float>(startAngle), Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF), uvRect, innerColor.toFloat4(), outerColor.toFloat4());
+		return circle;
+	}
 }
