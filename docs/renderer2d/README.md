@@ -65,6 +65,27 @@ command-manager methods.
 recorded-value access, cancellation, replacement, command ordering, draw batching
 and independent VS/PS sampler slots using the host's command manager.
 
+## Transform state
+
+[Renderer2DTransformState.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DTransformState.hpp)
+shares transform storage and calculations between the backend command managers.
+The affine transform is `Local * Camera`; the combined transform applies
+QuadWarp afterward. RMS scaling uses the affine transform, while raster scaling
+uses the affine transform followed by the scene's render-resolution scale.
+QuadWarp does not contribute to either scaling value. A unit scene scale reuses
+the cached RMS value.
+
+Command managers retain change detection, update scheduling and command
+coalescing. Local or Camera changes update both scaling values and the combined
+transform; QuadWarp changes update only the combined transform; scene scale
+changes update only raster scaling. Getters read cached values. Even when the
+combined transform returns to the last recorded matrix and cancels a pending
+command, the affine transform and scaling caches reflect the current inputs.
+
+[Test_Renderer2DTransformState.cpp](../../Test/Test_Renderer2DTransformState.cpp)
+checks composition, nonuniform scaling, shear, reflection, zero scale,
+render-resolution changes, batch preservation and cached state across reset.
+
 ## Custom constant buffers
 
 [ScopedConstantBuffer2D.hpp](../../Siv3D/include/Siv3D/ScopedConstantBuffer2D.hpp)

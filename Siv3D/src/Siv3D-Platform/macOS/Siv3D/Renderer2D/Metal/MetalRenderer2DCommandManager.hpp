@@ -24,6 +24,7 @@
 # include <Siv3D/Texture.hpp>
 # include "MetalRenderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
+# include <Siv3D/Renderer2D/Renderer2DTransformState.hpp>
 # include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
 
 namespace s3d
@@ -46,8 +47,8 @@ namespace s3d
 		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty()); }
 
 		void setSceneScale(Float2 scale);
-		Float2 getSceneScale() const noexcept { return m_current.sceneScale; }
-		float getCurrentRasterScaling() const noexcept { return m_current.rasterScaling; }
+		Float2 getSceneScale() const noexcept { return m_current.transform.sceneScale; }
+		float getCurrentRasterScaling() const noexcept { return m_current.transform.rasterScaling; }
 
 		const Array<MetalRenderer2DCommand>& getCommands() const noexcept;
 
@@ -203,21 +204,7 @@ namespace s3d
 			
 			PixelShader::IDType pixelShader		= PixelShader::IDType::Invalid();
 
-			Mat3x2 localTransform				= Mat3x2::Identity();
-			
-			Mat3x2 cameraTransform				= Mat3x2::Identity();
-			
-			Mat3x2 affineTransform = Mat3x2::Identity();
-
-			Mat3x3 quadWarpTransform = Mat3x3::Identity();
-
-			Mat3x3 combinedTransform			= Mat3x3::Identity();
-
-			float rmsScaling					= 1.0f;
-
-			Float2 sceneScale{ 1.0f, 1.0f };
-
-			float rasterScaling = 1.0f;
+			Renderer2DTransformState transform;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

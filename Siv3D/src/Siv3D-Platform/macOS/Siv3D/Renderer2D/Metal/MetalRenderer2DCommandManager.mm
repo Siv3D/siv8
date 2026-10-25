@@ -181,7 +181,7 @@ namespace s3d
 			m_current.pixelShader = PixelShader::IDType::Invalid();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, 0);
-			m_current.combinedTransform = m_buffer.combinedTransforms.front();
+			m_current.transform.combinedTransform = m_buffer.combinedTransforms.front();
 
 			{
 				for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
@@ -323,7 +323,7 @@ namespace s3d
 		if (m_stateTracker.has(MetalRenderer2DCommandType::Transform))
 		{
 			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
-			m_buffer.combinedTransforms.push_back(m_current.combinedTransform);
+			m_buffer.combinedTransforms.push_back(m_current.transform.combinedTransform);
 		}
 
 		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
@@ -747,17 +747,17 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushLocalTransform(const Mat3x2& local)
 	{
-		if (local == m_current.localTransform)
+		if (local == m_current.transform.localTransform)
 		{
 			return;
 		}
-		m_current.localTransform = local;
+		m_current.transform.localTransform = local;
 		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentLocalTransform() const
 	{
-		return m_current.localTransform;
+		return m_current.transform.localTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -768,17 +768,17 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushCameraTransform(const Mat3x2& camera)
 	{
-		if (camera == m_current.cameraTransform)
+		if (camera == m_current.transform.cameraTransform)
 		{
 			return;
 		}
-		m_current.cameraTransform = camera;
+		m_current.transform.cameraTransform = camera;
 		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentCameraTransform() const
 	{
-		return m_current.cameraTransform;
+		return m_current.transform.cameraTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -789,40 +789,37 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushQuadWarpTransform(const Mat3x3& warp)
 	{
-		if (warp == m_current.quadWarpTransform)
+		if (warp == m_current.transform.quadWarpTransform)
 		{
 			return;
 		}
-		m_current.quadWarpTransform = warp;
+		m_current.transform.quadWarpTransform = warp;
 		updateTransform();
 	}
 
 	const Mat3x3& MetalRenderer2DCommandManager::getCurrentQuadWarpTransform() const
 	{
-		return m_current.quadWarpTransform;
+		return m_current.transform.quadWarpTransform;
 	}
 
 	void MetalRenderer2DCommandManager::setSceneScale(const Float2 scale)
 	{
-		if (scale == m_current.sceneScale)
+		if (scale == m_current.transform.sceneScale)
 		{
 			return;
 		}
-		m_current.sceneScale = scale;
+		m_current.transform.sceneScale = scale;
 		updateRasterScaling();
 	}
 
 	void MetalRenderer2DCommandManager::updateRasterScaling()
 	{
-		m_current.rasterScaling = ((m_current.sceneScale == Float2{ 1.0f, 1.0f })
-			? m_current.rmsScaling
-			: (m_current.affineTransform * Mat3x2::Scale(m_current.sceneScale)).rmsScaling());
+		m_current.transform.updateRasterScaling();
 	}
 
 	void MetalRenderer2DCommandManager::updateAffineTransform()
 	{
-		m_current.affineTransform = (m_current.localTransform * m_current.cameraTransform);
-		m_current.rmsScaling = m_current.affineTransform.rmsScaling();
+		m_current.transform.updateAffineTransform();
 		updateRasterScaling();
 		updateTransform();
 	}
@@ -830,8 +827,8 @@ namespace s3d
 	void MetalRenderer2DCommandManager::updateTransform()
 	{
 		constexpr auto Command = MetalRenderer2DCommandType::Transform;
-		m_current.combinedTransform = (Mat3x3{ m_current.affineTransform } * m_current.quadWarpTransform);
-		if (m_current.combinedTransform == m_buffer.combinedTransforms.back())
+		m_current.transform.updateCombinedTransform();
+		if (m_current.transform.combinedTransform == m_buffer.combinedTransforms.back())
 		{
 			m_stateTracker.clear(Command);
 		}
@@ -848,7 +845,7 @@ namespace s3d
 
 	const Mat3x3& MetalRenderer2DCommandManager::getCurrentCombinedTransform() const
 	{
-		return m_current.combinedTransform;
+		return m_current.transform.combinedTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -859,7 +856,7 @@ namespace s3d
 
 	float MetalRenderer2DCommandManager::getCurrentRMSScaling() const noexcept
 	{
-		return m_current.rmsScaling;
+		return m_current.transform.rmsScaling;
 	}
 	
 	////////////////////////////////////////////////////////////////
