@@ -9496,9 +9496,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\SivRenderer2D_Bezier.cpp">
-      <Filter>src\Siv3D\Renderer2D</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\CRenderer2D.cpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClCompile>

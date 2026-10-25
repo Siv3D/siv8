@@ -42,7 +42,7 @@ submission timings call the public drawing API.
 A single [destination-writing kernel](../../Siv3D/src/Siv3D/Geometry2D/BezierTessellation.hpp)
 accepts a source curve and an affine metric curve. It evaluates quality in the
 metric and writes points on the source curve. Translation is removed before
-metric calculations. The [shared renderer path](../../Siv3D/src/Siv3D/Renderer2D/SivRenderer2D_Bezier.cpp)
+metric calculations. The [shared renderer path](../../Siv3D/src/Siv3D/Renderer2D/CRenderer2D.cpp)
 reuses a renderer-owned vertex array and passes it to the existing stroke builder.
 D3D11 and Metal provide their scene scale; the tessellation logic is shared.
 The fixed-size workspace is local to each call and does not allocate.
