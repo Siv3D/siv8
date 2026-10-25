@@ -119,6 +119,7 @@
 		E80D41942D7045A6B95D0001 /* Test_Renderer2DDrawSubmission.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */; };
 		F1442106E9CC4233BBE7C370 /* Test_Renderer2DEngineShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		5E794FEECE7949AE941BC2ED /* Test_Renderer2DStateUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
+		BE7D1E46ADE340BBBF94E070 /* Test_Renderer2DResourceStateUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		65A55FC279204B9EBEB88662 /* Test_Renderer2DTransformState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 483B7ABB61B94C6198475D23 /* Test_Renderer2DTransformState.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		D311D311D311D31100000001 /* Test_D3D11Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000002 /* Test_D3D11Device.cpp */; };
 		D311D311D311D31100000003 /* Test_D3D11SwapChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */; };
@@ -3540,6 +3541,7 @@
 		E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DDrawSubmission.cpp; sourceTree = "<group>"; };
 		D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEngineShaders.cpp; sourceTree = "<group>"; };
 		5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DStateUpdate.cpp; sourceTree = "<group>"; };
+		B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DResourceStateUpdate.cpp; sourceTree = "<group>"; };
 		483B7ABB61B94C6198475D23 /* Test_Renderer2DTransformState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTransformState.cpp; sourceTree = "<group>"; };
 		D311D311D311D31100000002 /* Test_D3D11Device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_D3D11Device.cpp; sourceTree = "<group>"; };
 		D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_D3D11SwapChain.cpp; sourceTree = "<group>"; };
@@ -7359,6 +7361,7 @@
 				E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */,
 				D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */,
 				5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */,
+				B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */,
 				483B7ABB61B94C6198475D23 /* Test_Renderer2DTransformState.cpp */,
 				CB2DCAFE0000000000000012 /* Test_ConstantBuffer.cpp */,
 				AFF94ACA4F194DF6A0EF1CA6 /* Test_LineStringIndexCount.cpp */,
@@ -17048,6 +17051,7 @@
 				E80D41942D7045A6B95D0001 /* Test_Renderer2DDrawSubmission.cpp in Sources */,
 				F1442106E9CC4233BBE7C370 /* Test_Renderer2DEngineShaders.cpp in Sources */,
 				5E794FEECE7949AE941BC2ED /* Test_Renderer2DStateUpdate.cpp in Sources */,
+				BE7D1E46ADE340BBBF94E070 /* Test_Renderer2DResourceStateUpdate.cpp in Sources */,
 				65A55FC279204B9EBEB88662 /* Test_Renderer2DTransformState.cpp in Sources */,
 				CB2DCAFE0000000000000011 /* Test_ConstantBuffer.cpp in Sources */,
 				5E416ED3BF56463B99B4622C /* Test_LineStringIndexCount.cpp in Sources */,

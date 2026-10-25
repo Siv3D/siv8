@@ -58,12 +58,21 @@ shares ordinary state updates between the backend command managers. A pending
 change is cancelled when its value returns to the last recorded value before
 the next draw or flush, allowing adjacent draws to stay in one batch. The helper
 reads the recorded value only when that state already has a pending change.
-Resource retention for custom shaders and textures remains in their respective
-command-manager methods.
+The same header provides separate helpers for custom shader and texture updates.
+Texture updates with an unchanged ID return before looking up retained resources;
+custom shader updates retain the shader whenever a change is already pending,
+including when its ID is unchanged. Texture unbinding uses the ordinary state
+helper. Command managers own the retention maps; their `flush()` and change
+cancellation preserve these references, while `reset()` clears them.
 
 [Test_Renderer2DStateUpdate.cpp](../../Test/Test_Renderer2DStateUpdate.cpp) checks
 recorded-value access, cancellation, replacement, command ordering, draw batching
 and independent VS/PS sampler slots using the host's command manager.
+
+[Test_Renderer2DResourceStateUpdate.cpp](../../Test/Test_Renderer2DResourceStateUpdate.cpp)
+checks retention lookups, recorded-value access, shader/texture command
+coalescing, independent texture slots and resource lifetime through cancellation,
+flush, reset and command-manager destruction.
 
 ## Transform state
 

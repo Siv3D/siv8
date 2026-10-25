@@ -664,30 +664,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushCustomVS(const VertexShader& vs)
 	{
-		const auto id = vs.id();
-		constexpr auto Command = MetalRenderer2DCommandType::SetVS;
-		auto& current = m_current.vertexShader;
-		auto& buffer = m_buffer.vertexShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-				m_reserved.vertexShaders.try_emplace(id, vs);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = id;
-			m_reserved.vertexShaders.try_emplace(id, vs);
-		}
+		UpdateRenderer2DCustomShaderState(m_stateTracker, MetalRenderer2DCommandType::SetVS, vs,
+			m_current.vertexShader, m_buffer.vertexShaders, m_reserved.vertexShaders);
 	}
 
 	VertexShader::IDType MetalRenderer2DCommandManager::getVS(const uint32 index) const
@@ -709,29 +687,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushCustomPS(const PixelShader& ps)
 	{
-		const auto id = ps.id();
-		constexpr auto Command = MetalRenderer2DCommandType::SetPS;
-		auto& current = m_current.pixelShader;
-		auto& buffer = m_buffer.pixelShaders;
-		
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-				m_reserved.pixelShaders.try_emplace(id, ps);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-			current = id;
-			m_reserved.pixelShaders.try_emplace(id, ps);
-		}
+		UpdateRenderer2DCustomShaderState(m_stateTracker, MetalRenderer2DCommandType::SetPS, ps,
+			m_current.pixelShader, m_buffer.pixelShaders, m_reserved.pixelShaders);
 	}
 
 	PixelShader::IDType MetalRenderer2DCommandManager::getPS(const uint32 index) const
@@ -871,26 +828,8 @@ namespace s3d
 
 		static constexpr auto InvalidID = Texture::IDType::Invalid();
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::VSTexture0) + slot);
-		auto& current = m_current.vsTextures[slot];
-		auto& buffer = m_buffer.vsTextures[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (InvalidID != current)
-			{
-				current = InvalidID;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (InvalidID == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = InvalidID;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, InvalidID,
+			m_current.vsTextures[slot], m_buffer.vsTextures[slot]);
 	}
 
 	void MetalRenderer2DCommandManager::pushVSTexture(const uint32 slot, const Texture& texture)
@@ -898,27 +837,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::VSTexture0) + slot);
-		auto& current = m_current.vsTextures[slot];
-		auto& buffer = m_buffer.vsTextures[slot];
-		const auto id = texture.id();
-
-		if (id == current)
-		{
-			return;
-		}
-
-		m_reserved.textures.try_emplace(id, texture);
-
-		if (not m_stateTracker.has(command))
-		{
-			m_stateTracker.set(command);
-		}
-		else if (id == buffer.back())
-		{
-			m_stateTracker.clear(command);
-		}
-
-		current = id;
+		UpdateRenderer2DTextureState(m_stateTracker, command, texture,
+			m_current.vsTextures[slot], m_buffer.vsTextures[slot], m_reserved.textures);
 	}
 	
 	const Texture::IDType& MetalRenderer2DCommandManager::getVSTexture(const uint32 slot, const uint32 index) const
@@ -945,26 +865,8 @@ namespace s3d
 
 		static constexpr auto InvalidID = Texture::IDType::Invalid();
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::PSTexture0) + slot);
-		auto& current = m_current.psTextures[slot];
-		auto& buffer = m_buffer.psTextures[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (InvalidID != current)
-			{
-				current = InvalidID;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (InvalidID == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = InvalidID;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, InvalidID,
+			m_current.psTextures[slot], m_buffer.psTextures[slot]);
 	}
 
 	void MetalRenderer2DCommandManager::pushPSTexture(const uint32 slot, const Texture& texture)
@@ -972,27 +874,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::PSTexture0) + slot);
-		auto& current = m_current.psTextures[slot];
-		auto& buffer = m_buffer.psTextures[slot];
-		const auto id = texture.id();
-
-		if (id == current)
-		{
-			return;
-		}
-
-		m_reserved.textures.try_emplace(id, texture);
-
-		if (not m_stateTracker.has(command))
-		{
-			m_stateTracker.set(command);
-		}
-		else if (id == buffer.back())
-		{
-			m_stateTracker.clear(command);
-		}
-
-		current = id;
+		UpdateRenderer2DTextureState(m_stateTracker, command, texture,
+			m_current.psTextures[slot], m_buffer.psTextures[slot], m_reserved.textures);
 	}
 
 	const Texture::IDType& MetalRenderer2DCommandManager::getPSTexture(const uint32 slot, const uint32 index) const
