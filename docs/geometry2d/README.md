@@ -10,6 +10,12 @@ API contracts live in the public headers, including
 [Writing 2D shapes to Image](image-writing.md) covers compositing, the CPU/GPU
 API inventory, validation, and reproducible performance measurements.
 
+## Shape drawing proposals
+
+[Shape drawing API proposals](proposals/shape-drawing-api.md) evaluates additions
+to the 2D drawing API, with SVG galleries, existing API comparisons, external
+examples, and staged implementation options. This is an unadopted proposal.
+
 ## Spline paths
 
 [Spline paths](splines.md) explains reusable curves, distance-based movement,
@@ -23,6 +29,13 @@ budgets, transform handling, and the density placement shared by Bezier2,
 Bezier3, Spline2D, and Bezier Image writing. It
 records the comparison with recursive subdivision and Wang's formula and links
 to the reproducible renderer gallery and benchmarks.
+
+## Rounded shape drawing
+
+[Drawing tessellation budgets](rounded-drawing.md) compares circle, ellipse,
+rounded-rectangle, cap, join, texture, and shadow paths against Circle's bounded
+drawing cost. It distinguishes GPU subdivision from arc-length calculations,
+records short-dash findings, and explains SuperEllipse's private tessellator.
 
 ## Continuing a ray after contact
 

@@ -28,9 +28,9 @@ namespace s3d
 
 	namespace Vertex2DBuilder
 	{
-		// Number of arc vertices, including both endpoints; r is in raster pixels.
+		// Points including both endpoints (2..253); r is in raster pixels, angle is in [0, 2*pi].
 		[[nodiscard]]
-		Vertex2D::IndexType CalculateCirclePieQuality(float r, float angle) noexcept;
+		Vertex2D::IndexType CalculateCircleArcQuality(float r, float angle) noexcept;
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2], float scale);

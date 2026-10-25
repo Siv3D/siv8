@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
-# include <Siv3D/LineCap.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
@@ -420,15 +419,7 @@ namespace s3d
 			return *this;
 		}
 
-		auto* pRenderer = SIV3D_ENGINE(Renderer2D);
-		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
-		const QualityFactor qualityFactor{ (0.5 * pRenderer->getRasterScaling()) };
-
-		pRenderer->addLineString(LineCap::Square, LineCap::Square,
-			outer(qualityFactor.toPointsPerCircle(r)), none,
-			Abs(static_cast<float>(thickness)), false,
-			CloseRing::Yes,
-			color.toFloat4());
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipseFrame(*this, static_cast<float>(thickness), color.toFloat4());
 
 		return *this;
 	}
@@ -440,15 +431,7 @@ namespace s3d
 			return *this;
 		}
 
-		auto* pRenderer = SIV3D_ENGINE(Renderer2D);
-		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
-		const QualityFactor qualityFactor{ (0.5 * pRenderer->getRasterScaling()) };
-
-		pRenderer->addLineString(LineCap::Square, LineCap::Square,
-			outer(qualityFactor.toPointsPerCircle(r)), none,
-			Abs(static_cast<float>(thickness)), false,
-			CloseRing::Yes,
-			pattern);
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipseFrame(*this, static_cast<float>(thickness), pattern);
 
 		return *this;
 	}

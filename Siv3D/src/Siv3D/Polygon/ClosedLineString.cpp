@@ -141,7 +141,7 @@ namespace s3d
 				double sweep = std::atan2(-from.cross(to), from.dot(to));
 				if (sweep < 0.0) sweep += Math::TwoPi;
 				const double radius = Abs(distance);
-				const auto count = Vertex2DBuilder::CalculateCirclePieQuality(static_cast<float>(radius) * m_scale, static_cast<float>(sweep));
+				const auto count = Vertex2DBuilder::CalculateCircleArcQuality(static_cast<float>(radius) * m_scale, static_cast<float>(sweep));
 				const double start = std::atan2(from.y, from.x), step = (sweep / (count - 1));
 				output.push_back(perp1);
 				for (uint16 i = 1; i + 1 < count; ++i)

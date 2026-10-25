@@ -69,6 +69,25 @@ namespace
 			CHECK(found == visible);
 		}
 	}
+
+	void DrawReferenceFrame(const uint32 count, const bool gradient)
+	{
+		const ColorF inner = (gradient ? Palette::Red : Palette::White);
+		const ColorF outer = (gradient ? Palette::Blue : Palette::White);
+		const auto point = [](const double angle, const double radius)
+		{
+			return (Vec2{ 140, 120 } + Vec2{ std::sin(angle), -std::cos(angle) } * radius);
+		};
+		for (uint32 i = 0; i < count; ++i)
+		{
+			for (int32 j = 0; j < 16; ++j)
+			{
+				const double start = (Math::TwoPi * (i + j / 32.0) / count);
+				const double end = (Math::TwoPi * (i + (j + 1) / 32.0) / count);
+				Quad{ point(start, 70), point(start, 90), point(end, 90), point(end, 70) }.draw(inner, outer, outer, inner);
+			}
+		}
+	}
 }
 
 TEST_CASE("Renderer2D.circle_dashed_frame_styles")
@@ -83,8 +102,8 @@ TEST_CASE("Renderer2D.circle_dashed_frame_styles")
 			{
 				INFO(ratio);
 				const bool visible = (dashCount && (0.0 < ratio));
-				// 半径 90 の外周では、12 本の破線は各 8 三角形、実線は 120 三角形。
-				const int64 triangles = (visible ? ((ratio == 1.0) ? 120 : 96) : 0);
+				// 半径 90 の外周では、12 本の破線は各 6 三角形、実線は 120 三角形。
+				const int64 triangles = (visible ? ((ratio == 1.0) ? 120 : 72) : 0);
 				const Image image = CaptureCircleFrame([&]
 				{
 					DrawCircleFrame({ .dashCount = dashCount, .dashRatio = ratio, .startAngle = -7.5_deg }, coloring);
@@ -118,27 +137,15 @@ TEST_CASE("Renderer2D.circle_dashed_frame_short_arcs")
 			INFO(dashCount);
 			const Image reference = CaptureCircleFrame([&]
 			{
-				const Circle circle{ 140, 120, 80 };
-				const double step = (Math::TwoPi / dashCount);
-				for (uint32 i = 0; i < dashCount; ++i)
-				{
-					if ((coloring == 1) || (coloring == 3))
-					{
-						circle.drawArc(LineCap::Flat, (step * i), (step * 0.5), 10, 10, Palette::Red, Palette::Blue);
-					}
-					else
-					{
-						circle.drawArc(LineCap::Flat, (step * i), (step * 0.5), 10, 10);
-					}
-				}
-			}, (dashCount * 8));
+				DrawReferenceFrame(dashCount, ((coloring == 1) || (coloring == 3)));
+			}, (dashCount * 32));
 			const Image actual = CaptureCircleFrame([&]
 			{
 				DrawCircleFrame({ .dashCount = dashCount }, coloring);
-			}, (dashCount * ((dashCount < 30) ? 8 : 2)));
+			}, (dashCount * ((dashCount < 30) ? 4 : 2)));
 			CheckCircleVisible(actual, true);
 
-			// 通常の円弧を並べた画像を基準にする。分割位置が変わるため画素の完全一致は要求せず、
+			// 各破線を 16 区間の Quad で描いた画像を基準にする。分割位置が変わるため画素の完全一致は要求せず、
 			// 円を含む領域の RGB 絶対差の合計を、基準画像の RGB 合計の 2% 以下に制限する。
 			uint64 difference = 0, intensity = 0;
 			for (int32 y = 20; y < 220; ++y)
