@@ -71,6 +71,14 @@ checks positions, gradients, flipped UVs, untouched UVs in untextured draws,
 destination bounds and geometry agreement between styles, including zero and
 maximum radii and scaled tessellation.
 
+Circle shadows share a vertex writer for their outer/inner ring. Buffer sizing,
+tessellation selection, the optional center vertex and index generation remain
+in each builder; the ring traversal has no fill-mode branch.
+[Test_Vertex2DBuilderCircleShadow.cpp](../../Test/Test_Vertex2DBuilderCircleShadow.cpp)
+checks analytic ring positions, UVs, colors, identical rings across fill modes,
+center placement and destination bounds, including zero-width rings, a collapsed
+inner radius, tessellation limits and offsets near the 16-bit vertex limit.
+
 On macOS, run its opt-in benchmarks from the repository root with:
 
 ```sh

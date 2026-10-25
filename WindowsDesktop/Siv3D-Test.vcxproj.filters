@@ -280,6 +280,9 @@
     <ClCompile Include="..\Test\Test_Vertex2DBuilderIndices.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderCircleShadow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Vertex2DBuilderArc.cpp">
       <Filter>Test</Filter>
     </ClCompile>

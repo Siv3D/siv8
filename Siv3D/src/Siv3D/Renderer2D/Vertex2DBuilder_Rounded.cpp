@@ -341,6 +341,38 @@ namespace s3d
 			}
 		}
 
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteCircleShadowRingVertices(Vertex2D* pDst0, const std::span<const Float2> pCS,
+			const float centerX, const float centerY, const float rInner, const float rOuter, const Vertex2D::IndexType quality, const Float4& color)
+		{
+			Vertex2D* pDst1 = (pDst0 + quality * 2);
+			Vertex2D* pDst2 = (pDst0 + quality * 4);
+			Vertex2D* pDst3 = (pDst0 + quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const Float2& cs = pCS[i];
+				const float ox = (cs.x * rOuter);
+				const float ix = (cs.x * rInner);
+				const float oy = (cs.y * rOuter);
+				const float iy = (cs.y * rInner);
+
+				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
+				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
+
+				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
+				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
+
+				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
+				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
+
+				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
+				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
+			}
+		}
+
 		template <bool Gradient>
 		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
 			[[gnu::always_inline]]
@@ -3539,31 +3571,7 @@ namespace s3d
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
-			Vertex2D* pDst0 = &pVertex[0];
-			Vertex2D* pDst1 = (pDst0 + Quality * 2);
-			Vertex2D* pDst2 = (pDst0 + Quality * 4);
-			Vertex2D* pDst3 = (pDst0 + Quality * 6);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float ox = (cs.x * rOuter);
-				const float ix = (cs.x * rInner);
-				const float oy = (cs.y * rOuter);
-				const float iy = (cs.y * rInner);
-
-				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
-				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
-
-				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
-				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
-
-				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
-				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
-
-				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
-				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
-			}
+			WriteCircleShadowRingVertices(pVertex, pCS, centerX, centerY, rInner, rOuter, Quality, color);
 
 			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
 
@@ -3610,31 +3618,7 @@ namespace s3d
 			// 中心頂点を最初に配置
 			pVertex[0].set(centerX, centerY, 0.5f, 0.5f, color);
 
-			Vertex2D* pDst0 = &pVertex[1];
-			Vertex2D* pDst1 = (pDst0 + Quality * 2);
-			Vertex2D* pDst2 = (pDst0 + Quality * 4);
-			Vertex2D* pDst3 = (pDst0 + Quality * 6);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float ox = (cs.x * rOuter);
-				const float ix = (cs.x * rInner);
-				const float oy = (cs.y * rOuter);
-				const float iy = (cs.y * rInner);
-
-				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
-				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
-
-				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
-				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
-
-				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
-				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
-
-				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
-				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
-			}
+			WriteCircleShadowRingVertices((pVertex + 1), pCS, centerX, centerY, rInner, rOuter, Quality, color);
 
 			{
 				const Vertex2D::IndexType ringStartIndex = (indexOffset + 1);

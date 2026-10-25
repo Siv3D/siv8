@@ -191,6 +191,7 @@
     </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Vertex2DBuilderIndices.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderCircleShadow.cpp" />
     <ClCompile Include="..\Test\Test_Vertex2DBuilderArc.cpp" />
     <ClCompile Include="..\Test\Test_Vertex2DBuilderEllipse.cpp" />
     <ClCompile Include="..\Test\Test_Vertex2DBuilderRoundRect.cpp" />
