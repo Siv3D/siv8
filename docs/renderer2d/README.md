@@ -35,6 +35,15 @@ material bindings also apply when a custom PS is active. New geometry builders
 can reuse these helpers without introducing another virtual submission call or
 an intermediate mesh.
 
+[Renderer2DEngineShaders.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DEngineShaders.hpp)
+defines the shared engine shader ID cache, its initialization and inline pattern
+selection.
+[Renderer2DCustomShaders.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DCustomShaders.hpp)
+defines the custom shader state. Each backend owns these members;
+draw submission reads cached IDs without accessing the engine shader service.
+[Test_Renderer2DEngineShaders.cpp](../../Test/Test_Renderer2DEngineShaders.cpp) checks
+the initialization mappings, pattern selection and fallback to the shape PS.
+
 [Test_Renderer2DDrawSubmission.cpp](../../Test/Test_Renderer2DDrawSubmission.cpp)
 checks command ordering, independent custom shaders, material bindings and
 32-bit index counts. Its opt-in CPU benchmark times public draw calls for solid

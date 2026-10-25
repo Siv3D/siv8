@@ -15,13 +15,13 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
+# include <Siv3D/Renderer2D/Renderer2DEngineShaders.hpp>
+# include <Siv3D/Renderer2D/Renderer2DCustomShaders.hpp>
 # include "D3D11VertexBufferManager2D.hpp"
 # include "D3D11Renderer2DCommandManager.hpp"
 
 namespace s3d
 {
-	enum class PatternType : uint8;
-
 	class CRenderer2D_D3D11 final : public ISiv3DRenderer2D
 	{
 	public:
@@ -566,60 +566,9 @@ namespace s3d
 		std::array<std::array<CustomConstantBuffer, Graphics::ConstantBufferSlotCount>, 2> m_customConstantBuffers;
 
 
-		struct EngineShader
-		{
-			VertexShader::IDType vsShape;
+		Renderer2DEngineShaders m_engineShader;
 
-			VertexShader::IDType vsPattern;
-
-			PixelShader::IDType psShape;
-
-			PixelShader::IDType psTexture;
-
-			PixelShader::IDType psLineDot;
-
-			PixelShader::IDType psLineDash;
-
-			PixelShader::IDType psLineLongDash;
-
-			PixelShader::IDType psLineDashDot;
-
-			PixelShader::IDType psLineRoundDot;
-
-			PixelShader::IDType psPatternPolkaDot;
-
-			PixelShader::IDType psPatternStripe;
-
-			PixelShader::IDType psPatternGrid;
-
-			PixelShader::IDType psPatternChecker;
-
-			PixelShader::IDType psPatternTriangle;
-
-			PixelShader::IDType psPatternHexGrid;
-
-			PixelShader::IDType psPatternHalftone;
-
-			PixelShader::IDType psPatternWave;
-
-			PixelShader::IDType psPatternRipple;
-
-			PixelShader::IDType psPatternWeave;
-
-			PixelShader::IDType psPatternTruchet;
-
-			[[nodiscard]]
-			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
-
-		} m_engineShader;
-
-		struct CurrentCustomShader
-		{
-			Optional<VertexShader> vs;
-
-			Optional<PixelShader> ps;
-
-		} m_currentCustomShader;
+		Renderer2DCustomShaders m_currentCustomShader;
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
 

@@ -64,37 +64,6 @@ namespace s3d
 		}
 	}
 
-	PixelShader::IDType CRenderer2D_Metal::EngineShader::getPatternShader(const PatternType pattern) const noexcept
-	{
-		switch (pattern)
-		{
-		case PatternType::PolkaDot:
-			return psPatternPolkaDot;
-		case PatternType::Stripe:
-			return psPatternStripe;
-		case PatternType::Checker:
-			return psPatternChecker;
-		case PatternType::Grid:
-			return psPatternGrid;
-		case PatternType::Triangle:
-			return psPatternTriangle;
-		case PatternType::HexGrid:
-			return psPatternHexGrid;
-		case PatternType::Halftone:
-			return psPatternHalftone;
-		case PatternType::Wave:
-			return psPatternWave;
-		case PatternType::Ripple:
-			return psPatternRipple;
-		case PatternType::Weave:
-			return psPatternWeave;
-		case PatternType::Truchet:
-			return psPatternTruchet;
-		default:
-			return psShape;
-		}
-	}
-
 	struct CommandState
 	{
 		Mat3x3 transform = Mat3x3::Identity();
@@ -133,26 +102,7 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		m_engineShader.vsShape				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.vsPattern				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Pattern2D).id();
-		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
-		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
-		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
-		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
-		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
-		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
-		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
-		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
-		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
-		m_engineShader.psPatternGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternGrid).id();
-		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
-		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
-		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
-		m_engineShader.psPatternHalftone = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHalftone).id();
-		m_engineShader.psPatternWave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWave).id();
-		m_engineShader.psPatternRipple = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternRipple).id();
-		m_engineShader.psPatternWeave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWeave).id();
-		m_engineShader.psPatternTruchet = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTruchet).id();
+		m_engineShader.init(*SIV3D_ENGINE(EngineShader));
 		
 		m_vertexBufferManager.init(m_device);
 
