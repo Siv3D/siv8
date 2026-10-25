@@ -3807,6 +3807,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DEngineShaders.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DStateUpdate.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCustomShaders.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>

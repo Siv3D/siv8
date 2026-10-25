@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11Renderer2DCommandManager.hpp"
+# include <Siv3D/Renderer2D/Renderer2DStateUpdate.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -432,27 +433,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushColorMul(const Float4& color)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::ColorMul;
-		auto& current = m_current.colorMul;
-		auto& buffer = m_buffer.colorMuls;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (color != current)
-			{
-				current = color;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (color == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = color;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::ColorMul, color,
+			m_current.colorMul, m_buffer.colorMuls);
 	}
 
 	const Float4& D3D11Renderer2DCommandManager::getColorMul(const uint32 index) const
@@ -473,27 +455,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushColorAdd(const Float3& color)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::ColorAdd;
-		auto& current = m_current.colorAdd;
-		auto& buffer = m_buffer.colorAdds;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (color != current)
-			{
-				current = color;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (color == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = color;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::ColorAdd, color,
+			m_current.colorAdd, m_buffer.colorAdds);
 	}
 
 	const Float3& D3D11Renderer2DCommandManager::getColorAdd(const uint32 index) const
@@ -514,27 +477,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushPatternParameter(const std::array<Float4, 4>& patternParameter)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::PatternParameters;
-		auto& current = m_current.patternParameter;
-		auto& buffer = m_buffer.patternParameters;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (patternParameter != current)
-			{
-				current = patternParameter;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (patternParameter == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = patternParameter;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::PatternParameters, patternParameter,
+			m_current.patternParameter, m_buffer.patternParameters);
 	}
 	
 	const std::array<Float4, 4>& D3D11Renderer2DCommandManager::getPatternParameter(const uint32 index) const
@@ -555,27 +499,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushBlendState(const BlendState& state)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::BlendState;
-		auto& current = m_current.blendState;
-		auto& buffer = m_buffer.blendStates;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::BlendState, state,
+			m_current.blendState, m_buffer.blendStates);
 	}
 
 	const BlendState& D3D11Renderer2DCommandManager::getBlendState(const uint32 index) const
@@ -596,27 +521,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushRasterizerState(const RasterizerState& state)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::RasterizerState;
-		auto& current = m_current.rasterizerState;
-		auto& buffer = m_buffer.rasterizerStates;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::RasterizerState, state,
+			m_current.rasterizerState, m_buffer.rasterizerStates);
 	}
 
 	const RasterizerState& D3D11Renderer2DCommandManager::getRasterizerState(const uint32 index) const
@@ -640,26 +546,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + slot);
-		auto& current = m_current.vsSamplerStates[slot];
-		auto& buffer = m_buffer.vsSamplerStates[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, state,
+			m_current.vsSamplerStates[slot], m_buffer.vsSamplerStates[slot]);
 	}
 	
 	const SamplerState& D3D11Renderer2DCommandManager::getVSSamplerState(const uint32 slot, const uint32 index) const
@@ -685,28 +573,10 @@ namespace s3d
 	void D3D11Renderer2DCommandManager::pushPSSamplerState(const SamplerState& state, const uint32 slot)
 	{
 		assert(slot < Graphics::TextureSlotCount);
-		
+
 		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + slot);
-		auto& current = m_current.psSamplerStates[slot];
-		auto& buffer = m_buffer.psSamplerStates[slot];
-		
-		if (not m_stateTracker.has(command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-			
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, state,
+			m_current.psSamplerStates[slot], m_buffer.psSamplerStates[slot]);
 	}
 
 	const SamplerState& D3D11Renderer2DCommandManager::getPSSamplerState(const uint32 slot, const uint32 index) const
@@ -731,27 +601,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushScissorRect(const Optional<Rect>& state)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::ScissorRect;
-		auto& current = m_current.scissorRect;
-		auto& buffer = m_buffer.scissorRects;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::ScissorRect, state,
+			m_current.scissorRect, m_buffer.scissorRects);
 	}
 
 	const Optional<Rect>& D3D11Renderer2DCommandManager::getScissorRect(const uint32 index) const
@@ -772,27 +623,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushViewport(const Optional<Rect>& state)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::Viewport;
-		auto& current = m_current.viewport;
-		auto& buffer = m_buffer.viewports;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::Viewport, state,
+			m_current.viewport, m_buffer.viewports);
 	}
 	
 	const Optional<Rect>& D3D11Renderer2DCommandManager::getViewport(const uint32 index) const
@@ -813,27 +645,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushSDFParameters(const std::array<Float4, 3>& state)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::SDFParams;
-		auto& current = m_current.sdfParameter;
-		auto& buffer = m_buffer.sdfParameters;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::SDFParams, state,
+			m_current.sdfParameter, m_buffer.sdfParameters);
 	}
 
 	const std::array<Float4, 3>& D3D11Renderer2DCommandManager::getSDFParameters(const uint32 index) const
@@ -854,27 +667,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushEngineVS(const VertexShader::IDType id)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::SetVS;
-		auto& current = m_current.vertexShader;
-		auto& buffer = m_buffer.vertexShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-		
-			current = id;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::SetVS, id,
+			m_current.vertexShader, m_buffer.vertexShaders);
 	}
 
 	void D3D11Renderer2DCommandManager::pushCustomVS(const VertexShader& vs)
@@ -918,27 +712,8 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushEnginePS(const PixelShader::IDType id)
 	{
-		constexpr auto Command = D3D11Renderer2DCommandType::SetPS;
-		auto& current = m_current.pixelShader;
-		auto& buffer = m_buffer.pixelShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = id;
-		}
+		UpdateRenderer2DState(m_stateTracker, D3D11Renderer2DCommandType::SetPS, id,
+			m_current.pixelShader, m_buffer.pixelShaders);
 	}
 
 	void D3D11Renderer2DCommandManager::pushCustomPS(const PixelShader& ps)

@@ -51,6 +51,20 @@ Rect/Circle, patterned Rect/Circle and TexturedQuad. See the
 [development guide](../development/README.md#draw-submission-benchmark) for
 measurement and comparison instructions.
 
+## State update coalescing
+
+[Renderer2DStateUpdate.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DStateUpdate.hpp)
+shares ordinary state updates between the backend command managers. A pending
+change is cancelled when its value returns to the last recorded value before
+the next draw or flush, allowing adjacent draws to stay in one batch. The helper
+reads the recorded value only when that state already has a pending change.
+Resource retention for custom shaders and textures remains in their respective
+command-manager methods.
+
+[Test_Renderer2DStateUpdate.cpp](../../Test/Test_Renderer2DStateUpdate.cpp) checks
+recorded-value access, cancellation, replacement, command ordering, draw batching
+and independent VS/PS sampler slots using the host's command manager.
+
 ## Custom constant buffers
 
 [ScopedConstantBuffer2D.hpp](../../Siv3D/include/Siv3D/ScopedConstantBuffer2D.hpp)
