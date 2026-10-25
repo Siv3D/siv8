@@ -726,6 +726,32 @@ namespace s3d
 				(baseY - normal.y * innerThickness));
 		}
 
+		template <class VertexWriter>
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteArcVertices(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
+			const float startAngle, const float radDelta, const Vertex2D::IndexType quality, const VertexWriter& writeVertex)
+		{
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				// Keep the angle in one expression to preserve multiply-add contraction.
+				const float rad = (startAngle + (radDelta * i));
+				const auto [s, c] = FastMath::SinCos(rad);
+				writeVertex(*pDst++, (centerX + rx * s), (centerY - ry * c), (radDelta * i));
+			}
+		}
+
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteArcPositions(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
+			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
+		{
+			WriteArcVertices(pDst, centerX, centerY, rx, ry, startAngle, radDelta, quality,
+				[](Vertex2D& vertex, const float x, const float y, float) { vertex.pos.set(x, y); });
+		}
+
 		// 確保済みの領域に半円を書き込む。領域の確保と品質の決定は呼び出し側が行う。
 		static void EmitRoundCap(const Vertex2DBufferPointer buffer, const Float2& center, const float r, const float startAngle, const Float4& color, const Vertex2D::IndexType quality)
 		{
@@ -741,14 +767,7 @@ namespace s3d
 			// 周
 			{
 				const float radDelta = (Math::PiF / (quality - 1));
-				Vertex2D* pDst = &pVertex[1];
-
-				for (Vertex2D::IndexType i = 0; i < quality; ++i)
-				{
-					const float rad = (startAngle + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
-				}
+				WriteArcPositions((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality);
 			}
 
 			for (size_t i = 0; i < VertexCount; ++i)
@@ -777,15 +796,12 @@ namespace s3d
 				// 周
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
-					Vertex2D* pDst = &pVertex[1];
-
-					for (Vertex2D::IndexType i = 0; i < quality; ++i)
-					{
-						const float rad = (startAngle + (radDelta * i));
-						const float f = std::sin(radDelta * i);
-						const auto [s, c] = FastMath::SinCos(rad);
-						(pDst++)->set((centerX + r * s), (centerY - r * c), (c0 + colorDiff * f));
-					}
+					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
+						[&](Vertex2D& vertex, const float x, const float y, const float delta)
+						{
+							const float f = std::sin(delta);
+							vertex.set(x, y, (c0 + colorDiff * f));
+						});
 				}
 			}
 			else
@@ -796,15 +812,12 @@ namespace s3d
 				// 周
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
-					Vertex2D* pDst = &pVertex[1];
-
-					for (Vertex2D::IndexType i = 0; i < quality; ++i)
-					{
-						const float rad = (startAngle + (radDelta * i));
-						const float f = (std::cos(radDelta * i) * -0.5f + 0.5f);
-						const auto [s, c] = FastMath::SinCos(rad);
-						(pDst++)->set((centerX + r * s), (centerY - r * c), (c0 + colorDiff * f));
-					}
+					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
+						[&](Vertex2D& vertex, const float x, const float y, const float delta)
+						{
+							const float f = (std::cos(delta) * -0.5f + 0.5f);
+							vertex.set(x, y, (c0 + colorDiff * f));
+						});
 				}
 			}
 
@@ -2170,14 +2183,7 @@ namespace s3d
 			{
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = &pVertex[1];
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const float rad = (start + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
-				}
+				WriteArcPositions((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality);
 			}
 
 			{
@@ -2265,14 +2271,7 @@ namespace s3d
 			{
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = &pVertex[1];
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const float rad = (start + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
-				}
+				WriteArcPositions((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality);
 			}
 
 			{
@@ -2597,14 +2596,7 @@ namespace s3d
 			{
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = &pVertex[1];
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const float rad = (start + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + rx * s), (centerY - ry * c));
-				}
+				WriteArcPositions((pVertex + 1), centerX, centerY, rx, ry, start, radDelta, Quality);
 			}
 
 			// 色

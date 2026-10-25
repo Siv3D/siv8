@@ -49,6 +49,18 @@ scaled tessellation. The existing
 [textured-circle tests](../../Test/Test_Renderer2DTexturedCircle.cpp) also cover
 transforms and scene render resolution.
 
+Pie, circular-segment and semicircular-cap builders share angular traversal and
+arc position generation. Callers retain tessellation selection, sweep direction,
+center placement and color interpolation. A templated vertex writer supports
+gradient caps without a runtime callback; position-only paths retain their
+separate color pass. Both paths leave UVs untouched.
+[Test_Vertex2DBuilderArc.cpp](../../Test/Test_Vertex2DBuilderArc.cpp) checks analytic
+positions, chord centers, solid and gradient caps, fan order and destination
+bounds across signed sweeps and tessellation scales. Existing
+[arc tessellation](../../Test/Test_Renderer2DArcTessellation.cpp) and
+[ellipse pie](../../Test/Test_Renderer2DEllipsePie.cpp) tests cover transforms and
+scene render resolution.
+
 Rounded rectangles also share vertex writers for fills and frames. Solid,
 gradient and textured fills use the same corner traversal; solid and gradient
 frames share the outer/inner traversal. Compile-time specialization omits gradient
