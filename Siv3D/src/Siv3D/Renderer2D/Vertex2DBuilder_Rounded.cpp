@@ -11,6 +11,7 @@
 
 # include <array>
 # include <limits>
+# include <type_traits>
 # include "Vertex2DBuilder.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include <Siv3D/LineStyle.hpp>
@@ -238,6 +239,306 @@ namespace s3d
 					*pDst3++ = trIndexBase;
 					*pDst3++ = (trIndexBase + 1);
 				}
+			}
+		}
+
+		template <bool Gradient>
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteRoundRectVertices(Vertex2D* const& pVertex, const FloatRect& rect, const float r, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
+		{
+			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
+
+			const Vertex2D::IndexType FanOuterVertexCount = (quality + 1);
+
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
+			const float topCenterY		= (rect.top + r);
+			const float bottomCenterY	= (rect.bottom - r);
+
+			Float4 colorDiff;
+			float colorRScale;
+			float colorROffset;
+			if constexpr (Gradient)
+			{
+				colorDiff = (color1 - color0);
+				colorRScale = (colorType == ColorFillDirection::TopBottom) ? (r / (rect.bottom - rect.top)) : (r / (rect.right - rect.left));
+				colorROffset = (1.0f - colorRScale);
+			}
+
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
+
+			Vertex2D* pDst0 = pVertex;
+			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
+			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
+			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
+
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const Float2& cs = pCS[i];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
+
+				CornerColor c0 = color0;
+				CornerColor c1 = color0;
+				CornerColor c2 = color0;
+				CornerColor c3 = color0;
+				if constexpr (Gradient)
+				{
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						c0 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
+						c1 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
+						c2 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
+						c3 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						c0 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
+						c1 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
+						c2 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
+						c3 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
+					}
+				}
+
+				pDst0->set((middleRightX + x), (topCenterY + y), c0);
+				pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
+				pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
+				pDst3->set((middleLeftX + y), (topCenterY - x), c3);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			// Fan の最後の頂点
+			{
+				const Float2& cs = pCS[0];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
+
+				CornerColor c0 = color0;
+				CornerColor c1 = color0;
+				CornerColor c2 = color0;
+				CornerColor c3 = color0;
+				CornerColor centerColor0 = color0;
+				CornerColor centerColor1 = color0;
+				CornerColor centerColor2 = color0;
+				CornerColor centerColor3 = color0;
+				if constexpr (Gradient)
+				{
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						c0 = (color0 + colorRScale * colorDiff);
+						c1 = color1;
+						c2 = (color0 + (1.0 - colorRScale) * colorDiff);
+						c3 = color0;
+						centerColor0 = c0;
+						centerColor1 = c2;
+						centerColor2 = c2;
+						centerColor3 = c0;
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						c0 = color1;
+						c1 = (color0 + (1.0 - colorRScale) * colorDiff);
+						c2 = color0;
+						c3 = (color0 + colorRScale * colorDiff);
+						centerColor0 = c1;
+						centerColor1 = c1;
+						centerColor2 = c3;
+						centerColor3 = c3;
+					}
+				}
+
+				pDst0->set((middleRightX - y), (topCenterY + x), c0);
+				pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
+				pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
+				pDst3->set((middleLeftX + x), (topCenterY + y), c3);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+
+				// Fan の中心の頂点
+				(pDst3++)->set(middleRightX, topCenterY, centerColor0);
+				(pDst3++)->set(middleRightX, bottomCenterY, centerColor1);
+				(pDst3++)->set(middleLeftX, bottomCenterY, centerColor2);
+				(pDst3++)->set(middleLeftX, topCenterY, centerColor3);
+			}
+		}
+
+		template <bool Gradient>
+		# if SIV3D_COMPILER(APPLE_CLANG) || SIV3D_COMPILER(CLANG)
+			[[gnu::always_inline]]
+		# endif
+		static inline void WriteRoundRectFrameVertices(Vertex2D* const& pVertex, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
+		{
+			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
+
+			const Vertex2D::IndexType ArcVertexCount = ((quality + 1) * 2);
+
+			const float innerLeftCenterX = (innerRect.left + innerR);
+			const float innerRightCenterX = (innerRect.right - innerR);
+			const float innerTopCenterY = (innerRect.top + innerR);
+			const float innerBottomCenterY = (innerRect.bottom - innerR);
+
+			const float outerLeftCenterX = (outerRect.left + outerR);
+			const float outerRightCenterX = (outerRect.right - outerR);
+			const float outerTopCenterY = (outerRect.top + outerR);
+			const float outerBottomCenterY = (outerRect.bottom - outerR);
+
+			Float4 colorDiff;
+			float ot1;
+			float ot2;
+			float it1;
+			float it2;
+			float it3;
+			float it4;
+			float irt;
+			if constexpr (Gradient)
+			{
+				colorDiff = (color1 - color0);
+				const float rectSize = ((colorType == ColorFillDirection::TopBottom) ? (outerRect.bottom - outerRect.top) : (outerRect.right - outerRect.left));
+				const float thickness = (((outerRect.right - outerRect.left) - (innerRect.right - innerRect.left)) / 2.0f);
+				ot1 = (outerR / rectSize);
+				ot2 = (1.0f - ot1);
+				it1 = (thickness / rectSize);
+				it2 = ((thickness + innerR) / rectSize);
+				it3 = (1.0f - it2);
+				it4 = (1.0f - it1);
+				irt = (it2 - it1);
+			}
+
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
+
+			Vertex2D* pDst0 = pVertex;
+			Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
+			Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
+			Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
+
+			for (Vertex2D::IndexType i = 0; i < quality; ++i)
+			{
+				const Float2& cs = pCS[i];
+				const float ox = (cs.x * outerR);
+				const float oy = (cs.y * outerR);
+				const float ix = (cs.x * innerR);
+				const float iy = (cs.y * innerR);
+
+				CornerColor c0 = color0;
+				CornerColor c1 = color0;
+				CornerColor c2 = color0;
+				CornerColor c3 = color0;
+				CornerColor innerColor0 = color0;
+				CornerColor innerColor1 = color0;
+				CornerColor innerColor2 = color0;
+				CornerColor innerColor3 = color0;
+				if constexpr (Gradient)
+				{
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						c0 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
+						c1 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
+						c2 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
+						c3 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
+						innerColor0 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
+						innerColor1 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
+						innerColor2 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
+						innerColor3 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						c0 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
+						c1 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
+						c2 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
+						c3 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
+						innerColor0 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
+						innerColor1 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
+						innerColor2 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
+						innerColor3 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
+					}
+				}
+
+				pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
+				pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
+				pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), c2);
+				pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), c3);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+
+				pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), innerColor0);
+				pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), innerColor1);
+				pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), innerColor2);
+				pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), innerColor3);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			// 弧の最後の頂点
+			{
+				const Float2& cs = pCS[0];
+				const float ox = (cs.x * outerR);
+				const float oy = (cs.y * outerR);
+				const float ix = (cs.x * innerR);
+				const float iy = (cs.y * innerR);
+
+				CornerColor c0 = color0;
+				CornerColor c1 = color0;
+				CornerColor c2 = color0;
+				CornerColor c3 = color0;
+				CornerColor innerColor0 = color0;
+				CornerColor innerColor1 = color0;
+				CornerColor innerColor2 = color0;
+				CornerColor innerColor3 = color0;
+				if constexpr (Gradient)
+				{
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						c0 = (color0 + ot1 * colorDiff);
+						c1 = color1;
+						c2 = (color0 + ot2 * colorDiff);
+						c3 = color0;
+						innerColor0 = (color0 + it2 * colorDiff);
+						innerColor1 = (color0 + it4 * colorDiff);
+						innerColor2 = (color0 + it3 * colorDiff);
+						innerColor3 = (color0 + it1 * colorDiff);
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						c0 = color1;
+						c1 = (color0 + ot2 * colorDiff);
+						c2 = color0;
+						c3 = (color0 + ot1 * colorDiff);
+						innerColor0 = (color0 + it4 * colorDiff);
+						innerColor1 = (color0 + it3 * colorDiff);
+						innerColor2 = (color0 + it1 * colorDiff);
+						innerColor3 = (color0 + it2 * colorDiff);
+					}
+				}
+
+				pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), c0);
+				pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), c1);
+				pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), c2);
+				pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), c3);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+
+				pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), innerColor0);
+				pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), innerColor1);
+				pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), innerColor2);
+				pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), innerColor3);
 			}
 		}
 
@@ -2430,59 +2731,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float middleLeftX		= (rect.left + r);
-			const float middleRightX	= (rect.right - r);
-			const float topCenterY		= (rect.top + r);
-			const float bottomCenterY	= (rect.bottom - r);
-
-			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-			Vertex2D* pDst0 = pVertex;
-			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
-			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
-			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				pDst0->set((middleRightX + x), (topCenterY + y), color);
-				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
-				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
-				pDst3->set((middleLeftX + y), (topCenterY - x), color);
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の最後の頂点
-			{
-				const Float2& cs = pCS[0];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				pDst0->set((middleRightX - y), (topCenterY + x), color);
-				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
-				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
-				pDst3->set((middleLeftX + x), (topCenterY + y), color);
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の中心の頂点
-			{
-				(pDst3++)->set(middleRightX, topCenterY, color);
-				(pDst3++)->set(middleRightX, bottomCenterY, color);
-				(pDst3++)->set(middleLeftX, bottomCenterY, color);
-				(pDst3++)->set(middleLeftX, topCenterY, color);
-			}
+			WriteRoundRectVertices<false>(pVertex, rect, r, Quality, ColorFillDirection::TopBottom, color, color);
 
 			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
@@ -2503,119 +2752,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float middleLeftX		= (rect.left + r);
-			const float middleRightX	= (rect.right - r);
-			const float topCenterY		= (rect.top + r);
-			const float bottomCenterY	= (rect.bottom - r);
-
-			const Float4 colorDiff = (color1 - color0);
-			const float colorRScale = (colorType == ColorFillDirection::TopBottom) ? (r / (rect.bottom - rect.top)) : (r / (rect.right - rect.left));
-			const float colorROffset = (1.0f - colorRScale);
-
-			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-			Vertex2D* pDst0 = pVertex;
-			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
-			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
-			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				if (colorType == ColorFillDirection::TopBottom)
-				{
-					const Float4 c0 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
-					const Float4 c1 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
-					const Float4 c2 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
-
-					pDst0->set((middleRightX + x), (topCenterY + y), c0);
-					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
-					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
-					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
-				}
-				else // ColorFillDirection::LeftRight
-				{
-					const Float4 c0 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
-					const Float4 c1 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
-					const Float4 c3 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
-
-					pDst0->set((middleRightX + x), (topCenterY + y), c0);
-					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
-					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
-					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
-				}
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の最後の頂点
-			{
-				const Float2& cs = pCS[0];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				if (colorType == ColorFillDirection::TopBottom)
-				{
-					const Float4 c0 = (color0 + colorRScale * colorDiff);
-					const Float4 c1 = color1;
-					const Float4 c2 = (color0 + (1.0 - colorRScale) * colorDiff);
-					const Float4 c3 = color0;
-
-					pDst0->set((middleRightX - y), (topCenterY + x), c0);
-					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
-					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
-					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
-				}
-				else // ColorFillDirection::LeftRight
-				{
-					const Float4 c0 = color1;
-					const Float4 c1 = (color0 + (1.0 - colorRScale) * colorDiff);
-					const Float4 c2 = color0;
-					const Float4 c3 = (color0 + colorRScale * colorDiff);
-
-					pDst0->set((middleRightX - y), (topCenterY + x), c0);
-					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
-					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
-					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
-				}
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の中心の頂点
-			{
-				if (colorType == ColorFillDirection::TopBottom)
-				{
-					const Float4 c0 = (color0 + colorRScale * colorDiff);
-					const Float4 c1 = (color0 + (1.0 - colorRScale) * colorDiff);
-
-					(pDst3++)->set(middleRightX, topCenterY, c0);
-					(pDst3++)->set(middleRightX, bottomCenterY, c1);
-					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
-					(pDst3++)->set(middleLeftX, topCenterY, c0);
-				}
-				else // ColorFillDirection::LeftRight
-				{
-					const Float4 c0 = (color0 + (1.0 - colorRScale) * colorDiff);
-					const Float4 c1 = (color0 + colorRScale * colorDiff);
-
-					(pDst3++)->set(middleRightX, topCenterY, c0);
-					(pDst3++)->set(middleRightX, bottomCenterY, c0);
-					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
-					(pDst3++)->set(middleLeftX, topCenterY, c1);
-				}
-			}
+			WriteRoundRectVertices<true>(pVertex, rect, r, Quality, colorType, color0, color1);
 
 			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
@@ -2646,77 +2783,7 @@ namespace s3d
 				return 0;
 			}
 
-			{
-				const float innerLeftCenterX = (innerRect.left + innerR);
-				const float innerRightCenterX = (innerRect.right - innerR);
-				const float innerTopCenterY = (innerRect.top + innerR);
-				const float innerBottomCenterY = (innerRect.bottom - innerR);
-
-				const float outerLeftCenterX = (outerRect.left + outerR);
-				const float outerRightCenterX = (outerRect.right - outerR);
-				const float outerTopCenterY = (outerRect.top + outerR);
-				const float outerBottomCenterY = (outerRect.bottom - outerR);
-
-				const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-				Vertex2D* pDst0 = pVertex;
-				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
-				Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
-				Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const Float2& cs = pCS[i];
-					const float ox = (cs.x * outerR);
-					const float oy = (cs.y * outerR);
-					const float ix = (cs.x * innerR);
-					const float iy = (cs.y * innerR);
-
-					pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), color);
-					pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), color);
-					pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), color);
-					pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), color);
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-
-					pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), color);
-					pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), color);
-					pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), color);
-					pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), color);
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-				}
-
-				// 弧の最後の頂点
-				{
-					const Float2& cs = pCS[0];
-					const float ox = (cs.x * outerR);
-					const float oy = (cs.y * outerR);
-					const float ix = (cs.x * innerR);
-					const float iy = (cs.y * innerR);
-
-					pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), color);
-					pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), color);
-					pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), color);
-					pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), color);
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-
-					pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), color);
-					pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), color);
-					pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), color);
-					pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), color);
-				}
-			}
+			WriteRoundRectFrameVertices<false>(pVertex, innerRect, innerR, outerRect, outerR, Quality, ColorFillDirection::TopBottom, color, color);
 
 			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
@@ -2741,148 +2808,7 @@ namespace s3d
 				return 0;
 			}
 
-			{
-				const float innerLeftCenterX = (innerRect.left + innerR);
-				const float innerRightCenterX = (innerRect.right - innerR);
-				const float innerTopCenterY = (innerRect.top + innerR);
-				const float innerBottomCenterY = (innerRect.bottom - innerR);
-
-				const float outerLeftCenterX = (outerRect.left + outerR);
-				const float outerRightCenterX = (outerRect.right - outerR);
-				const float outerTopCenterY = (outerRect.top + outerR);
-				const float outerBottomCenterY = (outerRect.bottom - outerR);
-
-				const Float4 colorDiff = (color1 - color0);
-				const float rectSize = ((colorType == ColorFillDirection::TopBottom) ? (outerRect.bottom - outerRect.top) : (outerRect.right - outerRect.left));
-				const float thickness = (((outerRect.right - outerRect.left) - (innerRect.right - innerRect.left)) / 2.0f);
-				const float ot1 = (outerR / rectSize);
-				const float ot2 = (1.0f - ot1);
-				const float it1 = (thickness / rectSize);
-				const float it2 = ((thickness + innerR) / rectSize);
-				const float it3 = (1.0f - it2);
-				const float it4 = (1.0f - it1);
-				const float irt = (it2 - it1);
-
-				const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-				Vertex2D* pDst0 = pVertex;
-				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
-				Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
-				Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const Float2& cs = pCS[i];
-					const float ox = (cs.x * outerR);
-					const float oy = (cs.y * outerR);
-					const float ix = (cs.x * innerR);
-					const float iy = (cs.y * innerR);
-
-					if (colorType == ColorFillDirection::TopBottom)
-					{
-						const Float4 c0 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
-						const Float4 c1 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
-						const Float4 c2 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
-						const Float4 c3 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
-
-						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
-						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
-						pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), c2);
-						pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), c3);
-					}
-					else // ColorFillDirection::LeftRight
-					{
-						const Float4 c0 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
-						const Float4 c1 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
-						const Float4 c2 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
-						const Float4 c3 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
-
-						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
-						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
-						pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), c2);
-						pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), c3);
-					}
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-
-					if (colorType == ColorFillDirection::TopBottom)
-					{
-						const Float4 c0 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
-						const Float4 c1 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
-						const Float4 c2 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
-						const Float4 c3 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
-
-						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
-						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
-						pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), c2);
-						pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), c3);
-					}
-					else // ColorFillDirection::LeftRight
-					{
-						const Float4 c0 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
-						const Float4 c1 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
-						const Float4 c2 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
-						const Float4 c3 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
-
-						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
-						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
-						pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), c2);
-						pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), c3);
-					}
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-				}
-
-				// 弧の最後の頂点
-				{
-					const Float2& cs = pCS[0];
-					const float ox = (cs.x * outerR);
-					const float oy = (cs.y * outerR);
-					const float ix = (cs.x * innerR);
-					const float iy = (cs.y * innerR);
-					
-					if (colorType == ColorFillDirection::TopBottom)
-					{
-						pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), (color0 + ot1 * colorDiff));
-						pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), color1);
-						pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), (color0 + ot2 * colorDiff));
-						pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), color0);
-					}
-					else
-					{
-						pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), color1);
-						pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), (color0 + ot2 * colorDiff));
-						pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), color0);
-						pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), (color0 + ot1 * colorDiff));
-					}
-
-					++pDst0;
-					++pDst1;
-					++pDst2;
-					++pDst3;
-
-					if (colorType == ColorFillDirection::TopBottom)
-					{
-						pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), (color0 + it2 * colorDiff));
-						pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), (color0 + it4 * colorDiff));
-						pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), (color0 + it3 * colorDiff));
-						pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), (color0 + it1 * colorDiff));
-					}
-					else
-					{
-						pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), (color0 + it4 * colorDiff));
-						pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), (color0 + it3 * colorDiff));
-						pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), (color0 + it1 * colorDiff));
-						pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), (color0 + it2 * colorDiff));
-					}
-				}
-			}
+			WriteRoundRectFrameVertices<true>(pVertex, innerRect, innerR, outerRect, outerR, Quality, colorType, color0, color1);
 
 			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
@@ -3625,59 +3551,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float middleLeftX		= (rect.left + r);
-			const float middleRightX	= (rect.right - r);
-			const float topCenterY		= (rect.top + r);
-			const float bottomCenterY	= (rect.bottom - r);
-
-			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
-
-			Vertex2D* pDst0 = pVertex;
-			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
-			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
-			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
-
-			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-			{
-				const Float2& cs = pCS[i];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				pDst0->set((middleRightX + x), (topCenterY + y), color);
-				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
-				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
-				pDst3->set((middleLeftX + y), (topCenterY - x), color);
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の最後の頂点
-			{
-				const Float2& cs = pCS[0];
-				const float x = (cs.x * r);
-				const float y = (cs.y * r);
-
-				pDst0->set((middleRightX - y), (topCenterY + x), color);
-				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
-				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
-				pDst3->set((middleLeftX + x), (topCenterY + y), color);
-
-				++pDst0;
-				++pDst1;
-				++pDst2;
-				++pDst3;
-			}
-
-			// Fan の中心の頂点
-			{
-				(pDst3++)->set(middleRightX, topCenterY, color);
-				(pDst3++)->set(middleRightX, bottomCenterY, color);
-				(pDst3++)->set(middleLeftX, bottomCenterY, color);
-				(pDst3++)->set(middleLeftX, topCenterY, color);
-			}
+			WriteRoundRectVertices<false>(pVertex, rect, r, Quality, ColorFillDirection::TopBottom, color, color);
 
 			// UV 座標を設定する
 			{

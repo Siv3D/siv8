@@ -29,13 +29,23 @@ The builder implementations share index writers for open and closed fans,
 open and closed strips, rounded rectangles and their frames, and copying
 indexed meshes with a base offset. Strip writers preserve each layout's
 triangle winding and the rounded-frame writer retains its four-corner traversal.
-These helpers write directly into the reserved buffer; vertex generation and
-allocation stay in each builder. Indexed copies retain a 32-bit element count
+These helpers write directly into the reserved buffer; allocation stays in each
+builder. Indexed copies retain a 32-bit element count
 independently of the 16-bit vertex indices.
 [Test_Vertex2DBuilderIndices.cpp](../../Test/Test_Vertex2DBuilderIndices.cpp) checks
 triangle order, winding, strip closure, cap/body boundaries, positive and negative
 sweeps, scaled tessellation, destination bounds, large index counts and allocation
 failure.
+
+Rounded rectangles also share vertex writers for fills and frames. Solid,
+gradient and textured fills use the same corner traversal; solid and gradient
+frames share the outer/inner traversal. Compile-time specialization omits gradient
+calculations from solid paths. Texture coordinates are assigned by the textured
+builder after position and color generation.
+[Test_Vertex2DBuilderRoundRect.cpp](../../Test/Test_Vertex2DBuilderRoundRect.cpp)
+checks positions, gradients, flipped UVs, untouched UVs in untextured draws,
+destination bounds and geometry agreement between styles, including zero and
+maximum radii and scaled tessellation.
 
 On macOS, run its opt-in benchmarks from the repository root with:
 
