@@ -18,8 +18,8 @@ namespace
 	const Float4 Color0{ 0.1f, 0.2f, 0.7f, 0.35f }, Color1{ 0.8f, 0.5f, 0.3f, 0.9f };
 	const Float2 UnwrittenUV{ -7, -8 };
 
-	enum class Style { Solid, TopBottom, LeftRight, Textured, Frame, FrameTopBottom, FrameLeftRight };
-	constexpr Style Styles[]{ Style::Solid, Style::TopBottom, Style::LeftRight, Style::Textured,
+	enum class Style { Solid, TopBottom, LeftRight, Textured, TexturedTopBottom, TexturedLeftRight, Frame, FrameTopBottom, FrameLeftRight };
+	constexpr Style Styles[]{ Style::Solid, Style::TopBottom, Style::LeftRight, Style::Textured, Style::TexturedTopBottom, Style::TexturedLeftRight,
 		Style::Frame, Style::FrameTopBottom, Style::FrameLeftRight };
 
 	uint32 Build(const BufferCreatorFunc& allocate, const Style style, const float radius, const float scale)
@@ -36,6 +36,10 @@ namespace
 				((style == Style::TopBottom) ? ColorFillDirection::TopBottom : ColorFillDirection::LeftRight), Color0, Color1, scale);
 		case Style::Textured:
 			return BuildTexturedRoundRect(allocate, Bounds, 200, 120, radius, UV, Color0, scale);
+		case Style::TexturedTopBottom:
+		case Style::TexturedLeftRight:
+			return BuildTexturedRoundRect(allocate, Bounds, 200, 120, radius, UV,
+				((style == Style::TexturedTopBottom) ? ColorFillDirection::TopBottom : ColorFillDirection::LeftRight), Color0, Color1, scale);
 		case Style::Frame:
 			return BuildRoundRectFrame(allocate, InnerBounds, innerR, Bounds, radius, Color0, scale);
 		default:
@@ -134,8 +138,8 @@ TEST_CASE("Vertex2DBuilder.round_rect_vertices_and_attributes")
 
 				for (const auto& vertex : mesh.vertices)
 				{
-					const bool vertical = ((style == Style::TopBottom) || (style == Style::FrameTopBottom));
-					const bool gradient = (vertical || (style == Style::LeftRight) || (style == Style::FrameLeftRight));
+					const bool vertical = ((style == Style::TopBottom) || (style == Style::TexturedTopBottom) || (style == Style::FrameTopBottom));
+					const bool gradient = (vertical || (style == Style::LeftRight) || (style == Style::TexturedLeftRight) || (style == Style::FrameLeftRight));
 					if (gradient)
 					{
 						const float t = (vertical ? ((vertex.pos.y - Bounds.top) / 120) : ((vertex.pos.x - Bounds.left) / 200));
@@ -149,7 +153,7 @@ TEST_CASE("Vertex2DBuilder.round_rect_vertices_and_attributes")
 					{
 						CHECK(vertex.color == Color0);
 					}
-					if (style == Style::Textured)
+					if ((style == Style::Textured) || (style == Style::TexturedTopBottom) || (style == Style::TexturedLeftRight))
 					{
 						const Float2 expected{ (UV.left + (vertex.pos.x - Bounds.left) * ((UV.right - UV.left) / 200)),
 							(UV.top + (vertex.pos.y - Bounds.top) * ((UV.bottom - UV.top) / 120)) };
@@ -184,5 +188,14 @@ TEST_CASE("Vertex2DBuilder.round_rect_variants_share_geometry")
 				}
 			}
 		}
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.textured_round_rect_gradient_allocation_failure")
+{
+	const auto fail = [](uint16, uint32) { return Vertex2DBufferPointer{ nullptr, nullptr, 0 }; };
+	for (const auto style : { Style::TexturedTopBottom, Style::TexturedLeftRight })
+	{
+		CHECK(Build(fail, style, 12, 1) == 0);
 	}
 }

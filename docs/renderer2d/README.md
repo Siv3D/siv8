@@ -11,6 +11,28 @@
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,
   fullscreen presentation, scene sizing, resolution scaling, and validation.
 
+## Textured rounded rectangles
+
+[TexturedRoundRect](../../Siv3D/include/Siv3D/TexturedRoundRect.hpp) supports vertical
+and horizontal tint gradients, including alpha fades. Use the same named color
+arguments as `RoundRect` with `draw()`, translated `draw(x, y)` / `draw(pos)`, or
+`drawAt()`:
+
+```cpp
+RoundRect{ 40, 40, 240, 160, 24 }(texture).draw(
+    Arg::top = ColorF{ 1.0, 0.2 }, Arg::bottom = ColorF{ 1.0, 1.0 });
+texture.resized(240, 160).rounded(24).drawAt(400, 120,
+    Arg::left = Palette::White, Arg::right = ColorF{ 0.4, 0.7, 1.0 });
+```
+
+The gradient follows the rectangle's local axes and is independent of UV cropping
+or flipping. Tint interpolation matches `RoundRect::draw()`. It uses the existing texture shader and the same tessellation as
+single-color textured rounded rectangles. The
+[rendering tests](../../Test/Test_Renderer2DTexturedRoundRect.cpp) cover the public
+overloads, cropped/flipped UVs, texture and tint alpha, transforms and scene
+render resolution. The builder tests below check vertex attributes and allocation
+failure.
+
 ## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):

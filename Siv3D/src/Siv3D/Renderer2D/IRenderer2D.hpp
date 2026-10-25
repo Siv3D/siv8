@@ -180,6 +180,8 @@ namespace s3d
 
 		virtual void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) = 0;
 
+		virtual void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
 
 		virtual void addCircleShadow(const Circle& circle, float blur, const Float4& color, bool fill) = 0;
 

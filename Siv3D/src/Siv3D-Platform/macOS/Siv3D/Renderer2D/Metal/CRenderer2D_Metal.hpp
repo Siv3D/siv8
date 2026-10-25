@@ -333,6 +333,8 @@ namespace s3d
 
 		void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) override;
 
+		void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addCircleShadow

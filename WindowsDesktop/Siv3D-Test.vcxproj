@@ -202,6 +202,7 @@
     <ClCompile Include="..\Test\Test_Renderer2DSuperEllipse.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DArcTessellation.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DTexturedRoundRect.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DJoinStyle.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp" />

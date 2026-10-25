@@ -3475,7 +3475,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color, const float scale)
+		template <bool Gradient>
+		SIV3D_ALWAYS_INLINE
+		static inline Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
@@ -3489,7 +3491,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteRoundRectVertices<false>(pVertex, rect, r, Quality, ColorFillDirection::TopBottom, color, color);
+			WriteRoundRectVertices<Gradient>(pVertex, rect, r, Quality, colorType, color0, color1);
 
 			// UV 座標を設定する
 			{
@@ -3513,6 +3515,16 @@ namespace s3d
 			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color, const float scale)
+		{
+			return BuildTexturedRoundRect<false>(bufferCreator, rect, w, h, r, uvRect, ColorFillDirection::TopBottom, color, color, scale);
+		}
+
+		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			return BuildTexturedRoundRect<true>(bufferCreator, rect, w, h, r, uvRect, colorType, color0, color1, scale);
 		}
 
 		////////////////////////////////////////////////////////////////
