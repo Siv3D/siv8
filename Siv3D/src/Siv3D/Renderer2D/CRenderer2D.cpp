@@ -175,6 +175,20 @@ namespace s3d
 		addLineString(startCap, endCap, m_curvePoints, none, Abs(thickness), false, CloseRing::No, color);
 	}
 
+	void ISiv3DRenderer2D::addBezier(const Bezier2& curve, const LineCap startCap, const LineCap endCap,
+		const float thickness, const Float4& startColor, const Float4& endColor, const double targetError, const int32 maxSegments)
+	{
+		Tessellate(m_curvePoints, curve, *this, targetError, maxSegments);
+		addLineString(startCap, endCap, m_curvePoints, none, Abs(thickness), false, startColor, endColor);
+	}
+
+	void ISiv3DRenderer2D::addBezier(const Bezier3& curve, const LineCap startCap, const LineCap endCap,
+		const float thickness, const Float4& startColor, const Float4& endColor, const double targetError, const int32 maxSegments)
+	{
+		Tessellate(m_curvePoints, curve, *this, targetError, maxSegments);
+		addLineString(startCap, endCap, m_curvePoints, none, Abs(thickness), false, startColor, endColor);
+	}
+
 	void ISiv3DRenderer2D::addSpline(const std::span<const Bezier3> curves, const CloseRing closeRing,
 		const float thickness, const Float4& color, const double targetError, const int32 maxSegmentsPerCurve)
 	{

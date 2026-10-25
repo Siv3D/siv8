@@ -153,6 +153,10 @@ namespace s3d
 
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
+		void addCircleArc(LineCap startCap, LineCap endCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addCircleArc(LineCap startCap, LineCap endCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addCircleSegment
@@ -183,6 +187,14 @@ namespace s3d
 
 		void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
 
+		void addEllipseRotated(const Float2& center, float a, float b, float rotation, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipseRotated(const Float2& center, float a, float b, float rotation, const PatternParameters& pattern) override;
+
+		void addEllipseFrameRotated(const Float2& center, float a, float b, float rotation, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addEllipseFrameRotated(const Float2& center, float a, float b, float rotation, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addEllipseDashedFrame
@@ -190,6 +202,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addEllipseDashedFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addEllipseArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipseArc(LineCap startCap, LineCap endCap, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipseArc(LineCap startCap, LineCap endCap, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//

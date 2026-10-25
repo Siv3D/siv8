@@ -817,6 +817,49 @@ namespace s3d
 		/// @return *this
 		const Bezier3& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
+		/// @anchor bezier3_draw_adaptive_gradient
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @remark 品質と入力条件は単色の drawAdaptive() と共通です。色は LineString の描画と同じく、線端を含む描画点列の長さに沿って補間します。
+		/// @return *this
+		const Bezier3& drawAdaptive(Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @return *this
+		const Bezier3& drawAdaptive(double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @return *this
+		const Bezier3& drawAdaptive(LineCap lineCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @return *this
+		const Bezier3& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromHermite

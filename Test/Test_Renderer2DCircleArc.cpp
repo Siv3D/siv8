@@ -241,3 +241,69 @@ TEST_CASE("Renderer2D.benchmark_circle_arc_vertices", "[.benchmark]")
 					});
 				}
 }
+
+TEST_CASE("Renderer2D.circle_arc_independent_caps")
+{
+	const Circle circle{ 200, 140, 60 };
+	const ColorF first{ 1, 0, 0, 0.5 }, last{ 0, 0, 1, 0.5 };
+	const Pattern::PolkaDot pattern{ .primary = first, .background = last };
+	const auto draw = [&](LineCap start, LineCap end, double sweep, int32 coloring)
+	{
+		if (coloring == 0) CHECK(&circle.drawArc(start, end, 0, sweep, 7, 13, first) == &circle);
+		else if (coloring == 1) circle.drawArc(start, end, 0, sweep, 7, 13, first, last);
+		else if (coloring == 2) circle.drawArc(start, end, 0, sweep, 7, 13, Arg::start = first, Arg::end = last);
+		else circle.drawArc(start, end, 0, sweep, 7, 13, pattern);
+	};
+	for (const auto cap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const double sweep : { 0.0, 1.5, -1.5, Math::TwoPi })
+	for (int32 coloring = 0; coloring < 4; ++coloring)
+	{
+		const auto actual = CaptureArc([&] { draw(cap, cap, sweep, coloring); });
+		const auto expected = CaptureArc([&] { DrawArc(circle, cap, sweep, coloring); });
+		CHECK(actual.image == expected.image);
+		CHECK(actual.triangles == expected.triangles);
+	}
+	for (const auto start : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const auto end : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	{
+		if (start == end) continue;
+		const auto actual = CaptureArc([&] { circle.drawArc(start, end, 0.3, -1.5, 7, 13, Arg::start = first, Arg::end = last); });
+		const auto expected = CaptureArc([&] { circle.drawArc(end, start, -1.2, 1.5, 7, 13, Arg::start = last, Arg::end = first); });
+		CHECK(actual.image == expected.image);
+		CHECK(actual.triangles == expected.triangles);
+	}
+}
+
+TEST_CASE("Renderer2D.circle_arc_independent_cap_mesh")
+{
+	for (const auto start : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const auto end : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const float sweep : { -Math::TwoPiF, -0.03f, 0.0f, 0.03f, Math::TwoPiF })
+	{
+		if (start == end) continue;
+		CAPTURE(static_cast<int32>(start), static_cast<int32>(end), sweep);
+		Array<Vertex2D> vertices;
+		Array<Vertex2D::IndexType> indices;
+		uint32 requests = 0;
+		const auto allocate = [&](uint16 vc, uint32 ic)
+		{
+			++requests;
+			vertices.resize(vc); indices.resize(ic);
+			return Vertex2DBufferPointer{ vertices.data(), indices.data(), 37 };
+		};
+		const auto count = Vertex2DBuilder::BuildCircleArc(allocate, start, end, { 0, 0 }, 53, 0.3f, sweep, 20,
+			ColorFillDirection::LeftRight, { 1, 0, 0, 0.5f }, { 0, 0, 1, 0.5f }, 1);
+		CHECK(requests == 1);
+		CHECK(count == indices.size());
+		for (const auto i : indices) REQUIRE((37 <= i && i < 37 + vertices.size()));
+		for (const auto& v : vertices)
+		{
+			CHECK(std::isfinite(v.pos.x)); CHECK(std::isfinite(v.pos.y));
+			CHECK(v.color.x >= -0.00001f); CHECK(v.color.z <= 1.00001f);
+			CHECK(v.color.w == 0.5f);
+		}
+		const auto fail = [](uint16, uint32) { return Vertex2DBufferPointer{ nullptr, nullptr, 0 }; };
+		CHECK(Vertex2DBuilder::BuildCircleArc(fail, start, end, { 0, 0 }, 53, 0.3f, sweep, 20,
+			ColorFillDirection::InOut, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, 1) == 0);
+	}
+}

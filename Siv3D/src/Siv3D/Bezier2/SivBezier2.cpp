@@ -536,6 +536,27 @@ namespace s3d
 		return *this;
 	}
 
+	const Bezier2& Bezier2::drawAdaptive(const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	{
+		return drawAdaptive(LineCap::Square, LineCap::Square, 1.0, startColor, endColor, targetError, maxSegments);
+	}
+
+	const Bezier2& Bezier2::drawAdaptive(const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	{
+		return drawAdaptive(LineCap::Square, LineCap::Square, thickness, startColor, endColor, targetError, maxSegments);
+	}
+
+	const Bezier2& Bezier2::drawAdaptive(const LineCap lineCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	{
+		return drawAdaptive(lineCap, lineCap, thickness, startColor, endColor, targetError, maxSegments);
+	}
+
+	const Bezier2& Bezier2::drawAdaptive(const LineCap startCap, const LineCap endCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addBezier(*this, startCap, endCap, static_cast<float>(thickness), startColor->toFloat4(), endColor->toFloat4(), targetError, maxSegments);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter

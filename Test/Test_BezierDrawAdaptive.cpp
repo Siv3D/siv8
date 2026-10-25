@@ -227,3 +227,63 @@ TEST_CASE("BezierDrawAdaptive.public_transform_resolution_and_defaults")
 		CHECK(actual == expected);
 	}
 }
+
+TEST_CASE("BezierDrawAdaptive.gradient_overloads_and_boundaries")
+{
+	const DrawSceneScope scene;
+	const ColorF first{ 0.9, 0.3, 0.1, 0.4 }, last{ 0.1, 0.4, 0.9, 0.8 };
+	const auto check = [&](const auto& curve)
+	{
+		for (const auto start : { LineCap::Flat, LineCap::Square, LineCap::Round })
+		for (const auto end : { LineCap::Flat, LineCap::Square, LineCap::Round })
+		{
+			const auto actual = Capture([&] { CHECK(&curve.drawAdaptive(start, end, -12, Arg::start = first, Arg::end = last, 0.5, 1) == &curve); });
+			const Tessellation::Curve source{ curve };
+			const auto expected = Capture([&] { LineString{ source.p[0], source.p[source.degree] }.draw(start, end, 12, first, last); });
+			CHECK(actual == expected);
+		}
+		for (int32 overload = 0; overload < 3; ++overload)
+		{
+			const auto actual = Capture([&]
+			{
+				if (overload == 0) curve.drawAdaptive(Arg::start = first, Arg::end = last);
+				else if (overload == 1) curve.drawAdaptive(5, Arg::start = first, Arg::end = last);
+				else curve.drawAdaptive(LineCap::Round, 5, Arg::start = first, Arg::end = last);
+			});
+			const auto cap = ((overload == 2) ? LineCap::Round : LineCap::Square);
+			const auto expected = Capture([&] { curve.drawAdaptive(cap, cap, (overload ? 5 : 1), Arg::start = first, Arg::end = last); });
+			CHECK(actual == expected);
+		}
+	};
+	check(Bezier2{ { 40, 100 }, { 160, 10 }, { 280, 120 } });
+	check(Bezier3{ { 40, 100 }, { 80, 0 }, { 240, 200 }, { 280, 120 } });
+	check(Bezier2{ { 100, 100 }, { 100, 100 }, { 100, 100 } });
+	check(Bezier3{ { 200, 100 }, { 200, 100 }, { 200, 100 }, { 200, 100 } });
+}
+
+TEST_CASE("BezierDrawAdaptive.gradient_transform_resolution")
+{
+	const DrawSceneScope scene;
+	const ColorF first{ 0.9, 0.3, 0.1, 0.4 }, last{ 0.1, 0.4, 0.9, 0.8 };
+	for (const auto resolution : { SceneResolution::SceneSize, SceneResolution::Display })
+	{
+		Scene::Configure(SceneConfig::Fixed({ 320, 240 }, resolution));
+		const Transformer2D local{ Mat3x2{ 2, 0.2f, 0.3f, 1, 20, 25 }, Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Scale(1.2f, 2.0f), Transformer2D::Target::SetCamera };
+		const auto check = [&](const auto& curve)
+		{
+			const Tessellation::Curve source{ curve };
+			const auto metric = Tessellation::TransformMetric(source, Graphics2D::GetLocalTransform() * Graphics2D::GetCameraTransform(), Vec2{ Scene::RenderResolution() } / Vec2{ Scene::Size() });
+			Tessellation::Workspace workspace;
+			LineString points;
+			Tessellation::Flatten(points, workspace, source, metric, 0.5, 256);
+			const auto actual = Capture([&] { curve.drawAdaptive(LineCap::Round, LineCap::Flat, 5, Arg::start = first, Arg::end = last); });
+			const auto expected = Capture([&] { points.draw(LineCap::Round, LineCap::Flat, 5, first, last); });
+			CHECK(actual == expected);
+			const auto equal = Capture([&] { curve.drawAdaptive(5, Arg::start = first, Arg::end = first); });
+			CHECK(equal == Capture([&] { curve.drawAdaptive(5, first); }));
+		};
+		check(Bezier2{ { 5, 5 }, { 30, 50 }, { 60, 10 } });
+		check(Bezier3{ { 5, 25 }, { 0, 60 }, { 55, -5 }, { 60, 40 } });
+	}
+}

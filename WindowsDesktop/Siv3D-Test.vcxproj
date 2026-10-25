@@ -199,6 +199,7 @@
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DEllipseDashedFrame.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DEllipseExtensions.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DSuperEllipse.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DArcTessellation.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp" />

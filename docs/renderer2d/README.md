@@ -75,6 +75,59 @@ overloads, cropped/flipped UVs, texture and tint alpha, transforms and scene
 render resolution. The builder tests below check vertex attributes and allocation
 failure.
 
+## Rotated ellipses and arc ends
+
+[Ellipse](../../Siv3D/include/Siv3D/Ellipse.hpp) can draw its fill or frame with a
+rotation around its center. Vertical and horizontal gradients rotate with the
+ellipse; a pattern keeps its existing coordinate space. This is useful for
+orbits, tilted badges and directional effects without a temporary Polygon or a
+transform scope:
+
+```cpp
+Ellipse{ 240, 140, 100, 40 }.drawRotated(30_deg,
+    Arg::top = Palette::Skyblue, Arg::bottom = Palette::Royalblue);
+Ellipse{ 240, 140, 110, 50 }.drawFrameRotated(30_deg, 4, Palette::White);
+```
+
+`Ellipse::drawArc()` gives an elliptical arc a width measured along the normal
+to the ellipse. Its angles use the same center-to-boundary ray directions as
+`drawPie()`. It supports a single color, inner/outer colors, named start/end
+colors, or a pattern. Named colors follow the sampled stroke length, including
+cap extensions. Very wide inward offsets can fold over at a high-curvature tip,
+as with `drawFrame()`; this is a directly generated stroke, not a Boolean union.
+
+Both [Circle](../../Siv3D/include/Siv3D/Circle.hpp) and Ellipse accept independent
+start/end caps. The cap names stay attached to the requested start and end even
+when the sweep is negative:
+
+```cpp
+Circle{ 180, 140, 60 }.drawArc(LineCap::Flat, LineCap::Round,
+    -60_deg, 240_deg, 8, 8, Arg::start = Palette::Skyblue, Arg::end = Palette::Orange);
+Ellipse{ 420, 140, 100, 40 }.drawArc(LineCap::Round, LineCap::Square,
+    20_deg, 220_deg, 3, 9, Palette::White);
+```
+
+Equal Circle caps reuse the existing path. An Ellipse full sweep has no caps;
+single-color, radial-gradient and pattern full sweeps reuse its frame drawing.
+Zero sweeps draw only the selected caps. Refer to the public headers for the
+boundary behavior and to the [manual gallery](../../Test/Manual/Renderer2DGeometryExtensions.md)
+for the complete program, controls and expected results. The gallery also shows
+[adaptive Bezier gradients](../geometry2d/bezier-drawing.md).
+
+Rotation is a compile-time specialization of the existing vertex writers;
+unrotated drawing does not execute the rotation arithmetic. Ellipse arcs merge
+samples spaced in ellipse parameter and in normal angle, keeping curved offset
+edges smooth near flat-ellipse tips. The body is bounded to 252 intervals, using
+fixed workspace and a single buffer reservation. Caps share their geometry
+writer with independent Circle caps. Neither path changes `outer()` or
+`asPolygon()` output.
+
+[Ellipse extension tests](../../Test/Test_Renderer2DEllipseExtensions.cpp) cover
+analytic positions, normals, line width, gradients, bounds, allocation failure,
+public overloads, transforms and scene render resolution. The
+[Circle arc tests](../../Test/Test_Renderer2DCircleArc.cpp) also compare equal-cap
+overloads against their original rendering paths.
+
 ## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):

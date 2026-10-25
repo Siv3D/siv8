@@ -230,10 +230,10 @@ namespace s3d
 			}
 		}
 
-		template <bool Circular, bool Textured, bool Gradient>
+		template <bool Circular, bool Textured, bool Gradient, bool Rotated = false>
 		SIV3D_ALWAYS_INLINE
 		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
-			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {})
+			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {}, const float rotationCos = 1.0f, const float rotationSin = 0.0f)
 		{
 			Float4 colorDiff;
 			float centerU, centerV, rU, rV;
@@ -271,7 +271,12 @@ namespace s3d
 
 				const auto writeVertex = [&](Vertex2D& vertex, const float x, const float y, const float ux, const float uy, const Float4& color)
 				{
-					if constexpr (Textured)
+					if constexpr (Rotated)
+					{
+						const float ox = (a * ux), oy = (b * uy);
+						vertex.set((centerX + rotationCos * ox - rotationSin * oy), (centerY + rotationSin * ox + rotationCos * oy), color);
+					}
+					else if constexpr (Textured)
 					{
 						vertex.set(x, y, (centerU + rU * ux), (centerV + rV * uy), color);
 					}
@@ -727,6 +732,7 @@ namespace s3d
 			return{ (nx * lengthInv), (ny * lengthInv) };
 		}
 
+		template <bool Rotated = false>
 		static void SetEllipseFrameVertexPair(
 			Vertex2D*& pDst,
 			const float centerX,
@@ -736,22 +742,33 @@ namespace s3d
 			const float ux,
 			const float uy,
 			const float innerThickness,
-			const float outerThickness) noexcept
+			const float outerThickness, const float rotationCos = 1.0f, const float rotationSin = 0.0f) noexcept
 		{
-			const float baseX = (centerX + a * ux);
-			const float baseY = (centerY + b * uy);
+			if constexpr (Rotated)
+			{
+				const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
+				const Float2 outer{ a * ux + normal.x * outerThickness, b * uy + normal.y * outerThickness };
+				const Float2 inner{ a * ux - normal.x * innerThickness, b * uy - normal.y * innerThickness };
+				(pDst++)->pos.set((centerX + rotationCos * outer.x - rotationSin * outer.y), (centerY + rotationSin * outer.x + rotationCos * outer.y));
+				(pDst++)->pos.set((centerX + rotationCos * inner.x - rotationSin * inner.y), (centerY + rotationSin * inner.x + rotationCos * inner.y));
+			}
+			else
+			{
+				const float baseX = (centerX + a * ux);
+				const float baseY = (centerY + b * uy);
 
-			const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
+				const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
 
-			// outer vertex
-			(pDst++)->pos.set(
-				(baseX + normal.x * outerThickness),
-				(baseY + normal.y * outerThickness));
+				// outer vertex
+				(pDst++)->pos.set(
+					(baseX + normal.x * outerThickness),
+					(baseY + normal.y * outerThickness));
 
-			// inner vertex
-			(pDst++)->pos.set(
-				(baseX - normal.x * innerThickness),
-				(baseY - normal.y * innerThickness));
+				// inner vertex
+				(pDst++)->pos.set(
+					(baseX - normal.x * innerThickness),
+					(baseY - normal.y * innerThickness));
+			}
 		}
 
 		template <class VertexWriter>
@@ -1083,6 +1100,57 @@ namespace s3d
 			WriteOpenStripIndices(pIndex, indexOffset, PairCount);
 
 			return IndexCount;
+		}
+
+		static Vertex2D::IndexType ArcCapVertexCount(const LineCap cap, const Vertex2D::IndexType quality)
+		{
+			return ((cap == LineCap::Round) ? (quality + 1) : ((cap == LineCap::Square) ? 4 : 0));
+		}
+
+		static Vertex2D::IndexType ArcCapIndexCount(const LineCap cap, const Vertex2D::IndexType quality)
+		{
+			return ((cap == LineCap::Round) ? ((quality - 1) * 3) : ((cap == LineCap::Square) ? 6 : 0));
+		}
+
+		// normal points outward; end selects the clockwise end of the sampled arc.
+		static void EmitArcEndCap(const Vertex2DBufferPointer buffer, const LineCap cap, const Float2 center,
+			const Float2 normal, const float halfWidth, const bool end, const ColorFillDirection coloring,
+			const Float4& bodyColor0, const Float4& bodyColor1, const Float4& tipColor, const Vertex2D::IndexType quality)
+		{
+			if (cap == LineCap::Round)
+			{
+				const float angle = (std::atan2(normal.x, -normal.y) + (end ? 0.0f : Math::PiF));
+				if (coloring == ColorFillDirection::LeftRight)
+				{
+					EmitRoundCap(buffer, center, halfWidth, angle, coloring, bodyColor0, tipColor, quality);
+				}
+				else
+				{
+					EmitRoundCap(buffer, center, halfWidth, angle, coloring,
+						(end ? bodyColor1 : bodyColor0), (end ? bodyColor0 : bodyColor1), quality);
+				}
+			}
+			else if (cap == LineCap::Square)
+			{
+				const Float2 radial = (normal * halfWidth);
+				const Float2 extension{ -radial.y, radial.x };
+				const Float2 inner = (center - radial), outer = (center + radial);
+				auto* v = buffer.pVertex;
+				const Float4& tip0 = ((coloring == ColorFillDirection::LeftRight) ? tipColor : bodyColor0);
+				const Float4& tip1 = ((coloring == ColorFillDirection::LeftRight) ? tipColor : bodyColor1);
+				if (end)
+				{
+					v[0].set(inner, bodyColor0); v[1].set(outer, bodyColor1);
+					v[2].set(inner + extension, tip0); v[3].set(outer + extension, tip1);
+				}
+				else
+				{
+					v[0].set(inner - extension, tip0); v[1].set(outer - extension, tip1);
+					v[2].set(inner, bodyColor0); v[3].set(outer, bodyColor1);
+				}
+				auto* indices = buffer.pIndex;
+				WriteOpenStripIndices(indices, buffer.indexOffset, 2);
+			}
 		}
 
 		struct PolylineBuffer
@@ -2276,6 +2344,68 @@ namespace s3d
 			return BuildCircleArcStrip<false>(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 		}
 
+		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap,
+			const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness,
+			const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			if (startCap == endCap)
+			{
+				return BuildCircleArc(bufferCreator, startCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
+			}
+			if (thickness <= 0.0f) return 0;
+			const bool reverse = (angle < 0.0f);
+			LineCap firstCap = (reverse ? endCap : startCap), lastCap = (reverse ? startCap : endCap);
+			if (Abs(angle) >= Math::TwoPiF)
+			{
+				if (firstCap == LineCap::Square) firstCap = LineCap::Flat;
+				if (lastCap == LineCap::Square) lastCap = LineCap::Flat;
+			}
+			const float halfWidth = (thickness * 0.5f), radius = (rInner + halfWidth);
+			const auto quality = ((angle != 0.0f) ? CalculateCircleArcQuality((rInner + thickness) * scale, Abs(angle)) : Vertex2D::IndexType{ 1 });
+			const auto capQuality = (((firstCap == LineCap::Round) || (lastCap == LineCap::Round))
+				? CalculateCircleSegmentQuality(halfWidth * scale, Math::PiF) : Vertex2D::IndexType{ 0 });
+			const auto firstVertices = ArcCapVertexCount(firstCap, capQuality), lastVertices = ArcCapVertexCount(lastCap, capQuality);
+			const auto firstIndices = ArcCapIndexCount(firstCap, capQuality), lastIndices = ArcCapIndexCount(lastCap, capQuality);
+			const auto bodyVertices = ((angle != 0.0f) ? quality * 2 : 0);
+			const auto bodyIndices = ((quality - 1) * 6);
+			const Vertex2D::IndexType indexCount = (firstIndices + bodyIndices + lastIndices);
+			if (indexCount == 0) return 0;
+			const auto buffer = bufferCreator(static_cast<uint16>(firstVertices + bodyVertices + lastVertices), indexCount);
+			if (not buffer.pVertex) return 0;
+
+			const Float4& firstColor = (reverse ? color1 : color0);
+			const Float4& lastColor = (reverse ? color0 : color1);
+			const bool along = (colorType == ColorFillDirection::LeftRight);
+			Float4 bodyFirst = color0, bodyLast = color1;
+			if (along)
+			{
+				const float firstLength = ((firstCap != LineCap::Flat) ? halfWidth : 0.0f);
+				const float length = (radius * Abs(angle) + firstLength + ((lastCap != LineCap::Flat) ? halfWidth : 0.0f));
+				bodyFirst = firstColor.lerp(lastColor, firstLength / length);
+				bodyLast = firstColor.lerp(lastColor, (firstLength + radius * Abs(angle)) / length);
+			}
+			const float start = (startAngle + (reverse ? angle : 0.0f));
+			const auto [s0, c0] = FastMath::SinCos(start);
+			const auto [s1, c1] = FastMath::SinCos(start + Abs(angle));
+			const Float2 normal0{ s0, -c0 }, normal1{ s1, -c1 };
+			EmitArcEndCap(buffer, firstCap, center + normal0 * radius, normal0, halfWidth, false, colorType,
+				(along ? bodyFirst : color0), (along ? bodyFirst : color1), firstColor, capQuality);
+			if (bodyVertices)
+			{
+				auto* vertices = (buffer.pVertex + firstVertices);
+				auto* indices = (buffer.pIndex + firstIndices);
+				WriteArcStripPositions(vertices, center.x, center.y, rInner, (rInner + thickness), start, (Abs(angle) / (quality - 1)), quality);
+				if (along) WriteArcStripAlongColors(vertices, quality, bodyFirst, ((bodyLast - bodyFirst) / (quality - 1)));
+				else WriteArcStripRadialColors(vertices, quality, color0, color1);
+				WriteOpenStripIndices(indices, static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices), quality);
+			}
+			EmitArcEndCap({ buffer.pVertex + firstVertices + bodyVertices, buffer.pIndex + firstIndices + bodyIndices,
+				static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices + bodyVertices) }, lastCap,
+				center + normal1 * radius, normal1, halfWidth, true, colorType,
+				(along ? bodyLast : color0), (along ? bodyLast : color1), lastColor, capQuality);
+			return indexCount;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	BuildCircleSegment
@@ -2340,7 +2470,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		template <bool Rotated>
+		SIV3D_ALWAYS_INLINE
+		static inline Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale, const float rotationCos = 1.0f, const float rotationSin = 0.0f)
 		{
 			const float majorAxis = Max(a, b);
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
@@ -2354,11 +2486,22 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<false, false, true>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1);
+			WriteEllipseFanVertices<false, false, true, Rotated>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1, {}, rotationCos, rotationSin);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			return BuildEllipse<false>(bufferCreator, center, a, b, colorType, color0, color1, scale);
+		}
+
+		Vertex2D::IndexType BuildEllipseRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const auto [s, c] = FastMath::SinCos(rotation);
+			return BuildEllipse<true>(bufferCreator, center, a, b, colorType, color0, color1, scale, c, s);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2367,7 +2510,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
+		template <bool Rotated>
+		SIV3D_ALWAYS_INLINE
+		static inline Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale, const float rotationCos = 1.0f, const float rotationSin = 0.0f)
 		{
 			if ((innerThickness <= 0.0f) && (outerThickness <= 0.0f))
 			{
@@ -2402,7 +2547,7 @@ namespace s3d
 				const float ux = cs.x;
 				const float uy = cs.y;
 
-				SetEllipseFrameVertexPair(
+				SetEllipseFrameVertexPair<Rotated>(
 					pDst0,
 					centerX,
 					centerY,
@@ -2411,9 +2556,9 @@ namespace s3d
 					ux,
 					uy,
 					innerThickness,
-					outerThickness);
+					outerThickness, rotationCos, rotationSin);
 
-				SetEllipseFrameVertexPair(
+				SetEllipseFrameVertexPair<Rotated>(
 					pDst1,
 					centerX,
 					centerY,
@@ -2422,9 +2567,9 @@ namespace s3d
 					-uy,
 					ux,
 					innerThickness,
-					outerThickness);
+					outerThickness, rotationCos, rotationSin);
 
-				SetEllipseFrameVertexPair(
+				SetEllipseFrameVertexPair<Rotated>(
 					pDst2,
 					centerX,
 					centerY,
@@ -2433,9 +2578,9 @@ namespace s3d
 					-ux,
 					-uy,
 					innerThickness,
-					outerThickness);
+					outerThickness, rotationCos, rotationSin);
 
-				SetEllipseFrameVertexPair(
+				SetEllipseFrameVertexPair<Rotated>(
 					pDst3,
 					centerX,
 					centerY,
@@ -2444,7 +2589,7 @@ namespace s3d
 					uy,
 					-ux,
 					innerThickness,
-					outerThickness);
+					outerThickness, rotationCos, rotationSin);
 			}
 
 			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
@@ -2456,6 +2601,17 @@ namespace s3d
 			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			return BuildEllipseFrame<false>(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale);
+		}
+
+		Vertex2D::IndexType BuildEllipseFrameRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const auto [s, c] = FastMath::SinCos(rotation);
+			return BuildEllipseFrame<true>(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale, c, s);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2609,6 +2765,123 @@ namespace s3d
 			}
 
 			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipseArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipseArc(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap,
+			const Float2& center, const float a, const float b, const float startAngle, const float angle,
+			const float innerThickness, const float outerThickness, const ColorFillDirection colorType,
+			const Float4& color0, const Float4& color1, const float scale)
+		{
+			const float thickness = (innerThickness + outerThickness);
+			if ((a <= 0.0f) || (b <= 0.0f) || (thickness <= 0.0f)) return 0;
+			const float sweep = Abs(angle);
+			if (sweep >= Math::TwoPiF) startCap = endCap = LineCap::Flat;
+			if (a == b)
+			{
+				return BuildCircleArc(bufferCreator, startCap, endCap, center, (a - innerThickness), startAngle, angle, thickness, colorType, color0, color1, scale);
+			}
+			const bool reverse = (angle < 0.0f), along = (colorType == ColorFillDirection::LeftRight);
+			const LineCap firstCap = (reverse ? endCap : startCap), lastCap = (reverse ? startCap : endCap);
+			if ((angle == 0.0f) && (firstCap == LineCap::Flat) && (lastCap == LineCap::Flat)) return 0;
+			const float start = (startAngle + (reverse ? angle : 0.0f));
+			const float halfWidth = (thickness * 0.5f), middleOffset = ((outerThickness - innerThickness) * 0.5f);
+			std::array<float, 253> parameters;
+			uint16 pointCount = 1;
+			parameters[0] = start;
+			if (sweep > 0.0f)
+			{
+				const float offsetRadius = Max(Abs(innerThickness), Abs(outerThickness));
+				uint16 positionIntervals = (CalculateCircleArcQuality((Max(a, b) + offsetRadius) * scale, sweep) - 1);
+				const auto [s0, c0] = FastMath::SinCos(start);
+				const auto [s1, c1] = FastMath::SinCos(start + sweep);
+				const float normalStart = std::atan2(b * s0, a * c0);
+				float normalSweep = (std::atan2(b * s1, a * c1) - normalStart);
+				if (sweep >= Math::TwoPiF) normalSweep = Math::TwoPiF;
+				else if (normalSweep < 0.0f) normalSweep += Math::TwoPiF;
+				uint16 normalIntervals = (CalculateCircleArcQuality(offsetRadius * scale, normalSweep) - 1);
+				// Distribute the bounded budget over both position and normal-angle grids.
+				if ((positionIntervals + normalIntervals) > 252)
+				{
+					positionIntervals = static_cast<uint16>((252u * positionIntervals) / (positionIntervals + normalIntervals));
+					normalIntervals = (252 - positionIntervals);
+				}
+				for (uint16 i = 1; i <= positionIntervals; ++i)
+				{
+					parameters[pointCount++] = (start + sweep * (float(i) / positionIntervals));
+				}
+				const float wrappedStart = std::atan2(s0, c0);
+				for (uint16 i = 1; i < normalIntervals; ++i)
+				{
+					const auto [s, c] = FastMath::SinCos(normalStart + normalSweep * (float(i) / normalIntervals));
+					float delta = (std::atan2(a * s, b * c) - wrappedStart);
+					if (delta < 0.0f) delta += Math::TwoPiF;
+					if ((0.0f < delta) && (delta < sweep)) parameters[pointCount++] = (start + delta);
+				}
+				std::sort(parameters.begin(), parameters.begin() + pointCount);
+				pointCount = static_cast<uint16>(std::unique(parameters.begin(), parameters.begin() + pointCount) - parameters.begin());
+			}
+			const auto capQuality = (((firstCap == LineCap::Round) || (lastCap == LineCap::Round))
+				? CalculateCircleSegmentQuality(halfWidth * scale, Math::PiF) : Vertex2D::IndexType{ 0 });
+			const auto firstVertices = ArcCapVertexCount(firstCap, capQuality), lastVertices = ArcCapVertexCount(lastCap, capQuality);
+			const auto firstIndices = ArcCapIndexCount(firstCap, capQuality), lastIndices = ArcCapIndexCount(lastCap, capQuality);
+			const auto bodyVertices = ((pointCount > 1) ? pointCount * 2 : 0);
+			const auto bodyIndices = ((pointCount - 1) * 6);
+			const Vertex2D::IndexType indexCount = (firstIndices + bodyIndices + lastIndices);
+			const auto buffer = bufferCreator(static_cast<uint16>(firstVertices + bodyVertices + lastVertices), indexCount);
+			if (not buffer.pVertex) return 0;
+			auto* vertices = (buffer.pVertex + firstVertices);
+			Float2 firstNormal, lastNormal, firstCenter, lastCenter, previous;
+			std::array<float, 253> lengths;
+			float bodyLength = 0.0f;
+			for (uint16 i = 0; i < pointCount; ++i)
+			{
+				const auto [s, c] = FastMath::SinCos(parameters[i]);
+				const Float2 normal = CalculateEllipseNormal(a, b, s, -c);
+				const Float2 base{ center.x + a * s, center.y - b * c };
+				const Float2 middle = (base + normal * middleOffset);
+				if (i == 0) { firstNormal = normal; firstCenter = middle; }
+				if (i == (pointCount - 1)) { lastNormal = normal; lastCenter = middle; }
+				if (along)
+				{
+					if (i) bodyLength += middle.distanceFrom(previous);
+					lengths[i] = bodyLength;
+					previous = middle;
+				}
+				if (bodyVertices)
+				{
+					vertices[i * 2].set(base - normal * innerThickness, color0);
+					vertices[i * 2 + 1].set(base + normal * outerThickness, color1);
+				}
+			}
+			const Float4& firstColor = (reverse ? color1 : color0);
+			const Float4& lastColor = (reverse ? color0 : color1);
+			Float4 bodyFirst = color0, bodyLast = color1;
+			if (along)
+			{
+				const float firstLength = ((firstCap != LineCap::Flat) ? halfWidth : 0.0f);
+				const float totalLength = (firstLength + bodyLength + ((lastCap != LineCap::Flat) ? halfWidth : 0.0f));
+				const float inverseLength = ((totalLength > 0.0f) ? (1.0f / totalLength) : 0.0f);
+				bodyFirst = firstColor.lerp(lastColor, firstLength * inverseLength);
+				bodyLast = firstColor.lerp(lastColor, (firstLength + bodyLength) * inverseLength);
+				for (uint16 i = 0; bodyVertices && (i < pointCount); ++i)
+				{
+					vertices[i * 2].color = vertices[i * 2 + 1].color = firstColor.lerp(lastColor, (firstLength + lengths[i]) * inverseLength);
+				}
+			}
+			EmitArcEndCap(buffer, firstCap, firstCenter, firstNormal, halfWidth, false, colorType,
+				(along ? bodyFirst : color0), (along ? bodyFirst : color1), firstColor, capQuality);
+			auto* indices = (buffer.pIndex + firstIndices);
+			WriteOpenStripIndices(indices, static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices), pointCount);
+			EmitArcEndCap({ buffer.pVertex + firstVertices + bodyVertices, buffer.pIndex + firstIndices + bodyIndices,
+				static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices + bodyVertices) }, lastCap, lastCenter, lastNormal,
+				halfWidth, true, colorType, (along ? bodyLast : color0), (along ? bodyLast : color1), lastColor, capQuality);
+			return indexCount;
 		}
 
 		////////////////////////////////////////////////////////////////

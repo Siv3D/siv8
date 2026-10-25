@@ -75,16 +75,28 @@ namespace s3d
 		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildCircleSegment(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, float startAngle, float angle, const Float4& color, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float rotation, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseFrameRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float rotation, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipseDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseArc(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor, float scale);

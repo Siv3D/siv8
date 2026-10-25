@@ -945,6 +945,74 @@ namespace s3d
 		return *this;
 	}
 
+	const Circle& Circle::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addCircleArc(
+			startCap, endCap,
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			static_cast<float>(startAngle),
+			ClampAngle(angle),
+			static_cast<float>(innerThickness + outerThickness),
+			color0,
+			color0,
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleArc(
+			startCap, endCap,
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			static_cast<float>(startAngle),
+			ClampAngle(angle),
+			static_cast<float>(innerThickness + outerThickness),
+			innerColor.toFloat4(),
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleArc(
+			startCap, endCap,
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			static_cast<float>(startAngle),
+			ClampAngle(angle),
+			static_cast<float>(innerThickness + outerThickness),
+			startColor->toFloat4(),
+			endColor->toFloat4(),
+			ColorFillDirection::LeftRight
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleArc(
+			startCap, endCap,
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			static_cast<float>(startAngle),
+			ClampAngle(angle),
+			static_cast<float>(innerThickness + outerThickness),
+			pattern
+		);
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawSegment

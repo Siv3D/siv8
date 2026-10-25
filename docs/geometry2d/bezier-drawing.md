@@ -14,7 +14,16 @@ const Bezier3 curve{ { 40, 200 }, { 100, 20 }, { 400, 380 }, { 560, 200 } };
 curve.drawAdaptive(6, Palette::White);             // 0.5 pixels, at most 256 segments
 curve.drawAdaptive(6, Palette::White, 0.25, 256);   // Finer approximation
 curve.drawAdaptive(6, Palette::White, 0.75, 128);   // Fewer vertices, visible facets possible
+curve.drawAdaptive(LineCap::Round, 12,
+    Arg::start = Palette::Skyblue, Arg::end = ColorF{ 1.0, 0.0 });
 ```
+
+The named `Arg::start` / `Arg::end` overloads interpolate color along the drawn
+polyline's length, including cap extensions, with the same rules as
+`LineString::draw()`. They support independent start/end caps and retain the
+same quality and segment-budget arguments as single-color drawing. Color does
+not depend on the Bezier parameter, so unequally spaced control points do not
+concentrate the gradient at one end.
 
 The authoritative contracts are in [Bezier2.hpp](../../Siv3D/include/Siv3D/Bezier2.hpp)
 and [Bezier3.hpp](../../Siv3D/include/Siv3D/Bezier3.hpp). `targetError` is a finite
@@ -86,7 +95,7 @@ have separate algorithms and do not require this tessellation change.
 
 Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
 quality, singular transforms, storage reuse, output and workspace limits, near
-collinear reversals, sampled count continuity, all cap combinations, degenerate
+collinear reversals, sampled count continuity, gradients, all cap combinations, degenerate
 curves, default overloads, and the public render path at different scene
 resolutions. The [integration tests](../../Test/Test_CurveAdaptive.cpp) add conversion storage,
 Spline composition and drawing, Image quality and caps, and renderer-state

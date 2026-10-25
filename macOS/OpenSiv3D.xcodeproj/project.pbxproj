@@ -103,6 +103,7 @@
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
 		AB612F20C13844B4B712E001 /* Test_Renderer2DEllipseDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB612F20C13844B4B712E002 /* Test_Renderer2DEllipseDashedFrame.cpp */; };
 		D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */; };
+		6F951AF0D54041949076D993 /* Test_Renderer2DEllipseExtensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3C383738B14A8487341922 /* Test_Renderer2DEllipseExtensions.cpp */; };
 		AD63742CA134471B986CCA01 /* Test_Renderer2DSuperEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */; };
 		CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */; };
 		F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */; };
@@ -3535,6 +3536,7 @@
 		C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleDashedFrame.cpp; sourceTree = "<group>"; };
 		AB612F20C13844B4B712E002 /* Test_Renderer2DEllipseDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEllipseDashedFrame.cpp; sourceTree = "<group>"; };
 		D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEllipsePie.cpp; sourceTree = "<group>"; };
+		CD3C383738B14A8487341922 /* Test_Renderer2DEllipseExtensions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEllipseExtensions.cpp; sourceTree = "<group>"; };
 		AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DSuperEllipse.cpp; sourceTree = "<group>"; };
 		CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DArcTessellation.cpp; sourceTree = "<group>"; };
 		F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTexturedCircle.cpp; sourceTree = "<group>"; };
@@ -7369,6 +7371,7 @@
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
 				AB612F20C13844B4B712E002 /* Test_Renderer2DEllipseDashedFrame.cpp */,
 				D380314780764251BAE96002 /* Test_Renderer2DEllipsePie.cpp */,
+				CD3C383738B14A8487341922 /* Test_Renderer2DEllipseExtensions.cpp */,
 				AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */,
 				CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */,
 				F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */,
@@ -17065,6 +17068,7 @@
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,
 				AB612F20C13844B4B712E001 /* Test_Renderer2DEllipseDashedFrame.cpp in Sources */,
 				D380314780764251BAE96001 /* Test_Renderer2DEllipsePie.cpp in Sources */,
+				6F951AF0D54041949076D993 /* Test_Renderer2DEllipseExtensions.cpp in Sources */,
 				AD63742CA134471B986CCA01 /* Test_Renderer2DSuperEllipse.cpp in Sources */,
 				CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */,
 				F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */,

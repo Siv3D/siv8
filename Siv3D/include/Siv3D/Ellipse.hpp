@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Geometry2D/Geometry2DConcepts.hpp"
 # include "PointVector.hpp"
+# include "LineCap.hpp"
 # include "ColorHSV.hpp"
 # include "PredefinedNamedParameter.hpp"
 
@@ -994,6 +995,112 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param color 楕円の色
+		/// @remark 軸の長さの扱いは draw() と共通です。
+		/// @return *this
+		const Ellipse& drawRotated(double rotation, const ColorF& color = Palette::White) const;
+
+		/// @brief 回転した楕円を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param innerColor 楕円の内側の色
+		/// @param outerColor 楕円の外側の色
+		/// @remark 軸の長さの扱いは draw() と共通です。
+		/// @return *this
+		const Ellipse& drawRotated(double rotation, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 回転した楕円を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param topColor 楕円の上側の色
+		/// @param bottomColor 楕円の下側の色
+		/// @remark グラデーションは楕円とともに回転します。軸の長さの扱いは draw() と共通です。
+		/// @return *this
+		const Ellipse& drawRotated(double rotation, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 回転した楕円を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param leftColor 楕円の左側の色
+		/// @param rightColor 楕円の右側の色
+		/// @remark グラデーションは楕円とともに回転します。軸の長さの扱いは draw() と共通です。
+		/// @return *this
+		const Ellipse& drawRotated(double rotation, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 回転した楕円を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @remark 軸の長さの扱いは draw() と共通です。
+		/// @remark パターンの座標は回転しません。
+		/// @return *this
+		const Ellipse& drawRotated(double rotation, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrameRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 枠の色
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param innerColor 内側部分の枠の色
+		/// @param outerColor 外側部分の枠の色
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param color 枠の色
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param innerColor 内側部分の枠の色
+		/// @param outerColor 外側部分の枠の色
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @remark パターンの座標は回転しません。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double thickness, const PatternParameters& pattern) const;
+
+		/// @brief 回転した楕円の枠を描きます。
+		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @remark パターンの座標は回転しません。
+		/// @return *this
+		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawDashedFrame
 		//
 		////////////////////////////////////////////////////////////////
@@ -1029,6 +1136,155 @@ namespace s3d
 		/// @param outerColor 外側部分の色
 		/// @return *this
 		const Ellipse& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor ellipse_draw_arc
+		/// @brief 平らな線端（Flat）で、楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param color 弧の色
+		/// @remark 軸には絶対値を使用し、いずれかの軸または太さの合計が 0 以下なら描画しません。全周以上の角度では線端を省きます。角度 0 では線端だけを描きます。
+		/// @remark 内側への太さが曲率半径を超える部分では、枠が折り返して重なることがあります。
+		/// @return *this
+		const Ellipse& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 平らな線端（Flat）で、楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param innerColor 内側の色
+		/// @param outerColor 外側の色
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 平らな線端（Flat）で、楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @see @ref ellipse_draw_arc
+		/// @remark 色は線端の延長を含む長さに沿って補間します。
+		/// @return *this
+		const Ellipse& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
+		/// @brief 平らな線端（Flat）で、楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param color 弧の色
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param innerColor 内側の色
+		/// @param outerColor 外側の色
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @see @ref ellipse_draw_arc
+		/// @remark 色は線端の延長を含む長さに沿って補間します。
+		/// @return *this
+		const Ellipse& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startCap 開始角側の線端
+		/// @param endCap 終了角側の線端
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param color 弧の色
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startCap 開始角側の線端
+		/// @param endCap 終了角側の線端
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param innerColor 内側の色
+		/// @param outerColor 外側の色
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startCap 開始角側の線端
+		/// @param endCap 終了角側の線端
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @see @ref ellipse_draw_arc
+		/// @remark 色は線端の延長を含む長さに沿って補間します。
+		/// @return *this
+		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
+		/// @brief 楕円の法線方向に幅を持つ弧を描きます。
+		/// @param startCap 開始角側の線端
+		/// @param endCap 終了角側の線端
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 楕円から内側への太さ
+		/// @param outerThickness 楕円から外側への太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @see @ref ellipse_draw_arc
+		/// @return *this
+		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
