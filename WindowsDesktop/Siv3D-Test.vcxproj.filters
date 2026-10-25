@@ -307,6 +307,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DDrawSubmission.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
       <Filter>Test</Filter>
     </ClCompile>

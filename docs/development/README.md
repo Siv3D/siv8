@@ -90,6 +90,38 @@ the opt-in TextFileReader benchmark from the default suite. An explicit matching
 name, wildcard, or tag runs it; there is no `--no-skip` option. Put
 `~[benchmark]` before a name pattern to exclude benchmark cases.
 
+### Draw submission benchmark
+
+The opt-in [draw submission benchmark](../../Test/Test_Renderer2DDrawSubmission.cpp)
+measures the CPU work inside public drawing calls, including vertex generation
+and command registration. It excludes `System::Update()`, command replay and
+presentation; the existing pipeline benchmark measures a different interval.
+Run it alone in Release, with other builds and benchmarks stopped:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2D.draw_submission_cpu_benchmark'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -Configuration Release -TestArguments '--test-case=Renderer2D.draw_submission_cpu_benchmark'
+```
+
+The benchmark uses offscreen geometry, disables VSync for its duration, warms
+the CPU before each sample, and restores the scene and shader settings. On
+macOS, it temporarily requests interactive thread QoS to reduce scheduling
+variation. Each material is measured with stable state, alternating color/blend state, custom
+VS, custom PS, and both custom stages. The custom stages use the corresponding
+engine shaders so the same workload is available on both backends. Triangle
+and draw counts are checked outside the timed region.
+
+Output reports elapsed median/p10/p90 (`ns`, `p10`, `p90`) and median thread CPU
+time (`cpu_ns`), all in nanoseconds per draw. Thread CPU timer resolution depends
+on the OS; retain the elapsed distribution as well. Compare repeated runs of
+saved before/after Release builds in alternating order under the same conditions.
+Inspect optimized code for additional calls, branches or allocations if a result
+is unclear. Timing differences within run-to-run variation do not establish a
+speedup, and these CPU measurements do not measure GPU time or application FPS.
+
 ### Window UI tests
 
 Tests that enter fullscreen, maximize/minimize, move between monitors, or warp

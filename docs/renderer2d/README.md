@@ -18,6 +18,30 @@
 - [MSDF font scale](msdf-font.md): atlas dimensions, UV derivatives, shadow
   offsets, and font shader validation.
 
+## Draw submission
+
+`Vertex2DBuilder` generates vertices and indices through the backend's buffer
+allocator. Each backend checks the resulting index count before submitting a
+draw. Buffer allocation, base-vertex handling, command batching and GPU execution
+remain backend responsibilities.
+
+[Renderer2DDrawSubmission.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DDrawSubmission.hpp)
+shares the subsequent command registration using inline templates for shapes,
+patterns, textures and styled lines. The helpers require a nonzero index count.
+They select the engine VS and PS independently when the corresponding custom
+shader is absent, then bind material parameters or a texture and register the
+draw. Pattern and line shader selection only runs when the engine PS is needed;
+material bindings also apply when a custom PS is active. New geometry builders
+can reuse these helpers without introducing another virtual submission call or
+an intermediate mesh.
+
+[Test_Renderer2DDrawSubmission.cpp](../../Test/Test_Renderer2DDrawSubmission.cpp)
+checks command ordering, independent custom shaders, material bindings and
+32-bit index counts. Its opt-in CPU benchmark times public draw calls for solid
+Rect/Circle, patterned Rect/Circle and TexturedQuad. See the
+[development guide](../development/README.md#draw-submission-benchmark) for
+measurement and comparison instructions.
+
 ## Custom constant buffers
 
 [ScopedConstantBuffer2D.hpp](../../Siv3D/include/Siv3D/ScopedConstantBuffer2D.hpp)
