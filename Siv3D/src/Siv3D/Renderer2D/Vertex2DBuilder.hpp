@@ -146,6 +146,9 @@ namespace s3d
 		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const Float4& color, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildTexturedQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const FloatRect& uv, const Float4& color);
 		
 		[[nodiscard]]

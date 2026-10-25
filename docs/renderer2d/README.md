@@ -11,6 +11,31 @@
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,
   fullscreen presentation, scene sizing, resolution scaling, and validation.
 
+## Textured circles
+
+[TexturedCircle](../../Siv3D/include/Siv3D/TexturedCircle.hpp) supports center-to-edge,
+vertical and horizontal tint gradients, including alpha fades:
+
+```cpp
+Circle{ 240, 140, 80 }(texture).draw(ColorF{ 1.0, 1.0 }, ColorF{ 1.0, 0.0 });
+Circle{ 240, 140, 80 }(texture).draw(Arg::top = Palette::White, Arg::bottom = Palette::Skyblue);
+Circle{ 0, 0, 80 }(texture).draw(Vec2{ 240, 140 }, Arg::left = Palette::Orange, Arg::right = Palette::White);
+```
+
+The gradients use the same vertex color interpolation as `Circle::draw()` and
+follow the circle's local axes, independently of UV cropping or flipping.
+`draw(x, y, ...)` and `draw(pos, ...)` specify the destination center, keeping the
+stored radius. They return the drawn circle; the form without a position returns
+a reference to the stored circle.
+
+The existing texture shader and circle tessellation are shared with single-color
+draws. Compile-time specialization omits gradient calculations from the
+single-color textured path. The [vertex tests](../../Test/Test_Vertex2DBuilderEllipse.cpp)
+check positions, colors, UVs and buffer bounds; the
+[rendering tests](../../Test/Test_Renderer2DTexturedCircle.cpp) cover the public
+overloads, texture and tint alpha, UV cropping/flipping, transforms and scene
+render resolution.
+
 ## Textured rounded rectangles
 
 [TexturedRoundRect](../../Siv3D/include/Siv3D/TexturedRoundRect.hpp) supports vertical
@@ -62,8 +87,9 @@ failure.
 Circle, ellipse and textured-circle fills share a vertex writer for their center
 and four quarter arcs. Compile-time specialization keeps the circle's two radial
 products per sample and writes textured positions, UVs and colors in one pass.
-Untextured fills share radial, vertical and horizontal color interpolation;
-their UV fields remain untouched. Tessellation selection stays in each builder.
+Textured and untextured fills share radial, vertical and horizontal color
+interpolation; untextured UV fields remain untouched. Tessellation selection
+stays in each builder.
 [Test_Vertex2DBuilderEllipse.cpp](../../Test/Test_Vertex2DBuilderEllipse.cpp) checks
 analytic positions and colors, flipped UVs, fan order, destination bounds and
 agreement between circles and equal-axis ellipses, including degenerate axes and

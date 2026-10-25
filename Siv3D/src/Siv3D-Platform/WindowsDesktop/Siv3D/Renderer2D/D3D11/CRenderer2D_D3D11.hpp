@@ -320,6 +320,8 @@ namespace s3d
 
 		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) override;
 
+		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addTexturedQuad

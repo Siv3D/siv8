@@ -32,7 +32,8 @@ namespace
 		case Shape::Ellipse:
 			return BuildEllipse(allocate, Center, axes.x, axes.y, direction, Color0, rimColor, scale);
 		default:
-			return BuildTexturedCircle(allocate, Circle{ Center, Max(axes.x, axes.y) }, UV, Color0, scale);
+			if (paint == Paint::Solid) return BuildTexturedCircle(allocate, Circle{ Center, Max(axes.x, axes.y) }, UV, Color0, scale);
+			return BuildTexturedCircle(allocate, Circle{ Center, Max(axes.x, axes.y) }, UV, direction, Color0, Color1, scale);
 		}
 	}
 
@@ -86,7 +87,6 @@ TEST_CASE("Vertex2DBuilder.ellipse_vertices_and_attributes")
 		{
 			for (const auto paint : Paints)
 			{
-				if ((shape == Shape::TexturedCircle) && (paint != Paint::Solid)) continue;
 				CAPTURE(axes, scale, static_cast<int32>(shape), static_cast<int32>(paint));
 				const auto mesh = Capture(shape, paint, axes, scale);
 				REQUIRE(mesh.vertices.size() == (rimVertices + 1));
@@ -139,12 +139,17 @@ TEST_CASE("Vertex2DBuilder.circle_and_equal_axis_ellipse_match")
 				CAPTURE(radius, scale, static_cast<int32>(paint));
 				const auto circle = Capture(Shape::Circle, paint, { radius, radius }, scale);
 				const auto ellipse = Capture(Shape::Ellipse, paint, { radius, radius }, scale);
+				const auto textured = Capture(Shape::TexturedCircle, paint, { radius, radius }, scale);
 				REQUIRE(circle.vertices.size() == ellipse.vertices.size());
+				REQUIRE(circle.vertices.size() == textured.vertices.size());
 				CHECK(circle.indices == ellipse.indices);
+				CHECK(circle.indices == textured.indices);
 				for (size_t i = 0; i < circle.vertices.size(); ++i)
 				{
 					CHECK(circle.vertices[i].pos == ellipse.vertices[i].pos);
 					CHECK(circle.vertices[i].color == ellipse.vertices[i].color);
+					CHECK(circle.vertices[i].pos == textured.vertices[i].pos);
+					CHECK(circle.vertices[i].color == textured.vertices[i].color);
 				}
 			}
 		}

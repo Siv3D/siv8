@@ -230,7 +230,7 @@ namespace s3d
 			}
 		}
 
-		template <bool Circular, bool Textured>
+		template <bool Circular, bool Textured, bool Gradient>
 		SIV3D_ALWAYS_INLINE
 		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
 			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {})
@@ -248,6 +248,10 @@ namespace s3d
 			else
 			{
 				pVertex[0].pos.set(centerX, centerY);
+			}
+
+			if constexpr (Gradient)
+			{
 				colorDiff = (color1 - color0);
 			}
 
@@ -265,7 +269,19 @@ namespace s3d
 				const float ya = (cs.y * a);
 				const float yb = (Circular ? ya : (cs.y * b));
 
-				if constexpr (Textured)
+				const auto writeVertex = [&](Vertex2D& vertex, const float x, const float y, const float ux, const float uy, const Float4& color)
+				{
+					if constexpr (Textured)
+					{
+						vertex.set(x, y, (centerU + rU * ux), (centerV + rV * uy), color);
+					}
+					else
+					{
+						vertex.set(x, y, color);
+					}
+				};
+
+				if constexpr (Textured && (not Gradient))
 				{
 					pDst0->set((centerX + xa), (centerY + yb), (centerU + rU * cs.x), (centerV + rV * cs.y), color0);
 					pDst1->set((centerX - ya), (centerY + xb), (centerU - rU * cs.y), (centerV + rV * cs.x), color0);
@@ -276,10 +292,10 @@ namespace s3d
 				{
 					if (colorType == ColorFillDirection::InOut)
 					{
-						pDst0->set((centerX + xa), (centerY + yb), color1);
-						pDst1->set((centerX - ya), (centerY + xb), color1);
-						pDst2->set((centerX - xa), (centerY - yb), color1);
-						pDst3->set((centerX + ya), (centerY - xb), color1);
+						writeVertex(*pDst0, (centerX + xa), (centerY + yb), cs.x, cs.y, color1);
+						writeVertex(*pDst1, (centerX - ya), (centerY + xb), -cs.y, cs.x, color1);
+						writeVertex(*pDst2, (centerX - xa), (centerY - yb), -cs.x, -cs.y, color1);
+						writeVertex(*pDst3, (centerX + ya), (centerY - xb), cs.y, -cs.x, color1);
 					}
 					else if (colorType == ColorFillDirection::TopBottom)
 					{
@@ -288,10 +304,10 @@ namespace s3d
 						const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
 						const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
 
-						pDst0->set((centerX + xa), (centerY + yb), c0);
-						pDst1->set((centerX - ya), (centerY + xb), c1);
-						pDst2->set((centerX - xa), (centerY - yb), c2);
-						pDst3->set((centerX + ya), (centerY - xb), c3);
+						writeVertex(*pDst0, (centerX + xa), (centerY + yb), cs.x, cs.y, c0);
+						writeVertex(*pDst1, (centerX - ya), (centerY + xb), -cs.y, cs.x, c1);
+						writeVertex(*pDst2, (centerX - xa), (centerY - yb), -cs.x, -cs.y, c2);
+						writeVertex(*pDst3, (centerX + ya), (centerY - xb), cs.y, -cs.x, c3);
 					}
 					else
 					{
@@ -300,10 +316,10 @@ namespace s3d
 						const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
 						const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
 
-						pDst0->set((centerX + xa), (centerY + yb), c0);
-						pDst1->set((centerX - ya), (centerY + xb), c1);
-						pDst2->set((centerX - xa), (centerY - yb), c2);
-						pDst3->set((centerX + ya), (centerY - xb), c3);
+						writeVertex(*pDst0, (centerX + xa), (centerY + yb), cs.x, cs.y, c0);
+						writeVertex(*pDst1, (centerX - ya), (centerY + xb), -cs.y, cs.x, c1);
+						writeVertex(*pDst2, (centerX - xa), (centerY - yb), -cs.x, -cs.y, c2);
+						writeVertex(*pDst3, (centerX + ya), (centerY - xb), cs.y, -cs.x, c3);
 					}
 				}
 
@@ -313,7 +329,7 @@ namespace s3d
 				++pDst3;
 			}
 
-			if constexpr (not Textured)
+			if constexpr (Gradient)
 			{
 				// 中心の色
 				if (colorType == ColorFillDirection::InOut)
@@ -2011,7 +2027,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<true, false>(pVertex, center.x, center.y, r, r, Quality, colorType, color0, color1);
+			WriteEllipseFanVertices<true, false, true>(pVertex, center.x, center.y, r, r, Quality, colorType, color0, color1);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -2312,7 +2328,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<false, false>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1);
+			WriteEllipseFanVertices<false, false, true>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -3445,7 +3461,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const Float4& color, const float scale)
+		template <bool Gradient>
+		SIV3D_ALWAYS_INLINE
+		static inline Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const float rf = Abs(static_cast<float>(circle.r));
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(rf * scale); // 円周の 1/4 に相当する品質
@@ -3460,11 +3478,21 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<true, true>(pVertex, static_cast<float>(circle.x), static_cast<float>(circle.y), rf, rf, Quality, ColorFillDirection::InOut, color, color, uv);
+			WriteEllipseFanVertices<true, true, Gradient>(pVertex, static_cast<float>(circle.x), static_cast<float>(circle.y), rf, rf, Quality, colorType, color0, color1, uv);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const Float4& color, const float scale)
+		{
+			return BuildTexturedCircle<false>(bufferCreator, circle, uv, ColorFillDirection::InOut, color, color, scale);
+		}
+
+		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			return BuildTexturedCircle<true>(bufferCreator, circle, uv, colorType, color0, color1, scale);
 		}
 
 		////////////////////////////////////////////////////////////////
