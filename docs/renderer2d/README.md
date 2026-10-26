@@ -131,9 +131,31 @@ overloads against their original rendering paths.
 ## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):
-  proposed stages, D3D11/Metal evidence, compatibility boundaries, and validation.
+  adopted changes, remaining evaluation, D3D11/Metal evidence, and compatibility boundaries.
 - [MSDF font scale](msdf-font.md): atlas dimensions, UV derivatives, shadow
   offsets, and font shader validation.
+
+## Development boundaries
+
+| Layer | Responsibility |
+| --- | --- |
+| Public shape methods | Normalize public arguments and preserve the shape's documented geometry and color semantics |
+| Shared `ISiv3DRenderer2D` implementation | Prepare reusable contours for Bezier and SuperEllipse drawing, and share backend-independent resources such as the shadow image |
+| `Vertex2DBuilder` | Select bounded drawing detail and write vertices/indices through the backend allocator |
+| Backend and command manager | Own GPU resources, buffer allocation, resource retention, command ordering, batching and execution |
+
+Keep sharing at these boundaries. In particular, custom-shader and texture state
+updates have different retention rules; their similar control flow is not a
+reason to combine them. Engine shader IDs and scoped custom shaders also have
+different ownership and remain separate types.
+
+Extend small geometry writers with explicit supported modes when needed. Avoid
+a general mesh framework or combinations of flags for hypothetical variants.
+Preserve direct writes, storage reuse and the existing fast paths. Draw-time
+quality must not alter the vertex output of `outer()` or `asPolygon()`.
+The [tessellation inventory](../geometry2d/rounded-drawing.md) records the budgets.
+For changes to hot paths, use the relevant CPU benchmarks and Release generated
+code alongside regression tests; GPU performance requires separate measurements.
 
 ## Draw submission
 

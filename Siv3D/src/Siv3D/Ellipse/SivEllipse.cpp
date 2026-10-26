@@ -25,7 +25,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static std::pair<float, float> AdjustEllipsePieAngles(const float rx, const float ry, const float startAngle, const float angle) noexcept
+		static std::pair<float, float> ToEllipseParametricAngles(const float rx, const float ry, const float startAngle, const float angle) noexcept
 		{
 			auto AngleToParam = [&](float theta)
 			{
@@ -778,7 +778,7 @@ namespace s3d
 		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
 		if (Abs(sweep) >= Math::TwoPiF) return drawFrame(innerThickness, outerThickness, innerColor, outerColor);
 		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
-		auto [start, span] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
 		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
 			static_cast<float>(innerThickness), static_cast<float>(outerThickness), innerColor.toFloat4(), outerColor.toFloat4(), ColorFillDirection::InOut);
 		return *this;
@@ -789,7 +789,7 @@ namespace s3d
 		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
 		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
 		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
-		auto [start, span] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
 		if (Abs(sweep) >= Math::TwoPiF) span = sweep;
 		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
 			static_cast<float>(innerThickness), static_cast<float>(outerThickness), startColor->toFloat4(), endColor->toFloat4(), ColorFillDirection::LeftRight);
@@ -802,7 +802,7 @@ namespace s3d
 		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
 		if (Abs(sweep) >= Math::TwoPiF) return drawFrame(innerThickness, outerThickness, pattern);
 		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
-		auto [start, span] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
 		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
 			static_cast<float>(innerThickness), static_cast<float>(outerThickness), pattern);
 		return *this;
@@ -828,7 +828,7 @@ namespace s3d
 
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 		const Float4 color0 = color.toFloat4();
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
@@ -857,7 +857,7 @@ namespace s3d
 
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
 			center,
@@ -885,7 +885,7 @@ namespace s3d
 
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
 			center,

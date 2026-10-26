@@ -1,10 +1,10 @@
 # siv8 の 2D 図形描画を広げる API 提案
 
-状態: 未採用の調査・設計提案。対象: siv8 の今後の 2D 描画拡張。特定リリースへの採用は未定。
+状態: 未採用の候補を検討する調査・設計提案。01 回転楕円と 03 楕円弧は実装済みで、仕様と作例は [Renderer2D ガイド](../../renderer2d/README.md#rotated-ellipses-and-arc-ends)に集約する。残る候補の採用は未定。
 
 私の推奨は、**まず既存図形の回転・部分描画・角の指定を安価にし、次に曲線を矢印や帯として扱えるようにする**ことである。その後に、三日月・レンズ・しずく・花形のように、少数のパラメータから多くの表現を作れる形を加える。図形名を増やすだけでなく、「向き」「切り出す範囲」「接続」「幅」を指定できることが、ゲーム、UI、図解に共通して効く。
 
-優先して検討したいのは **01 回転楕円、02 回転角丸長方形、03 楕円弧、05 四隅別の角丸直接描画**。続いて **04 角丸ドーナツ扇形、06 角丸吹き出し、07 曲線矢印**を推す。09 可変幅ストロークと 10 二曲線間の帯は表現力が大きいが、自己交差や分割品質まで含む設計が必要なので別段階にする。
+優先して検討したいのは **02 回転角丸長方形、05 四隅別の角丸直接描画**。続いて **04 角丸ドーナツ扇形、06 角丸吹き出し、07 曲線矢印**を推す。09 可変幅ストロークと 10 二曲線間の帯は表現力が大きいが、自己交差や分割品質まで含む設計が必要なので別段階にする。
 
 ## SVG で比較する
 
@@ -15,7 +15,7 @@
 
 SVG は提案する幾何の説明図であり、siv8 の描画結果ではない。作例は独自に作成した。SVG のストロークやパスを利用しているため、siv8 での AA、分割品質、半透明の結果を保証するものではない。
 
-本文の「提案 API」は未実装で、宣言は主要な引数だけを示す。色変数 `c`、座標、曲線などは呼び出し側で用意する。「1 行」は一つの描画式を意味し、初期化や複数の文を同じ行へ詰めることは数えない。
+実装済みの 01・03 は比較用に番号を残している。それ以外の「提案 API」は未実装で、宣言は主要な引数だけを示す。色変数 `c`、座標、曲線などは呼び出し側で用意する。「1 行」は一つの描画式を意味し、初期化や複数の文を同じ行へ詰めることは数えない。
 
 ## 現在の API でできること
 
@@ -24,7 +24,7 @@ SVG は提案する幾何の説明図であり、siv8 の描画結果ではな�
 | 表現 | 現在の手段 | 追加検討の余地 |
 |---|---|---|
 | 円環、扇形、丸い端の円弧、弓形 | [`Circle`](../../../Siv3D/include/Siv3D/Circle.hpp) の `drawFrame`、`drawPie`、`drawArc(LineCap, ...)`、`drawSegment` | 普通のドーナツや半円を新設する必要はない。四隅を丸めた扇形は別 |
-| 楕円、楕円枠、楕円扇形 | [`Ellipse`](../../../Siv3D/include/Siv3D/Ellipse.hpp) | 回転の直接描画と開いた楕円弧が不足 |
+| 楕円、楕円枠、楕円扇形、回転楕円、楕円弧 | [`Ellipse`](../../../Siv3D/include/Siv3D/Ellipse.hpp) の `drawRotated`、`drawFrameRotated`、`drawArc` など | 回転した楕円弧は `Transformer2D` と併用できる |
 | 四隅別の角丸、面取り | [`RectF`](../../../Siv3D/include/Siv3D/RectF.hpp) / [`Rect`](../../../Siv3D/include/Siv3D/Rect.hpp) の `rounded(tl, tr, br, bl)`、`chamfered` | すでに 1 行。戻り値の `Polygon` を毎回作る費用を減らす余地 |
 | 台形、平行四辺形、ひし形 | `trapezoid`、`shearedX/Y`、`skewedX/Y`、`inscribedDiamond` | `Quad` を返せるので追加の優先度は低い |
 | V 字の突起・切り欠き、階段状の角、円形の角の切り欠き | `RectF::pointed`、`stepped`、`scooped` | 「チケット風の角」「旗の端」を一律に未対応と扱わない |
@@ -36,20 +36,7 @@ SVG は提案する幾何の説明図であり、siv8 の描画結果ではな�
 | 多角形の和・差・積・穴 | [`Geometry2D::Or / Subtract / And`](../../../Siv3D/include/Siv3D/Geometry2D/Misc.hpp)、[`Polygon`](../../../Siv3D/include/Siv3D/Polygon.hpp) | 一般解はある。解析的に作れる小さな図形で汎用演算を避ける価値を評価 |
 | 幾何の再利用と変換 | [`Mesh2D`](../../../Siv3D/include/Siv3D/Mesh2D.hpp)、`Polygon::drawTransformed`、[`Transformer2D`](../../../Siv3D/include/Siv3D/Transformer2D.hpp) | 再利用の仕組みを重複して新設しない |
 
-回転楕円も、現状で「描画不可能」ではない。例えば次の二つがある。
-
-```cpp
-// 現在の API。形状の生成と回転を毎回行う。
-ellipse.asPolygon().rotatedAt(ellipse.center, angle).draw(c);
-
-// 現在の API。変換スコープを共有できる複数図形にも適する。
-{
-    const Transformer2D transform{ Mat3x2::Rotate(angle, ellipse.center) };
-    ellipse.draw(c);
-}
-```
-
-前者は一つの式でも配列を所有する形状を生成する。後者は実用的だが、単独図形のために状態変更のスコープが必要になる。**専用 API の価値は、この二択の間を埋めること**にある。ただし、スコープ内で多数の図形を同じ角度だけ回す用途では、引き続き `Transformer2D` が自然である。
+単独の回転楕円は `ellipse.drawRotated(angle, c)` で直接描画できる。同じ変換を複数図形へ適用する用途では `Transformer2D`、保存した形状を編集・再利用する用途では `Polygon` が引き続き適する。
 
 また、[`Ellipse::asPolygon`](../../../Siv3D/src/Siv3D/Ellipse/SivEllipse.cpp) と [`RectF::rounded`](../../../Siv3D/src/Siv3D/RectF/SivRectF.cpp) は頂点・添字配列を作るが、既知の形状用の添字を直接構築している。「Polygon を作るので毎回汎用三角形分割をする」とは限らない。主な削減対象は、一時的な所有配列、コピー、再計算である。
 
@@ -81,9 +68,9 @@ ellipse.asPolygon().rotatedAt(ellipse.center, angle).draw(c);
 
 | ID | 候補 | 優先度 | 主な用途 | 現状との差 | 経路 | 実装規模 |
 |---|---|---|---|---|---|---|
-| 01 | 回転楕円 | A | 弾、軌道、影、葉 | 回転用の一時形状・スコープを省く | D | 小〜中 |
+| 01 | 回転楕円（実装済み） | — | 弾、軌道、影、葉 | 回転用の一時形状・スコープを省く | D | 小〜中 |
 | 02 | 回転角丸長方形 | A | カード、棒、カプセル状の部品 | 同上 | D | 小〜中 |
-| 03 | 楕円弧 | A | 軌道、ゲージ、遠近感のある輪 | 開いた一定幅の楕円弧 | D | 中 |
+| 03 | 楕円弧（実装済み） | — | 軌道、ゲージ、遠近感のある輪 | 開いた一定幅の楕円弧 | D | 中 |
 | 04 | 角丸ドーナツ扇形 | A | 円グラフ、ラジアルメニュー | 扇形の四隅を丸める | D | 中〜大 |
 | 05 | 四隅別の角丸直接描画 | A | UI、タブ、チャット | 表現は既存。毎回の Polygon 生成を省く | D | 中 |
 | 06 | 角丸吹き出し | A | 会話、注釈、ヒント | 尾を含む一つの輪郭 | D | 中 |
@@ -102,19 +89,7 @@ ellipse.asPolygon().rotatedAt(ellipse.center, angle).draw(c);
 
 ## 01 回転楕円
 
-```cpp
-// 提案
-Ellipse{ center, 72, 24 }.drawRotated(30_deg, c);
-ellipse.drawFrameRotated(angle, 6, c);
-```
-
-初期案は `Ellipse::drawRotated(double angle, const ColorF&)` と `drawFrameRotated(double angle, double thickness, const ColorF&)`。中心を軸に時計回り、幅は現在の楕円枠と同じ形状ローカル単位とする。塗りだけなら弾、花弁、傾いた接地影に使え、枠が加わると軌道、分子図、装飾にも使える。
-
-[`BuildEllipse / BuildEllipseFrame`](../../../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_Rounded.cpp) の出力座標に回転を合成する。sin / cos は図形ごとに一度求める設計を出発点とし、renderer の状態変更で各楕円の batch が分断されない方式を比較する。既存の軸平行描画に回転用分岐や計算を一律に加える必要はない。
-
-`Ellipse` 自体への `angle` フィールド追加は推さない。軸平行を前提とする境界、交差、Image 書き込みまで影響が広がる。`.rotated(angle).draw()` を採るなら、将来の独立した所有値 `OrientedEllipse` を返す案とし、最初から全形状対の交差 API を実装する前提にはしない。単なる一時参照 view は寿命の問題を持ち込む。
-
-確認点は 0° / 90° / 負角、円の場合、中心以外の回転との区別、細い楕円、半透明の枠。回転に幾何を限定すれば、非一様拡大した円枠のような太さの変化は導入しない。
+実装済み。`Ellipse::drawRotated()` と `drawFrameRotated()` は単色、グラデーション、パターンを扱う。使用例と回転・パターン座標の規則は [Renderer2D ガイド](../../renderer2d/README.md#rotated-ellipses-and-arc-ends)を参照する。
 
 ## 02 回転角丸長方形
 
@@ -130,18 +105,7 @@ card.drawFrameRotated(angle, 4, c);
 
 ## 03 楕円弧
 
-```cpp
-// 提案
-Ellipse{ center, 110, 50 }.drawArc(LineCap::Round, -60_deg, 240_deg, 5, 5, c);
-```
-
-主要宣言案は `Ellipse::drawArc(LineCap cap, double startAngle, double sweepAngle, double innerThickness, double outerThickness, const ColorF&)`。`Circle::drawArc` と対応させる。円の拡大縮小では、非一様拡大によって線幅と線端まで変形するため、一定幅の楕円弧の代用にはならない。
-
-**角度は現在の `Ellipse::drawPie` と同じく中心から見た方向角**とする。上が 0、正が時計回り。楕円の媒介変数とは異なり、内部で変換する。例えば `p(t) = (a sin t, -b cos t)` なら、方向角 θ から `t = atan2(b sin θ, a cos θ)` を求める。既存実装もこの変換を行っている。名前を揃えながら別の意味の角度を採ることは避けたい。
-
-幅は中心線の単位法線方向に付ける。現在の `BuildEllipseFrame` にも法線計算があり、全周枠と部分弧を別々の数学で実装する必要はない。0 sweep は描かず、絶対値が全周以上なら一周として扱い、閉じ目に cap を置かない案とする。太い内側オフセットの折り返しと、ごく短い弧の丸 cap の重なりは設計上の確認点。
-
-回転した楕円弧は当初 `Transformer2D` と併用できる。03 のためだけに angle 引数を全 overload へ足すより、01 の将来の oriented 型との共通化を検討したい。
+実装済み。`Ellipse::drawArc()` は法線方向の幅、独立した始端・終端、単色、内外色、始終色、パターンを扱う。角度は `drawPie()` と同じ中心から見た方向角。ゼロ角度では選択した線端を描き、全周では線端を省く。使用例は [Renderer2D ガイド](../../renderer2d/README.md#rotated-ellipses-and-arc-ends)、入力条件は [公開ヘッダ](../../../Siv3D/include/Siv3D/Ellipse.hpp)を参照する。
 
 ## 04 角丸ドーナツ扇形
 
@@ -389,12 +353,12 @@ Shapes のような少ない頂点と解析的な輪郭評価の組み合わせ�
 
 ## 小さく実装する場合の順番
 
-以下は採用された場合の分割案で、実装が決まった項目の一覧ではない。
+以下は残る候補が採用された場合の分割案で、実装が決まった項目の一覧ではない。09 の可変幅 LineString は [TODO](../../../TODO.md) にある。
 
 | 段階 | 内容 | 採否を判断できる成果物 |
 |---|---|---|
-| 1 | 01 と 02 の単色 fill、次に frame | スコープ版・Polygon 版・直接版の見た目と準備費用の比較 |
-| 2 | 03 と 05 | 全周と部分弧の整合、角の同比率縮小、短い弧・太い枠の結果 |
+| 1 | 02 の単色 fill、次に frame | スコープ版・Polygon 版・直接版の見た目と準備費用の比較 |
+| 2 | 05 | 角の同比率縮小、細い矩形・太い枠の結果 |
 | 3 | 04、06、07 を独立した変更として追加 | 小 sweep、尾の移動、短い矢印の境界。alpha 0.5 で接合の継ぎ目が出ないこと |
 | 4 | 09 と 10 の再利用可能な生成器 | strip の反転検出、出力容量の再利用、太さを含めた分割品質 |
 | 5 | 11〜16 の採用候補を用途から選択 | 静的キャッシュと動的生成を比較した作例。新型の数を増やす価値 |

@@ -780,7 +780,7 @@ namespace s3d
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
+		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
 		/// @return *this
 		const Bezier3& drawAdaptive(const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
@@ -789,7 +789,7 @@ namespace s3d
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
+		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
 		/// @return *this
 		const Bezier3& drawAdaptive(double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
@@ -799,10 +799,11 @@ namespace s3d
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @remark 品質と入力条件は、始端と終端の LineCap を指定する overload と共通です。
+		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
 		/// @return *this
 		const Bezier3& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
+		/// @anchor bezier3_draw_adaptive
 		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
 		/// @param startCap 始点側の線端の種類
 		/// @param endCap 終点側の線端の種類
@@ -811,7 +812,7 @@ namespace s3d
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
 		/// @pre 制御点と適用する変換が有限で、計算結果を double と描画用 float で表現できること。
-		/// @remark 品質評価には Local、Camera とシーンの解像度倍率を反映します。QuadWarp とカスタム VS は含みません。
+		/// @remark 品質評価には Local、Camera とシーンの解像度倍率を反映します。QuadWarp とカスタム頂点シェーダは含みません。
 		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
 		/// @remark 太さには絶対値を使用します。すべての制御点が同じ場合は、その点に線端を描画します。
 		/// @return *this
@@ -823,7 +824,8 @@ namespace s3d
 		/// @param endColor 終点側の色
 		/// @param targetError 描画先のピクセル単位の目標誤差
 		/// @param maxSegments 分割数の上限（1～4096）
-		/// @remark 品質と入力条件は単色の drawAdaptive() と共通です。色は LineString の描画と同じく、線端を含む描画点列の長さに沿って補間します。
+		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
+		/// @remark 色は線端を含む折れ線の長さに沿って補間します。
 		/// @return *this
 		const Bezier3& drawAdaptive(Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
 

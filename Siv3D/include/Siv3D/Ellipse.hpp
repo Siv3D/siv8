@@ -999,10 +999,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @anchor ellipse_draw_rotated
 		/// @brief 回転した楕円を描きます。
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param color 楕円の色
-		/// @remark 軸の長さの扱いは draw() と共通です。
+		/// @remark 各軸の長さには絶対値を使用します。いずれかの軸が 0 なら描画しません。
 		/// @return *this
 		const Ellipse& drawRotated(double rotation, const ColorF& color = Palette::White) const;
 
@@ -1010,7 +1011,7 @@ namespace s3d
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param innerColor 楕円の内側の色
 		/// @param outerColor 楕円の外側の色
-		/// @remark 軸の長さの扱いは draw() と共通です。
+		/// @see @ref ellipse_draw_rotated
 		/// @return *this
 		const Ellipse& drawRotated(double rotation, const ColorF& innerColor, const ColorF& outerColor) const;
 
@@ -1018,7 +1019,8 @@ namespace s3d
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param topColor 楕円の上側の色
 		/// @param bottomColor 楕円の下側の色
-		/// @remark グラデーションは楕円とともに回転します。軸の長さの扱いは draw() と共通です。
+		/// @remark グラデーションは楕円とともに回転します。
+		/// @see @ref ellipse_draw_rotated
 		/// @return *this
 		const Ellipse& drawRotated(double rotation, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
@@ -1026,15 +1028,16 @@ namespace s3d
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param leftColor 楕円の左側の色
 		/// @param rightColor 楕円の右側の色
-		/// @remark グラデーションは楕円とともに回転します。軸の長さの扱いは draw() と共通です。
+		/// @remark グラデーションは楕円とともに回転します。
+		/// @see @ref ellipse_draw_rotated
 		/// @return *this
 		const Ellipse& drawRotated(double rotation, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 回転した楕円を描きます。
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param pattern 塗りつぶしパターン
-		/// @remark 軸の長さの扱いは draw() と共通です。
-		/// @remark パターンの座標は回転しません。
+		/// @see @ref ellipse_draw_rotated
+		/// @remark rotation はパターンの座標には適用しません。
 		/// @return *this
 		const Ellipse& drawRotated(double rotation, const PatternParameters& pattern) const;
 
@@ -1048,7 +1051,7 @@ namespace s3d
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 枠の色
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @see @ref ellipse_draw_frame_rotated
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
@@ -1057,16 +1060,18 @@ namespace s3d
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @see @ref ellipse_draw_frame_rotated
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @anchor ellipse_draw_frame_rotated
 		/// @brief 回転した楕円の枠を描きます。
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param color 枠の色
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @remark 各軸の長さには絶対値を使用します。いずれかの軸が 0、または太さの合計が 0 以下なら描画しません。
+		/// @remark 内側への太さが曲率半径を超える部分では、枠が折り返して重なることがあります。
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
@@ -1076,7 +1081,7 @@ namespace s3d
 		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
+		/// @see @ref ellipse_draw_frame_rotated
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
@@ -1084,8 +1089,8 @@ namespace s3d
 		/// @param rotation 中心を基準とする時計回りの回転角（ラジアン）
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
-		/// @remark パターンの座標は回転しません。
+		/// @see @ref ellipse_draw_frame_rotated
+		/// @remark rotation はパターンの座標には適用しません。
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double thickness, const PatternParameters& pattern) const;
 
@@ -1094,8 +1099,8 @@ namespace s3d
 		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		/// @remark 軸の長さと太さの扱いは drawFrame() と共通です。
-		/// @remark パターンの座標は回転しません。
+		/// @see @ref ellipse_draw_frame_rotated
+		/// @remark rotation はパターンの座標には適用しません。
 		/// @return *this
 		const Ellipse& drawFrameRotated(double rotation, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
@@ -1150,7 +1155,8 @@ namespace s3d
 		/// @param innerThickness 楕円から内側への太さ
 		/// @param outerThickness 楕円から外側への太さ
 		/// @param color 弧の色
-		/// @remark 軸には絶対値を使用し、いずれかの軸または太さの合計が 0 以下なら描画しません。全周以上の角度では線端を省きます。角度 0 では線端だけを描きます。
+		/// @remark 各軸の長さには絶対値を使用します。いずれかの軸が 0、または太さの合計が 0 以下なら描画しません。
+		/// @remark 角度の絶対値が全周以上なら一周を描き、線端を省きます。角度 0 では Round / Square の線端だけを描きます。
 		/// @remark 内側への太さが曲率半径を超える部分では、枠が折り返して重なることがあります。
 		/// @return *this
 		const Ellipse& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;

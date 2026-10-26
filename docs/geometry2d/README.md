@@ -14,7 +14,8 @@ API inventory, validation, and reproducible performance measurements.
 
 [Shape drawing API proposals](proposals/shape-drawing-api.md) evaluates additions
 to the 2D drawing API, with SVG galleries, existing API comparisons, external
-examples, and staged implementation options. This is an unadopted proposal.
+examples, and staged implementation options. Remaining candidates are unadopted;
+implemented rotated ellipses and elliptical arcs link to the Renderer2D guide.
 
 ## Spline paths
 

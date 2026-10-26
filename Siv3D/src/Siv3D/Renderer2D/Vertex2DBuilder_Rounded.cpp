@@ -23,6 +23,12 @@ namespace s3d
 {
 	namespace
 	{
+		static constexpr int32 MaxCircleQuarterSegments = 63;
+
+		static constexpr uint32 MaxCircleSegments = (MaxCircleQuarterSegments * 4);
+
+		static_assert(MaxCircleQuarterSegments <= QuarterArcTable::MaxQuality);
+
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
 		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
@@ -230,11 +236,25 @@ namespace s3d
 			}
 		}
 
-		template <bool Circular, bool Textured, bool Gradient, bool Rotated = false>
+		enum class EllipseFanType
+		{
+			Circle,
+			Ellipse,
+			RotatedEllipse,
+			TexturedCircle,
+			TexturedCircleGradient,
+		};
+
+		template <EllipseFanType Type>
 		SIV3D_ALWAYS_INLINE
 		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
 			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {}, const float rotationCos = 1.0f, const float rotationSin = 0.0f)
 		{
+			constexpr bool Circular = ((Type == EllipseFanType::Circle) || (Type == EllipseFanType::TexturedCircle) || (Type == EllipseFanType::TexturedCircleGradient));
+			constexpr bool Textured = ((Type == EllipseFanType::TexturedCircle) || (Type == EllipseFanType::TexturedCircleGradient));
+			constexpr bool Gradient = (Type != EllipseFanType::TexturedCircle);
+			constexpr bool Rotated = (Type == EllipseFanType::RotatedEllipse);
+
 			Float4 colorDiff;
 			float centerU, centerV, rU, rV;
 			if constexpr (Textured)
@@ -694,7 +714,7 @@ namespace s3d
 			}
 			else
 			{
-				return static_cast<Vertex2D::IndexType>(Min((5 + static_cast<int32>((r - 8.0f) / 8.0f)), 63));
+				return static_cast<Vertex2D::IndexType>(Min((5 + static_cast<int32>((r - 8.0f) / 8.0f)), MaxCircleQuarterSegments));
 			}
 		}
 
@@ -1770,7 +1790,7 @@ namespace s3d
 			}
 		}
 
-		static constexpr size_t MaxEllipseArcLengthTableSegmentCount = (63 * 4 * 8);
+		static constexpr size_t MaxEllipseArcLengthTableSegmentCount = (MaxCircleSegments * 8);
 
 		[[nodiscard]]
 		static std::span<const float> GetEllipseArcLengthTable(const float a, const float b, const size_t segmentCount) noexcept
@@ -2095,7 +2115,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<true, false, true>(pVertex, center.x, center.y, r, r, Quality, colorType, color0, color1);
+			WriteEllipseFanVertices<EllipseFanType::Circle>(pVertex, center.x, center.y, r, r, Quality, colorType, color0, color1);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -2486,7 +2506,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<false, false, true, Rotated>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1, {}, rotationCos, rotationSin);
+			WriteEllipseFanVertices<Rotated ? EllipseFanType::RotatedEllipse : EllipseFanType::Ellipse>(pVertex, center.x, center.y, a, b, Quality, colorType, color0, color1, {}, rotationCos, rotationSin);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 
@@ -2791,7 +2811,7 @@ namespace s3d
 			if ((angle == 0.0f) && (firstCap == LineCap::Flat) && (lastCap == LineCap::Flat)) return 0;
 			const float start = (startAngle + (reverse ? angle : 0.0f));
 			const float halfWidth = (thickness * 0.5f), middleOffset = ((outerThickness - innerThickness) * 0.5f);
-			std::array<float, 253> parameters;
+			std::array<float, (MaxCircleSegments + 1)> parameters;
 			uint16 pointCount = 1;
 			parameters[0] = start;
 			if (sweep > 0.0f)
@@ -2806,10 +2826,10 @@ namespace s3d
 				else if (normalSweep < 0.0f) normalSweep += Math::TwoPiF;
 				uint16 normalIntervals = (CalculateCircleArcQuality(offsetRadius * scale, normalSweep) - 1);
 				// Distribute the bounded budget over both position and normal-angle grids.
-				if ((positionIntervals + normalIntervals) > 252)
+				if ((positionIntervals + normalIntervals) > MaxCircleSegments)
 				{
-					positionIntervals = static_cast<uint16>((252u * positionIntervals) / (positionIntervals + normalIntervals));
-					normalIntervals = (252 - positionIntervals);
+					positionIntervals = static_cast<uint16>((MaxCircleSegments * positionIntervals) / (positionIntervals + normalIntervals));
+					normalIntervals = (MaxCircleSegments - positionIntervals);
 				}
 				for (uint16 i = 1; i <= positionIntervals; ++i)
 				{
@@ -2837,7 +2857,7 @@ namespace s3d
 			if (not buffer.pVertex) return 0;
 			auto* vertices = (buffer.pVertex + firstVertices);
 			Float2 firstNormal, lastNormal, firstCenter, lastCenter, previous;
-			std::array<float, 253> lengths;
+			std::array<float, (MaxCircleSegments + 1)> lengths;
 			float bodyLength = 0.0f;
 			for (uint16 i = 0; i < pointCount; ++i)
 			{
@@ -3777,7 +3797,7 @@ namespace s3d
 				return 0;
 			}
 
-			WriteEllipseFanVertices<true, true, Gradient>(pVertex, static_cast<float>(circle.x), static_cast<float>(circle.y), rf, rf, Quality, colorType, color0, color1, uv);
+			WriteEllipseFanVertices<Gradient ? EllipseFanType::TexturedCircleGradient : EllipseFanType::TexturedCircle>(pVertex, static_cast<float>(circle.x), static_cast<float>(circle.y), rf, rf, Quality, colorType, color0, color1, uv);
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
 

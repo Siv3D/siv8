@@ -25,8 +25,7 @@ add one endpoint. The input sweep is nonnegative and at most one revolution.
 Public circle sweep arguments are clamped to one revolution. Ellipse pie drawing
 converts the sweep to ellipse parameters and uses ordinary fill for a full
 revolution. The full-curve budget is at most 252 intervals. Counting intervals
-before endpoints keeps partial arcs at the ordinary circle's angular density;
-longer arcs can gain one interval compared with the former point-count formula.
+before endpoints keeps partial arcs at the ordinary circle's angular density.
 
 [Metal](../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/Renderer2D/Metal/CRenderer2D_Metal.mm)
 and [D3D11](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Renderer2D/D3D11/CRenderer2D_D3D11.cpp)
@@ -48,8 +47,9 @@ primitives do not route their contours through that tessellator.
 | Drawing path | Detail criterion and limit | Assessment |
 | --- | --- | --- |
 | Circle fill / frame | Radius / outer radius; `4*Q`, at most 252 contour intervals | Matches the reference budget |
-| Ellipse fill / frame | Larger axis; frames add the larger absolute inner/outer width; `4*Q`, at most 252 | Bounded like Circle; uniform parameter sampling may be conservative for elongated ellipses |
-| Circle pie / arc; Ellipse pie | Radius or larger axis and sweep; 1 to 252 intervals | Short pieces use the same angular density as ordinary circles, with no forced 4-interval minimum |
+| Ellipse fill / frame, including rotated drawing | Larger axis; frames add the larger absolute inner/outer width; `4*Q`, at most 252 | Bounded like Circle; uniform parameter sampling may be conservative for elongated ellipses |
+| Circle pie / arc; Ellipse pie; TexturedCircle pie | Radius or larger axis and sweep; 1 to 252 intervals | Short pieces use the same angular density as ordinary circles, with no forced 4-interval minimum |
+| Ellipse arc | Merges parameter-angle and normal-angle samples within 252 body intervals; caps have separate budgets | Preserves curved offset edges at elongated tips without exceeding the circle budget |
 | Circle segment | Dedicated chord-fill quality, retaining at least 4 intervals | Preserves the thin region between chord and arc; two endpoints alone would collapse it |
 | Circle dashed frame | Uses the same arc quality independently for each dash | Short dashes grow from 1 to 2, 3, … intervals as needed |
 | Ellipse dashed frame | Short dashes use 2 points when both parameter and normal turns fit one ordinary circle interval; other dashes retain the existing subdivision | Reduces flat portions while preserving detail at high-curvature tips |
@@ -65,12 +65,13 @@ For dashes and joins, total work also depends on the requested number of pieces
 or corners. A single whole-shape limit of 252 would remove requested structure;
 apply the quality budget to curved detail within that structure.
 
-Builder counts were also checked at radii 1,000 and 16,000: Circle/Ellipse fill
-stayed at 252 triangles and their frames at 504. RoundRect/textured RoundRect
-fill stayed at 258 triangles, frames at 512, and the shadow paths stayed
-bounded. These are CPU geometry checks, not GPU timing or visual validation;
-Windows execution was not performed. Source inspection found no additional
-double application of raster scale in the covered drawing paths.
+At the cap, Circle/Ellipse fills have 252 triangles and their frames have 504.
+RoundRect/textured RoundRect fills have 258 triangles and frames have 512.
+[Arc tessellation tests](../../Test/Test_Renderer2DArcTessellation.cpp),
+[ellipse builder tests](../../Test/Test_Vertex2DBuilderEllipse.cpp), and
+[ellipse extension tests](../../Test/Test_Renderer2DEllipseExtensions.cpp)
+check interval limits, mesh bounds and transformed drawing. These geometry
+budgets are distinct from GPU timing and visual quality at extreme scales.
 
 ## Short-arc findings
 
@@ -90,8 +91,8 @@ are eligible for this reduction when their arc length is at most
 `perimeter / fullQuality`. Each eligible dash also checks its endpoint parameter
 span and the change in its outward unit normal against `2*pi / fullQuality`.
 The normal check protects offset frames at elongated ellipses' high-curvature
-tips, including thick strokes. Dashes that fail either check retain the existing
-equal-distance samples and minimum of five points; longer dashes are unchanged.
+tips, including thick strokes. Other dashes use equal-distance samples with a
+minimum of five points.
 The quality uses the larger axis plus the larger absolute stroke width and the
 raster RMS scale, with the same bounded circle quality as other rounded drawing.
 
