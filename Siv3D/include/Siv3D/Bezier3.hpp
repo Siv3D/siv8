@@ -740,58 +740,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を描画します。
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier3& draw(const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を描画します。
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier3& draw(double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を描画します。
-		/// @param lineCap 線端の種類
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier3& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を指定した両端の線端と太さで描画します。
-		/// @param startCap 始点側の線端の種類
-		/// @param endCap 終点側の線端の種類
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier3& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	drawAdaptive
-		//
-		////////////////////////////////////////////////////////////////
-
 		/// @brief 曲線を適応分割で描画します。
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
+		/// @see @ref bezier3_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier3& drawAdaptive(const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param thickness 太さ
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
+		/// @see @ref bezier3_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier3& drawAdaptive(double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param lineCap 線端の種類
@@ -799,11 +763,11 @@ namespace s3d
 		/// @param color 色
 		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
 		/// @param maxSegments 分割数の上限。1～4096
-		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
+		/// @see @ref bezier3_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier3& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
-		/// @anchor bezier3_draw_adaptive
+		/// @anchor bezier3_draw
 		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
 		/// @param startCap 始点側の線端の種類
 		/// @param endCap 終点側の線端の種類
@@ -816,18 +780,18 @@ namespace s3d
 		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
 		/// @remark 太さには絶対値を使用します。すべての制御点が同じ場合は、その点に線端を描画します。
 		/// @return *this
-		const Bezier3& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
-		/// @anchor bezier3_draw_adaptive_gradient
+		/// @anchor bezier3_draw_gradient
 		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
 		/// @param startColor 始点側の色
 		/// @param endColor 終点側の色
 		/// @param targetError 描画先のピクセル単位の目標誤差
 		/// @param maxSegments 分割数の上限（1～4096）
-		/// @see @ref bezier3_draw_adaptive "適応分割の品質と入力条件"
+		/// @see @ref bezier3_draw "適応分割の品質と入力条件"
 		/// @remark 色は線端を含む折れ線の長さに沿って補間します。
 		/// @return *this
-		const Bezier3& drawAdaptive(Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
 		/// @param thickness 太さ
@@ -835,9 +799,9 @@ namespace s3d
 		/// @param endColor 終点側の色
 		/// @param targetError 描画先のピクセル単位の目標誤差
 		/// @param maxSegments 分割数の上限（1～4096）
-		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @see @ref bezier3_draw_gradient
 		/// @return *this
-		const Bezier3& drawAdaptive(double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
 		/// @param lineCap 線端の種類
@@ -846,9 +810,9 @@ namespace s3d
 		/// @param endColor 終点側の色
 		/// @param targetError 描画先のピクセル単位の目標誤差
 		/// @param maxSegments 分割数の上限（1～4096）
-		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @see @ref bezier3_draw_gradient
 		/// @return *this
-		const Bezier3& drawAdaptive(LineCap lineCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(LineCap lineCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
 		/// @param startCap 始点側の線端の種類
@@ -858,9 +822,9 @@ namespace s3d
 		/// @param endColor 終点側の色
 		/// @param targetError 描画先のピクセル単位の目標誤差
 		/// @param maxSegments 分割数の上限（1～4096）
-		/// @see @ref bezier3_draw_adaptive_gradient
+		/// @see @ref bezier3_draw_gradient
 		/// @return *this
-		const Bezier3& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+		const Bezier3& draw(LineCap startCap, LineCap endCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -917,7 +881,7 @@ namespace s3d
 		/// @param color 色
 		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
 		/// @param maxSegments 軸の分割数の上限（1～4096）
-		/// @pre headSize と thickness は有限であること。幾何・変換・品質の入力条件は drawAdaptive() と共通です。
+		/// @pre headSize と thickness は有限であること。幾何・変換・品質の入力条件は draw() と共通です。
 		/// @remark 根元は、終点からの直線距離が矢じりの長さになる曲線上の点のうち、パラメータ t が最大の点です。
 		/// @remark 指定の長さが収まらない場合、終点から曲線までの最大距離に合わせて headSize の両成分を同率で縮小します。軸幅は維持します。
 		/// @remark 三角形の底辺中央を根元に置きます。配置は描画分割から独立して計算し、軸には始点から根元までの曲線を使います。

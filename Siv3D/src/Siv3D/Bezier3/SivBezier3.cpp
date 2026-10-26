@@ -493,73 +493,43 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Bezier3& Bezier3::draw(const ColorF& color, const int32 segments) const
+	const Bezier3& Bezier3::draw(const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineString(segments).draw(color);
-		return *this;
+		return draw(LineCap::Square, LineCap::Square, 1.0, color, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::draw(const double thickness, const ColorF& color, const int32 segments) const
+	const Bezier3& Bezier3::draw(const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineString(segments).draw(thickness, color);
-		return *this;
+		return draw(LineCap::Square, LineCap::Square, thickness, color, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::draw(const LineCap linaCap, const double thickness, const ColorF& color, const int32 segments) const
+	const Bezier3& Bezier3::draw(const LineCap lineCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
-		toLineString(segments).draw(linaCap, thickness, color);
-		return *this;
+		return draw(lineCap, lineCap, thickness, color, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const int32 segments) const
-	{
-		toLineString(segments).draw(startCap, endCap, thickness, color);
-		return *this;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	drawAdaptive
-	//
-	////////////////////////////////////////////////////////////////
-
-	const Bezier3& Bezier3::drawAdaptive(const ColorF& color, const double targetError, const int32 maxSegments) const
-	{
-		return drawAdaptive(LineCap::Square, LineCap::Square, 1.0, color, targetError, maxSegments);
-	}
-
-	const Bezier3& Bezier3::drawAdaptive(const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
-	{
-		return drawAdaptive(LineCap::Square, LineCap::Square, thickness, color, targetError, maxSegments);
-	}
-
-	const Bezier3& Bezier3::drawAdaptive(const LineCap lineCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
-	{
-		return drawAdaptive(lineCap, lineCap, thickness, color, targetError, maxSegments);
-	}
-
-	const Bezier3& Bezier3::drawAdaptive(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
+	const Bezier3& Bezier3::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addBezier(*this, startCap, endCap, static_cast<float>(thickness), color.toFloat4(), targetError, maxSegments);
 		return *this;
 	}
 
-	const Bezier3& Bezier3::drawAdaptive(const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	const Bezier3& Bezier3::draw(const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
 	{
-		return drawAdaptive(LineCap::Square, LineCap::Square, 1.0, startColor, endColor, targetError, maxSegments);
+		return draw(LineCap::Square, LineCap::Square, 1.0, startColor, endColor, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::drawAdaptive(const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	const Bezier3& Bezier3::draw(const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
 	{
-		return drawAdaptive(LineCap::Square, LineCap::Square, thickness, startColor, endColor, targetError, maxSegments);
+		return draw(LineCap::Square, LineCap::Square, thickness, startColor, endColor, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::drawAdaptive(const LineCap lineCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	const Bezier3& Bezier3::draw(const LineCap lineCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
 	{
-		return drawAdaptive(lineCap, lineCap, thickness, startColor, endColor, targetError, maxSegments);
+		return draw(lineCap, lineCap, thickness, startColor, endColor, targetError, maxSegments);
 	}
 
-	const Bezier3& Bezier3::drawAdaptive(const LineCap startCap, const LineCap endCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
+	const Bezier3& Bezier3::draw(const LineCap startCap, const LineCap endCap, const double thickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor, const double targetError, const int32 maxSegments) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addBezier(*this, startCap, endCap, static_cast<float>(thickness), startColor->toFloat4(), endColor->toFloat4(), targetError, maxSegments);
 		return *this;

@@ -65,7 +65,7 @@ void Main()
             const Bezier2 narrow{ { 24, 156 }, { 24, 10 + bend }, { 360, 156 } };
             const auto draw = [&](const auto& curve, const double extraWidth)
             {
-                if (guides) curve.drawAdaptive(1, ColorF{ 0.5 });
+                if (guides) curve.draw(1, ColorF{ 0.5 });
                 curve.drawArrow(caps[capIndex], 8, SizeF{ extraWidth, length }, color, 0.5, budget);
             };
             if (row == 0) draw(quadratic, length * 0.9);
@@ -91,7 +91,7 @@ The opt-in benchmark reports CPU nanoseconds per placement for an ordinary cubic
 and a collinear reversing cubic. It excludes tessellation, mesh building, command
 submission, and GPU work. Treat the values as host-dependent measurements, not a
 frame-rate guarantee. The normal suite validates rendering without writing images.
-The submission benchmark compares `drawAdaptive` with `drawArrow` for both degrees,
+The submission benchmark compares `draw` with `drawArrow` for both degrees,
 using 256 offscreen curves per frame, two warmup rounds and nine measured rounds
 in alternating order. It reports median CPU time including mesh and command
 submission, but excluding frame updates and GPU work.

@@ -137,7 +137,7 @@
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_Bezier.cpp" />
     <ClCompile Include="..\Test\Test_BezierTessellation.cpp" />
-    <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp" />
+    <ClCompile Include="..\Test\Test_BezierDraw.cpp" />
     <ClCompile Include="..\Test\Test_BezierArrow.cpp" />
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />

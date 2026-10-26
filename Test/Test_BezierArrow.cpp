@@ -212,12 +212,12 @@ TEST_CASE("BezierArrow.fallback_and_empty")
 	const SceneScope scene;
 	const Bezier2 curve{ { 40, 200 }, { 40, 20 }, { 300, 200 } };
 	const ColorF color{ 1.0, 0.5 };
-	const auto expected = Capture([&] { curve.drawAdaptive(LineCap::Round, LineCap::Flat, 20, color); });
+	const auto expected = Capture([&] { curve.draw(LineCap::Round, LineCap::Flat, 20, color); });
 	const auto actual = Capture([&] { curve.drawArrow(LineCap::Round, 20, SizeF{ 0.001, 160 }, color); });
 	CHECK(actual == expected);
 	// An oversized head on a reversal would face back into the incoming shaft.
 	const Bezier2 reversing{ { 140, 140 }, { 300, 140 }, { 140, 140 } };
-	const auto reversedLine = Capture([&] { reversing.drawAdaptive(LineCap::Round, LineCap::Flat, 8, color); });
+	const auto reversedLine = Capture([&] { reversing.draw(LineCap::Round, LineCap::Flat, 8, color); });
 	const auto reversedArrow = Capture([&] { reversing.drawArrow(LineCap::Round, 8, SizeF{ 60, 200 }, color); });
 	CHECK(reversedArrow == reversedLine);
 	const auto blank = Capture([] {});
@@ -320,7 +320,7 @@ TEST_CASE("BezierArrow.submission_benchmark", "[.benchmark]")
 				for (int32 i = 0; i < 256; ++i)
 				{
 					const auto moved = curve.movedBy(i * 0.1, 0);
-					if (method == 0) moved.drawAdaptive(LineCap::Round, LineCap::Flat, 8);
+					if (method == 0) moved.draw(LineCap::Round, LineCap::Flat, 8);
 					else moved.drawArrow(LineCap::Round, 8, SizeF{ 40, 32.0 + (i % 100) });
 				}
 				const double ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count() / 256;
@@ -328,7 +328,7 @@ TEST_CASE("BezierArrow.submission_benchmark", "[.benchmark]")
 			}
 		}
 		for (auto& values : times) values.sort();
-		std::cout << "BezierArrow submission " << name << " median ns/call: drawAdaptive=" << times[0][4]
+		std::cout << "BezierArrow submission " << name << " median ns/call: draw=" << times[0][4]
 			<< " drawArrow=" << times[1][4] << '\n';
 	};
 	measure(quadratic, "quadratic");

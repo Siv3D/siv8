@@ -58,9 +58,9 @@ void Main()
         const double sweep = (reverse ? -240_deg : 240_deg);
 
         font(U"Bezier gradients").draw(24, 20);
-        Bezier2{ { 40, 220 }, { 160, 40 }, { 420, 180 } }.drawAdaptive(
+        Bezier2{ { 40, 220 }, { 160, 40 }, { 420, 180 } }.draw(
             LineCap::Flat, LineCap::Round, 18, Arg::start = blue, Arg::end = orange);
-        Bezier3{ { 40, 250 }, { 170, 150 }, { 280, 330 }, { 420, 220 } }.drawAdaptive(
+        Bezier3{ { 40, 250 }, { 170, 150 }, { 280, 330 }, { 420, 220 } }.draw(
             LineCap::Round, 12, Arg::start = blue, Arg::end = ColorF{ 1.0, 0.0 });
 
         font(U"Circle: Flat / Round").draw(500, 20);

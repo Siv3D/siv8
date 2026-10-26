@@ -28,7 +28,7 @@ and the shader interface.
 5. Check that the background and keyboard hint remain stationary while the
    entire card, including its shadow, tilts.
 
-The underline uses 64 subdivisions. Adjust drawing quality explicitly if changing
+The underline uses `toLineString(64)` for uniform subdivisions. Adjust sampling explicitly if changing
 this demo to use much larger magnifications. The dotted route samples `pointAt()`
 and uses `tangentAt()` to orient the plane. Shadow geometry extends outside the
 source rectangle; that rectangle does not clip the drawing. Keep all drawn
@@ -120,7 +120,7 @@ void Main()
 
 			medium(U"Greetings from").draw(24, 44, 44, sea);
 			heavy(U"川平湾").draw(88, 40, 62, ink);
-			Bezier3{ { 46, 178 }, { 120, 196 }, { 220, 160 }, { 300, 176 } }.draw(LineCap::Round, 5, sun, 64);
+			Bezier3{ { 46, 178 }, { 120, 196 }, { 220, 160 }, { 300, 176 } }.toLineString(64).draw(LineCap::Round, 5, sun);
 			RectF{ Arg::center(215, 320), 346, 206 }.rotated(-3_deg).draw(ColorF{ 1.0 });
 			photo.resized(330, 186).rotated(-3_deg).drawAt(215, 320);
 

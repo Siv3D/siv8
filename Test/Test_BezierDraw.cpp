@@ -57,17 +57,17 @@ namespace
 		if (curve.degree == 2)
 		{
 			const auto q = curve.quadratic();
-			CHECK(&q.drawAdaptive(start, end, width, Palette::White, error, limit) == &q);
+			CHECK(&q.draw(start, end, width, Palette::White, error, limit) == &q);
 		}
 		else
 		{
 			const auto c = curve.cubic();
-			CHECK(&c.drawAdaptive(start, end, width, Palette::White, error, limit) == &c);
+			CHECK(&c.draw(start, end, width, Palette::White, error, limit) == &c);
 		}
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.affine_quality_and_storage")
+TEST_CASE("BezierDraw.affine_quality_and_storage")
 {
 	const std::array matrices{
 		Mat3x2::Identity(), Mat3x2::Scale(3.0f), Mat3x2::Scale(4.0f, 0.25f),
@@ -104,7 +104,7 @@ TEST_CASE("BezierDrawAdaptive.affine_quality_and_storage")
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.budget_and_cubic_work_limit")
+TEST_CASE("BezierDraw.budget_and_cubic_work_limit")
 {
 	Tessellation::Workspace workspace;
 	Array<Vec2> points;
@@ -123,7 +123,7 @@ TEST_CASE("BezierDrawAdaptive.budget_and_cubic_work_limit")
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.near_collinear_cubic_reversals")
+TEST_CASE("BezierDraw.near_collinear_cubic_reversals")
 {
 	Tessellation::Workspace workspace;
 	LineString points;
@@ -136,7 +136,7 @@ TEST_CASE("BezierDrawAdaptive.near_collinear_cubic_reversals")
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.count_continuity_near_straight_and_reversal")
+TEST_CASE("BezierDraw.count_continuity_near_straight_and_reversal")
 {
 	Tessellation::Workspace workspace;
 	Array<Vec2> points;
@@ -160,7 +160,7 @@ TEST_CASE("BezierDrawAdaptive.count_continuity_near_straight_and_reversal")
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.public_caps_and_one_segment_budget")
+TEST_CASE("BezierDraw.public_caps_and_one_segment_budget")
 {
 	const DrawSceneScope scene;
 	const std::array<BezierStudy::Curve, 2> curves{
@@ -178,13 +178,41 @@ TEST_CASE("BezierDrawAdaptive.public_caps_and_one_segment_budget")
 	{
 		const Bezier2 q{ { 100, 100 }, { 100, 100 }, { 100, 100 } };
 		const Bezier3 c{ { 200, 100 }, { 200, 100 }, { 200, 100 }, { 200, 100 } };
-		const Image actual = Capture([&] { q.drawAdaptive(cap, 12); c.drawAdaptive(cap, 12); });
+		const Image actual = Capture([&] { q.draw(cap, 12); c.draw(cap, 12); });
 		const Image expected = Capture([&] { LineString{ q.p0 }.draw(cap, 12); LineString{ c.p0 }.draw(cap, 12); });
 		CHECK(actual == expected);
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.public_transform_resolution_and_defaults")
+TEST_CASE("BezierDraw.public_single_color_overloads")
+{
+	const DrawSceneScope scene;
+	const ColorF color{ 0.3, 0.6, 0.9, 0.5 };
+	const auto check = [&](const auto& curve, const Vec2 end)
+	{
+		for (int32 overload = 0; overload < 4; ++overload)
+		{
+			// An explicit one-segment budget must draw the chord in every overload.
+			const auto actual = Capture([&]
+			{
+				if (overload == 0) CHECK(&curve.draw(color, 0.25, 1) == &curve);
+				else if (overload == 1) CHECK(&curve.draw(-6, color, 0.25, 1) == &curve);
+				else if (overload == 2) CHECK(&curve.draw(LineCap::Round, -6, color, 0.25, 1) == &curve);
+				else CHECK(&curve.draw(LineCap::Flat, LineCap::Round, -6, color, 0.25, 1) == &curve);
+			});
+			const auto startCap = ((overload == 3) ? LineCap::Flat : ((overload == 2) ? LineCap::Round : LineCap::Square));
+			const auto endCap = ((overload >= 2) ? LineCap::Round : LineCap::Square);
+			const auto expected = Capture([&] { LineString{ curve.p0, end }.draw(startCap, endCap, (overload ? 6 : 1), color); });
+			CHECK(actual == expected);
+		}
+	};
+	const Bezier2 q{ { 40, 100 }, { 160, 10 }, { 280, 120 } };
+	const Bezier3 c{ { 40, 100 }, { 80, 0 }, { 240, 200 }, { 280, 120 } };
+	check(q, q.p2);
+	check(c, c.p3);
+}
+
+TEST_CASE("BezierDraw.public_transform_resolution_and_defaults")
 {
 	const DrawSceneScope scene;
 	const Bezier2 q{ { 5, 5 }, { 30, 50 }, { 60, 10 } };
@@ -217,18 +245,18 @@ TEST_CASE("BezierDrawAdaptive.public_transform_resolution_and_defaults")
 	{
 		const Image actual = Capture([&]
 		{
-			if (overload == 0) { CHECK(&q.drawAdaptive() == &q); CHECK(&c.drawAdaptive() == &c); }
-			else if (overload == 1) { q.drawAdaptive(5); c.drawAdaptive(5); }
-			else { q.drawAdaptive(LineCap::Round, 5); c.drawAdaptive(LineCap::Round, 5); }
+			if (overload == 0) { CHECK(&q.draw() == &q); CHECK(&c.draw() == &c); }
+			else if (overload == 1) { q.draw(5); c.draw(5); }
+			else { q.draw(LineCap::Round, 5); c.draw(LineCap::Round, 5); }
 		});
 		const auto cap = overload == 2 ? LineCap::Round : LineCap::Square;
 		const auto width = overload == 0 ? 1 : 5;
-		const Image expected = Capture([&] { q.drawAdaptive(cap, cap, width, Palette::White, 0.5, 256); c.drawAdaptive(cap, cap, width, Palette::White, 0.5, 256); });
+		const Image expected = Capture([&] { q.draw(cap, cap, width, Palette::White, 0.5, 256); c.draw(cap, cap, width, Palette::White, 0.5, 256); });
 		CHECK(actual == expected);
 	}
 }
 
-TEST_CASE("BezierDrawAdaptive.gradient_overloads_and_boundaries")
+TEST_CASE("BezierDraw.gradient_overloads_and_boundaries")
 {
 	const DrawSceneScope scene;
 	const ColorF first{ 0.9, 0.3, 0.1, 0.4 }, last{ 0.1, 0.4, 0.9, 0.8 };
@@ -237,7 +265,7 @@ TEST_CASE("BezierDrawAdaptive.gradient_overloads_and_boundaries")
 		for (const auto start : { LineCap::Flat, LineCap::Square, LineCap::Round })
 		for (const auto end : { LineCap::Flat, LineCap::Square, LineCap::Round })
 		{
-			const auto actual = Capture([&] { CHECK(&curve.drawAdaptive(start, end, -12, Arg::start = first, Arg::end = last, 0.5, 1) == &curve); });
+			const auto actual = Capture([&] { CHECK(&curve.draw(start, end, -12, Arg::start = first, Arg::end = last, 0.5, 1) == &curve); });
 			const Tessellation::Curve source{ curve };
 			const auto expected = Capture([&] { LineString{ source.p[0], source.p[source.degree] }.draw(start, end, 12, first, last); });
 			CHECK(actual == expected);
@@ -246,12 +274,12 @@ TEST_CASE("BezierDrawAdaptive.gradient_overloads_and_boundaries")
 		{
 			const auto actual = Capture([&]
 			{
-				if (overload == 0) curve.drawAdaptive(Arg::start = first, Arg::end = last);
-				else if (overload == 1) curve.drawAdaptive(5, Arg::start = first, Arg::end = last);
-				else curve.drawAdaptive(LineCap::Round, 5, Arg::start = first, Arg::end = last);
+				if (overload == 0) curve.draw(Arg::start = first, Arg::end = last);
+				else if (overload == 1) curve.draw(5, Arg::start = first, Arg::end = last);
+				else curve.draw(LineCap::Round, 5, Arg::start = first, Arg::end = last);
 			});
 			const auto cap = ((overload == 2) ? LineCap::Round : LineCap::Square);
-			const auto expected = Capture([&] { curve.drawAdaptive(cap, cap, (overload ? 5 : 1), Arg::start = first, Arg::end = last); });
+			const auto expected = Capture([&] { curve.draw(cap, cap, (overload ? 5 : 1), Arg::start = first, Arg::end = last); });
 			CHECK(actual == expected);
 		}
 	};
@@ -261,7 +289,7 @@ TEST_CASE("BezierDrawAdaptive.gradient_overloads_and_boundaries")
 	check(Bezier3{ { 200, 100 }, { 200, 100 }, { 200, 100 }, { 200, 100 } });
 }
 
-TEST_CASE("BezierDrawAdaptive.gradient_transform_resolution")
+TEST_CASE("BezierDraw.gradient_transform_resolution")
 {
 	const DrawSceneScope scene;
 	const ColorF first{ 0.9, 0.3, 0.1, 0.4 }, last{ 0.1, 0.4, 0.9, 0.8 };
@@ -277,11 +305,11 @@ TEST_CASE("BezierDrawAdaptive.gradient_transform_resolution")
 			Tessellation::Workspace workspace;
 			LineString points;
 			Tessellation::Flatten(points, workspace, source, metric, 0.5, 256);
-			const auto actual = Capture([&] { curve.drawAdaptive(LineCap::Round, LineCap::Flat, 5, Arg::start = first, Arg::end = last); });
+			const auto actual = Capture([&] { curve.draw(LineCap::Round, LineCap::Flat, 5, Arg::start = first, Arg::end = last); });
 			const auto expected = Capture([&] { points.draw(LineCap::Round, LineCap::Flat, 5, first, last); });
 			CHECK(actual == expected);
-			const auto equal = Capture([&] { curve.drawAdaptive(5, Arg::start = first, Arg::end = first); });
-			CHECK(equal == Capture([&] { curve.drawAdaptive(5, first); }));
+			const auto equal = Capture([&] { curve.draw(5, Arg::start = first, Arg::end = first); });
+			CHECK(equal == Capture([&] { curve.draw(5, first); }));
 		};
 		check(Bezier2{ { 5, 5 }, { 30, 50 }, { 60, 10 } });
 		check(Bezier3{ { 5, 25 }, { 0, 60 }, { 55, -5 }, { 60, 40 } });

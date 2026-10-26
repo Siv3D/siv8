@@ -436,7 +436,7 @@
     <ClCompile Include="..\Test\Test_BezierTessellation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_BezierDrawAdaptive.cpp">
+    <ClCompile Include="..\Test\Test_BezierDraw.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_BezierArrow.cpp">

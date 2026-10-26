@@ -70,7 +70,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
 | LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
-| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | Fixed-subdivision `draw()`; adaptive GPU quality includes renderer transforms and render-target resolution |
+| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | `draw()` uses adaptive subdivision; GPU quality includes renderer transforms and render-target resolution |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
 | Spline2D | Adaptive open / closed stroke, independent open end caps, per-curve quality/budget controls | GPU quality includes renderer transforms and render-target resolution; open GPU paths use Square caps |
@@ -201,7 +201,7 @@ compositing. Bezier Image writing uses the shared [density tessellation](bezier-
 with optional `targetError` and `maxSegments` after the antialiasing argument.
 Defaults are 0.5 Image pixels and 256 segments. The positive finite target is
 approximate, and the segment cap takes priority. Renderer transforms do not
-affect Image quality. GPU `drawAdaptive()` defaults to Square caps, while Image
+affect Image quality. GPU `draw()` defaults to Square caps, while Image
 writing defaults to Round; specify caps explicitly when comparing the two.
 
 ```cpp
@@ -229,9 +229,8 @@ the neighboring round join already covers the inward part of an endpoint disk.
 Bezier and Spline adaptive conversion, GPU drawing, and Image writing share
 the [curve tessellation kernel](bezier-drawing.md). The Image methods pass the
 sampled path to the common stroke rasterizer.
-Fixed-subdivision `draw()` remains a separate GPU family. Image callers needing
-uniform parameter subdivisions can use `toLineString(subdivisions)` and paint
-that result.
+Callers needing uniform parameter subdivisions can use
+`toLineString(segments)` and draw or paint that result.
 
 Spline2D directly writes its whole path with automatic closure from `isClosed()`.
 Open paths default to Round caps; a closed path joins its seam and ignores caps.

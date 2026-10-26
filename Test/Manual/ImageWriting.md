@@ -23,7 +23,7 @@ acceptance criterion.
    start and end caps through Flat / Round / Square. **D** changes the last Line
    length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
    0.25 / 0.5 / 1.5 pixels; **B** switches its budget between 256 and four segments.
-   The GPU Bezier columns use `drawAdaptive` with the same numeric settings.
+   The GPU Bezier columns use `draw` with the same numeric settings.
    On the arrow page, **J** selects the
    tail cap, **T** cycles the shaft width, and **D** changes the short arrow.
    The columns show horizontal, diagonal, short, clipped, and zero-length arrows.
@@ -432,7 +432,7 @@ void Main()
 					};
 					const auto drawCurve = [&](const auto& shape)
 					{
-						shape.movedBy(pos).drawAdaptive(arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink,
+						shape.movedBy(pos).draw(arcCaps[startCapIndex], arcCaps[endCapIndex], 18.5, ink,
 							curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
 					};
 					if (kind == 0) draw(strokeLine);

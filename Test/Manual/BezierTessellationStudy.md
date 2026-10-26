@@ -3,7 +3,7 @@
 This opt-in automated study compares legacy Bezier2/Bezier3 flattening, a deeper
 legacy baseline, Wang subdivision, and the adopted density placement. It captures
 the actual renderer, measures stroke mesh counts, and produces a local interactive
-report. Density captures and submission timings use the public `drawAdaptive`
+report. Density captures and submission timings use the public `draw`
 API. The study does not replace a platform Main.cpp. The [Spline gallery](Spline2D.md)
 and [Image gallery](ImageWriting.md) cover those integration paths.
 
@@ -56,7 +56,7 @@ commands there. A macOS timing result does not validate Windows performance.
 ## Expected results and inspection
 
 The default automated suite runs endpoint, output-budget, storage-reuse,
-ordinary-error, and collinear-limit checks. `BezierDrawAdaptive.*` adds public
+ordinary-error, and collinear-limit checks. `BezierDraw.*` adds public
 API captures, affine and resolution tests, and cubic reversal regressions.
 Geometry, raster, animation, and timing studies are hidden unless explicitly selected. A complete study ends
 with passing test results and emits `BSTUDY` measurement records and
@@ -142,8 +142,8 @@ void Main()
 				const LineString line = cubic ? c.toLineString(4096) : q.toLineString(4096);
 				line.draw(LineCap::Round, 6, Palette::White);
 			}
-			else if (cubic) c.drawAdaptive(LineCap::Round, 6, Palette::White, targetError, budget);
-			else q.drawAdaptive(LineCap::Round, 6, Palette::White, targetError, budget);
+			else if (cubic) c.draw(LineCap::Round, 6, Palette::White, targetError, budget);
+			else q.draw(LineCap::Round, 6, Palette::White, targetError, budget);
 		}
 		font(U"Bezier{} | target={}px | budget={} | zoom={:.2f} | reference={}"_fmt(
 			cubic ? 3 : 2, targetError, budget, zoom, reference)).draw(20, 20);

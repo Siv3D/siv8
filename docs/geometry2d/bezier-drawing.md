@@ -11,10 +11,10 @@ or a temporal cache. Wang subdivision remains an internal bounded fallback.
 
 ```cpp
 const Bezier3 curve{ { 40, 200 }, { 100, 20 }, { 400, 380 }, { 560, 200 } };
-curve.drawAdaptive(6, Palette::White);             // 0.5 pixels, at most 256 segments
-curve.drawAdaptive(6, Palette::White, 0.25, 256);   // Finer approximation
-curve.drawAdaptive(6, Palette::White, 0.75, 128);   // Fewer vertices, visible facets possible
-curve.drawAdaptive(LineCap::Round, 12,
+curve.draw(6, Palette::White);             // 0.5 pixels, at most 256 segments
+curve.draw(6, Palette::White, 0.25, 256);   // Finer approximation
+curve.draw(6, Palette::White, 0.75, 128);   // Fewer vertices, visible facets possible
+curve.draw(LineCap::Round, 12,
     Arg::start = Palette::Skyblue, Arg::end = ColorF{ 1.0, 0.0 });
 ```
 
@@ -34,11 +34,19 @@ consistent with [ScopedQuadWarp2D](../../Siv3D/include/Siv3D/ScopedQuadWarp2D.hp
 It describes the centerline, not stroke joins, caps, or raster coverage.
 
 The final argument is **`maxSegments`**, with a default of 256 and a precondition
-of 1–4096. It replaces the old recursion-depth argument; an old call ending in
-`5` now allows only five segments. This budget limits centerline segments, not
+of 1–4096. This budget limits centerline segments, not
 GPU vertices added for thickness, joins, and caps. The budget takes priority
 over the quality target; one segment draws the endpoint chord. Finite,
 representable geometry and intermediate calculations are caller preconditions.
+
+For uniform parameter subdivisions, convert explicitly and draw the resulting
+LineString. Retain it when the curve does not change and that sampling density
+suits the intended display scale:
+
+```cpp
+const LineString outline = curve.toLineString(24);
+outline.draw(6, Palette::White);
+```
 
 The [manual gallery and study instructions](../../Test/Manual/BezierTessellationStudy.md)
 cover moving curves, quality controls, native captures, plots, and measurements.
@@ -132,10 +140,10 @@ for drawing and caching examples.
 
 The v0.8.0 implementation scope is complete: adaptive Bezier and Spline
 conversion, GPU drawing, and Bezier/Spline Image writing use the shared kernel.
-Fixed-subdivision APIs, arc-length measurement, Walkers, and geometric queries
+Fixed-subdivision conversion, arc-length measurement, Walkers, and geometric queries
 have separate algorithms and do not require this tessellation change.
 
-Automated [drawing tests](../../Test/Test_BezierDrawAdaptive.cpp) cover affine
+Automated [drawing tests](../../Test/Test_BezierDraw.cpp) cover affine
 quality, singular transforms, storage reuse, output and workspace limits, near
 collinear reversals, sampled count continuity, gradients, all cap combinations, degenerate
 curves, default overloads, and the public render path at different scene
@@ -260,7 +268,7 @@ and 4% faster for cubics than current. Wang is about 32–35% faster in that
 workload, but generates more vertices for the ordinary cubic set.
 
 A separate test submits 768 offscreen round-capped strokes per frame through
-the renderer. Density calls the public `drawAdaptive`, including transform setup
+the renderer. Density calls the public `draw`, including transform setup
 and reusable output; other methods call adaptive conversion and `LineString::draw`.
 It excludes frame update, presentation, and GPU waits. Across two runs, median
 CPU time was 2.23–2.25 µs per curve for current, 1.62–1.66 µs for Wang, and

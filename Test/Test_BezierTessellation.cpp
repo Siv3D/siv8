@@ -99,8 +99,8 @@ namespace
 
 	void DrawDensity(const Curve& curve, const double width, const ColorF& color, const double tolerance)
 	{
-		if (curve.degree == 2) curve.quadratic().drawAdaptive(LineCap::Round, width, color, tolerance);
-		else curve.cubic().drawAdaptive(LineCap::Round, width, color, tolerance);
+		if (curve.degree == 2) curve.quadratic().draw(LineCap::Round, width, color, tolerance);
+		else curve.cubic().draw(LineCap::Round, width, color, tolerance);
 	}
 
 	double ResidualChange(const Curve& a, const LineString& la, const Curve& b, const LineString& lb)

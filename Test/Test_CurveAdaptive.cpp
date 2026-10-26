@@ -415,8 +415,8 @@ TEST_CASE("CurveAdaptive.Gallery", "[.bezier-study]")
 				else
 				{
 					const Transformer2D transform{ Mat3x2::Translate(pos) };
-					if (row == 0) quadratic.drawAdaptive(LineCap::Square, 6, ink);
-					else if (row == 1) cubic.drawAdaptive(LineCap::Square, 6, ink);
+					if (row == 0) quadratic.draw(LineCap::Square, 6, ink);
+					else if (row == 1) cubic.draw(LineCap::Square, 6, ink);
 					else path.draw(6, ink);
 				}
 			}
