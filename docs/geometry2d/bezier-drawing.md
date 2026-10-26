@@ -1,4 +1,4 @@
-# Adaptive Bezier and Spline drawing
+# Bezier and Spline drawing
 
 `Bezier2`, `Bezier3`, and `Spline2D` share density-based vertex placement
 for adaptive conversion and drawing. GPU drawing uses a default target deviation
@@ -45,6 +45,48 @@ cover moving curves, quality controls, native captures, plots, and measurements.
 The study's **Current** label means the legacy recursive conversion, frozen in
 [test support](../../Test/BezierTessellationLegacy.hpp) as a baseline. **Density** uses the adopted kernel, and native captures and
 submission timings call the public drawing API.
+
+## Curved arrows
+
+```cpp
+const Bezier3 arrow{ { 40, 220 }, { 100, 30 }, { 320, 220 }, { 440, 220 } };
+arrow.drawArrow(8, SizeF{ 26, 32 }, Palette::Skyblue);
+arrow.drawArrow(LineCap::Round, 8, SizeF{ 80, 100 }, ColorF{ 0.3, 0.7, 1.0, 0.5 });
+```
+
+Both Bezier classes provide single-color `drawArrow`. As with `Line::drawArrow`,
+`headSize` supplies the **additional width beyond the shaft** and the head length.
+The first example therefore has a 34-unit-wide base and a 32-unit-long head.
+The source curve's endpoint is the tip. A point on the curve becomes the base
+center, and the triangle points from that base to the tip. Large heads follow
+this chord instead of the endpoint tangent, without bending the source curve.
+See the public headers linked above for selection, shrinking, and empty-input rules.
+
+Placement uses curve coordinates and is independent of tessellation quality and
+transforms. The remaining shaft uses the adaptive drawing quality and segment
+budget described above. Very low budgets can change whether the last shaft
+segment fits the head base, even though the candidate triangle stays fixed.
+When it does not fit, or the shaft meets the head facing backwards, the API draws
+the full curve with a flat end and omits the head. This can occur with oversized
+heads on reversing curves. Use a wider head when a narrow arrow disappears on a bend.
+
+Ordinary joins cut the shaft at the triangle's base to avoid double blending.
+Short terminal segments and sharp bends can use an overlapping local bridge.
+Self-intersections and overlaps between a large head and earlier parts of the
+shaft can also darken translucent arrows. The renderer does not union the entire
+outline. This keeps work bounded for arrows drawn every frame.
+
+The [placement helper](../../Siv3D/src/Siv3D/Geometry2D/BezierArrowGeometry.hpp)
+first checks Bernstein coefficient signs for a unique crossing, then uses
+bounded root refinement. Multiple-candidate and oversized cases use fixed-storage
+distance extrema. It does not flatten the curve to locate the head. The shared renderer splits the curve at
+the root, reuses its point array, and normally tessellates once; the omitted-head
+fallback tessellates the full curve. Metal and D3D11 use the same mesh builder.
+
+The [manual arrow gallery](../../Test/Manual/BezierArrow.md) covers sizes, caps,
+translucency, deformation, and the narrow-head fallback. The focused
+[automated tests](../../Test/Test_BezierArrow.cpp) cover placement, repeated roots,
+mesh bounds, allocation failure, public rendering, and an opt-in placement benchmark.
 
 ## Implementation boundaries
 

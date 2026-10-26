@@ -14,6 +14,7 @@
 # include <Siv3D/Resource.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Geometry2D/BezierTessellation.hpp>
+# include <Siv3D/Geometry2D/BezierArrowGeometry.hpp>
 
 namespace s3d::detail::SuperEllipseTessellation
 {
@@ -149,6 +150,33 @@ namespace s3d
 			detail::BezierTessellation::Flatten(destination, workspace, source, metric, targetError, static_cast<uint32>(maxSegments));
 		}
 
+		template <class Bezier>
+		void DrawBezierArrow(ISiv3DRenderer2D& renderer, Array<Vec2>& points, const Bezier& curve,
+			const LineCap startCap, const float thickness, const SizeF& headSize, const Float4& color,
+			const double targetError, const int32 maxSegments)
+		{
+			assert(0 < targetError);
+			assert(1 <= maxSegments && maxSegments <= 4096);
+			const auto head = detail::FindBezierArrowHead(curve, headSize.y);
+			if (not head) return;
+			if (head->parameter == 0.0)
+			{
+				points.clear();
+				points.push_back(head->base);
+			}
+			else
+			{
+				Tessellate(points, curve.split(head->parameter).first, renderer, targetError, maxSegments);
+				points.back() = head->base;
+			}
+			const float headWidth = (thickness + static_cast<float>(headSize.x * head->sizeScale));
+			if (not renderer.addLineStringArrow(startCap, points, head->tip, thickness, headWidth, color))
+			{
+				Tessellate(points, curve, renderer, targetError, maxSegments);
+				renderer.addLineString(startCap, LineCap::Flat, points, none, thickness, false, CloseRing::No, color);
+			}
+		}
+
 		template <class Fill>
 		void DrawFrame(ISiv3DRenderer2D& renderer, Array<Vec2>& points, const SuperEllipse& shape,
 			const float thickness, const Fill& fill)
@@ -187,6 +215,18 @@ namespace s3d
 	{
 		Tessellate(m_curvePoints, curve, *this, targetError, maxSegments);
 		addLineString(startCap, endCap, m_curvePoints, none, Abs(thickness), false, startColor, endColor);
+	}
+
+	void ISiv3DRenderer2D::addBezierArrow(const Bezier2& curve, const LineCap startCap, const float thickness,
+		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		DrawBezierArrow(*this, m_curvePoints, curve, startCap, thickness, headSize, color, targetError, maxSegments);
+	}
+
+	void ISiv3DRenderer2D::addBezierArrow(const Bezier3& curve, const LineCap startCap, const float thickness,
+		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		DrawBezierArrow(*this, m_curvePoints, curve, startCap, thickness, headSize, color, targetError, maxSegments);
 	}
 
 	void ISiv3DRenderer2D::addSpline(const std::span<const Bezier3> curves, const CloseRing closeRing,

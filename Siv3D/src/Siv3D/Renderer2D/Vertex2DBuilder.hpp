@@ -41,6 +41,10 @@ namespace s3d
 		[[nodiscard]]
 		Vertex2D::IndexType BuildArrow(const BufferCreatorFunc& bufferCreator, LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2], float scale);
 
+		// none requests ordinary-curve fallback; 0 means allocation failed or empty.
+		[[nodiscard]]
+		Optional<uint32> BuildLineStringArrow(const BufferCreatorFunc& bufferCreator, LineCap startCap, std::span<const Vec2> points, const Float2& tip, float thickness, float headWidth, const Float4& color, float scale);
+
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTriangle(const BufferCreatorFunc& bufferCreator, const Float2(&points)[3], const Float4& color);
 

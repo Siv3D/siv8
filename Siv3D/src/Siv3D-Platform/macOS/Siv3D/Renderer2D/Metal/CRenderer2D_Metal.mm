@@ -137,6 +137,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool CRenderer2D_Metal::addLineStringArrow(const LineCap startCap, const std::span<const Vec2> points,
+		const Float2& tip, const float thickness, const float headWidth, const Float4& color)
+	{
+		const auto count = Vertex2DBuilder::BuildLineStringArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			startCap, points, tip, thickness, headWidth, color, m_commandManager.getCurrentRasterScaling());
+		if (not count) return false;
+		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
+		return true;
+	}
+
 	void CRenderer2D_Metal::addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2])
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, start, end, thickness, headSize, colors, m_commandManager.getCurrentRasterScaling()))

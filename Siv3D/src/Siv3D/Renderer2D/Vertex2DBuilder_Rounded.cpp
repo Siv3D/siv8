@@ -3569,6 +3569,105 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildLineStringArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<uint32> BuildLineStringArrow(const BufferCreatorFunc& bufferCreator, const LineCap startCap,
+			const std::span<const Vec2> points, const Float2& tip, const float thickness, const float headWidth,
+			const Float4& color, const float scale)
+		{
+			if (points.empty() || (thickness <= 0.0f) || (headWidth < thickness)) return none;
+			PolylineBuffer& scratch = GetPolylineBuffer();
+			const auto prepared = PreparePolyline<Vec2>(points, none, scale, false, true, false, scratch);
+			const auto pts = prepared.points;
+			const Float2 base = pts.back();
+			const Float2 headVector = (tip - base);
+			const float headLength = headVector.length();
+			if (headLength == 0.0f) return none;
+			if (pts.size() == 1)
+			{
+				return BuildArrow(bufferCreator, startCap, base, tip, thickness,
+					Float2{ (headWidth - thickness), headLength }, { color, color }, scale);
+			}
+			if (MaxLineStringPointCount < pts.size()) return none;
+
+			const size_t n = pts.size();
+			const Float2 lastVector = (base - pts[n - 2]);
+			const float lastLength = lastVector.length();
+			if (lastLength == 0.0f) return none;
+			const Float2 shaftDirection = (lastVector / lastLength), headDirection = (headVector / headLength);
+			const float cosine = shaftDirection.dot(headDirection);
+			// The oblique cross-section must fit inside the head's base. This
+			// also bounds the projection without exceptional-value guards.
+			if ((cosine <= 0.0f) || (headWidth * cosine < thickness)) return none;
+			const float halfThickness = (thickness * 0.5f), joinRadius = (halfThickness / cosine);
+			const Float2 normal{ -headDirection.y, headDirection.x };
+			MiterPair previous;
+			if (n == 2)
+			{
+				const Float2 offset{ -shaftDirection.y * halfThickness, shaftDirection.x * halfThickness };
+				previous = { (pts[0] + offset), (pts[0] - offset) };
+			}
+			else
+			{
+				previous = ComputeMiterPair(pts[n - 2], (pts[n - 2] - pts[n - 3]).normalized(),
+					shaftDirection, pts[n - 3], base, halfThickness);
+			}
+			const bool project = (((previous.a - base).dot(headDirection) <= 0.0f)
+				&& ((previous.b - base).dot(headDirection) <= 0.0f));
+
+			const uint16 quality = ((startCap == LineCap::Round) ? CalculateCircleSegmentQuality(halfThickness * scale, Math::PiF) : 0);
+			const uint16 capVertices = ((startCap == LineCap::Square) ? 4 : ((startCap == LineCap::Round) ? (quality + 1) : 0));
+			const uint32 capIndices = ((startCap == LineCap::Square) ? 6 : ((startCap == LineCap::Round) ? ((quality - 1) * 3) : 0));
+			const uint16 stripVertices = static_cast<uint16>(n * 2);
+			const uint32 stripIndices = static_cast<uint32>((n - 1) * 6);
+			const uint16 headOffset = (stripVertices + capVertices);
+			const uint16 vertexCount = (headOffset + 3 + (project ? 0 : 3));
+			const uint32 indexCount = (stripIndices + capIndices + 3 + (project ? 0 : 6));
+			const auto buffer = bufferCreator(vertexCount, indexCount);
+			if (not buffer.pVertex) return uint32{ 0 };
+
+			float startAngle = 0.0f;
+			EmitLineStringStrip(buffer, pts, halfThickness, false, [&](size_t) { return color; }, &startAngle);
+			const Vertex2DBufferPointer capBuffer{ buffer.pVertex + stripVertices, buffer.pIndex + stripIndices,
+				static_cast<uint16>(buffer.indexOffset + stripVertices) };
+			const LineStringBuffer caps{ buffer, capBuffer, {}, quality, indexCount };
+			EmitLineStringCaps(caps, startCap, LineCap::Flat, pts.front(), startAngle, base, 0.0f, none, thickness, color, color);
+
+			const Float2 a = (base + normal * joinRadius), b = (base - normal * joinRadius);
+			if (project)
+			{
+				buffer.pVertex[stripVertices - 2].pos = a;
+				buffer.pVertex[stripVertices - 1].pos = b;
+			}
+			buffer.pVertex[headOffset].set(tip, color);
+			buffer.pVertex[headOffset + 1].set(base + normal * (headWidth * 0.5f), color);
+			buffer.pVertex[headOffset + 2].set(base - normal * (headWidth * 0.5f), color);
+			auto* indices = (buffer.pIndex + stripIndices + capIndices);
+			const auto triangle = [&](uint16 i, uint16 j, uint16 k)
+			{
+				if ((buffer.pVertex[j].pos - buffer.pVertex[i].pos).cross(buffer.pVertex[k].pos - buffer.pVertex[i].pos) < 0.0f) std::swap(j, k);
+				*indices++ = (buffer.indexOffset + i);
+				*indices++ = (buffer.indexOffset + j);
+				*indices++ = (buffer.indexOffset + k);
+			};
+			triangle(headOffset, (headOffset + 1), (headOffset + 2));
+			if (not project)
+			{
+				// A short/turning terminal strip may already cross the head plane.
+				// Keep its ordinary end and bridge locally; overlap is intentional.
+				buffer.pVertex[headOffset + 3].set(base, color);
+				buffer.pVertex[headOffset + 4].set(a, color);
+				buffer.pVertex[headOffset + 5].set(b, color);
+				triangle((headOffset + 3), (stripVertices - 2), (headOffset + 4));
+				triangle((headOffset + 3), (headOffset + 5), (stripVertices - 1));
+			}
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildLineString
 		//
 		////////////////////////////////////////////////////////////////

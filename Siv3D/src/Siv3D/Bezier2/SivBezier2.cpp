@@ -559,6 +559,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier2& Bezier2::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color, const double targetError, const int32 maxSegments) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, color, targetError, maxSegments);
+	}
+
+	const Bezier2& Bezier2::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color, const double targetError, const int32 maxSegments) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addBezierArrow(*this, startCap, static_cast<float>(thickness), headSize, color.toFloat4(), targetError, maxSegments);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////

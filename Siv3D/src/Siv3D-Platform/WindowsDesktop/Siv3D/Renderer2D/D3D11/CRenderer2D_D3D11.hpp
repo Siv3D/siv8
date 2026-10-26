@@ -58,6 +58,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		bool addLineStringArrow(LineCap startCap, std::span<const Vec2> points, const Float2& tip, float thickness, float headWidth, const Float4& color) override;
+
 		void addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2]) override;
 
 		////////////////////////////////////////////////////////////////
