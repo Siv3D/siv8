@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 
 namespace
 {
@@ -218,6 +219,8 @@ TEST_CASE("Renderer2D.ellipse_pie_scene_resolution")
 			DrawHalfEllipse(sweep, coloring);
 		});
 		CHECK(highTriangles == Profiler::GetFrameMetrics().triangleCount);
-		CHECK(highResolution == reference);
+		// The scene-scale and explicit-transform paths can round gradient RGB by
+		// one UNORM8 step; retain exact alpha and reject larger per-channel errors.
+		CHECK_THAT(highResolution, ImageDrawingTest::ImageEquals(reference, 1));
 	}
 }

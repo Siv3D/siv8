@@ -282,7 +282,8 @@ TEST_CASE("Renderer2D.superellipse_mesh_colors_and_failure")
 			return Vertex2DBuilder::BuildSuperEllipse(creator, Float2{ 120, 100 }, 80, 60, n,
 				coloring, Float4{ 1, 0, 0, 0.5f }, Float4{ 0, 0, 1, 0.5f }, scale);
 		};
-		CHECK(build(allocate) == indices.size());
+		const auto indexCount = build(allocate);
+		CHECK(indexCount == indices.size());
 		REQUIRE(vertices.size() >= 5);
 		CHECK(vertices.size() <= 257);
 		CHECK(indices.size() == (vertices.size() - 1) * 3);

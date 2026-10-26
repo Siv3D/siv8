@@ -128,10 +128,35 @@ TEST_CASE("ImageDrawingTestHelper.ImageEqualsDiagnostics")
 	CHECK(matcher.describe().find("first difference at (1, 0): actual RGBA (80, 90, 100, 110)") != std::string::npos);
 	std::ostringstream diagnostic;
 	Catch::makeMatchExpr(actual, matcher).streamReconstructedExpression(diagnostic);
-	CHECK(diagnostic.str() == "Image(2x2) equals expected image 2x2; first difference at (1, 0): actual RGBA (80, 90, 100, 110), expected RGBA (10, 20, 30, 0)");
+	CHECK(diagnostic.str() == "Image(2x2) equals expected image 2x2; first difference at (1, 0): actual RGBA (80, 90, 100, 110), expected RGBA (10, 20, 30, 0)"
+		"; differing pixels 2/4; maximum RGBA difference (70, 70, 70, 110); total channel difference 480; bounds (1, 0)-(1, 1)");
 	CHECK(matcher.match(expected));
 	CHECK(matcher.describe().find("difference") == std::string::npos);
 	const Image empty;
 	CHECK_THAT(empty, ImageEquals(empty));
 	CHECK_FALSE(ImageEquals(empty).match(expected));
+}
+
+TEST_CASE("ImageDrawingTestHelper.ImageEqualsRGBTolerance")
+{
+	const Image expected{ 2, 2, Color{ 10, 20, 30, 40 } };
+	Image actual = expected;
+	actual[0][0] = Color{ 9, 21, 29, 40 };
+	actual[1][1] = Color{ 11, 19, 31, 40 };
+	ImageEquals matcher{ expected, 1 };
+	CHECK_FALSE(ImageEquals(expected).match(actual));
+	CHECK(matcher.match(actual));
+	CHECK(matcher.describe().find("RGB tolerance 1 with exact alpha") != std::string::npos);
+	CHECK(matcher.describe().find("differing pixels 2/4; maximum RGBA difference (1, 1, 1, 0)") != std::string::npos);
+	for (const Color rejected : { Color{ 8, 20, 30, 40 }, Color{ 10, 22, 30, 40 },
+		Color{ 10, 20, 32, 40 }, Color{ 10, 20, 30, 41 } })
+	{
+		actual = expected;
+		actual[1][1] = rejected;
+		CHECK_FALSE(matcher.match(actual));
+	}
+	CHECK_FALSE(matcher.match(Image{ 1, 4, Color{ 10, 20, 30, 40 } }));
+	CHECK(matcher.match(expected));
+	const Image empty;
+	CHECK(ImageEquals(empty, 1).match(empty));
 }

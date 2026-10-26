@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 
 // Vertex boundaries apply to both D3D11 buffers and Metal vertex ranges.
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
@@ -441,7 +442,7 @@ TEST_CASE("Renderer2D.round_arc_directions")
 				}
 				draw();
 			});
-			CHECK((actual.image == reference.image));
+			CHECK_THAT(actual.image, ImageDrawingTest::ImageEquals(reference.image));
 			CHECK(actual.triangleCount == (reference.triangleCount + rectangleCount * 2));
 		}
 	}
