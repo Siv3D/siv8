@@ -16,7 +16,8 @@ API inventory, validation, and reproducible performance measurements.
 to the 2D drawing API, with SVG galleries, existing API comparisons, external
 examples, and staged implementation options. Remaining candidates are unadopted;
 implemented rotated ellipses and elliptical arcs link to the Renderer2D guide,
-and Bezier arrows link to the curve drawing guide.
+Bezier arrows link to the curve drawing guide, and independent-corner rectangles
+link to the rounded drawing guide.
 
 ## Spline paths
 
@@ -38,6 +39,7 @@ to the reproducible renderer gallery and benchmarks.
 rounded-rectangle, cap, join, texture, and shadow paths against Circle's bounded
 drawing cost. It distinguishes GPU subdivision from arc-length calculations,
 records short-dash findings, and explains SuperEllipse's private tessellator.
+It also covers [direct independent-corner fills and frames](rounded-drawing.md#independent-corner-rectangles).
 
 ## Continuing a ray after contact
 

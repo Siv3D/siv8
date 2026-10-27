@@ -73,6 +73,52 @@ RoundRect/textured RoundRect fills have 258 triangles and frames have 512.
 check interval limits, mesh bounds and transformed drawing. These geometry
 budgets are distinct from GPU timing and visual quality at extreme scales.
 
+## Independent-corner rectangles
+
+`Rect` and `RectF` accept four radii directly, in top-left, top-right,
+bottom-right, bottom-left order:
+
+```cpp
+rect.drawRounded(28, 6, 28, 6, color);
+rect.drawRoundedFrame(28, 6, 28, 6, 8, color);
+rect.drawRoundedFrame(28, 6, 28, 6, 6, 2, color);
+```
+
+The frame overloads specify either a centered total width or separate inner and
+outer widths. See [RectF](../../Siv3D/include/Siv3D/RectF.hpp) and
+[Rect](../../Siv3D/include/Siv3D/Rect.hpp) for normalization and boundary behavior.
+A single large corner may exceed half the short side; fitting uses neighboring
+radius sums. The fill shares its adjustment with `rounded(tl, tr, br, bl)`.
+
+Both direct APIs write into one renderer buffer reservation without constructing
+a Polygon or allocating a temporary contour. The independent-radius fill uses
+a convex boundary fan; the frame joins corresponding inner/outer arc samples.
+Collapsed inner arcs become fans around a square inner corner. Fitting those
+inner radii to the contracted rectangle keeps thick frames simple and bounded,
+though their corners need not be exact constant-distance offsets. Touching arc
+endpoints can leave degenerate triangles, avoiding a separate compaction pass.
+Only the band is drawn, so translucent frames do not accumulate color at joins.
+
+Each corner uses its own bounded circle quality, with at most 63 curved intervals.
+The independent-radius fill uses at most 256 vertices / 254 triangles, and its
+frame at most 512 vertices / 512 triangles. Equal radii use the existing RoundRect
+path (up to 258 fill triangles); zero-radius fills use Rect. Detail follows the
+same composed raster RMS metric as other rounded shapes on Metal and D3D11.
+
+Use direct drawing when dimensions or radii change frequently. A stored Polygon
+remains useful for geometry queries and repeated drawing of a fixed shape.
+The Polygon conversion has its own tessellation rule; pixel-identical outlines
+are not implied. Its generic centered polyline frame also differs at collapsed
+corners from the dedicated rounded frame.
+
+The [interactive gallery and benchmark instructions](../../Test/Manual/RectRoundedDrawing.md)
+cover both APIs and the Polygon comparison. The dedicated
+[tests](../../Test/Test_RectRoundedDrawing.cpp) check mesh bounds, winding,
+single coverage, radius fitting, collapsed corners, empty inputs, allocation
+failure, transforms, scene resolution, and translucent rendering. The optional
+benchmark compares CPU submission against temporary and cached Polygons;
+it does not measure GPU time.
+
 ## Short-arc findings
 
 The following counts were checked by invoking the actual shared builders with

@@ -1464,7 +1464,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
-		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @brief 四隅を丸めた Polygon を作成して返します。
 		/// @param tl 左上の角の半径
 		/// @param tr 右上の角の半径
 		/// @param br 右下の角の半径
@@ -2015,6 +2015,55 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Rect& draw(const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawRounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅の半径を指定して角丸長方形を描きます。
+		/// @param tl 左上の角の半径
+		/// @param tr 右上の角の半径
+		/// @param br 右下の角の半径
+		/// @param bl 左下の角の半径
+		/// @param color 色
+		/// @remark 負の半径は 0 とし、隣接する半径の和が辺を超える場合は全半径を同じ比率で縮小します。幅または高さが 0 以下なら描きません。
+		/// @pre 座標、寸法、半径と調整後の輪郭は有限で、描画座標は float で表現可能であること。
+		/// @return *this
+		const Rect& drawRounded(double tl, double tr, double br, double bl, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawRoundedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅の半径を指定して角丸長方形の枠を描きます。
+		/// @param tl 左上の角の半径
+		/// @param tr 右上の角の半径
+		/// @param br 右下の角の半径
+		/// @param bl 左下の角の半径
+		/// @param thickness 基準の輪郭から内外へ半分ずつ広がる枠の太さ。0 以下なら描きません。
+		/// @param color 色
+		/// @remark 半径の調整、内外の輪郭、入力条件は内側・外側の太さを指定するオーバーロードと同じです。
+		/// @return *this
+		const Rect& drawRoundedFrame(double tl, double tr, double br, double bl, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 四隅の半径と内外の太さを指定して角丸長方形の枠を描きます。
+		/// @param tl 左上の角の半径
+		/// @param tr 右上の角の半径
+		/// @param br 右下の角の半径
+		/// @param bl 左下の角の半径
+		/// @param innerThickness 基準の輪郭から内側方向への枠の太さ
+		/// @param outerThickness 基準の輪郭から外側方向への枠の太さ
+		/// @param color 色
+		/// @remark 基準の半径は drawRounded() と同じ規則で調整します。外側の半径には outerThickness を加えます。
+		/// @remark 内側の半径は innerThickness を引いて 0 以上とし、内側の矩形に収まるよう全半径を同じ比率で縮小します。内側の幅または高さが 0 以下なら外形を塗りつぶします。
+		/// @remark 基準の幅・高さが 0 以下、いずれかの太さが負、または両方の太さが 0 なら描きません。
+		/// @pre 座標、寸法、半径、太さと調整後の輪郭は有限で、描画座標は float で表現可能であること。
+		/// @return *this
+		const Rect& drawRoundedFrame(double tl, double tr, double br, double bl, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

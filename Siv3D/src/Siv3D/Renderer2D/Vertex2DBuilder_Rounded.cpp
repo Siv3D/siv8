@@ -718,6 +718,49 @@ namespace s3d
 			}
 		}
 
+		// One contour writer for independent-radius fills and both frame boundaries.
+		// Quality 0 emits a single square corner; a collapsed inner arc repeats that
+		// corner at the outer arc's quality so the frame remains a simple strip.
+		static void WriteRoundedRectContour(Vertex2D* const pVertex, const FloatRect& rect,
+			const std::array<float, 4>& radii, const std::array<Vertex2D::IndexType, 4>& qualities,
+			const Float4& color, const uint16 stride)
+		{
+			constexpr Float2 startDirections[]{ { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 } };
+			constexpr Float2 endDirections[]{ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
+			const Float2 corners[]{ { rect.left, rect.top }, { rect.right, rect.top },
+				{ rect.right, rect.bottom }, { rect.left, rect.bottom } };
+
+			uint16 vertexIndex = 0;
+			for (size_t corner = 0; corner < 4; ++corner)
+			{
+				const float r = radii[corner];
+				const auto quality = qualities[corner];
+				const Float2 startDirection = startDirections[corner];
+				const Float2 endDirection = endDirections[corner];
+				const Float2 center = (corners[corner] - (startDirection + endDirection) * r);
+				const Float2 start = (corners[corner] - endDirection * r);
+				pVertex[vertexIndex].set(start.x, start.y, color);
+				vertexIndex += stride;
+
+				if (quality == 0)
+				{
+					continue;
+				}
+
+				const auto table = QuarterArcTable::GetUnitVectors(quality);
+				for (Vertex2D::IndexType i = 1; i < quality; ++i)
+				{
+					const Float2 position = (center + (startDirection * -table[i].y + endDirection * table[i].x) * r);
+					pVertex[vertexIndex].set(position.x, position.y, color);
+					vertexIndex += stride;
+				}
+
+				const Float2 end = (corners[corner] - startDirection * r);
+				pVertex[vertexIndex].set(end.x, end.y, color);
+				vertexIndex += stride;
+			}
+		}
+
 		// 円弓形と半円キャップには、弦と弧の間の領域を保つ最低 4 区間の密度を用いる。
 		[[nodiscard]]
 		static Vertex2D::IndexType CalculateCircleSegmentQuality(const float r, const float angle) noexcept
@@ -3038,6 +3081,30 @@ namespace s3d
 			return IndexCount;
 		}
 		
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color, const float scale)
+		{
+			std::array<Vertex2D::IndexType, 4> qualities;
+			Vertex2D::IndexType vertexCount = 4;
+			for (size_t corner = 0; corner < 4; ++corner)
+			{
+				qualities[corner] = (radii[corner] ? CalculateCircleQuality(radii[corner] * scale) : 0);
+				vertexCount += qualities[corner];
+			}
+
+			const Vertex2D::IndexType indexCount = ((vertexCount - 2) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			WriteRoundedRectContour(pVertex, rect, radii, qualities, color, 1);
+			// Touching arc endpoints remain as degenerate triangles. Keeping them
+			// avoids a compaction pass and keeps reservation/submission counts equal.
+			WriteOpenFanIndices(pIndex, indexOffset, (vertexCount - 1));
+			return indexCount;
+		}
+
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float r, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
@@ -3088,6 +3155,41 @@ namespace s3d
 			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color, const float scale)
+		{
+			std::array<Vertex2D::IndexType, 4> qualities;
+			Vertex2D::IndexType contourCount = 4;
+			for (size_t corner = 0; corner < 4; ++corner)
+			{
+				qualities[corner] = (outerRadii[corner] ? CalculateCircleQuality(outerRadii[corner] * scale) : 0);
+				contourCount += qualities[corner];
+			}
+
+			const Vertex2D::IndexType vertexCount = (contourCount * 2);
+			const Vertex2D::IndexType indexCount = (contourCount * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			WriteRoundedRectContour(pVertex, outerRect, outerRadii, qualities, color, 2);
+			WriteRoundedRectContour((pVertex + 1), innerRect, innerRadii, qualities, color, 2);
+			for (Vertex2D::IndexType i = 0; i < contourCount; ++i)
+			{
+				const Vertex2D::IndexType current = (indexOffset + i * 2);
+				const Vertex2D::IndexType next = (indexOffset + ((i + 1 == contourCount) ? 0 : ((i + 1) * 2)));
+				*pIndex++ = current;
+				*pIndex++ = next;
+				*pIndex++ = (current + 1);
+				*pIndex++ = (current + 1);
+				*pIndex++ = next;
+				*pIndex++ = (next + 1);
+			}
+
+			return indexCount;
 		}
 
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)

@@ -241,6 +241,54 @@ Each result reports the median and 10th/90th percentiles in nanoseconds per call
 Compare repeated runs of both revisions on the same idle machine, alternating
 their order. These measurements exclude backend submission and GPU execution.
 
+### Measuring CPU writes to upload buffers
+
+Ordinary heap arrays do not model the CPU mapping of every backend's upload
+buffers. Metal's vertex/index buffers use
+[`writeCombined`](https://developer.apple.com/documentation/metal/mtlcpucachemode/writecombined),
+which is intended for CPU writes without CPU reads. D3D11 currently builds into
+ordinary CPU arrays and copies them to mapped GPU buffers at submission.
+
+The current `CopyIndicesWithOffset` first copies indices into the destination,
+then reads those destination indices to add the base offset. This can make
+Polygon filling disproportionately expensive on Metal, including cached Polygons.
+The same helper serves raw indexed polygons, transformed polygons, and Mesh2D.
+A source-to-destination copy that adds the offset before writing avoids these
+reads. The pending implementation work is tracked in [TODO](../../TODO.md).
+`BuildMesh2D` also adjusts vertex positions in the destination after copying when
+an offset is supplied; inspect that separately when changing the upload path.
+
+Use [renderer2d-index-upload.mm](../../tools/renderer2d-index-upload.mm) to compare
+ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
+measures representative copy kernels and the actual shared Polygon builder,
+with preallocated reusable buffers, no renderer initialization, no GPU commands,
+and no presentation. Destination checks happen after timing. Run on macOS from
+the repository root, outside the sandbox:
+
+```sh
+xcrun clang++ -std=c++23 -Os -DNDEBUG \
+    -I Siv3D/include -I Siv3D/include/ThirdParty -I Siv3D/src \
+    -framework Foundation -framework Metal -Wl,-dead_strip \
+    tools/renderer2d-index-upload.mm \
+    Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_StraightEdged.cpp \
+    -o /tmp/siv8-index-upload
+/tmp/siv8-index-upload
+```
+
+Repeat with `-O3` and inspect generated code when assessing a change: optimization
+can change the number and width of destination reads without removing the
+underlying hazard. Neither cache mode nor optimizer alone is a universal speed
+ratio. The tool prints wall and thread CPU time and checks the written data;
+its timings exclude resource allocation and GPU execution.
+
+The [rounded rectangle submission benchmark](../../Test/Manual/RectRoundedDrawing.md#automated-checks-and-cpu-measurements)
+complements this isolated measurement with public API calls. It reports geometry
+counts and batching, checks a cached Polygon with the exact direct-fill mesh,
+and measures both wall and thread CPU time on macOS. Matching GPU work matters
+when comparing APIs with different tessellation rules. Use repeated A/B/A runs
+on the same machine; a large CPU ratio alone does not establish a GPU cost or a
+benefit inherent to a particular public shape API.
+
 [Renderer2DDrawSubmission.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DDrawSubmission.hpp)
 shares the subsequent command registration using inline templates for shapes,
 patterns, textures and styled lines. The helpers require a nonzero index count.

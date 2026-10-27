@@ -560,6 +560,35 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::drawRounded(const double tl, const double tr, const double br, const double bl, const ColorF& color) const
+	{
+		RectF{ *this }.drawRounded(tl, tr, br, bl, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::drawRoundedFrame(const double tl, const double tr, const double br, const double bl, const double thickness, const ColorF& color) const
+	{
+		return drawRoundedFrame(tl, tr, br, bl, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const Rect& Rect::drawRoundedFrame(const double tl, const double tr, const double br, const double bl, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		RectF{ *this }.drawRoundedFrame(tl, tr, br, bl, innerThickness, outerThickness, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawFrame
 	//
 	////////////////////////////////////////////////////////////////

@@ -106,6 +106,15 @@ namespace s3d
 			}
 		}
 
+		static constexpr void NormalizeCornerRadii(double& tl, double& tr, double& br, double& bl, const double w, const double h) noexcept
+		{
+			tl = Max(tl, 0.0);
+			tr = Max(tr, 0.0);
+			br = Max(br, 0.0);
+			bl = Max(bl, 0.0);
+			ScaleCornerSizes(tl, tr, br, bl, w, h);
+		}
+
 		[[nodiscard]]
 		static constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
 		{
@@ -464,40 +473,7 @@ namespace s3d
 			return{};
 		}
 
-		tl = Max(tl, 0.0);
-		tr = Max(tr, 0.0);
-		br = Max(br, 0.0);
-		bl = Max(bl, 0.0);
-
-		double radiusScale = 1.0;
-
-		if (const double t = (tl + tr); w < t)
-		{
-			radiusScale = Min(radiusScale, (w / t));
-		}
-
-		if (const double r = (tr + br); h < r)
-		{
-			radiusScale = Min(radiusScale, (h / r));
-		}
-
-		if (const double b = (bl + br); w < b)
-		{
-			radiusScale = Min(radiusScale, (w / b));
-		}
-
-		if (const double l = (tl + bl); h < l)
-		{
-			radiusScale = Min(radiusScale, (h / l));
-		}
-
-		if (radiusScale < 1.0)
-		{
-			tl *= radiusScale;
-			tr *= radiusScale;
-			br *= radiusScale;
-			bl *= radiusScale;
-		}
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
 
 		const Vec2 rectTL = this->tl();
 		const Vec2 rectTR = this->tr();
@@ -1740,6 +1716,88 @@ namespace s3d
 	const RectF& RectF::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, pattern);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawRounded(double tl, double tr, double br, double bl, const ColorF& color) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return *this;
+		}
+
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
+
+		if ((tl == tr) && (tl == br) && (tl == bl))
+		{
+			if (tl == 0.0)
+			{
+				return draw(color);
+			}
+
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ *this }, static_cast<float>(tl), color.toFloat4());
+		}
+		else
+		{
+			const std::array<float, 4> radii{ static_cast<float>(tl), static_cast<float>(tr), static_cast<float>(br), static_cast<float>(bl) };
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ *this }, radii, color.toFloat4());
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawRoundedFrame(const double tl, const double tr, const double br, const double bl, const double thickness, const ColorF& color) const
+	{
+		return drawRoundedFrame(tl, tr, br, bl, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RectF& RectF::drawRoundedFrame(double tl, double tr, double br, double bl, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if ((w <= 0.0) || (h <= 0.0) || (innerThickness < 0.0) || (outerThickness < 0.0)
+			|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
+		{
+			return *this;
+		}
+
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
+
+		if ((tl == tr) && (tl == br) && (tl == bl))
+		{
+			RoundRect{ *this, tl }.drawFrame(innerThickness, outerThickness, color);
+			return *this;
+		}
+
+		const RectF outerRect = stretched(outerThickness);
+		const std::array<float, 4> outerRadii{
+			static_cast<float>(tl + outerThickness), static_cast<float>(tr + outerThickness),
+			static_cast<float>(br + outerThickness), static_cast<float>(bl + outerThickness) };
+		const RectF innerRect = stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ outerRect }, outerRadii, color.toFloat4());
+			return *this;
+		}
+
+		tl -= innerThickness;
+		tr -= innerThickness;
+		br -= innerThickness;
+		bl -= innerThickness;
+		NormalizeCornerRadii(tl, tr, br, bl, innerRect.w, innerRect.h);
+		const std::array<float, 4> innerRadii{ static_cast<float>(tl), static_cast<float>(tr), static_cast<float>(br), static_cast<float>(bl) };
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(FloatRect{ innerRect }, innerRadii, FloatRect{ outerRect }, outerRadii, color.toFloat4());
 		return *this;
 	}
 

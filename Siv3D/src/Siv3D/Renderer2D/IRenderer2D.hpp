@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include <memory>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Optional.hpp>
@@ -156,11 +157,15 @@ namespace s3d
 
 		virtual void addRoundRect(const FloatRect& rect, float r, const Float4& color) = 0;
 
+		virtual void addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color) = 0;
+
 		virtual void addRoundRect(const FloatRect& rect, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
 		virtual void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) = 0;
 
 		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color) = 0;
+
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color) = 0;
 
 		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 

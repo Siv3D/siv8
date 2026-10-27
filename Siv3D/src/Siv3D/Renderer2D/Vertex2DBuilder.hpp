@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/FloatRect.hpp>
@@ -117,11 +118,19 @@ namespace s3d
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float r, const Float4& color, float scale);
 
+		// Radii are normalized, nonnegative, in TL, TR, BR, BL order.
+		[[nodiscard]]
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color, float scale);
+
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float r, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 	
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const Float4& color, float scale);
+
+		// Corresponding inner/outer rounded rectangles use the drawRoundedFrame offset contract.
+		[[nodiscard]]
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);

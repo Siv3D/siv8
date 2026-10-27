@@ -605,6 +605,14 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, radii, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
 	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
@@ -631,6 +639,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
 			innerRect, innerR, outerRect, outerR, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerRadii, outerRect, outerRadii, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
