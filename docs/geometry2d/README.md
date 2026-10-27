@@ -10,14 +10,12 @@ API contracts live in the public headers, including
 [Writing 2D shapes to Image](image-writing.md) covers compositing, the CPU/GPU
 API inventory, validation, and reproducible performance measurements.
 
-## Shape drawing proposals
+## Drawing extension proposals
 
-[Shape drawing API proposals](proposals/shape-drawing-api.md) evaluates additions
-to the 2D drawing API, with SVG galleries, existing API comparisons, external
-examples, and staged implementation options. Remaining candidates are unadopted;
-implemented rotated ellipses and elliptical arcs link to the Renderer2D guide,
-Bezier and circle arc arrows link to the curve drawing guide, and independent-corner rectangles
-and rounded speech balloons link to the rounded drawing guide.
+[Drawing extensions](proposals/drawing-extensions.md) describes potential style,
+arrow, shape-generation and path APIs, their uses, design questions and evaluation
+criteria. Variable-width strokes depend on experience from Trail development.
+These proposals are unadopted; their release scope and implementation schedule are undecided.
 
 ## Dashed curves, paths and arcs
 
