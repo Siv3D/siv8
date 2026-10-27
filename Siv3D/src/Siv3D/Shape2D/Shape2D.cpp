@@ -27,9 +27,8 @@ namespace s3d
 	namespace
 	{
 		template <class Placement>
-		Shape2D MakeCircularShape(const Placement& placement, const QualityFactor& quality)
+		Shape2D MakeCircularShape(const Placement& placement, const uint16 fullQuality)
 		{
-			const uint16 fullQuality = static_cast<uint16>(quality.toPointsPerCircle(placement.circle.r).value());
 			const uint16 count = detail::CircularShapes::VertexCount(placement, fullQuality);
 			Array<Float2> vertices(count);
 			Array<TriangleIndex> indices(count - 2);
@@ -537,7 +536,20 @@ namespace s3d
 	{
 		const auto placement = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
 		if (not placement) return {};
-		return MakeCircularShape(*placement, qualityFactor);
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->circle.r).value()));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Lens
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Lens(const Vec2& from, const Vec2& to, const double halfWidth, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceLens(from, to, halfWidth);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->halfLength).value()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -550,7 +562,7 @@ namespace s3d
 	{
 		const auto placement = detail::CircularShapes::PlaceTeardrop(circle, tip);
 		if (not placement) return {};
-		return MakeCircularShape(*placement, qualityFactor);
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->circle.r).value()));
 	}
 
 	////////////////////////////////////////////////////////////////

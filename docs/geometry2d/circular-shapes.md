@@ -1,6 +1,7 @@
-# Crescents and teardrops
+# Crescents, lenses and teardrops
 
-Circle provides direct single-color fills, and Shape2D provides stored geometry:
+Circle provides direct single-color fills for crescents and teardrops. Shape2D
+provides stored geometry for those shapes and for symmetric lenses:
 
 ```cpp
 const Circle moon{ 320, 240, 64 };
@@ -12,8 +13,11 @@ bulb.drawTeardrop(tip, Palette::Orange);
 
 const Shape2D crescent = Shape2D::Crescent(moon, 90_deg, 36);
 const Shape2D teardrop = Shape2D::Teardrop(bulb, tip);
+const Shape2D petal = Shape2D::Lens(Vec2{ 100, 400 }, Vec2{ 260, 400 }, 24);
 crescent.draw();
 teardrop.drawFrame(4);
+petal.draw(Palette::Skyblue);
+petal.drawFrame(3, Palette::Orange);
 const Polygon polygon{ teardrop };
 ```
 
@@ -25,7 +29,18 @@ the original center; it is not a lunar phase or an area fraction. A teardrop is
 the convex hull of the circle and the tip, with straight tangent sides. It has no
 hole, and is not the curved-sided drop of an arbitrary path.
 
-Use direct fills for changing parameters. Store a Shape2D or Polygon when the
+A lens uses two equal circular arcs through `from` and `to`. Its `halfWidth`
+is the perpendicular distance from the axis to the boundary at the midpoint;
+the maximum total width is twice that value. The shape is symmetric about the
+axis and its perpendicular bisector. At half the endpoint distance it becomes
+a circle. Wider, zero or negative widths and coincident endpoints return an
+empty Shape2D. Reversing endpoints gives the same region. Use
+`from.distanceFrom(to) * 0.5` for the circle boundary; independent floating-point
+distance expressions can round differently right at that boundary.
+Thin lenses make leaves and petals without adding another shape class.
+
+Use the available direct fills for changing crescent/teardrop parameters. Store
+a Shape2D or Polygon when the
 shape stays fixed; drawing the stored mesh avoids regenerating vertices. The
 Shape2D factories default to `QualityFactor{ 1.0 }`, independently of rendering
 state. `QualityFactor::FromSceneScaling()` is available when generating for a
@@ -39,6 +54,11 @@ geometry and retains its supplied triangulation; its coordinates still originate
 from Shape2D's float vertices. Conversion does not recover double-precision
 boundary information. Generic frames use the existing polyline joins, so thick
 strokes and sharp tips can overlap.
+Lens has no separate direct-fill API; repeatedly drawing a saved lens uses the
+ordinary Shape2D or Polygon upload path without regenerating the arcs.
+The gallery includes a thin lens with a 12-pixel frame: GPU and Image joins
+can differ visibly at its tips. This uses each existing frame contract, without
+a lens-specific overlap correction.
 
 ## Geometry and upload construction
 
@@ -63,6 +83,19 @@ fans it from the external tip. At most 252 arc intervals produce 254 vertices an
 and Image operations see the outline without internal fan spokes. Full-circle
 direct cases delegate to ordinary Circle fill; stored circles use a boundary fan.
 Their edge rasterization need not be pixel-identical.
+
+A lens computes a quarter of its outline and reflects those samples, explicitly
+including both tips and both maximum-width points. With half-length `a` and
+half-width `h`, its circular half-angle is `alpha = 2 * atan(h / a)`. Coordinates
+use ratios of half-angle sines, avoiding subtraction of a huge circle center and
+radius as `h` becomes small. The circle's quality at radius `a`, scaled by
+`alpha / sqrt(sin(alpha))`, sets angular density; four equal groups give
+4–252 boundary vertices. This approximates the existing circle chord-error scale
+with bounded work, rather than a strict pixel-error guarantee. A fan from a tip
+uses `vertexCount - 2` triangles. No center vertex, Boolean intersection or
+general triangulation is needed. The factory sizes its two owned arrays once
+and writes directly into them; the existing factory helper receives the chosen
+quality, without requiring a lens to store a Circle.
 
 ## Validation and measurement
 
@@ -98,3 +131,51 @@ use its percentiles and thread CPU time instead of treating these isolated
 builder numbers as the cost of a whole draw call. Cached geometry avoids the
 trigonometry and construction measured here. Timing thresholds do not belong in
 correctness tests.
+
+### Lens measurements
+
+Apple M2 / macOS Metal Release, `QualityFactor{ 1.0 }`. Values below are wall-time
+medians in microseconds per call. The opt-in lens benchmark in the manual gallery
+uses four warmups and 21 rotating batches of 128 calls, 5 ms CPU warmups, and
+temporary interactive thread QoS. Construction includes the two owned arrays and
+their destruction; scene updates and GPU execution are excluded.
+
+| Half-length / half-width | Vertices | Construct | Construct + fill | Saved Shape2D fill | Saved Polygon fill |
+|---|---:|---:|---:|---:|---:|
+| 80 / 24 | 32 | 0.595 | 0.731 | 0.135 | 0.146 |
+| 80 / 0.1 | 4 | 0.277 | 0.420 | 0.066 | 0.062 |
+| 80 / 79.999 | 56 | 0.974 | 1.389 | 0.225 | 0.262 |
+| 500 / 500 | 252 | 3.289 | 4.260 | 0.882 | 0.906 |
+
+| Half-length / half-width | Saved Shape2D frame | Saved Polygon frame |
+|---|---:|---:|
+| 80 / 24 | 0.792 | 0.859 |
+| 80 / 0.1 | 0.295 | 0.310 |
+| 80 / 79.999 | 1.454 | 1.532 |
+| 500 / 500 | 6.247 | 6.132 |
+
+Frames use thickness 2. Matching Shape2D/Polygon methods submitted equal triangle
+counts: fills use 2–250 triangles and these frames use 12–504. The public timing
+spread is substantial: the 80/24 construction p10–p90 was 0.264–0.774 µs, and its
+saved Shape2D fill was 0.070–0.187 µs. These results support storing static shapes,
+but are not GPU timings or a general speedup ratio.
+
+The isolated `-Os` diagnostic reuses those contours and preallocated buffers;
+median nanoseconds per existing builder call, excluding shape generation:
+
+| Half-length / half-width / operation | RAM | Metal default cache | Metal write-combined |
+|---|---:|---:|---:|
+| 80 / 24 / fill | 32 | 32 | 34 |
+| 80 / 24 / frame | 241 | 244 | 265 |
+| 80 / 0.1 / fill | 6 | 6 | 7 |
+| 80 / 0.1 / frame | 73 | 73 | 85 |
+| 80 / 79.999 / fill | 52 | 52 | 59 |
+| 80 / 79.999 / frame | 411 | 396 | 447 |
+| 500 / 500 / fill | 278 | 271 | 253 |
+| 500 / 500 / frame | 1,853 | 1,833 | 1,956 |
+
+Vertex attributes and indices matched across storage modes at both `-Os` and
+`-O3`. The latter's write-combined medians were 10–165 ns for fills and
+76–1,135 ns for frames. Compare memory modes within this diagnostic rather than
+comparing these isolated timings directly with the public benchmark. Windows
+build, runtime performance and visual output remain unverified on this host.

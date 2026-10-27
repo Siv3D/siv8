@@ -51,10 +51,11 @@ records short-dash findings, and explains SuperEllipse's private tessellator.
 It also covers [direct independent-corner fills and frames](rounded-drawing.md#independent-corner-rectangles)
 and [rounded speech balloons](rounded-drawing.md#rounded-speech-balloons).
 
-## Crescents and teardrops
+## Crescents, lenses and teardrops
 
 [Circular shape drawing](circular-shapes.md) covers direct Circle fills, stored
-Shape2D geometry, Polygon conversion, shared construction and the visual gallery.
+Shape2D geometry including symmetric lenses, Polygon conversion, shared construction
+and the visual gallery.
 
 ## Continuing a ray after contact
 

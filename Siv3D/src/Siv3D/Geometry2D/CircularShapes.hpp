@@ -27,6 +27,12 @@ namespace s3d::detail::CircularShapes
 		bool circleOnly = false;
 	};
 
+	struct Lens
+	{
+		Vec2 from, to, axis;
+		double halfLength = 0, halfWidth = 0, halfAngle = 0, sinAngle = 0, sinHalfAngle = 0;
+	};
+
 	// Inputs and intermediate geometry must be finite and representable.
 	[[nodiscard]]
 	inline Optional<Crescent> PlaceCrescent(const Circle& circle, const double openingAngle, const double width)
@@ -58,6 +64,18 @@ namespace s3d::detail::CircularShapes
 	}
 
 	[[nodiscard]]
+	inline Optional<Lens> PlaceLens(const Vec2& from, const Vec2& to, const double halfWidth)
+	{
+		if (halfWidth <= 0) return none;
+		const Vec2 delta = (to - from);
+		const double length = from.distanceFrom(to), a = (length * 0.5);
+		if ((length == 0) || (a < halfWidth)) return none;
+		const double ratio = (halfWidth / a), square = (1 + ratio * ratio);
+		return Lens{ from, to, delta / length, a, halfWidth, 2 * std::atan(ratio),
+			2 * ratio / square, ratio / std::sqrt(square) };
+	}
+
+	[[nodiscard]]
 	inline uint16 CrescentIntervals(const Crescent& shape, const uint16 fullQuality)
 	{
 		// Uniform rays turn the outer circle by at most (1 + halfWidth / r)
@@ -81,6 +99,21 @@ namespace s3d::detail::CircularShapes
 	inline uint16 VertexCount(const Teardrop& shape, const uint16 fullQuality)
 	{
 		return (shape.circleOnly ? fullQuality : (TeardropIntervals(shape, fullQuality) + 2));
+	}
+
+	[[nodiscard]]
+	inline uint16 LensQuarterIntervals(const Lens& shape, const uint16 fullQuality)
+	{
+		// Match the chord-error scale of a circle of radius halfLength. Since
+		// R = halfLength / sin(halfAngle), angular density scales by sqrt(R).
+		const double quarter = (fullQuality * (shape.halfAngle / Math::TwoPi) / std::sqrt(shape.sinAngle));
+		return static_cast<uint16>(Clamp(std::ceil(quarter), 1.0, 63.0));
+	}
+
+	[[nodiscard]]
+	inline uint16 VertexCount(const Lens& shape, const uint16 fullQuality)
+	{
+		return (LensQuarterIntervals(shape, fullQuality) * 4);
 	}
 
 	// All emitted vertices form one clockwise boundary, with no interior vertex.
@@ -155,5 +188,31 @@ namespace s3d::detail::CircularShapes
 				+ (shape.axis * std::cos(angle) + perpendicular * std::sin(angle)) * shape.circle.r });
 		}
 		for (uint16 i = 1; i <= n; ++i) triangle(0, i, (i + 1));
+	}
+
+	template <class Vertex, class Triangle>
+	void Write(const Lens& shape, const uint16 fullQuality, Vertex&& vertex, Triangle&& triangle)
+	{
+		const uint16 quarter = LensQuarterIntervals(shape, fullQuality), count = (quarter * 4);
+		const Vec2 center = (shape.from + (shape.to - shape.from) * 0.5);
+		const Vec2 normal{ shape.axis.y, -shape.axis.x };
+		vertex(0, Float2{ shape.from });
+		vertex(quarter, Float2{ center + normal * shape.halfWidth });
+		vertex((quarter * 2), Float2{ shape.to });
+		vertex((quarter * 3), Float2{ center - normal * shape.halfWidth });
+		for (uint16 i = 1; i < quarter; ++i)
+		{
+			const double angle = (shape.halfAngle * (1 - double(i) / quarter) * 0.5);
+			const double s = std::sin(angle), c = std::cos(angle);
+			const Vec2 along = (shape.axis * (shape.halfLength * (2 * s * c / shape.sinAngle)));
+			// h - R * (1 - cos(theta)), expressed without the large circle radius.
+			const double ratio = (s / shape.sinHalfAngle);
+			const Vec2 across = (normal * (shape.halfWidth * (1 - ratio) * (1 + ratio)));
+			vertex(i, Float2{ center - along + across });
+			vertex((quarter * 2 - i), Float2{ center + along + across });
+			vertex((quarter * 2 + i), Float2{ center + along - across });
+			vertex((count - i), Float2{ center - along - across });
+		}
+		for (uint16 i = 1; i + 1 < count; ++i) triangle(0, i, (i + 1));
 	}
 }

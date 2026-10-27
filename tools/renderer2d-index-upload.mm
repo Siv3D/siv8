@@ -11,6 +11,7 @@
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Renderer2D/CircleArcArrow.hpp>
 # include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
+# include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <algorithm>
@@ -411,6 +412,27 @@ int main()
 			{
 				return Vertex2DBuilder::BuildCircleTeardrop(allocate, circle, circle.center + Vec2{ c.tipDistance, 0 },
 					Float4{ 1, 1, 1, 0.5f }, 1);
+			});
+		}
+		for (const auto size : { Vec2{ 80, 24 }, Vec2{ 80, 0.1 }, Vec2{ 80, 79.999 }, Vec2{ 500, 500 } })
+		{
+			const auto lens = detail::CircularShapes::PlaceLens({ -size.x, 0 }, { size.x, 0 }, size.y);
+			const auto quality = static_cast<uint16>(QualityFactor{}.toPointsPerCircle(size.x).value());
+			const uint16 count = detail::CircularShapes::VertexCount(*lens, quality);
+			std::vector<Float2> vertices(count);
+			std::vector<TriangleIndex> triangles(count - 2);
+			size_t next = 0;
+			detail::CircularShapes::Write(*lens, quality,
+				[&](uint16 i, const Float2& p) { vertices[i] = p; },
+				[&](uint16 a, uint16 b, uint16 c) { triangles[next++] = { a, b, c }; });
+			const std::string name = ("Lens_" + std::to_string(size.x) + "_" + std::to_string(size.y));
+			MeasureBuilder(device, (name + "_fill").c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildPolygon(allocate, vertices, triangles, none, Float4{ 1, 1, 1, 0.5f });
+			});
+			MeasureBuilder(device, (name + "_frame").c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildShape2DFrame(allocate, vertices, none, 2, Float4{ 1, 1, 1, 0.5f }, 1);
 			});
 		}
 		struct BalloonCase { const char* name; RoundRect body; Vec2 target; double width; float scale; };

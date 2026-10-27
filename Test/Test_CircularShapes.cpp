@@ -8,6 +8,7 @@
 # include "../Siv3D/src/Siv3D/Geometry2D/CircularShapes.hpp"
 # include "../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder.hpp"
 # include <chrono>
+# include <atomic>
 # include <iostream>
 # if SIV3D_PLATFORM(MACOS)
 # include <pthread.h>
@@ -317,6 +318,197 @@ TEST_CASE("CircularShapes.public_rendering_transform_alpha_and_fallback")
 		== Capture([&] { negative.drawCrescent(0.3, 36, ink); }));
 	CHECK(Capture([&] { circle.drawTeardrop(tip, ink); })
 		== Capture([&] { negative.drawTeardrop(tip, ink); }));
+}
+
+namespace
+{
+	double LensArea(const double a, const double h)
+	{
+		// Independent quadrature of the intersection of two equal disks.
+		// x = a * sin(t) removes the circle limit's endpoint singularity.
+		const long double k = (static_cast<long double>(a) * a - static_cast<long double>(h) * h) / (2 * h);
+		constexpr int32 Steps = 256;
+		long double sum = 0;
+		for (int32 i = 0; i <= Steps; ++i)
+		{
+			const long double c = std::cos(static_cast<long double>(Math::HalfPi) * i / Steps);
+			const long double z = (a * c) * (a * c);
+			const long double y = z / (std::sqrt(k * k + z) + k);
+			sum += (i == 0 || i == Steps ? 1 : i % 2 ? 4 : 2) * y * c;
+		}
+		return static_cast<double>(4 * a * sum * Math::HalfPi / (3 * Steps));
+	}
+}
+
+TEST_CASE("CircularShapes.lens_geometry_symmetry_area_and_upload")
+{
+	for (const double a : { 8.0, 80.0, 500.0 })
+	for (const double ratio : { 0.0001, 0.05, 0.4, 0.999999, 1.0 })
+	for (const double angle : { 0.0, 0.37, -1.2 })
+	for (const double quality : { 0.0, 1.0, 8.0 })
+	{
+		CAPTURE(a, ratio, angle, quality);
+		const Vec2 center{ 20, -30 }, axis{ std::cos(angle), std::sin(angle) }, normal{ axis.y, -axis.x };
+		const Vec2 from = center - axis * a, to = center + axis * a;
+		// Use the actual distance so the inclusive circle boundary is unambiguous.
+		const double halfLength = from.distanceFrom(to) * 0.5, h = (halfLength * ratio);
+		const auto shape = Shape2D::Lens(from, to, h, QualityFactor{ quality });
+		const auto reversed = Shape2D::Lens(to, from, h, QualityFactor{ quality });
+		const size_t count = shape.vertices().size(), n = count / 2;
+		REQUIRE(count >= 4); REQUIRE(count <= 252); CHECK(count % 4 == 0);
+		REQUIRE(reversed.vertices().size() == count);
+		CHECK(shape.vertices()[0] == Float2{ from }); CHECK(shape.vertices()[n] == Float2{ to });
+		CHECK(Vec2{ shape.vertices()[count / 4] }.distanceFrom(center + normal * h) < 0.0001);
+		CHECK(Vec2{ shape.vertices()[count * 3 / 4] }.distanceFrom(center - normal * h) < 0.0001);
+		const auto mesh = CaptureMesh([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildPolygon(allocate, shape.vertices(), shape.indices(), none, Ink);
+		});
+		const double area = CheckMesh(mesh, shape), expected = LensArea(halfLength, h);
+		CHECK(area <= expected + halfLength * 0.0001);
+		const double intervals = static_cast<double>(n);
+		CHECK(area == Catch::Approx(expected).epsilon(2.0 / (intervals * intervals)).margin(halfLength * 0.0001));
+		for (size_t i = 0; i < count; ++i)
+		{
+			const Vec2 p = shape.vertices()[i], local = p - center;
+			const double x = local.dot(axis), y = local.dot(normal);
+			CHECK(Abs(x) <= halfLength + 0.0001); CHECK(Abs(y) <= h + 0.0001);
+			// The circle equation multiplied by h avoids a huge radius at small h.
+			const double residual = h * (x * x + y * y - halfLength * halfLength)
+				+ (halfLength * halfLength - h * h) * Abs(y);
+			CHECK(Abs(residual) <= halfLength * halfLength * 0.0002);
+			CHECK(Vec2{ reversed.vertices()[(i + n) % count] }.distanceFrom(p) < 0.0001);
+			CHECK(Vec2{ shape.vertices()[(count - i) % count] }.distanceFrom(center + axis * x - normal * y) < 0.0001);
+			CHECK(Vec2{ shape.vertices()[(i + n) % count] }.distanceFrom(center - local) < 0.0001);
+		}
+	}
+}
+
+TEST_CASE("CircularShapes.lens_empty_thin_circle_and_quality")
+{
+	const Vec2 from{ -80, 0 }, to{ 80, 0 };
+	for (const double h : { -1.0, 0.0, std::nextafter(80.0, 81.0), 100.0 })
+	{
+		const auto shape = Shape2D::Lens(from, to, h);
+		CHECK(shape.vertices().empty()); CHECK(shape.indices().empty());
+	}
+	CHECK(Shape2D::Lens(from, from, 1).vertices().empty());
+	for (const double h : { 1e-10, 0.001, 20.0, std::nextafter(80.0, 0.0), 80.0 })
+	{
+		size_t previous = 0;
+		for (const double q : { 0.0, 1.0, 4.0, 100.0 })
+		{
+			const auto shape = Shape2D::Lens(from, to, h, QualityFactor{ q });
+			CHECK(shape.vertices().size() >= previous); previous = shape.vertices().size();
+			CHECK(shape.vertices()[previous / 4].y == static_cast<float>(-h));
+			if (h == 80)
+			{
+				CHECK(previous == QualityFactor{ q }.toPointsPerCircle(80).value());
+				for (const auto p : shape.vertices()) CHECK(Vec2{ p }.length() == Catch::Approx(80).margin(0.00001));
+			}
+		}
+	}
+	const auto disk = Shape2D::Lens(from, to, 80), nearDisk = Shape2D::Lens(from, to, std::nextafter(80.0, 0.0));
+	CHECK(disk.vertices() == nearDisk.vertices());
+	const auto original = Shape2D::Lens(from, to, 24);
+	const Transformer2D scale{ Mat3x2::Scale(4) };
+	CHECK(Shape2D::Lens(from, to, 24).vertices() == original.vertices());
+	CHECK(Shape2D::Lens(from, to, 24, QualityFactor::FromSceneScaling()).vertices().size() > original.vertices().size());
+}
+
+TEST_CASE("CircularShapes.lens_coverage_image_and_public_rendering")
+{
+	const SceneScope scope;
+	for (const double h : { 0.1, 16.0, 60.0, 79.999, 80.0 })
+	{
+		const auto shape = Shape2D::Lens({ 80, 160 }, { 240, 160 }, h);
+		const Polygon polygon{ shape };
+		CheckCoverage(shape);
+		Image painted{ 320, 320, Palette::Black }, reference = painted;
+		shape.paint(painted, Color{ 255, 128 }, EnableAntialiasing::No);
+		polygon.paint(reference, Color{ 255, 128 }, EnableAntialiasing::No);
+		CHECK(painted == reference);
+		shape.overwrite(painted, Palette::White); polygon.overwrite(reference, Palette::White);
+		CHECK(painted == reference);
+		Image frame{ 320, 320, Palette::Black }, frameReference = frame;
+		shape.paintFrame(frame, 2, Palette::White); polygon.paintFrame(frameReference, 2, Palette::White);
+		CHECK(frame == frameReference);
+		if (h >= 16) CHECK(frame[160][160].r == 0); // No fan spokes in the outline.
+		for (const Mat3x2 matrix : { Mat3x2::Identity(), Mat3x2{ -0.8f, 0.1f, 0.15f, 0.9f, 400, 10 } })
+		{
+			const auto actual = Capture([&] { const Transformer2D t{ matrix }; shape.draw(ColorF{ 1.0, 0.5 }); });
+			CHECK(actual == Capture([&] { const Transformer2D t{ matrix }; polygon.draw(ColorF{ 1.0, 0.5 }); }));
+			uint8 maximum = 0;
+			for (const auto pixel : actual) maximum = Max(maximum, pixel.r);
+			CHECK(maximum <= 129); if (h >= 16) CHECK(maximum >= 127);
+		}
+		const auto outline = Capture([&] { shape.drawFrame(3); });
+		CHECK(outline == Capture([&] { polygon.drawFrame(3); }));
+	}
+	CHECK(Capture([] {}) == Capture([] { Shape2D::Lens({ 80, 80 }, { 120, 80 }, 30).draw().drawFrame(); }));
+}
+
+TEST_CASE("CircularShapes.lens_submission_benchmark", "[.benchmark]")
+{
+	const SceneScope scope;
+	Graphics::SetVSyncEnabled(false);
+# if SIV3D_PLATFORM(MACOS)
+	struct QoS
+	{
+		pthread_override_t value = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+		~QoS() { if (value) pthread_override_qos_class_end_np(value); }
+	} qos;
+# endif
+	const char* methods[]{ "construct", "constructDraw", "cachedShape", "cachedPolygon", "shapeFrame", "polygonFrame" };
+	for (const auto size : { Vec2{ 80, 24 }, Vec2{ 80, 0.1 }, Vec2{ 80, 79.999 }, Vec2{ 500, 500 } })
+	{
+		const Vec2 from{ -size.x, 0 }, to{ size.x, 0 };
+		const auto shape = Shape2D::Lens(from, to, size.y);
+		const Polygon polygon{ shape };
+		std::array<Array<double>, 6> times;
+		std::array<int64, 6> triangles{};
+		constexpr int32 Batch = 128;
+		for (int32 round = -4; round < 21; ++round)
+		for (int32 offset = 0; offset < 6; ++offset)
+		{
+			const int32 method = ((round + 6 + offset) % 6);
+			REQUIRE(System::Update());
+			{
+				const Transformer2D offscreen{ Mat3x2::Translate(10000, 10000) };
+				const auto warm = std::chrono::steady_clock::now();
+				while (std::chrono::steady_clock::now() - warm < std::chrono::milliseconds(5)) std::atomic_signal_fence(std::memory_order_seq_cst);
+				const auto begin = std::chrono::steady_clock::now();
+				for (int32 i = 0; i < Batch; ++i)
+				{
+					if (method <= 1)
+					{
+						const auto temporary = Shape2D::Lens(from, to, size.y);
+						if (method == 1) temporary.draw();
+						std::atomic_signal_fence(std::memory_order_seq_cst);
+					}
+					else if (method == 2) shape.draw();
+					else if (method == 3) polygon.draw();
+					else if (method == 4) shape.drawFrame(2);
+					else polygon.drawFrame(2);
+				}
+				const double ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count() / Batch;
+				if (round >= 0) times[method].push_back(ns);
+			}
+			REQUIRE(System::Update());
+			const int64 count = Profiler::GetFrameMetrics().triangleCount;
+			if (round == 0) triangles[method] = count;
+			if (round > 0) CHECK(count == triangles[method]);
+		}
+		CHECK(triangles[0] == 0); CHECK(triangles[1] == triangles[2]); CHECK(triangles[2] == triangles[3]);
+		CHECK(triangles[4] == triangles[5]);
+		for (size_t method = 0; method < times.size(); ++method)
+		{
+			times[method].sort();
+			std::cout << "Lens a=" << size.x << " h=" << size.y << ' ' << methods[method]
+				<< " vertices=" << shape.vertices().size() << " triangles/call=" << double(triangles[method]) / Batch
+				<< " ns/call=" << times[method][10] << " p10=" << times[method][2] << " p90=" << times[method][18] << '\n';
+		}
+	}
 }
 
 TEST_CASE("CircularShapes.submission_benchmark", "[.benchmark]")
