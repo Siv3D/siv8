@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED6C1566140043E4A38CAC71 /* Test_Vertex2DBuilderPolyline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4778CF18E6460DB0DF7FBC /* Test_Vertex2DBuilderPolyline.cpp */; };
 		011C88F37720982B8C264B1F /* Mesh3DBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97874F8D9539D101F36ABD5F /* Mesh3DBox.cpp */; };
 		0850BECCA58F8ED0D0AA1A0E /* Mesh3DPolyhedron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC645A71830062F593B1B7A2 /* Mesh3DPolyhedron.cpp */; };
 		088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */; };
@@ -3435,6 +3436,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9A4778CF18E6460DB0DF7FBC /* Test_Vertex2DBuilderPolyline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderPolyline.cpp; sourceTree = "<group>"; };
 		00917A404DE549D4BB72C12C /* catch_amalgamated.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = catch_amalgamated.hpp; sourceTree = "<group>"; };
 		0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoundaryGeometry.hpp; sourceTree = "<group>"; };
 		0D15A455331848599026324A /* Quaternion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.hpp; sourceTree = "<group>"; };
@@ -7371,6 +7373,7 @@
 				D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */,
 				2555DB1F071C4B7AA73723B3 /* Test_MonitorInfo.cpp */,
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
+				9A4778CF18E6460DB0DF7FBC /* Test_Vertex2DBuilderPolyline.cpp */,
 				7FFEF7DE6CEC4841879D4233 /* Test_Renderer2DUpload.cpp */,
 				08E99A8B827A4A4CA2473F91 /* Test_Vertex2DBuilderIndices.cpp */,
 				08F29F2B60F14CE2AA373253 /* Test_Vertex2DBuilderCircleShadow.cpp */,
@@ -17072,6 +17075,7 @@
 				D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */,
 				1F287AC7063E47A9861C8AF4 /* Test_MonitorInfo.cpp in Sources */,
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
+				ED6C1566140043E4A38CAC71 /* Test_Vertex2DBuilderPolyline.cpp in Sources */,
 				D08E683BD1A64CA09BFF16FF /* Test_Renderer2DUpload.cpp in Sources */,
 				E458686BD1B44E7C87802280 /* Test_Vertex2DBuilderIndices.cpp in Sources */,
 				62BABE911B1A49E9ABF336EF /* Test_Vertex2DBuilderCircleShadow.cpp in Sources */,

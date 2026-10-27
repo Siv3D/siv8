@@ -176,6 +176,17 @@ triangle order, winding, strip closure, cap/body boundaries, positive and negati
 sweeps, scaled tessellation, destination bounds, large index counts and allocation
 failure.
 
+Polygon frames, Shape2D frames, and line strings share contour preparation.
+Reusable CPU scratch holds simplified points, source-color indices, and unit
+segment directions. Sharp-corner checks and strip generation reuse those
+directions; a second point array is populated only when a corner needs an
+auxiliary point. Directions are rebuilt after such insertions. Miter offsets
+use the unnormalized bisector because its length cancels in the offset ratio.
+This keeps scale-dependent preparation at draw time without adding per-Polygon
+caches. [Test_Vertex2DBuilderPolyline.cpp](../../Test/Test_Vertex2DBuilderPolyline.cpp)
+checks strip width and closure, sharp corners including the first ring point,
+source colors, simplification, scratch reuse, and allocation failure.
+
 Circle, ellipse and textured-circle fills share a vertex writer for their center
 and four quarter arcs. Compile-time specialization keeps the circle's two radial
 products per sample and writes textured positions, UVs and colors in one pass.
@@ -289,7 +300,8 @@ this occurs when capacity grows, rather than on each draw.
 Use [renderer2d-index-upload.mm](../../tools/renderer2d-index-upload.mm) to compare
 ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
 measures representative copy kernels and the actual shared Polygon, Mesh2D,
-textured round-rectangle, circle/ellipse arc, and hollow rectangle shadow builders,
+textured round-rectangle, circle/ellipse arc, hollow rectangle shadow, and closed
+line-string builders (smooth and sharp contours at several point counts),
 with preallocated reusable buffers, no renderer initialization, no GPU commands,
 and no presentation. Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:
@@ -302,6 +314,7 @@ xcrun clang++ -std=c++23 -Os -DNDEBUG \
     Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_StraightEdged.cpp \
     Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_Rounded.cpp \
     Siv3D/src/Siv3D/QuarterArcTable/SivQuarterArcTable.cpp \
+    Siv3D/src/Siv3D/RectF/SivRectF.cpp \
     -o /tmp/siv8-index-upload
 /tmp/siv8-index-upload
 ```

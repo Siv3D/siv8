@@ -257,6 +257,25 @@ int main()
 			return Vertex2DBuilder::BuildEllipseArc(allocate, LineCap::Flat, LineCap::Flat, { 100, 100 }, 80, 40,
 				0.3f, 2.0f, 6, 6, ColorFillDirection::LeftRight, Float4{ 1, 0, 0, 0.5f }, Float4{ 0, 0, 1, 0.5f }, 1);
 		});
+		// Polygon::drawFrame() uses the same closed line builder. Keep inputs
+		// outside timing; exercise both smooth contours and inserted sharp joins.
+		for (const size_t count : { 4u, 40u, 512u })
+		for (const bool sharp : { false, true })
+		{
+			std::vector<Vec2> contour(count);
+			for (size_t i = 0; i < count; ++i)
+			{
+				const double angle = (i * 6.283185307179586 / count);
+				const double radius = ((sharp && (i % 2)) ? 40.0 : 100.0);
+				contour[i] = { (160 + radius * std::cos(angle)), (120 + radius * std::sin(angle)) };
+			}
+			const std::string name = (std::string(sharp ? "SharpFrame" : "SmoothFrame") + std::to_string(count));
+			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildLineString(allocate, LineCap::Square, LineCap::Square,
+					contour, none, 8, false, CloseRing::Yes, Float4{ 1, 1, 1, 0.5f }, 1);
+			});
+		}
 		[device release];
 	}
 }

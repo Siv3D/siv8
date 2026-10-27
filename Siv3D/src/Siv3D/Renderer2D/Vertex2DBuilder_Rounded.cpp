@@ -1237,6 +1237,8 @@ namespace s3d
 			Array<Float2> points;		// 角分割適用後（最終出力）
 
 			Array<uint32> srcIndices;	// points[i] が入力点列の何番目由来か
+
+			Array<Float2> directions;	// 各セグメントの単位方向。角分割判定とメッシュ生成で共有
 		};
 
 		/// @brief 前処理用の共有スクラッチバッファを返します。
@@ -1250,6 +1252,7 @@ namespace s3d
 			buffer.simplifiedSrc.clear();
 			buffer.points.clear();
 			buffer.srcIndices.clear();
+			buffer.directions.clear();
 			return buffer;
 		}
 
@@ -1267,7 +1270,24 @@ namespace s3d
 			std::span<const Float2> points;
 
 			std::span<const uint32> srcIndices;
+
+			std::span<const Float2> directions;	// points[i] から次の点へ。closed は末尾から先頭も含む
 		};
+
+		static void CalculatePolylineDirections(const std::span<const Float2> points, const bool closed, Array<Float2>& directions)
+		{
+			const size_t size = points.size();
+			const bool ring = (closed && (3 <= size));
+			directions.resize(ring ? size : (size - 1));
+			for (size_t i = 0; i < (size - 1); ++i)
+			{
+				directions[i] = (points[i + 1] - points[i]).normalized();
+			}
+			if (ring)
+			{
+				directions.back() = (points.front() - points.back()).normalized();
+			}
+		}
 
 		/// @brief 入力点列に間引きと鋭角頂点の分割を適用します。
 		/// @remark 間引き: 直前の採用点からスクリーン上で 0.25px 未満しか離れていない点を除去。
@@ -1353,11 +1373,12 @@ namespace s3d
 			}
 
 			const size_t simplifiedSize = simplified.size();
+			CalculatePolylineDirections(simplified, closed, buffer.directions);
 
 			// 角分割の対象が無い場合は間引き結果をそのまま返す（コピーしない）
 			if ((simplifiedSize < 3) || (not splitSharpCorners))
 			{
-				return{ { simplified.data(), simplified.size() }, { simplifiedSrc.data(), simplifiedSrc.size() } };
+				return{ simplified, simplifiedSrc, buffer.directions };
 			}
 
 			// 角分割
@@ -1367,35 +1388,36 @@ namespace s3d
 				const Float2* const pSrc = simplified.data();
 				const float epsilon = (0.001f / scale);
 
-				result.push_back(pSrc[0]);
-
-				if (trackSrcIndices)
+				// 補助点が必要になった時点で初めて点列をコピーする。
+				const auto copyPrefix = [&](const size_t count)
 				{
-					resultSrc.push_back(simplifiedSrc[0]);
-				}
-
-				// セグメントの単位方向ベクトルは隣接頂点間で共有されるため持ち回り、
-				// 正規化 (sqrt) の重複を避ける
-				const Float2 d01 = (pSrc[1] - pSrc[0]).normalized();
-				Float2 inDir = d01;
+					result.assign(simplified.begin(), (simplified.begin() + count));
+					if (trackSrcIndices)
+					{
+						resultSrc.assign(simplifiedSrc.begin(), (simplifiedSrc.begin() + count));
+					}
+				};
 
 				const size_t last = (closed ? simplifiedSize : (simplifiedSize - 1));
 
 				for (size_t i = 1; i < last; ++i)
 				{
 					const Float2 current = pSrc[i];
-					const Float2 next = ((i + 1) < simplifiedSize) ? pSrc[i + 1] : pSrc[0];
-					const Float2 outDir = (next - current).normalized();
+					const Float2 inDir = buffer.directions[i - 1];
+					const Float2 outDir = buffer.directions[i];
 
-					result.push_back(current);
-
-					if (trackSrcIndices)
+					if (not result.empty())
 					{
-						resultSrc.push_back(simplifiedSrc[i]);
+						result.push_back(current);
+						if (trackSrcIndices)
+						{
+							resultSrc.push_back(simplifiedSrc[i]);
+						}
 					}
 
 					if (inDir.dot(outDir) < SharpCornerThreshold)
 					{
+						if (result.empty()) copyPrefix(i + 1);
 						result.push_back(current + (CornerSplitDirection(inDir, outDir) * epsilon));
 
 						if (trackSrcIndices)
@@ -1403,17 +1425,17 @@ namespace s3d
 							resultSrc.push_back(simplifiedSrc[i]);
 						}
 					}
-
-					inDir = outDir;
 				}
 
 				if (closed)
 				{
 					// 先頭頂点の角分割。補助点は巡回順で先頭頂点の「直前」に当たるため、
 					// 点列の末尾に、二等分線の逆方向で追加する
-					if (inDir.dot(d01) < SharpCornerThreshold)
+					const Float2 inDir = buffer.directions.back(), outDir = buffer.directions.front();
+					if (inDir.dot(outDir) < SharpCornerThreshold)
 					{
-						result.push_back(pSrc[0] - (CornerSplitDirection(inDir, d01) * epsilon));
+						if (result.empty()) copyPrefix(simplifiedSize);
+						result.push_back(pSrc[0] - (CornerSplitDirection(inDir, outDir) * epsilon));
 
 						if (trackSrcIndices)
 						{
@@ -1421,7 +1443,7 @@ namespace s3d
 						}
 					}
 				}
-				else
+				else if (not result.empty())
 				{
 					result.push_back(pSrc[simplifiedSize - 1]);
 
@@ -1431,7 +1453,14 @@ namespace s3d
 					}
 				}
 
-				return{ { result.data(), result.size() }, { resultSrc.data(), resultSrc.size() } };
+				if (result.empty())
+				{
+					return{ simplified, simplifiedSrc, buffer.directions };
+				}
+
+				// 補助点を挿入した場合だけ、変更された点列から方向を求め直す。
+				CalculatePolylineDirections(result, closed, buffer.directions);
+				return{ result, resultSrc, buffer.directions };
 			}
 		}
 
@@ -1463,7 +1492,8 @@ namespace s3d
 		static MiterPair ComputeMiterPair(const Float2& point, const Float2& inDir, const Float2& outDir, const Float2& prevPoint, const Float2& nextPoint, const float halfThickness) noexcept
 		{
 			const Float2 v = (inDir + outDir);
-			const Float2 tangent = ((0.001f < v.lengthSq()) ? v.normalized() : (nextPoint - prevPoint).normalized());
+			// 二等分線の長さは miter / dot(tangent, inDir) で相殺されるため、正規化しない。
+			const Float2 tangent = ((0.001f < v.lengthSq()) ? v : (nextPoint - prevPoint));
 			const Float2 miter{ -tangent.y, tangent.x };
 			const float length = (halfThickness / tangent.dot(inDir));
 			const Float2 m = (miter * length);
@@ -1542,25 +1572,27 @@ namespace s3d
 
 		/// @brief 前処理済みの点列から、幅 (halfThickness * 2) のクアッドストリップを構築します。
 		/// @param buffer 本体の頂点・インデックスを書き込める確保済み領域。
-		/// @param pts PreparePolyline 済みの点列。open は 2 点以上、closed は 3 点以上であること。
+		/// @param prepared PreparePolyline 済みの点列と方向。open は 2 点以上、closed は 3 点以上であること。
 		/// @param colorAt pts[i] に対応する頂点ペアの色を返す関数。
 		///        i の昇順に、各 i につきちょうど 1 回呼び出される（状態を持つラムダを許容するための契約）。
 		/// @param pStartAngle, pEndAngle open のとき、始端・終端の法線角度を返す（キャップ描画用）。
 		template <class ColorFn>
-		static void EmitLineStringStrip(const Vertex2DBufferPointer buffer, const std::span<const Float2> pts, const float halfThickness, const bool closed, ColorFn&& colorAt, float* pStartAngle = nullptr, float* pEndAngle = nullptr)
+		static void EmitLineStringStrip(const Vertex2DBufferPointer buffer, const PreparedPolyline& prepared, const float halfThickness, const bool closed, ColorFn&& colorAt, float* pStartAngle = nullptr, float* pEndAngle = nullptr)
 		{
 			auto [pVertex, pIndex, indexOffset] = buffer;
+			const auto pts = prepared.points;
+			const auto directions = prepared.directions;
 			const size_t n = pts.size();
 			const Vertex2D::IndexType pointCount = static_cast<Vertex2D::IndexType>(n);
 
 			const Float2* const pBuf = pts.data();
-			const Float2 firstDir = (closed ? (pBuf[0] - pBuf[n - 1]) : (pBuf[1] - pBuf[0])).normalized();
+			const Float2 firstDir = (closed ? directions.back() : directions.front());
 			Float2 inDir = firstDir;
 
 			// 始端の頂点ペア
 			if (closed)
 			{
-				const Float2 outDir = (pBuf[1] - pBuf[0]).normalized();
+				const Float2 outDir = directions.front();
 				const auto [a, b] = ComputeMiterPair(pBuf[0], inDir, outDir, pBuf[n - 1], pBuf[1], halfThickness);
 				const Float4 color = colorAt(size_t{ 0 });
 				pVertex[0].set(a, color);
@@ -1584,7 +1616,7 @@ namespace s3d
 			// 中間頂点（マイター接合）
 			for (size_t i = 1; i < (n - 1); ++i)
 			{
-				const Float2 outDir = (pBuf[i + 1] - pBuf[i]).normalized();
+				const Float2 outDir = directions[i];
 				const auto [a, b] = ComputeMiterPair(pBuf[i], inDir, outDir, pBuf[i - 1], pBuf[i + 1], halfThickness);
 				const Float4 color = colorAt(i);
 				pVertex[i * 2].set(a, color);
@@ -1644,9 +1676,9 @@ namespace s3d
 
 		template <class ColorFn>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildLineStringStrip(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> pts, const float halfThickness, const bool closed, ColorFn&& colorAt, float* pStartAngle = nullptr, float* pEndAngle = nullptr)
+		static Vertex2D::IndexType BuildLineStringStrip(const BufferCreatorFunc& bufferCreator, const PreparedPolyline& prepared, const float halfThickness, const bool closed, ColorFn&& colorAt, float* pStartAngle = nullptr, float* pEndAngle = nullptr)
 		{
-			const size_t n = pts.size();
+			const size_t n = prepared.points.size();
 
 			if ((n < 2) || (MaxLineStringPointCount < n))
 			{
@@ -1663,7 +1695,7 @@ namespace s3d
 				return 0;
 			}
 
-			EmitLineStringStrip({ pVertex, pIndex, indexOffset }, pts, halfThickness, closed, colorAt, pStartAngle, pEndAngle);
+			EmitLineStringStrip({ pVertex, pIndex, indexOffset }, prepared, halfThickness, closed, colorAt, pStartAngle, pEndAngle);
 
 			return indexCount;
 		}
@@ -3546,7 +3578,7 @@ namespace s3d
 				return 0;
 			}
 
-			return BuildLineStringStrip(bufferCreator, prepared.points, (thickness * 0.5f), true,
+			return BuildLineStringStrip(bufferCreator, prepared, (thickness * 0.5f), true,
 				[&color](size_t) { return color; });
 		}
 
@@ -3729,7 +3761,7 @@ namespace s3d
 			}
 			else
 			{
-				previous = ComputeMiterPair(pts[n - 2], (pts[n - 2] - pts[n - 3]).normalized(),
+				previous = ComputeMiterPair(pts[n - 2], prepared.directions[n - 3],
 					shaftDirection, pts[n - 3], base, halfThickness);
 			}
 			const bool project = (((previous.a - base).dot(headDirection) <= 0.0f)
@@ -3747,7 +3779,7 @@ namespace s3d
 			if (not buffer.pVertex) return uint32{ 0 };
 
 			float startAngle = 0.0f;
-			EmitLineStringStrip(buffer, pts, halfThickness, false, [&](size_t) { return color; }, &startAngle);
+			EmitLineStringStrip(buffer, prepared, halfThickness, false, [&](size_t) { return color; }, &startAngle);
 			const Vertex2DBufferPointer capBuffer{ buffer.pVertex + stripVertices, buffer.pIndex + stripIndices,
 				static_cast<uint16>(buffer.indexOffset + stripVertices) };
 			const LineStringBuffer caps{ buffer, capBuffer, {}, quality, indexCount };
@@ -3831,11 +3863,11 @@ namespace s3d
 			{
 				if (3 <= prepared.points.size())
 				{
-					return BuildLineStringStrip(bufferCreator, prepared.points, halfThickness, true, colorAt);
+					return BuildLineStringStrip(bufferCreator, prepared, halfThickness, true, colorAt);
 				}
 
 				// 2 点に縮退したリングは、キャップなしの開いた線分として描画する
-				return BuildLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt);
+				return BuildLineStringStrip(bufferCreator, prepared, halfThickness, false, colorAt);
 			}
 			else
 			{
@@ -3847,7 +3879,7 @@ namespace s3d
 					return 0;
 				}
 
-				EmitLineStringStrip(drawBuffer.strip, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				EmitLineStringStrip(drawBuffer.strip, prepared, halfThickness, false, colorAt, &startAngle, &endAngle);
 
 				EmitLineStringCaps(drawBuffer, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, color, color);
 
@@ -3919,7 +3951,7 @@ namespace s3d
 				return 0;
 			}
 
-			EmitLineStringStrip(drawBuffer.strip, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+			EmitLineStringStrip(drawBuffer.strip, prepared, halfThickness, false, colorAt, &startAngle, &endAngle);
 
 			EmitLineStringCaps(drawBuffer, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, stripStartColor, stripEndColor, colorEnd);
 
@@ -3969,11 +4001,11 @@ namespace s3d
 			{
 				if (3 <= prepared.points.size())
 				{
-					return BuildLineStringStrip(bufferCreator, prepared.points, halfThickness, true, colorAt);
+					return BuildLineStringStrip(bufferCreator, prepared, halfThickness, true, colorAt);
 				}
 
 				// 2 点に縮退したリングは、キャップなしの開いた線分として描画する
-				return BuildLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt);
+				return BuildLineStringStrip(bufferCreator, prepared, halfThickness, false, colorAt);
 			}
 			else
 			{
@@ -3985,7 +4017,7 @@ namespace s3d
 					return 0;
 				}
 
-				EmitLineStringStrip(drawBuffer.strip, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				EmitLineStringStrip(drawBuffer.strip, prepared, halfThickness, false, colorAt, &startAngle, &endAngle);
 
 				EmitLineStringCaps(drawBuffer, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, colorEnd);
 
