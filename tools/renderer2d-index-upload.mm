@@ -233,6 +233,16 @@ int main()
 					0.3f, 4.5f, 3, 5, Float4{ 0.2f, 0.4f, 0.6f, 0.5f }, 1);
 			});
 		}
+		for (const float radius : { 0.0f, 2.0f, 20.0f, 50.0f })
+		for (const auto preset : { LineStyle::DashedFlat, LineStyle::RoundDot })
+		{
+			const std::string name = ("StyledRoundRect_" + std::to_string(int(radius)) + "_" + std::to_string(int(preset.type)));
+			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildRoundRectFrameStyled(allocate, preset(-0.5), { 13, 23, 207, 117 }, Max(radius - 3, 0.0f),
+					{ 5, 15, 215, 125 }, Min(radius + 5, 55.0f), 8, Float4{ 0.2f, 0.4f, 0.6f, 0.5f }, 1);
+			});
+		}
 		for (const bool clipped : { false, true })
 		{
 			MeasureBuilder(device, (clipped ? "RoundDotClipped" : "RoundDot"), [&](const BufferCreatorFunc& allocate)

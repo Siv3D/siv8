@@ -20,6 +20,7 @@
 
 namespace s3d
 {
+	struct LineStyle;
 	struct PatternParameters;
 	struct TexturedRoundRect;
 
@@ -1300,6 +1301,26 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 指定した線のスタイルで角丸長方形の枠を描きます。
+		/// @param style 線のスタイル。閉じた枠なので線端の指定は使いません。
+		/// @param thickness 枠の太さ。内側・外側に半分ずつ配置します。
+		/// @param color 色
+		/// @return *this
+		/// @see @ref styled_round_rect_frame
+		const RoundRect& drawFrame(const LineStyle& style, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 指定した線のスタイルと内外の太さで角丸長方形の枠を描きます。
+		/// @param style 線のスタイル。閉じた枠なので線端の指定は使いません。
+		/// @param innerThickness 基準の角丸長方形から内側への太さ
+		/// @param outerThickness 基準の角丸長方形から外側への太さ
+		/// @param color 色
+		/// @anchor styled_round_rect_frame
+		/// @pre 座標・寸法・太さ・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 非実線は内外輪郭の中央の全周長に整数個の周期が収まるよう調整します。位相は調整後の単位で、その輪郭の上辺と左上の角丸の接点から時計回りです。丸点の直径は太さの合計を保ち、狭い角などでは重なる場合があります。
+		/// @remark Solid・角半径の制限・内側が潰れた場合の外形の塗りつぶしは通常の drawFrame() と共通です。寸法が 0 以下、太さが負、または太さの合計が 0 の場合は描画しません。非実線の枠でパターン片が 4,096 個を超える場合も描画せず、継ぎ目の同じ丸点は 1 個と数えます。
+		/// @return *this
+		const RoundRect& drawFrame(const LineStyle& style, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

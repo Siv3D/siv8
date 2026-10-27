@@ -150,6 +150,7 @@
 		A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */; };
 		7A6D94865623402291D9E55C /* Test_DashedPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17F8B12C9FA4203ABBDB0CC /* Test_DashedPath.cpp */; };
 		FCA34CDA67434D258DFA2A19 /* Test_StyledArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4321FE790107439BA1403845 /* Test_StyledArc.cpp */; };
+		547EAC31123F493CACDD5584 /* Test_StyledRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F32B570E1C43E7A0AF440A /* Test_StyledRoundRect.cpp */; };
 		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		184A2FF02587E88823E7452F /* Test_DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */; };
@@ -3606,6 +3607,7 @@
 		3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircularShapes.cpp; sourceTree = "<group>"; };
 		A17F8B12C9FA4203ABBDB0CC /* Test_DashedPath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DashedPath.cpp; sourceTree = "<group>"; };
 		4321FE790107439BA1403845 /* Test_StyledArc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_StyledArc.cpp; sourceTree = "<group>"; };
+		D9F32B570E1C43E7A0AF440A /* Test_StyledRoundRect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_StyledRoundRect.cpp; sourceTree = "<group>"; };
 		67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CurveAdaptive.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
 		B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationLegacy.hpp; sourceTree = "<group>"; };
@@ -7372,6 +7374,7 @@
 				3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */,
 				A17F8B12C9FA4203ABBDB0CC /* Test_DashedPath.cpp */,
 				4321FE790107439BA1403845 /* Test_StyledArc.cpp */,
+				D9F32B570E1C43E7A0AF440A /* Test_StyledRoundRect.cpp */,
 				67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */,
 				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
 				B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */,
@@ -17260,6 +17263,7 @@
 				A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */,
 				7A6D94865623402291D9E55C /* Test_DashedPath.cpp in Sources */,
 				FCA34CDA67434D258DFA2A19 /* Test_StyledArc.cpp in Sources */,
+				547EAC31123F493CACDD5584 /* Test_StyledRoundRect.cpp in Sources */,
 				E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */,

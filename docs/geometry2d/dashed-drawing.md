@@ -175,6 +175,94 @@ and the isolated tool use different angles, width offsets and timing contexts;
 compare storage modes or before/after runs within the same benchmark. Windows
 runtime performance and visual output still require measurement on Windows.
 
+## Rounded frames
+
+`RoundRect::drawFrame(LineStyle, ...)` accepts either a centered thickness or
+separate inner/outer thicknesses, with a single color:
+
+```cpp
+roundRect.drawFrame(LineStyle::Dashed(phase), 6, Palette::Orange);
+roundRect.drawFrame(LineStyle::RoundDot(phase), 2, 6, Palette::Skyblue);
+```
+
+The four straight sides and four quarter circles form one closed pattern domain.
+Distances follow the midpoint of the normalized inner and outer outlines. The
+preset period fits an integer number of repeats to this perimeter, using the same
+rule as styled arcs. Phase starts at the midpoint contour's upper-left top
+contact and moves clockwise, without restarting at component boundaries. Caps
+have no effect on a closed frame. Radius normalization and a collapsed interior's
+outer-fill fallback follow ordinary frame drawing. Round dots keep the requested
+diameter; tight corners can still bring neighboring dots together.
+
+The existing `drawDashedFrame(RectangularDashStyle, ...)` keeps its explicit
+count/ratio/offset contract. The new overload uses existing LineStyle presets and
+does not add fields or new public style types. Four-independent-radius Rect/RectF
+frames and arbitrary Polygon outlines are outside this addition.
+
+The shared builder emits paired inner/outer samples for each dash, including
+exact straight/arc junctions and the closing point. It uses bounded local arrays,
+one buffer reservation and the same fitted-pattern cursor as analytic arcs.
+Arc and frame mesh emission stay specialized to their geometry. It does not
+construct a Polygon or allocate a container for each dash. Ordinary solid
+frames bypass these helpers.
+
+[Frame tests](../../Test/Test_StyledRoundRect.cpp) cover an independent centerline
+coverage oracle, caps/phase, circular and capsule limits, small/zero radii,
+collapsed interiors, half-alpha blending, transforms, allocation failure and the
+piece budget. Use F or `--frames` in the canonical
+[comparison program](../../Test/Manual/DashedPathDrawing.md). Space animates phase;
+I changes the inner/outer split. The narrow column exposes the fill fallback.
+
+Run the opt-in CPU benchmark separately from correctness tests:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=StyledRoundRect.submission_benchmark'
+```
+
+It rotates public submission, preallocated heap-builder output and ordinary
+solid frames as different-output context, with matching public/heap triangle
+counts. The upload diagnostic also verifies the new builder in RAM and both
+Metal cache modes. These timings exclude GPU execution.
+
+### Rounded frame measurement example
+
+Apple M2, macOS/Metal Release, symmetric widths, moving phase. Public-call
+wall-time medians in microseconds (p10–p90 in brackets), including backend
+buffer writes. The benchmark uses 4 warmups, 21 batches of 64 calls, a 5 ms CPU
+warmup before each batch and interactive thread QoS on macOS.
+
+| Rectangle / radius / width | DashedFlat | DashDot | RoundDot |
+|---|---:|---:|---:|
+| 200 × 100 / 20 / 8 | 1.277 [0.859–1.505] | 1.554 [1.345–1.572] | 1.152 [1.138–1.395] |
+| 120 × 40 / 20 / 8 | 1.253 [0.930–1.354] | 1.278 [1.095–1.486] | 0.703 [0.695–0.898] |
+| 400 × 240 / 48 / 2 | 7.133 [6.872–8.336] | 5.699 [3.824–6.220] | 6.847 [6.682–7.937] |
+
+The thin, large frame has many more pieces: RoundDot submits 598 triangles,
+versus 70 for the first shape. Ordinary solid frames took 0.148–0.213 µs in
+these runs, but produce different geometry. Public and heap-builder triangle
+counts matched; the heap-builder medians for the first shape were
+1.258 / 1.478 / 1.145 µs in the same pattern order.
+
+The isolated upload diagnostic uses a 200 × 100 reference rectangle,
+inner/outer widths 3/5, phase -0.5 and scale 1. Median nanoseconds per `-Os`
+builder call, with all vertex attributes and indices checked in each mode:
+
+| Radius / pattern | RAM | Metal default cache | Metal write-combined |
+|---|---:|---:|---:|
+| 0 / DashedFlat | 565 | 568 | 583 |
+| 0 / RoundDot | 462 | 446 | 448 |
+| 2 / DashedFlat | 608 | 602 | 588 |
+| 2 / RoundDot | 460 | 463 | 453 |
+| 20 / DashedFlat | 685 | 668 | 670 |
+| 20 / RoundDot | 488 | 507 | 479 |
+| 50 / DashedFlat | 726 | 724 | 733 |
+| 50 / RoundDot | 498 | 528 | 475 |
+
+No material write-combined penalty appeared. `-O3` checks also passed, with
+write-combined medians of 0.366–0.659 µs. Isolated and public measurements use
+different phases, width offsets and timing contexts; compare storage modes
+within the same benchmark. Windows runtime and visual results remain unverified.
+
 ## Rendering limits
 
 The v0.8 renderer draws each distance-cut dash as an ordinary GPU stroke with

@@ -744,6 +744,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRoundRectFrameStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectFrameStyled(const LineStyle& style, const FloatRect& innerRect, const float innerR,
+		const FloatRect& outerRect, const float outerR, const float thickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrameStyled(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			style, innerRect, innerR, outerRect, outerR, thickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			if (style.type == LinePattern::RoundDot)
+				Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
+			else Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addRoundRectDashedFrame
 	//
 	////////////////////////////////////////////////////////////////

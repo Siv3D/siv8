@@ -145,6 +145,7 @@
     <ClCompile Include="..\Test\Test_CircularShapes.cpp" />
     <ClCompile Include="..\Test\Test_DashedPath.cpp" />
     <ClCompile Include="..\Test\Test_StyledArc.cpp" />
+    <ClCompile Include="..\Test\Test_StyledRoundRect.cpp" />
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
     <ClInclude Include="..\Test\BezierTessellationLegacy.hpp" />

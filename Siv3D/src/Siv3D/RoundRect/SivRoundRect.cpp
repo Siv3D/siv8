@@ -18,6 +18,7 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/LineString.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
@@ -784,6 +785,45 @@ namespace s3d
 			FloatRect{ outerRoundRect.rect },
 			static_cast<float>(outerRoundRect.r),
 			pattern
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		return drawFrame(style, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const LineStyle& style, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (style.type == LinePattern::Solid) return drawFrame(innerThickness, outerThickness, color);
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(color);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrameStyled(
+			style,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
+			static_cast<float>(innerThickness + outerThickness),
+			color.toFloat4()
 		);
 
 		return *this;

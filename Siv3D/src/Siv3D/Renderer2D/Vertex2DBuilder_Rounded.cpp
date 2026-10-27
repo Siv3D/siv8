@@ -3358,7 +3358,7 @@ namespace s3d
 			const double initialLength = lengthAt(start);
 			const double length = Circular ? (radius * sweep) : (closed ? perimeter : (direction * (lengthAt(finish) - initialLength)));
 			detail::DashPattern::Cursor pattern;
-			if (not pattern.prepareArc(length, perimeter, width, style) || (pattern.count == 0)) return 0;
+			if (not pattern.prepareFitted(length, perimeter, width, style) || (pattern.count == 0)) return 0;
 
 			struct Sample { Float2 middle, normal; };
 			const auto sampleParameter = [&](const float parameter)
@@ -3721,6 +3721,186 @@ namespace s3d
 			}
 
 			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Styled rounded frame emission
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class SampleAt>
+		static Vertex2D::IndexType BuildClosedRoundDots(const BufferCreatorFunc& bufferCreator, const detail::DashPattern::Cursor& pattern,
+			const float width, const Float4& color, const SampleAt& sample)
+		{
+			const float halfWidth = (width * 0.5f);
+			const size_t count = (pattern.count - (pattern.count > pattern.cycles ? 1 : 0));
+			const auto indices = static_cast<uint16>(count * 6);
+			const auto buffer = bufferCreator(static_cast<uint16>(count * 4), indices);
+			if (not buffer.pVertex) return 0;
+			const double firstCenter = (pattern.series[0].first + pattern.unit * 0.5);
+			for (size_t i = 0; i < count; ++i)
+			{
+				// A fitted closed contour keeps one whole quad per dot, even at the seam.
+				const auto point = sample(firstCenter + i * pattern.pitch);
+				const Float2 normal = (point.normal * halfWidth), tangent{ -normal.y, normal.x };
+				const Float2 first = (point.middle - tangent), last = (point.middle + tangent);
+				auto dst = (buffer.pVertex + i * 4);
+				dst[0].set(first - normal, { 0, 1 }, color);
+				dst[1].set(first + normal, { 0, 0 }, color);
+				dst[2].set(last - normal, { 1, 1 }, color);
+				dst[3].set(last + normal, { 1, 0 }, color);
+				auto index = (buffer.pIndex + i * 6);
+				for (const auto j : RectIndexTable) *index++ = static_cast<uint16>(buffer.indexOffset + i * 4 + j);
+			}
+			return indices;
+		}
+
+		template <class SampleAt, class GridSampleAt>
+		SIV3D_ALWAYS_INLINE
+		static Vertex2D::IndexType BuildStyledBand(const BufferCreatorFunc& bufferCreator, detail::DashPattern::Cursor pattern,
+			const std::span<const double> distances, const Float4& color, const SampleAt& sample, const GridSampleAt& sampleGrid)
+		{
+			const size_t gridCount = distances.size();
+			size_t pointCount = 0, grid = 0, runs = 0;
+			auto counter = pattern;
+			for (size_t i = 0; i < counter.count; ++i)
+			{
+				const auto run = counter.next();
+				if (run.end <= run.start) continue;
+				++runs;
+				pointCount += 2;
+				while ((grid < gridCount) && (distances[grid] <= run.start)) ++grid;
+				while ((grid < gridCount) && (distances[grid] < run.end)) { ++grid; ++pointCount; }
+			}
+			if (runs == 0) return 0;
+			static_assert((MaxCircleSegments + 9 + detail::DashPattern::MaxRuns * 2) * 2 < 65536);
+			static_assert((MaxCircleSegments + 9 + detail::DashPattern::MaxRuns) * 6 < 65536);
+			const auto indexCount = static_cast<uint16>((pointCount - runs) * 6);
+			const auto buffer = bufferCreator(static_cast<uint16>(pointCount * 2), indexCount);
+			if (not buffer.pVertex) return 0;
+			auto vertices = buffer.pVertex;
+			auto indices = buffer.pIndex;
+			grid = 0;
+			const auto emit = [&](const std::array<Float2, 2>& point)
+			{
+				(*vertices++).set(point[0], color);
+				(*vertices++).set(point[1], color);
+			};
+			for (size_t i = 0; i < pattern.count; ++i)
+			{
+				const auto run = pattern.next();
+				if (run.end <= run.start) continue;
+				const auto first = (vertices - buffer.pVertex);
+				emit(sample(run.start));
+				while ((grid < gridCount) && (distances[grid] <= run.start)) ++grid;
+				while ((grid < gridCount) && (distances[grid] < run.end)) emit(sampleGrid(grid++));
+				emit(sample(run.end));
+				WriteOpenStripIndices(indices, static_cast<uint16>(buffer.indexOffset + first), static_cast<uint16>((vertices - buffer.pVertex - first) / 2));
+			}
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildRoundRectFrameStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRoundRectFrameStyled(const BufferCreatorFunc& bufferCreator, const LineStyle& style,
+			const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR,
+			const float thickness, const Float4& color, const float scale)
+		{
+			if (thickness <= 0) return 0;
+			const auto endpoints = [](const FloatRect& rect, const float r)
+			{
+				return std::array<Float2, 8>{{ { rect.left + r, rect.top }, { rect.right - r, rect.top },
+					{ rect.right, rect.top + r }, { rect.right, rect.bottom - r },
+					{ rect.right - r, rect.bottom }, { rect.left + r, rect.bottom },
+					{ rect.left, rect.bottom - r }, { rect.left, rect.top + r } }};
+			};
+			const auto inner = endpoints(innerRect, innerR), outer = endpoints(outerRect, outerR);
+			const double horizontal = Max(0.0, ((double(inner[1].x) - inner[0].x + double(outer[1].x) - outer[0].x) * 0.5));
+			const double vertical = Max(0.0, ((double(inner[3].y) - inner[2].y + double(outer[3].y) - outer[2].y) * 0.5));
+			const double arc = ((double(innerR) + outerR) * 0.5 * Math::HalfPiF);
+			const std::array<double, 8> lengths{ horizontal, arc, vertical, arc, horizontal, arc, vertical, arc };
+			std::array<double, 9> cumulative{};
+			for (size_t i = 0; i < 8; ++i) cumulative[i + 1] = (cumulative[i] + lengths[i]);
+			const double perimeter = cumulative.back();
+			detail::DashPattern::Cursor pattern;
+			if (not pattern.prepareFitted(perimeter, perimeter, thickness, style) || pattern.count == 0) return 0;
+
+			struct Location { size_t component; float fraction; };
+			const auto locate = [&](double distance)
+			{
+				if (distance < 0) distance += perimeter;
+				else if (distance >= perimeter) distance -= perimeter;
+				for (size_t i = 0; i < 8; ++i)
+					if (distance < cumulative[i + 1]) return Location{ i, static_cast<float>((distance - cumulative[i]) / lengths[i]) };
+				return Location{ 0, 0 };
+			};
+			struct Sample { std::array<Float2, 2> edges; Float2 normal; };
+			const auto sample = [&](const Location location)
+			{
+				const size_t k = location.component, next = ((k + 1) % 8), corner = (k / 2);
+				const float f = location.fraction;
+				constexpr std::array<Float2, 4> normals{{ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }};
+				if ((k & 1) == 0)
+				{
+					auto p = inner[k].lerp(inner[next], f), q = outer[k].lerp(outer[next], f);
+					// When the inner radius clamps to zero, its straight side is
+					// shorter. Keep cuts perpendicular away from the corner while
+					// preserving the midpoint and both contour endpoints.
+					if ((k % 4) == 0)
+					{
+						const float middle = ((p.x + q.x) * 0.5f);
+						p.x = Clamp(middle, Min(inner[k].x, inner[next].x), Max(inner[k].x, inner[next].x));
+						q.x = (2 * middle - p.x);
+					}
+					else
+					{
+						const float middle = ((p.y + q.y) * 0.5f);
+						p.y = Clamp(middle, Min(inner[k].y, inner[next].y), Max(inner[k].y, inner[next].y));
+						q.y = (2 * middle - p.y);
+					}
+					return Sample{ { p, q }, normals[corner] };
+				}
+				// Adjacent components share exact endpoints, including zero-length sides.
+				if (f == 0) return Sample{ { inner[k], outer[k] }, normals[corner] };
+				if (f == 1) return Sample{ { inner[next], outer[next] }, normals[(corner + 1) % 4] };
+				const auto [s, c] = FastMath::SinCos(f * Math::HalfPiF);
+				const std::array<Float2, 4> n{{ { s, -c }, { c, s }, { -s, c }, { -c, -s } }};
+				const Float2 normal = n[corner];
+				return Sample{ { inner[k] + (normal - normals[corner]) * innerR,
+					outer[k] + (normal - normals[corner]) * outerR }, normal };
+			};
+			if (pattern.round)
+			{
+				struct Dot { Float2 middle, normal; };
+				return BuildClosedRoundDots(bufferCreator, pattern, thickness, color, [&](const double d)
+				{
+					const auto point = sample(locate(d));
+					return Dot{ (point.edges[0] + point.edges[1]) * 0.5f, point.normal };
+				});
+			}
+
+			const uint16 quality = CalculateCircleQuality(outerR * scale);
+			std::array<double, (MaxCircleSegments + 9)> distances{};
+			std::array<Location, (MaxCircleSegments + 9)> locations{};
+			size_t count = 1;
+			for (size_t k = 0; k < 8; ++k)
+			{
+				if (lengths[k] <= 0) continue;
+				const uint16 steps = ((k & 1) ? quality : 1);
+				for (uint16 i = 1; i <= steps; ++i)
+				{
+					distances[count] = ((i == steps) ? cumulative[k + 1] : (cumulative[k] + lengths[k] * i / steps));
+					locations[count++] = { k, (float(i) / steps) };
+				}
+			}
+			return BuildStyledBand(bufferCreator, pattern, std::span{ distances.data(), count }, color,
+				[&](const double d) { return sample(locate(d)).edges; },
+				[&](const size_t i) { return sample(locations[i]).edges; });
 		}
 
 		////////////////////////////////////////////////////////////////

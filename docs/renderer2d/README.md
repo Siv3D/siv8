@@ -320,7 +320,7 @@ ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
 measures representative copy kernels and the actual shared Polygon, Mesh2D,
 textured round-rectangle, circle/ellipse arc, hollow rectangle shadow, and closed
 line-string builders (smooth and sharp contours at several point counts),
-single- and double-headed arrows, round dots, crescents, teardrops, and rounded balloon fills and frames,
+single- and double-headed arrows, styled arcs and rounded frames, round dots, crescents, teardrops, and rounded balloon fills and frames,
 with preallocated reusable buffers, no renderer initialization, no GPU commands,
 and no presentation. Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:

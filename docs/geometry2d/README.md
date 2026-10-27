@@ -22,7 +22,8 @@ and rounded speech balloons link to the rounded drawing guide.
 ## Dashed curves, paths and arcs
 
 [Dashed drawing](dashed-drawing.md) covers `draw(LineStyle, ...)` and Circle/Ellipse
-`drawArc(LineStyle, ...)`, fixed patterns/phase settings, closed seams, and the
+`drawArc(LineStyle, ...)`, `RoundRect::drawFrame(LineStyle, ...)`, fitted closed
+contours, phase settings, and the
 accepted corner/overlap limits. It links the
 public-API manual program, tests, and submission benchmark.
 

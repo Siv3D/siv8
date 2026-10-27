@@ -4,7 +4,7 @@ The canonical gallery for `draw(LineStyle, ...)` and
 `LineString::drawClosed(LineStyle, ...)` compares every existing LineStyle preset
 with the original Line renderer. The overview shows all 13 presets at once:
 Square, Round, Flat, the five patterned presets, and their five Flat variants.
-Press C to switch between paths and analytic arcs. Each row keeps the preset's original cap; the program changes only its phase.
+Press C to switch between paths and analytic arcs; F selects rounded frames. Each row keeps the preset's original cap; the program changes only its phase.
 
 The path page has seven columns: Line, a collinear LineString, a polyline with right-angle
 corners, Bezier2, Bezier3, Spline2D, and a closed LineString. The first two have
@@ -26,12 +26,13 @@ preset. Width, phase and opacity are shared across every sample.
 | Key | Action |
 |---|---|
 | C | Toggle paths / analytic arcs |
+| F | Toggle the rounded-frame page |
 | H | Toggle the closure comparison page |
 | P | Pause / resume sweep animation (350° through 362° and back) |
 | J / K | Pause and step sweep by 1°; Shift: 0.01° |
 | V | Reverse the sweep direction |
 | O | Toggle variable / full-reference display in the enlarged seam card |
-| I | Toggle symmetric / asymmetric arc widths (inner 25%, outer 75%) |
+| I | Toggle symmetric / asymmetric arc/frame widths (inner 25%, outer 75%) |
 | Tab | Toggle overview / selected-preset detail |
 | Up / Down | Select the previous / next preset; clicking a row also selects it |
 | Space | Pause / resume phase animation |
@@ -43,6 +44,7 @@ preset. Width, phase and opacity are shared across every sample.
 
 Optional command-line arguments:
 
+- `--frames` selects rounded frames, including radius 0, a small radius, capsules, a circle and a narrow frame.
 - `--arcs` selects the analytic arc page; `--asymmetric` selects unequal inner/outer widths.
 - `--detail` starts in the enlarged view.
 - `--closure` compares a variable sweep with a fixed 360° reference and a 4x seam view.
@@ -52,7 +54,7 @@ Optional command-line arguments:
   clamped to 1–16; phase wraps by 20, a common period of all five patterns.
 - `--capture` saves the selected view after four frames and exits. Images are
   `line-style-overview.png` or `line-style-<preset>.png` in the application's
-  working directory; arc-page names include `arcs-`; closure captures include `closure-<angle>-<preset>`, and unequal-width arc-page captures include `asymmetric-`. Repeated captures of the same view overwrite that file.
+  working directory; arc-page names include `arcs-`, frame-page names include `frames-`; closure captures include `closure-<angle>-<preset>`, and unequal-width arc/frame captures include `asymmetric-`. Repeated captures of the same view overwrite that file.
   Remove retained images when no longer needed; avoid input during capture.
 
 ## Expected results
@@ -97,13 +99,23 @@ Optional command-line arguments:
   overlap. Compare alpha 0.5 and 1. Gray guides show the reference curve; green
   and red markers show its angular endpoints, before the asymmetric width shift.
 
+On the F page, all patterned frames fit their period to the full midpoint
+perimeter. Phase advances clockwise from the upper-left corner's top contact.
+Space animates phase through straight/arc boundaries; compare Flat/non-Flat
+variants and phase -0.5 at alpha 0.5 to inspect the seam. I changes the width
+offset. Round dots keep their diameter and can overlap at small radii. A frame
+whose inner rectangle collapses fills its outer shape, matching ordinary frames.
+The separate count/ratio-based `drawDashedFrame()` API keeps its existing behavior.
+
 See the [drawing guide](../../docs/geometry2d/dashed-drawing.md) for design and
 measurement details. The [automated tests](../Test_DashedPath.cpp) cover placement,
 boundaries, rendering and CPU submission. [Arc tests](../Test_StyledArc.cpp) also
-check analytic placement, ellipse length accuracy, upload bounds and public rendering. To run correctness tests on macOS:
+check analytic placement, ellipse length accuracy, upload bounds and public rendering.
+[Frame tests](../Test_StyledRoundRect.cpp) cover whole-perimeter placement, joins,
+round dots, collapsed interiors, buffer bounds and public rendering. To run correctness tests on macOS:
 
 ```sh
-CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=~[benchmark]DashedPath.*,~[benchmark]StyledArc.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=~[benchmark]DashedPath.*,~[benchmark]StyledArc.*,~[benchmark]StyledRoundRect.*'
 ```
 
 For Windows and the isolated Release benchmark, use the
@@ -189,6 +201,30 @@ namespace
 		}
 	}
 
+	constexpr std::array<StringView, 7> FrameTitles{
+		U"Line", U"RoundRect", U"RoundRect", U"RoundRect", U"RoundRect", U"RoundRect", U"RoundRect"
+	};
+	constexpr std::array<StringView, 7> FrameSubtitles{
+		U"reference", U"radius 12", U"capsule", U"radius 0", U"radius 2", U"circle limit", U"narrow / thick"
+	};
+
+	RoundRect FrameShape(const size_t kind)
+	{
+		if (kind == 5) return RoundRect{ 48, -18, 36, 36, 18 };
+		if (kind == 6) return RoundRect{ 0, -4, 132, 8, 4 };
+		return RoundRect{ 0, -18, 132, 36, kind == 1 ? 12.0 : kind == 2 ? 18.0 : kind == 3 ? 0.0 : 2.0 };
+	}
+
+	void DrawFrameGeometry(const size_t kind, const LineStyle& style, const double width, const ColorF& color, const bool asymmetric)
+	{
+		if (kind == 0) Line{ 0, 0, 132, 0 }.draw(style, width, color);
+		else
+		{
+			const double inner = width * (asymmetric ? 0.25 : 0.5);
+			FrameShape(kind).drawFrame(style, inner, (width - inner), color);
+		}
+	}
+
 	void DrawGeometry(const size_t kind, const LineStyle& style, const double width, const ColorF& color)
 	{
 		static const LineString straight{ { 0, 0 }, { 44, 0 }, { 88, 0 }, { 132, 0 } };
@@ -209,10 +245,15 @@ namespace
 	}
 
 	void DrawSample(const size_t kind, const LineStyle& style, const double width,
-		const ColorF& color, const bool guides, const Vec2 origin, const bool arcs, const bool asymmetric, const double zoom = 1.0)
+		const ColorF& color, const bool guides, const Vec2 origin, const bool arcs, const bool asymmetric, const bool roundFrames, const double zoom = 1.0)
 	{
 		const Transformer2D transform{ Mat3x2::Scale(zoom).translated(origin) };
-		if (arcs)
+		if (roundFrames)
+		{
+			if (guides) DrawFrameGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 }, false);
+			DrawFrameGeometry(kind, style, width, color, asymmetric);
+		}
+		else if (arcs)
 		{
 			if (guides) DrawArcGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 }, false);
 			DrawArcGeometry(kind, style, width, color, asymmetric);
@@ -222,7 +263,12 @@ namespace
 			if (guides) DrawGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 });
 			DrawGeometry(kind, style, width, color);
 		}
-		if (guides)
+		if (guides && roundFrames)
+		{
+			const auto rect = FrameShape(kind);
+			Circle{ kind == 0 ? Vec2{ 0, 0 } : rect.rect.tl() + Vec2{ rect.r, 0 }, 2 }.draw(ColorF{ 0.05, 0.55, 0.32 });
+		}
+		else if (guides)
 		{
 			Circle{ arcs ? ArcEndpoint(kind, false) : Starts[kind], 2 }.draw(ColorF{ 0.05, 0.55, 0.32 });
 			if (arcs ? kind < 4 : kind < Ends.size()) Circle{ arcs ? ArcEndpoint(kind, true) : Ends[kind], 2 }.draw(ColorF{ 0.85, 0.25, 0.15 });
@@ -274,6 +320,7 @@ void Main()
 	bool playing = false, translucent = true, guides = false, detail = false;
 	const auto& args = System::GetCommandLineArgs();
 	const bool capture = args.contains(U"--capture");
+	bool roundFrames = args.contains(U"--frames");
 	bool arcs = args.contains(U"--arcs"), asymmetric = args.contains(U"--asymmetric");
 	detail = args.contains(U"--detail");
 	bool closure = args.contains(U"--closure"), sweepPlaying = args.contains(U"--sweep-play");
@@ -295,15 +342,16 @@ void Main()
 	{
 		if (capture && ScreenCapture::HasNewFrame())
 		{
-			const FilePath path = closure ? Format(U"line-style-closure-", sweepDegrees, U"-", Presets[selected].name, U".png") : Format(U"line-style-", arcs ? U"arcs-" : U"", asymmetric ? U"asymmetric-" : U"", detail ? Presets[selected].name : U"overview", U".png");
+			const FilePath path = closure ? Format(U"line-style-closure-", sweepDegrees, U"-", Presets[selected].name, U".png") : Format(U"line-style-", roundFrames ? U"frames-" : arcs ? U"arcs-" : U"", asymmetric ? U"asymmetric-" : U"", detail ? Presets[selected].name : U"overview", U".png");
 			const bool saved = ScreenCapture::GetFrame().save(path);
 			System::Exit(saved ? 0 : 1);
 			return;
 		}
 		if (KeySpace.down()) playing = !playing;
 		if (KeyTab.down()) detail = !detail;
-		if (KeyC.down()) { arcs = !arcs; closure = false; }
-		if (KeyH.down()) closure = !closure;
+		if (KeyC.down()) { arcs = !arcs; closure = false; roundFrames = false; }
+		if (KeyF.down()) { roundFrames = !roundFrames; closure = false; }
+		if (KeyH.down()) { closure = !closure; roundFrames = false; }
 		if (KeyP.down())
 		{
 			sweepPlaying = !sweepPlaying;
@@ -333,9 +381,9 @@ void Main()
 		phase = std::fmod(phase, 20.0); // Common period of all five patterned presets.
 		const ColorF ink{ 0.05, 0.35, 0.68, (translucent ? 0.5 : 1.0) };
 
-		const auto& titles = arcs ? ArcTitles : Titles;
-		const auto& subtitles = arcs ? ArcSubtitles : Subtitles;
-		title(closure ? U"Arc closure / " : arcs ? U"LineStyle arcs / " : U"LineStyle paths / ", (detail || closure) ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
+		const auto& titles = roundFrames ? FrameTitles : arcs ? ArcTitles : Titles;
+		const auto& subtitles = roundFrames ? FrameSubtitles : arcs ? ArcSubtitles : Subtitles;
+		title(closure ? U"Arc closure / " : roundFrames ? U"Rounded frames / " : arcs ? U"LineStyle arcs / " : U"LineStyle paths / ", (detail || closure) ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
 		ui(U"width: {:.0f}   phase: {:.2f}   alpha: {:.1f}   {}"_fmt(
 			width, phase, ink.a, playing ? U"playing" : U"paused")).draw(650, 18, text);
 		if (closure)
@@ -360,25 +408,26 @@ void Main()
 				ui(Presets[r].name).draw(22, y + 15, text);
 				const LineStyle style{ Presets[r].parameters(phase) };
 				for (size_t c = 0; c < Titles.size(); ++c)
-					DrawSample(c, style, width, ink, guides, { 200 + c * 172, y + 26 }, arcs, asymmetric);
+					DrawSample(c, style, width, ink, guides, { 200 + c * 172, y + 26 }, arcs, asymmetric, roundFrames);
 			}
 		}
 		else
 		{
-			ui(asymmetric && arcs ? U"2.1x view / inner 25%, outer 75%" : U"2.1x view / symmetric widths").draw(16, 68, muted);
+			ui(asymmetric && (arcs || roundFrames) ? U"2.1x view / inner 25%, outer 75%" : U"2.1x view / symmetric widths").draw(16, 68, muted);
 			const LineStyle style{ Presets[selected].parameters(phase) };
 			for (size_t c = 0; c < Titles.size(); ++c)
 			{
 				const Vec2 pos{ 16 + (c % 4) * 344.0, 110 + (c / 4) * 326.0 };
 				RectF{ pos, 332, 306 }.draw(ColorF{ 1.0 });
 				ui(titles[c], U" / ", subtitles[c]).draw(pos + Vec2{ 16, 16 }, text);
-				DrawSample(c, style, width, ink, guides, pos + Vec2{ 27.4, 150 }, arcs, asymmetric, 2.1);
+				DrawSample(c, style, width, ink, guides, pos + Vec2{ 27.4, 150 }, arcs, asymmetric, roundFrames, 2.1);
 			}
 			ui(U"Inspect endpoints and corners\nG: centerlines and endpoint markers\nA: reveal overlapping strokes\nLeft / Right: step phase while paused").draw(1064, 470, muted);
 		}
 		ui(U"H: closure comparison    Tab: overview / detail    Up / Down: preset    Space: phase animation    W / S: width").draw(16, 800, text);
-		ui(U"Left / Right: phase 0.1 (Shift: 0.01)    A: alpha    G: guides    C: paths / arcs    I: inner / outer widths    R: reset").draw(16, 830, text);
+		ui(U"Left / Right: phase 0.1 (Shift: 0.01)    A: alpha    G: guides    C: paths / arcs    F: frames    I: inner / outer widths    R: reset").draw(16, 830, text);
 		small(closure ? U"Sweep changes reveal a fixed full-circumference pattern. Hold phase still to inspect closure; Solid keeps ordinary caps."
+			: roundFrames ? U"Rounded frames fit the full perimeter. Cap is ignored. Narrow frames fill when the interior collapses."
 			: arcs ? U"Analytic arcs / different path lengths. All sweeps fit their period to the full circumference. Flat ellipse shows tight-curvature limits."
 			: U"Line and straight LineString share endpoints. Curved paths have different lengths. Guides: green = start, red = end.").draw(16, 864, muted);
 		if (capture && (++frames == 4)) ScreenCapture::RequestCurrentFrame();
