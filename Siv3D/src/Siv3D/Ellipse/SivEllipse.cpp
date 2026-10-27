@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
@@ -805,6 +806,20 @@ namespace s3d
 		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
 		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
 			static_cast<float>(innerThickness), static_cast<float>(outerThickness), pattern);
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineStyle& style, const double startAngle, const double angle,
+		const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (style.type == LinePattern::Solid) return drawArc(style.cap, startAngle, angle, innerThickness, outerThickness, color);
+		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
+		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
+		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		if (Abs(sweep) >= Math::TwoPiF) span = sweep;
+		SIV3D_ENGINE(Renderer2D)->addArcStyled(style, center, rx, ry, start, span,
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), color.toFloat4());
 		return *this;
 	}
 

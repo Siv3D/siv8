@@ -610,6 +610,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addArcStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addArcStyled(const LineStyle& style, const Float2& center, const float a, const float b,
+		const float startAngle, const float angle, const float innerThickness, const float outerThickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildArcStyled(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			style, center, a, b, startAngle, angle, innerThickness, outerThickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			if (style.type == LinePattern::RoundDot)
+				Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
+			else Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addSuperEllipse
 	//
 	////////////////////////////////////////////////////////////////

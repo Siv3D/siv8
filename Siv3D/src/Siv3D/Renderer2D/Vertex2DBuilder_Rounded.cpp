@@ -15,6 +15,7 @@
 # include "Vertex2DBuilder.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include "RoundRectBalloon.hpp"
+# include "../Geometry2D/DashPattern.hpp"
 # include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/JoinStyle.hpp>
@@ -2011,14 +2012,58 @@ namespace s3d
 			}
 		}
 
+		[[nodiscard]]
+		static uint16 MakeEllipseArcParameters(const float a, const float b, const float start, const float sweep,
+			const float innerThickness, const float outerThickness, const float scale,
+			std::array<float, (MaxCircleSegments + 1)>& parameters)
+		{
+			uint16 pointCount = 1;
+			parameters[0] = start;
+			if (sweep > 0.0f)
+			{
+				const float offsetRadius = Max(Abs(innerThickness), Abs(outerThickness));
+				uint16 positionIntervals = (CalculateCircleArcQuality((Max(a, b) + offsetRadius) * scale, sweep) - 1);
+				const auto [s0, c0] = FastMath::SinCos(start);
+				const auto [s1, c1] = FastMath::SinCos(start + sweep);
+				const float normalStart = std::atan2(b * s0, a * c0);
+				float normalSweep = (std::atan2(b * s1, a * c1) - normalStart);
+				if (sweep >= Math::TwoPiF) normalSweep = Math::TwoPiF;
+				else if (normalSweep < 0.0f) normalSweep += Math::TwoPiF;
+				uint16 normalIntervals = (CalculateCircleArcQuality(offsetRadius * scale, normalSweep) - 1);
+				// Distribute the bounded budget over both position and normal-angle grids.
+				if ((positionIntervals + normalIntervals) > MaxCircleSegments)
+				{
+					positionIntervals = static_cast<uint16>((MaxCircleSegments * positionIntervals) / (positionIntervals + normalIntervals));
+					normalIntervals = (MaxCircleSegments - positionIntervals);
+				}
+				for (uint16 i = 1; i <= positionIntervals; ++i)
+				{
+					parameters[pointCount++] = (start + sweep * (float(i) / positionIntervals));
+				}
+				const float wrappedStart = std::atan2(s0, c0);
+				for (uint16 i = 1; i < normalIntervals; ++i)
+				{
+					const auto [s, c] = FastMath::SinCos(normalStart + normalSweep * (float(i) / normalIntervals));
+					float delta = (std::atan2(a * s, b * c) - wrappedStart);
+					if (delta < 0.0f) delta += Math::TwoPiF;
+					if ((0.0f < delta) && (delta < sweep)) parameters[pointCount++] = (start + delta);
+				}
+				std::sort(parameters.begin(), parameters.begin() + pointCount);
+				pointCount = static_cast<uint16>(std::unique(parameters.begin(), parameters.begin() + pointCount) - parameters.begin());
+			}
+			return pointCount;
+		}
+
 		static constexpr size_t MaxEllipseArcLengthTableSegmentCount = (MaxCircleSegments * 8);
 
+		template <bool Offset = false>
 		[[nodiscard]]
-		static std::span<const float> GetEllipseArcLengthTable(const float a, const float b, const size_t segmentCount) noexcept
+		static std::span<const float> GetEllipseArcLengthTable(const float a, const float b, const size_t segmentCount, const float middleOffset = 0.0f) noexcept
 		{
 			struct Table
 			{
 				Float2 axes{ 0, 0 };
+				float middleOffset = 0;
 				size_t segmentCount = 0;
 				std::array<float, (MaxEllipseArcLengthTableSegmentCount + 1)> lengths;
 			};
@@ -2028,7 +2073,7 @@ namespace s3d
 			static size_t nextTable = 0;
 			for (const auto& table : tables)
 			{
-				if ((table.axes == Float2{ a, b }) && (table.segmentCount == segmentCount))
+				if ((table.axes == Float2{ a, b }) && (table.segmentCount == segmentCount) && ((not Offset) || (table.middleOffset == middleOffset)))
 				{
 					return{ table.lengths.data(), (segmentCount + 1) };
 				}
@@ -2040,15 +2085,21 @@ namespace s3d
 			lengths[0] = 0.0f;
 			const size_t quarterCount = (segmentCount / 4);
 			float previousX = 0.0f;
-			float previousY = -b;
+			float previousY = (-b - (Offset ? middleOffset : 0.0f));
 			double length = 0.0;
 
 			for (size_t i = 1; i <= quarterCount; ++i)
 			{
 				const float rad = (Math::HalfPiF * static_cast<float>(i) / quarterCount);
 				const auto [s, c] = FastMath::SinCos(rad);
-				const float x = (a * s);
-				const float y = (-b * c);
+				float x = (a * s);
+				float y = (-b * c);
+				if constexpr (Offset)
+				{
+					const Float2 normal = CalculateEllipseNormal(a, b, s, -c);
+					x += normal.x * middleOffset;
+					y += normal.y * middleOffset;
+				}
 				const float dx = (x - previousX);
 				const float dy = (y - previousY);
 				length += std::sqrt(dx * dx + dy * dy);
@@ -2068,6 +2119,7 @@ namespace s3d
 			}
 
 			table.axes = { a, b };
+			table.middleOffset = middleOffset;
 			table.segmentCount = segmentCount;
 			return{ lengths.data(), (segmentCount + 1) };
 		}
@@ -3195,40 +3247,7 @@ namespace s3d
 			const float start = (startAngle + (reverse ? angle : 0.0f));
 			const float halfWidth = (thickness * 0.5f), middleOffset = ((outerThickness - innerThickness) * 0.5f);
 			std::array<float, (MaxCircleSegments + 1)> parameters;
-			uint16 pointCount = 1;
-			parameters[0] = start;
-			if (sweep > 0.0f)
-			{
-				const float offsetRadius = Max(Abs(innerThickness), Abs(outerThickness));
-				uint16 positionIntervals = (CalculateCircleArcQuality((Max(a, b) + offsetRadius) * scale, sweep) - 1);
-				const auto [s0, c0] = FastMath::SinCos(start);
-				const auto [s1, c1] = FastMath::SinCos(start + sweep);
-				const float normalStart = std::atan2(b * s0, a * c0);
-				float normalSweep = (std::atan2(b * s1, a * c1) - normalStart);
-				if (sweep >= Math::TwoPiF) normalSweep = Math::TwoPiF;
-				else if (normalSweep < 0.0f) normalSweep += Math::TwoPiF;
-				uint16 normalIntervals = (CalculateCircleArcQuality(offsetRadius * scale, normalSweep) - 1);
-				// Distribute the bounded budget over both position and normal-angle grids.
-				if ((positionIntervals + normalIntervals) > MaxCircleSegments)
-				{
-					positionIntervals = static_cast<uint16>((MaxCircleSegments * positionIntervals) / (positionIntervals + normalIntervals));
-					normalIntervals = (MaxCircleSegments - positionIntervals);
-				}
-				for (uint16 i = 1; i <= positionIntervals; ++i)
-				{
-					parameters[pointCount++] = (start + sweep * (float(i) / positionIntervals));
-				}
-				const float wrappedStart = std::atan2(s0, c0);
-				for (uint16 i = 1; i < normalIntervals; ++i)
-				{
-					const auto [s, c] = FastMath::SinCos(normalStart + normalSweep * (float(i) / normalIntervals));
-					float delta = (std::atan2(a * s, b * c) - wrappedStart);
-					if (delta < 0.0f) delta += Math::TwoPiF;
-					if ((0.0f < delta) && (delta < sweep)) parameters[pointCount++] = (start + delta);
-				}
-				std::sort(parameters.begin(), parameters.begin() + pointCount);
-				pointCount = static_cast<uint16>(std::unique(parameters.begin(), parameters.begin() + pointCount) - parameters.begin());
-			}
+			const uint16 pointCount = MakeEllipseArcParameters(a, b, start, sweep, innerThickness, outerThickness, scale, parameters);
 			const auto capQuality = (((firstCap == LineCap::Round) || (lastCap == LineCap::Round))
 				? CalculateCircleSegmentQuality(halfWidth * scale, Math::PiF) : Vertex2D::IndexType{ 0 });
 			const auto firstVertices = ArcCapVertexCount(firstCap, capQuality), lastVertices = ArcCapVertexCount(lastCap, capQuality);
@@ -3287,6 +3306,175 @@ namespace s3d
 				static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices + bodyVertices) }, lastCap, lastCenter, lastNormal,
 				halfWidth, true, colorType, (along ? bodyLast : color0), (along ? bodyLast : color1), lastColor, capQuality);
 			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildArcStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <bool Circular>
+		static Vertex2D::IndexType BuildArcStyledImpl(const BufferCreatorFunc& bufferCreator, const LineStyle& style,
+			const Float2& center, const float a, const float b, const float startAngle, const float angle,
+			const float innerThickness, const float outerThickness, const Float4& color, const float scale)
+		{
+			const float width = (innerThickness + outerThickness), halfWidth = (width * 0.5f);
+			const float middleOffset = ((outerThickness - innerThickness) * 0.5f);
+			if ((a <= 0) || (b <= 0) || (width <= 0) || (angle == 0)) return 0;
+			const bool closed = (Abs(angle) >= Math::TwoPiF), reverse = (angle < 0);
+			const float direction = (reverse ? -1.0f : 1.0f);
+			const float sweep = Min(Abs(angle), Math::TwoPiF);
+			const float start = std::remainder(startAngle, Math::TwoPiF);
+			const float finish = (start + direction * sweep);
+			const double radius = (a + middleOffset);
+			std::span<const float> table;
+			double perimeter = 0;
+			if constexpr (Circular)
+			{
+				if (radius <= 0) return 0;
+			}
+			else
+			{
+				const auto quality = CalculateCircleQuality((Max(a, b) + Max(Abs(innerThickness), Abs(outerThickness))) * scale);
+				const size_t segments = Max(size_t{ 64 }, (static_cast<size_t>(quality) * 32));
+				table = (middleOffset == 0) ? GetEllipseArcLengthTable(a, b, segments)
+					: GetEllipseArcLengthTable<true>(a, b, segments, middleOffset);
+				perimeter = table.back();
+				if (perimeter <= 0) return 0;
+			}
+			const auto lengthAt = [&](const double parameter)
+			{
+				if constexpr (Circular) return (parameter * radius);
+				else
+				{
+					const double cycle = std::floor(parameter / Math::TwoPiF);
+					const double index = Clamp((parameter / Math::TwoPiF - cycle) * (table.size() - 1), 0.0, double(table.size() - 1));
+					const size_t i = Min(static_cast<size_t>(index), (table.size() - 2));
+					return (cycle * perimeter + table[i] + (table[i + 1] - table[i]) * (index - i));
+				}
+			};
+			const double initialLength = lengthAt(start);
+			const double length = Circular ? (radius * sweep) : (closed ? perimeter : (direction * (lengthAt(finish) - initialLength)));
+			detail::DashPattern::Cursor pattern;
+			if (not pattern.prepare(length, closed, width, style) || (pattern.count == 0)) return 0;
+
+			struct Sample { Float2 middle, normal; };
+			const auto sampleParameter = [&](const float parameter)
+			{
+				const auto [s, c] = FastMath::SinCos(parameter);
+				Float2 normal;
+				if constexpr (Circular) normal = { s, -c };
+				else normal = CalculateEllipseNormal(a, b, s, -c);
+				return Sample{ center + Float2{ a * s, -b * c } + normal * middleOffset, normal };
+			};
+			const auto sample = [&](const double distance)
+			{
+				float parameter;
+				if (distance <= 0) parameter = start;
+				else if (distance >= length) parameter = (closed ? start : finish);
+				else if constexpr (Circular) parameter = (start + direction * static_cast<float>(distance / radius));
+				else parameter = CalculateEllipseParameterAtLength(table, static_cast<float>(initialLength + direction * distance), static_cast<float>(perimeter));
+				auto point = sampleParameter(parameter);
+				const double extension = (distance < 0 ? distance : (distance > length ? distance - length : 0));
+				point.middle += Float2{ -point.normal.y, point.normal.x } * static_cast<float>(direction * extension);
+				return point;
+			};
+
+			if (pattern.round)
+			{
+				const auto vertices = static_cast<uint16>(pattern.count * 4);
+				const auto indices = static_cast<uint16>(pattern.count * 6);
+				const auto buffer = bufferCreator(vertices, indices);
+				if (not buffer.pVertex) return 0;
+				for (size_t i = 0; i < pattern.count; ++i)
+				{
+					const auto run = pattern.next();
+					const double d = (run.origin + pattern.unit * 0.5);
+					const auto point = sample(d);
+					const Float2 tangent = (Float2{ -point.normal.y, point.normal.x } * direction);
+					const Float2 first = (point.middle + tangent * static_cast<float>(run.start - d));
+					const Float2 last = (point.middle + tangent * static_cast<float>(run.end - d));
+					const Float2 normal = (point.normal * halfWidth);
+					const float u0 = static_cast<float>((run.start - run.origin) / pattern.unit);
+					const float u1 = static_cast<float>((run.end - run.origin) / pattern.unit);
+					auto dst = (buffer.pVertex + i * 4);
+					dst[0].set(first - normal * direction, { u0, 1 }, color);
+					dst[1].set(first + normal * direction, { u0, 0 }, color);
+					dst[2].set(last - normal * direction, { u1, 1 }, color);
+					dst[3].set(last + normal * direction, { u1, 0 }, color);
+					auto index = (buffer.pIndex + i * 6);
+					for (const auto j : RectIndexTable) *index++ = static_cast<uint16>(buffer.indexOffset + i * 4 + j);
+				}
+				return indices;
+			}
+
+			// Merge analytic dash endpoints with one bounded curvature grid. No joins
+			// or per-dash allocations are needed, even for very short terminal pieces.
+			std::array<float, (MaxCircleSegments + 1)> parameters;
+			uint16 gridCount;
+			if constexpr (Circular)
+			{
+				gridCount = CalculateCircleArcQuality((a + Max(Abs(innerThickness), Abs(outerThickness))) * scale, sweep);
+				for (uint16 i = 0; i < gridCount; ++i) parameters[i] = (start + direction * sweep * (float(i) / (gridCount - 1)));
+			}
+			else
+			{
+				gridCount = MakeEllipseArcParameters(a, b, (reverse ? finish : start), sweep, innerThickness, outerThickness, scale, parameters);
+				if (reverse) std::reverse(parameters.begin(), parameters.begin() + gridCount);
+			}
+			std::array<double, (MaxCircleSegments + 1)> distances;
+			distances[0] = 0;
+			for (uint16 i = 1; i + 1 < gridCount; ++i)
+				distances[i] = Clamp(direction * (lengthAt(parameters[i]) - initialLength), 0.0, length);
+			distances[gridCount - 1] = length;
+
+			size_t pointCount = 0, grid = 0, runs = 0;
+			auto counter = pattern;
+			for (size_t i = 0; i < counter.count; ++i)
+			{
+				const auto run = counter.next();
+				if (run.end <= run.start) continue;
+				++runs;
+				pointCount += 2;
+				while ((grid < gridCount) && (distances[grid] <= run.start)) ++grid;
+				while ((grid < gridCount) && (distances[grid] < run.end)) { ++grid; ++pointCount; }
+			}
+			if (runs == 0) return 0;
+			static_assert((MaxCircleSegments + 1 + detail::DashPattern::MaxRuns * 2) * 2 < 65536);
+			static_assert((MaxCircleSegments + 1 + detail::DashPattern::MaxRuns) * 6 < 65536);
+			const auto indexCount = static_cast<uint16>((pointCount - runs) * 6);
+			const auto buffer = bufferCreator(static_cast<uint16>(pointCount * 2), indexCount);
+			if (not buffer.pVertex) return 0;
+			auto vertices = buffer.pVertex;
+			auto indices = buffer.pIndex;
+			grid = 0;
+			const auto emit = [&](const Sample& point)
+			{
+				const Float2 offset = (point.normal * (halfWidth * direction));
+				(*vertices++).set(point.middle - offset, color);
+				(*vertices++).set(point.middle + offset, color);
+			};
+			for (size_t i = 0; i < pattern.count; ++i)
+			{
+				const auto run = pattern.next();
+				if (run.end <= run.start) continue;
+				const auto first = (vertices - buffer.pVertex);
+				emit(sample(run.start));
+				while ((grid < gridCount) && (distances[grid] <= run.start)) ++grid;
+				while ((grid < gridCount) && (distances[grid] < run.end)) emit(sampleParameter(parameters[grid++]));
+				emit(sample(run.end));
+				WriteOpenStripIndices(indices, static_cast<uint16>(buffer.indexOffset + first), static_cast<uint16>((vertices - buffer.pVertex - first) / 2));
+			}
+			return indexCount;
+		}
+
+		Vertex2D::IndexType BuildArcStyled(const BufferCreatorFunc& bufferCreator, const LineStyle& style,
+			const Float2& center, const float a, const float b, const float startAngle, const float angle,
+			const float innerThickness, const float outerThickness, const Float4& color, const float scale)
+		{
+			if (a == b) return BuildArcStyledImpl<true>(bufferCreator, style, center, a, b, startAngle, angle, innerThickness, outerThickness, color, scale);
+			return BuildArcStyledImpl<false>(bufferCreator, style, center, a, b, startAngle, angle, innerThickness, outerThickness, color, scale);
 		}
 
 		////////////////////////////////////////////////////////////////

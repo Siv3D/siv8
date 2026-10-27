@@ -12,6 +12,7 @@
 # include <Siv3D/Renderer2D/CircleArcArrow.hpp>
 # include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <algorithm>
 # include <chrono>
 # include <cmath>
@@ -221,6 +222,16 @@ int main()
 			}
 			[ib release];
 			[vb release];
+		}
+		for (const auto axes : { Float2{ 120, 120 }, Float2{ 120, 60 }, Float2{ 120, 12 } })
+		for (const auto preset : { LineStyle::DashedFlat, LineStyle::RoundDot })
+		{
+			const std::string name = ("StyledArc_" + std::to_string(int(axes.y)) + "_" + std::to_string(int(preset.type)));
+			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildArcStyled(allocate, preset(0.25), { 10, 20 }, axes.x, axes.y,
+					0.3f, 4.5f, 3, 5, Float4{ 0.2f, 0.4f, 0.6f, 0.5f }, 1);
+			});
 		}
 		for (const bool clipped : { false, true })
 		{

@@ -1,15 +1,17 @@
-# LineStyle: Line and path comparison
+# LineStyle: Line, path and arc comparison
 
 The canonical gallery for `draw(LineStyle, ...)` and
 `LineString::drawClosed(LineStyle, ...)` compares every existing LineStyle preset
 with the original Line renderer. The overview shows all 13 presets at once:
 Square, Round, Flat, the five patterned presets, and their five Flat variants.
-Each row keeps the preset's original cap; the program changes only its phase.
+Press C to switch between paths and analytic arcs. Each row keeps the preset's original cap; the program changes only its phase.
 
-The seven columns are Line, a collinear LineString, a polyline with right-angle
+The path page has seven columns: Line, a collinear LineString, a polyline with right-angle
 corners, Bezier2, Bezier3, Spline2D, and a closed LineString. The first two have
 identical geometry, including endpoints; the others share their horizontal span
-but have different path lengths. Use the 2.1x detail view to inspect a selected
+but have different path lengths. The arc page compares Line, an open Circle arc,
+an open Ellipse arc, its reverse, full Circle and Ellipse arcs, and a flat Ellipse.
+Use the 2.1x detail view to inspect a selected
 preset. Width, phase and opacity are shared across every sample.
 
 ## Run
@@ -23,6 +25,8 @@ preset. Width, phase and opacity are shared across every sample.
 
 | Key | Action |
 |---|---|
+| C | Toggle paths / analytic arcs |
+| I | Toggle symmetric / asymmetric arc widths (inner 25%, outer 75%) |
 | Tab | Toggle overview / selected-preset detail |
 | Up / Down | Select the previous / next preset; clicking a row also selects it |
 | Space | Pause / resume phase animation |
@@ -34,13 +38,14 @@ preset. Width, phase and opacity are shared across every sample.
 
 Optional command-line arguments:
 
+- `--arcs` selects the analytic arc page; `--asymmetric` selects unequal inner/outer widths.
 - `--detail` starts in the enlarged view.
 - `--preset=RoundDotFlat` selects a preset by its exact name.
 - `--width=12` and `--phase=1.25` set the starting width and phase. Width is
   clamped to 1–16; phase wraps by 20, a common period of all five patterns.
 - `--capture` saves the selected view after four frames and exits. Images are
   `line-style-overview.png` or `line-style-<preset>.png` in the application's
-  working directory. Repeated captures of the same view overwrite that file.
+  working directory; arc-page names include `arcs-`, and unequal-width captures include `asymmetric-`. Repeated captures of the same view overwrite that file.
   Remove retained images when no longer needed; avoid input during capture.
 
 ## Expected results
@@ -49,7 +54,9 @@ Optional command-line arguments:
   Look at endpoints in the non-Flat and Flat rows. Cut-edge antialiasing can differ
   between the Line shader and the path's geometric cuts.
 - Square, Round and Flat are solid styles and ignore phase. Their open endpoints
-  differ; closed paths have no endpoint caps.
+  differ; closed LineStrings have no endpoint caps. Solid arcs retain ordinary
+  `drawArc()` behavior, including the existing Round circle cap overlap visible
+  at the full-circle seam.
 - Patterned non-Flat presets extend the whole open path by half the width. Each
   dash still has flat cuts. RoundDot places round points and uses Line's open
   non-Flat pitch fitting; RoundDotFlat does not fit the pitch.
@@ -65,12 +72,22 @@ Optional command-line arguments:
   the detail view to inspect this. Tight curves and thick strokes can also
   overlap. These are accepted rendering limits, not artifact-free guarantees.
 
+- Arc dashes use analytic normals, without polyline joins. Circle spacing uses
+  exact central arc length; ellipse spacing uses an approximate length table.
+  Reverse arcs advance the pattern from their own start. Full patterned arcs
+  omit caps and keep the preset pitch, so seam spacing can differ.
+- Use the flat ellipse and I at width 12–16 to inspect tight-curvature limits.
+  Its inward offset can fold over, and round dots near a full-circle seam can
+  overlap. Compare alpha 0.5 and 1. Gray guides show the reference curve; green
+  and red markers show its angular endpoints, before the asymmetric width shift.
+
 See the [drawing guide](../../docs/geometry2d/dashed-drawing.md) for design and
 measurement details. The [automated tests](../Test_DashedPath.cpp) cover placement,
-boundaries, rendering and CPU submission. To run correctness tests on macOS:
+boundaries, rendering and CPU submission. [Arc tests](../Test_StyledArc.cpp) also
+check analytic placement, ellipse length accuracy, upload bounds and public rendering. To run correctness tests on macOS:
 
 ```sh
-CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=~[benchmark]DashedPath.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=~[benchmark]DashedPath.*,~[benchmark]StyledArc.*'
 ```
 
 For Windows and the isolated Release benchmark, use the
@@ -120,6 +137,42 @@ namespace
 		{ 132, 0 }, { 132, 0 }, { 132, -12 }, { 132, 10 }, { 132, -12 }, { 132, 0 }
 	}};
 
+	constexpr std::array<StringView, 7> ArcTitles{
+		U"Line", U"Circle", U"Ellipse", U"Ellipse", U"Circle", U"Ellipse", U"Ellipse"
+	};
+	constexpr std::array<StringView, 7> ArcSubtitles{
+		U"reference", U"open arc", U"open arc", U"reverse arc", U"full arc", U"full arc", U"flat / full"
+	};
+
+	Vec2 ArcEndpoint(const size_t kind, const bool end)
+	{
+		if (kind == 0) return { end ? 132.0 : 0.0, 0 };
+		if (kind == 1)
+		{
+			const double t = end ? 40_deg : -40_deg;
+			return Vec2{ 66, 90 } + Vec2{ std::sin(t), -std::cos(t) } * 100;
+		}
+		if (kind >= 4) return { 66, kind == 6 ? -5.0 : -18.0 };
+		const double t = (end != (kind == 3)) ? 80_deg : -80_deg;
+		const Vec2 direction{ std::sin(t), -std::cos(t) };
+		return Vec2{ 66, 18 } + direction * (64 * 32 / std::hypot(32 * direction.x, 64 * direction.y));
+	}
+
+	void DrawArcGeometry(const size_t kind, const LineStyle& style, const double width, const ColorF& color, const bool asymmetric)
+	{
+		const double inner = width * (asymmetric ? 0.25 : 0.5), outer = (width - inner);
+		switch (kind)
+		{
+		case 0: Line{ 0, 0, 132, 0 }.draw(style, width, color); break;
+		case 1: Circle{ 66, 90, 100 }.drawArc(style, -40_deg, 80_deg, inner, outer, color); break;
+		case 2: Ellipse{ 66, 18, 64, 32 }.drawArc(style, -80_deg, 160_deg, inner, outer, color); break;
+		case 3: Ellipse{ 66, 18, 64, 32 }.drawArc(style, 80_deg, -160_deg, inner, outer, color); break;
+		case 4: Circle{ 66, 0, 18 }.drawArc(style, 0, 360_deg, inner, outer, color); break;
+		case 5: Ellipse{ 66, 0, 58, 18 }.drawArc(style, 0, 360_deg, inner, outer, color); break;
+		case 6: Ellipse{ 66, 0, 60, 5 }.drawArc(style, 0, 360_deg, inner, outer, color); break;
+		}
+	}
+
 	void DrawGeometry(const size_t kind, const LineStyle& style, const double width, const ColorF& color)
 	{
 		static const LineString straight{ { 0, 0 }, { 44, 0 }, { 88, 0 }, { 132, 0 } };
@@ -140,22 +193,30 @@ namespace
 	}
 
 	void DrawSample(const size_t kind, const LineStyle& style, const double width,
-		const ColorF& color, const bool guides, const Vec2 origin, const double zoom = 1.0)
+		const ColorF& color, const bool guides, const Vec2 origin, const bool arcs, const bool asymmetric, const double zoom = 1.0)
 	{
 		const Transformer2D transform{ Mat3x2::Scale(zoom).translated(origin) };
-		if (guides) DrawGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 });
-		DrawGeometry(kind, style, width, color);
+		if (arcs)
+		{
+			if (guides) DrawArcGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 }, false);
+			DrawArcGeometry(kind, style, width, color, asymmetric);
+		}
+		else
+		{
+			if (guides) DrawGeometry(kind, LineStyle::Flat, 0.75, ColorF{ 0.70 });
+			DrawGeometry(kind, style, width, color);
+		}
 		if (guides)
 		{
-			Circle{ Starts[kind], 2 }.draw(ColorF{ 0.05, 0.55, 0.32 });
-			if (kind < Ends.size()) Circle{ Ends[kind], 2 }.draw(ColorF{ 0.85, 0.25, 0.15 });
+			Circle{ arcs ? ArcEndpoint(kind, false) : Starts[kind], 2 }.draw(ColorF{ 0.05, 0.55, 0.32 });
+			if (arcs ? kind < 4 : kind < Ends.size()) Circle{ arcs ? ArcEndpoint(kind, true) : Ends[kind], 2 }.draw(ColorF{ 0.85, 0.25, 0.15 });
 		}
 	}
 }
 
 void Main()
 {
-	Window::SetTitle(U"LineStyle: Line and path comparison");
+	Window::SetTitle(U"LineStyle: Line, path and arc comparison");
 	Window::SetStyle(WindowStyle::Sizable);
 	Window::Resize(1200, 780);
 	Scene::Configure(SceneConfig::Fixed({ 1400, 900 }));
@@ -167,6 +228,7 @@ void Main()
 	bool playing = false, translucent = true, guides = false, detail = false;
 	const auto& args = System::GetCommandLineArgs();
 	const bool capture = args.contains(U"--capture");
+	bool arcs = args.contains(U"--arcs"), asymmetric = args.contains(U"--asymmetric");
 	detail = args.contains(U"--detail");
 	for (const auto& arg : args)
 	{
@@ -182,13 +244,15 @@ void Main()
 	{
 		if (capture && ScreenCapture::HasNewFrame())
 		{
-			const FilePath path = detail ? Format(U"line-style-", Presets[selected].name, U".png") : U"line-style-overview.png";
+			const FilePath path = Format(U"line-style-", arcs ? U"arcs-" : U"", asymmetric ? U"asymmetric-" : U"", detail ? Presets[selected].name : U"overview", U".png");
 			const bool saved = ScreenCapture::GetFrame().save(path);
 			System::Exit(saved ? 0 : 1);
 			return;
 		}
 		if (KeySpace.down()) playing = !playing;
 		if (KeyTab.down()) detail = !detail;
+		if (KeyC.down()) arcs = !arcs;
+		if (KeyI.down()) asymmetric = !asymmetric;
 		if (KeyUp.down()) selected = (selected + Presets.size() - 1) % Presets.size();
 		if (KeyDown.down()) selected = (selected + 1) % Presets.size();
 		if (KeyW.down()) width = Min(width + 1, 16.0);
@@ -197,7 +261,7 @@ void Main()
 		if (KeyG.down()) guides = !guides;
 		if (KeyR.down())
 		{
-			width = 6; phase = 0; playing = false; translucent = true; guides = false;
+			width = 6; phase = 0; playing = false; translucent = true; guides = false; asymmetric = false;
 		}
 		if (playing) phase += Scene::DeltaTime();
 		const double step = KeyShift.pressed() ? 0.01 : 0.1;
@@ -206,15 +270,17 @@ void Main()
 		phase = std::fmod(phase, 20.0); // Common period of all five patterned presets.
 		const ColorF ink{ 0.05, 0.35, 0.68, (translucent ? 0.5 : 1.0) };
 
-		title(U"LineStyle / ", detail ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
+		const auto& titles = arcs ? ArcTitles : Titles;
+		const auto& subtitles = arcs ? ArcSubtitles : Subtitles;
+		title(arcs ? U"LineStyle arcs / " : U"LineStyle paths / ", detail ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
 		ui(U"width: {:.0f}   phase: {:.2f}   alpha: {:.1f}   {}"_fmt(
 			width, phase, ink.a, playing ? U"playing" : U"paused")).draw(650, 18, text);
 		if (not detail)
 		{
 			for (size_t c = 0; c < Titles.size(); ++c)
 			{
-				ui(Titles[c]).drawAt(266 + c * 172, 68, text);
-				small(Subtitles[c]).drawAt(266 + c * 172, 86, muted);
+				ui(titles[c]).drawAt(266 + c * 172, 68, text);
+				small(subtitles[c]).drawAt(266 + c * 172, 86, muted);
 			}
 			for (size_t r = 0; r < Presets.size(); ++r)
 			{
@@ -225,25 +291,26 @@ void Main()
 				ui(Presets[r].name).draw(22, y + 15, text);
 				const LineStyle style{ Presets[r].parameters(phase) };
 				for (size_t c = 0; c < Titles.size(); ++c)
-					DrawSample(c, style, width, ink, guides, { 200 + c * 172, y + 26 });
+					DrawSample(c, style, width, ink, guides, { 200 + c * 172, y + 26 }, arcs, asymmetric);
 			}
 		}
 		else
 		{
-			ui(U"2.1x view / same source geometry, width and phase as the overview").draw(16, 68, muted);
+			ui(asymmetric && arcs ? U"2.1x view / inner 25%, outer 75%" : U"2.1x view / symmetric widths").draw(16, 68, muted);
 			const LineStyle style{ Presets[selected].parameters(phase) };
 			for (size_t c = 0; c < Titles.size(); ++c)
 			{
 				const Vec2 pos{ 16 + (c % 4) * 344.0, 110 + (c / 4) * 326.0 };
 				RectF{ pos, 332, 306 }.draw(ColorF{ 1.0 });
-				ui(Titles[c], U" / ", Subtitles[c]).draw(pos + Vec2{ 16, 16 }, text);
-				DrawSample(c, style, width, ink, guides, pos + Vec2{ 27.4, 150 }, 2.1);
+				ui(titles[c], U" / ", subtitles[c]).draw(pos + Vec2{ 16, 16 }, text);
+				DrawSample(c, style, width, ink, guides, pos + Vec2{ 27.4, 150 }, arcs, asymmetric, 2.1);
 			}
 			ui(U"Inspect endpoints and corners\nG: centerlines and endpoint markers\nA: reveal overlapping strokes\nLeft / Right: step phase while paused").draw(1064, 470, muted);
 		}
 		ui(U"Tab: overview / detail    Up / Down or click row: select    Space: play / pause    W / S: width").draw(16, 800, text);
-		ui(U"Left / Right: phase 0.1 (Shift: 0.01)    A: alpha    G: guides    R: reset controls").draw(16, 830, text);
-		small(U"Line and straight LineString share endpoints. Curved paths have different lengths. Guides: green = start, red = end.").draw(16, 864, muted);
+		ui(U"Left / Right: phase 0.1 (Shift: 0.01)    A: alpha    G: guides    C: paths / arcs    I: inner / outer widths    R: reset").draw(16, 830, text);
+		small(arcs ? U"Analytic arcs / different path lengths. Full arcs keep preset pitch. Flat ellipse shows tight-curvature limits."
+			: U"Line and straight LineString share endpoints. Curved paths have different lengths. Guides: green = start, red = end.").draw(16, 864, muted);
 		if (capture && (++frames == 4)) ScreenCapture::RequestCurrentFrame();
 	}
 }

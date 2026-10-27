@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
@@ -1041,6 +1042,16 @@ namespace s3d
 			pattern
 		);
 
+		return *this;
+	}
+
+	const Circle& Circle::drawArc(const LineStyle& style, const double startAngle, const double angle,
+		const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (style.type == LinePattern::Solid) return drawArc(style.cap, startAngle, angle, innerThickness, outerThickness, color);
+		const float radius = static_cast<float>(Abs(r));
+		SIV3D_ENGINE(Renderer2D)->addArcStyled(style, center, radius, radius, static_cast<float>(startAngle), ClampAngle(angle),
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), color.toFloat4());
 		return *this;
 	}
 

@@ -4308,6 +4308,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierTessellation.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierArrowGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DashedPath.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DashPattern.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PathArrowGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DoubleHeadedArrowGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\CircularShapes.hpp" />

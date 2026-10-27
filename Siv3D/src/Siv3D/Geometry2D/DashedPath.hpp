@@ -12,11 +12,11 @@
 # include <span>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/PointVector.hpp>
-# include <Siv3D/LineStyle.hpp>
+# include "DashPattern.hpp"
 
 namespace s3d::detail::DashedPath
 {
-	inline constexpr size_t MaxRuns = 4096;
+	inline constexpr size_t MaxRuns = DashPattern::MaxRuns;
 
 	struct Node
 	{
@@ -73,51 +73,9 @@ namespace s3d::detail::DashedPath
 		if (out.path.size() < 2) return true;
 		if (closed) append(out.path.front().point);
 		const double length = out.path.back().distance;
-		const double extension = ((not closed && style.cap != LineCap::Flat) ? (width * 0.5) : 0.0);
-		const double domainStart = -extension, domainEnd = (length + extension);
-		const bool round = (style.type == LinePattern::RoundDot);
-		const double unit = ((round && extension) ? ((length + width) / (std::ceil(length / width * 0.5) * 2 + 1)) : width);
-		struct Series
-		{
-			double first = 0, size = 0;
-			size_t count = 0, index = 0;
-		};
-		std::array<Series, 2> series{};
-		double period = 2;
-		size_t seriesCount = 1;
-		switch (style.type)
-		{
-		case LinePattern::Dotted:
-		case LinePattern::RoundDot: series[0] = { 0, 1 }; break;
-		case LinePattern::Dashed: period = 4; series[0] = { -0.2, 2.4 }; break;
-		case LinePattern::LongDash: period = 10; series[0] = { -2.5, 7 }; break;
-		case LinePattern::DashDot:
-			period = 10; series[0] = { -2, 6 }; series[1] = { 5.5, 1 }; seriesCount = 2; break;
-		default: return true; // Solid is submitted directly by the caller.
-		}
-		const double phase = std::fmod(style.dotOffset, period), pitch = (period * unit);
-		size_t count = 0;
-		for (size_t i = 0; i < seriesCount; ++i)
-		{
-			auto& s = series[i];
-			s.first = ((s.first + phase) * unit - extension);
-			s.size *= unit;
-			double n;
-			if (round && closed)
-			{
-				// Keep whole dots with centers in [0, length), avoiding a split dot at the seam.
-				s.first += std::ceil(-(s.first + unit * 0.5) / pitch) * pitch;
-				n = std::max(0.0, std::ceil((length - s.first - unit * 0.5) / pitch));
-			}
-			else
-			{
-				s.first += (std::floor((domainStart - s.first - s.size) / pitch) + 1) * pitch;
-				n = std::max(0.0, std::ceil((domainEnd - s.first) / pitch));
-			}
-			if ((MaxRuns - count) < n) return false;
-			s.count = static_cast<size_t>(n);
-			count += s.count;
-		}
+		DashPattern::Cursor pattern;
+		if (not pattern.prepare(length, closed, width, style)) return false;
+		const double unit = pattern.unit;
 		size_t segment = 0;
 		const auto pointAt = [&](const double distance)
 		{
@@ -127,19 +85,11 @@ namespace s3d::detail::DashedPath
 			return a.point.lerp(b.point, ((distance - a.distance) / (b.distance - a.distance)));
 		};
 		bool beginsAtSeam = false, endsAtSeam = false;
-		for (size_t i = 0; i < count; ++i)
+		for (size_t i = 0; i < pattern.count; ++i)
 		{
-			size_t next = 0;
-			if ((series[0].index == series[0].count) || ((seriesCount == 2)
-				&& (series[1].index < series[1].count)
-				&& ((series[1].first + series[1].index * pitch) < (series[0].first + series[0].index * pitch)))) next = 1;
-			auto& s = series[next];
-			// Multiplication avoids cumulative phase drift and bounds the loop.
-			const double start = (s.first + s.index++ * pitch);
-			const double a = ((round && closed) ? start : std::max(domainStart, start));
-			const double b = ((round && closed) ? (start + s.size) : std::min(domainEnd, (start + s.size)));
+			const auto [a, b, start] = pattern.next();
 			if (b <= a) continue;
-			if (round)
+			if (pattern.round)
 			{
 				const double centerDistance = (start + unit * 0.5);
 				const Vec2 center = pointAt(centerDistance);

@@ -22,6 +22,8 @@
 
 namespace s3d
 {
+	struct LineStyle;
+
 	enum class LineCap : uint8;
 	struct PatternParameters;
 	struct TexturedCircle;
@@ -1400,6 +1402,20 @@ namespace s3d
 		/// @return *this
 		/// @see @ref circle_draw_arc_independent_caps
 		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 指定した線のスタイルで弧を描きます。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 基準の図形から内側への太さ
+		/// @param outerThickness 基準の図形から外側への太さ
+		/// @param color 色
+		/// @anchor styled_arc_drawing
+		/// @pre 座標・寸法・太さ・角度・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark Solid は通常の drawArc() と同じ線端です。非実線は内外の輪郭の中央の長さで配置し、線端・個数上限は @ref styled_path_drawing と共通です。長さまたは太さの合計が 0 以下なら描画しません。
+		/// @remark 非実線で角度の絶対値が全周以上なら一周を描き、線端を省きます。周期は全周に合わせて調整せず、継ぎ目の間隔は通常部分と異なる場合があります。太い線や継ぎ目付近の丸点は重なる場合があります。
+		/// @return *this
+		const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

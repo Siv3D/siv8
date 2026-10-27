@@ -19,6 +19,8 @@
 
 namespace s3d
 {
+	struct LineStyle;
+
 	struct PatternParameters;
 
 	/// @brief 楕円
@@ -1290,6 +1292,19 @@ namespace s3d
 		/// @see @ref ellipse_draw_arc
 		/// @return *this
 		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 指定した線のスタイルで弧を描きます。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 基準の図形から内側への太さ
+		/// @param outerThickness 基準の図形から外側への太さ
+		/// @param color 色
+		/// @see @ref styled_arc_drawing
+		/// @see @ref ellipse_draw_arc
+		/// @remark 破線の配置は、内外の輪郭の中央を通る線の近似弧長に基づきます。
+		/// @return *this
+		const Ellipse& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

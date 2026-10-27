@@ -472,6 +472,9 @@
     <ClCompile Include="..\Test\Test_DashedPath.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_StyledArc.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp">
       <Filter>Test</Filter>
     </ClCompile>
