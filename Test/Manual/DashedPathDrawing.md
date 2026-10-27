@@ -26,6 +26,11 @@ preset. Width, phase and opacity are shared across every sample.
 | Key | Action |
 |---|---|
 | C | Toggle paths / analytic arcs |
+| H | Toggle the closure comparison page |
+| P | Pause / resume sweep animation (350° through 362° and back) |
+| J / K | Pause and step sweep by 1°; Shift: 0.01° |
+| V | Reverse the sweep direction |
+| O | Toggle variable / full-reference display in the enlarged seam card |
 | I | Toggle symmetric / asymmetric arc widths (inner 25%, outer 75%) |
 | Tab | Toggle overview / selected-preset detail |
 | Up / Down | Select the previous / next preset; clicking a row also selects it |
@@ -40,12 +45,14 @@ Optional command-line arguments:
 
 - `--arcs` selects the analytic arc page; `--asymmetric` selects unequal inner/outer widths.
 - `--detail` starts in the enlarged view.
+- `--closure` compares a variable sweep with a fixed 360° reference and a 4x seam view.
+  `--sweep=359.9`, `--sweep-play`, and `--reverse` set its initial angle, animation and direction.
 - `--preset=RoundDotFlat` selects a preset by its exact name.
 - `--width=12` and `--phase=1.25` set the starting width and phase. Width is
   clamped to 1–16; phase wraps by 20, a common period of all five patterns.
 - `--capture` saves the selected view after four frames and exits. Images are
   `line-style-overview.png` or `line-style-<preset>.png` in the application's
-  working directory; arc-page names include `arcs-`, and unequal-width captures include `asymmetric-`. Repeated captures of the same view overwrite that file.
+  working directory; arc-page names include `arcs-`; closure captures include `closure-<angle>-<preset>`, and unequal-width arc-page captures include `asymmetric-`. Repeated captures of the same view overwrite that file.
   Remove retained images when no longer needed; avoid input during capture.
 
 ## Expected results
@@ -57,7 +64,7 @@ Optional command-line arguments:
   differ; closed LineStrings have no endpoint caps. Solid arcs retain ordinary
   `drawArc()` behavior, including the existing Round circle cap overlap visible
   at the full-circle seam.
-- Patterned non-Flat presets extend the whole open path by half the width. Each
+- On the path page, patterned non-Flat presets extend the whole open path by half the width. Each
   dash still has flat cuts. RoundDot places round points and uses Line's open
   non-Flat pitch fitting; RoundDotFlat does not fit the pitch.
 - Curves keep spacing along the sampled centerline without restarting at each
@@ -74,10 +81,19 @@ Optional command-line arguments:
 
 - Arc dashes use analytic normals, without polyline joins. Circle spacing uses
   exact central arc length; ellipse spacing uses an approximate length table.
-  Reverse arcs advance the pattern from their own start. Full patterned arcs
-  omit caps and keep the preset pitch, so seam spacing can differ.
+  Reverse arcs advance the pattern from their own start. Every patterned arc
+  fits an integer number of periods to its full circumference, regardless of the
+  displayed sweep. Round dots keep their diameter. Non-Flat extensions shorten
+  as the uncovered gap closes; no phase shift occurs at 360°.
+- On the H page, pause phase animation (Space), then press P to animate the sweep.
+  Inspect 359.99° → 360° → 360.01° and the reverse direction (V), all ten patterned
+  presets, phase -0.5 (a dot centered on the seam), width 16 and asymmetric widths.
+  Existing dots and dashes should remain stationary. The last cut closes without
+  a global hop or a darker duplicate of the seam dot. The right card enlarges
+  the seam; O alternates its variable sweep and full-circle reference.
+  Solid styles retain ordinary cap behavior and are not period-fitted.
 - Use the flat ellipse and I at width 12–16 to inspect tight-curvature limits.
-  Its inward offset can fold over, and round dots near a full-circle seam can
+  Its inward offset can fold over, and neighboring round dots on tight bends can
   overlap. Compare alpha 0.5 and 1. Gray guides show the reference curve; green
   and red markers show its angular endpoints, before the asymmetric width shift.
 
@@ -212,6 +228,36 @@ namespace
 			if (arcs ? kind < 4 : kind < Ends.size()) Circle{ arcs ? ArcEndpoint(kind, true) : Ends[kind], 2 }.draw(ColorF{ 0.85, 0.25, 0.15 });
 		}
 	}
+
+	void DrawClosure(const Font& ui, const Font& small, const LineStyle& style, const double width,
+		const ColorF ink, const double degrees, const bool reverse, const bool asymmetric, const bool guides, const bool referenceZoom)
+	{
+		const ColorF text{ 0.15, 0.19, 0.25 };
+		const double start = 35_deg, direction = (reverse ? -1.0 : 1.0);
+		const double inner = width * (asymmetric ? 0.25 : 0.5), outer = (width - inner);
+		for (int32 row = 0; row < 2; ++row)
+		for (int32 column = 0; column < 3; ++column)
+		{
+			const Vec2 pos{ 16 + column * 460.0, 110 + row * 330.0 };
+			RectF{ pos, 448, 310 }.draw(ColorF{ 1.0 });
+			const bool full = (column == 1 || (column == 2 && referenceZoom));
+			const double sweep = direction * (full ? 360_deg : Math::ToRadians(degrees));
+			ui(row ? U"Ellipse" : U"Circle", U" / ", full ? U"360.00 deg reference" : U"{:.2f} deg"_fmt(degrees)).draw(pos + Vec2{ 12, 10 }, text);
+			if (column == 2) small(U"4x seam / O: alternate with reference").draw(pos + Vec2{ 12, 36 }, text);
+			const Ellipse ellipse{ 0, 0, row ? 130.0 : 85.0, row ? 65.0 : 85.0 };
+			const Vec2 radial{ std::sin(start), -std::cos(start) };
+			const Vec2 endpoint = radial * (ellipse.a * ellipse.b / std::hypot(ellipse.b * radial.x, ellipse.a * radial.y));
+			const double zoom = (column == 2 ? 4.0 : 1.0);
+			const Vec2 origin = pos + Vec2{ 224, 175 } - (column == 2 ? endpoint * zoom : Vec2{ 0, 0 });
+			const ScopedScissorRect2D clip{ Rect{ static_cast<int32>(pos.x), static_cast<int32>(pos.y + 60), 448, 244 } };
+			const Transformer2D transform{ Mat3x2::Scale(zoom).translated(origin) };
+			if (guides) ellipse.drawArc(0, 360_deg, 0, 0.5, ColorF{ 0.75 });
+			if (row) ellipse.drawArc(style, start, sweep, inner, outer, ink);
+			else Circle{ 0, 0, ellipse.a }.drawArc(style, start, sweep, inner, outer, ink);
+			if (guides) Circle{ endpoint, 1.5 }.draw(ColorF{ 0.05, 0.55, 0.32 });
+		}
+	}
+
 }
 
 void Main()
@@ -223,35 +269,52 @@ void Main()
 	Scene::SetBackground(ColorF{ 0.96, 0.97, 0.98 });
 	const Font title{ 22, Typeface::Bold }, ui{ 16 }, small{ 14 };
 	const ColorF text{ 0.15, 0.19, 0.25 }, muted{ 0.40, 0.44, 0.50 };
-	double width = 6, phase = 0;
+	double width = 6, phase = 0, sweepDegrees = 359.9, sweepTime = 0;
 	size_t selected = 4;
 	bool playing = false, translucent = true, guides = false, detail = false;
 	const auto& args = System::GetCommandLineArgs();
 	const bool capture = args.contains(U"--capture");
 	bool arcs = args.contains(U"--arcs"), asymmetric = args.contains(U"--asymmetric");
 	detail = args.contains(U"--detail");
+	bool closure = args.contains(U"--closure"), sweepPlaying = args.contains(U"--sweep-play");
+	bool reverse = args.contains(U"--reverse"), referenceZoom = false;
 	for (const auto& arg : args)
 	{
 		for (size_t i = 0; i < Presets.size(); ++i)
 			if (arg == Format(U"--preset=", Presets[i].name)) selected = i;
 		if (arg.starts_with(U"--width="))
 			if (const auto value = ParseOpt<double>(arg.substr(8)); value && std::isfinite(*value)) width = Clamp(*value, 1.0, 16.0);
+		if (arg.starts_with(U"--sweep="))
+			if (const auto value = ParseOpt<double>(arg.substr(8)); value && std::isfinite(*value)) sweepDegrees = Clamp(*value, 0.0, 362.0);
 		if (arg.starts_with(U"--phase="))
 			if (const auto value = ParseOpt<double>(arg.substr(8)); value && std::isfinite(*value)) phase = std::fmod(*value, 20.0);
 	}
+	sweepTime = std::asin(Clamp((sweepDegrees - 356) / 6, -1.0, 1.0)) / 0.8;
 	int32 frames = 0;
 	while (System::Update())
 	{
 		if (capture && ScreenCapture::HasNewFrame())
 		{
-			const FilePath path = Format(U"line-style-", arcs ? U"arcs-" : U"", asymmetric ? U"asymmetric-" : U"", detail ? Presets[selected].name : U"overview", U".png");
+			const FilePath path = closure ? Format(U"line-style-closure-", sweepDegrees, U"-", Presets[selected].name, U".png") : Format(U"line-style-", arcs ? U"arcs-" : U"", asymmetric ? U"asymmetric-" : U"", detail ? Presets[selected].name : U"overview", U".png");
 			const bool saved = ScreenCapture::GetFrame().save(path);
 			System::Exit(saved ? 0 : 1);
 			return;
 		}
 		if (KeySpace.down()) playing = !playing;
 		if (KeyTab.down()) detail = !detail;
-		if (KeyC.down()) arcs = !arcs;
+		if (KeyC.down()) { arcs = !arcs; closure = false; }
+		if (KeyH.down()) closure = !closure;
+		if (KeyP.down())
+		{
+			sweepPlaying = !sweepPlaying;
+			if (sweepPlaying) sweepTime = std::asin(Clamp((sweepDegrees - 356) / 6, -1.0, 1.0)) / 0.8;
+		}
+		if (KeyV.down()) reverse = !reverse;
+		if (KeyO.down()) referenceZoom = !referenceZoom;
+		const double angleStep = KeyShift.pressed() ? 0.01 : 1.0;
+		if (KeyJ.down()) { sweepDegrees = Max(0.0, sweepDegrees - angleStep); sweepPlaying = false; }
+		if (KeyK.down()) { sweepDegrees = Min(362.0, sweepDegrees + angleStep); sweepPlaying = false; }
+		if (sweepPlaying) { sweepTime += Scene::DeltaTime(); sweepDegrees = 356 + 6 * std::sin(sweepTime * 0.8); }
 		if (KeyI.down()) asymmetric = !asymmetric;
 		if (KeyUp.down()) selected = (selected + Presets.size() - 1) % Presets.size();
 		if (KeyDown.down()) selected = (selected + 1) % Presets.size();
@@ -261,7 +324,7 @@ void Main()
 		if (KeyG.down()) guides = !guides;
 		if (KeyR.down())
 		{
-			width = 6; phase = 0; playing = false; translucent = true; guides = false; asymmetric = false;
+			width = 6; phase = 0; playing = false; translucent = true; guides = false; asymmetric = false; sweepPlaying = false; sweepDegrees = 359.9; sweepTime = 0;
 		}
 		if (playing) phase += Scene::DeltaTime();
 		const double step = KeyShift.pressed() ? 0.01 : 0.1;
@@ -272,10 +335,16 @@ void Main()
 
 		const auto& titles = arcs ? ArcTitles : Titles;
 		const auto& subtitles = arcs ? ArcSubtitles : Subtitles;
-		title(arcs ? U"LineStyle arcs / " : U"LineStyle paths / ", detail ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
+		title(closure ? U"Arc closure / " : arcs ? U"LineStyle arcs / " : U"LineStyle paths / ", (detail || closure) ? Presets[selected].name : U"all 13 presets").draw(16, 12, text);
 		ui(U"width: {:.0f}   phase: {:.2f}   alpha: {:.1f}   {}"_fmt(
 			width, phase, ink.a, playing ? U"playing" : U"paused")).draw(650, 18, text);
-		if (not detail)
+		if (closure)
+		{
+			ui(U"P: sweep animation   J / K: angle (Shift: fine)   V: reverse   O: seam reference   {:.2f} deg / {}"_fmt(
+				sweepDegrees, reverse ? U"CCW" : U"CW")).draw(16, 68, text);
+			DrawClosure(ui, small, Presets[selected].parameters(phase), width, ink, sweepDegrees, reverse, asymmetric, guides, referenceZoom);
+		}
+		else if (not detail)
 		{
 			for (size_t c = 0; c < Titles.size(); ++c)
 			{
@@ -307,9 +376,10 @@ void Main()
 			}
 			ui(U"Inspect endpoints and corners\nG: centerlines and endpoint markers\nA: reveal overlapping strokes\nLeft / Right: step phase while paused").draw(1064, 470, muted);
 		}
-		ui(U"Tab: overview / detail    Up / Down or click row: select    Space: play / pause    W / S: width").draw(16, 800, text);
+		ui(U"H: closure comparison    Tab: overview / detail    Up / Down: preset    Space: phase animation    W / S: width").draw(16, 800, text);
 		ui(U"Left / Right: phase 0.1 (Shift: 0.01)    A: alpha    G: guides    C: paths / arcs    I: inner / outer widths    R: reset").draw(16, 830, text);
-		small(arcs ? U"Analytic arcs / different path lengths. Full arcs keep preset pitch. Flat ellipse shows tight-curvature limits."
+		small(closure ? U"Sweep changes reveal a fixed full-circumference pattern. Hold phase still to inspect closure; Solid keeps ordinary caps."
+			: arcs ? U"Analytic arcs / different path lengths. All sweeps fit their period to the full circumference. Flat ellipse shows tight-curvature limits."
 			: U"Line and straight LineString share endpoints. Curved paths have different lengths. Guides: green = start, red = end.").draw(16, 864, muted);
 		if (capture && (++frames == 4)) ScreenCapture::RequestCurrentFrame();
 	}

@@ -3333,6 +3333,7 @@ namespace s3d
 			if constexpr (Circular)
 			{
 				if (radius <= 0) return 0;
+				perimeter = (radius * Math::TwoPiF);
 			}
 			else
 			{
@@ -3357,7 +3358,7 @@ namespace s3d
 			const double initialLength = lengthAt(start);
 			const double length = Circular ? (radius * sweep) : (closed ? perimeter : (direction * (lengthAt(finish) - initialLength)));
 			detail::DashPattern::Cursor pattern;
-			if (not pattern.prepare(length, closed, width, style) || (pattern.count == 0)) return 0;
+			if (not pattern.prepareArc(length, perimeter, width, style) || (pattern.count == 0)) return 0;
 
 			struct Sample { Float2 middle, normal; };
 			const auto sampleParameter = [&](const float parameter)
@@ -3383,21 +3384,36 @@ namespace s3d
 
 			if (pattern.round)
 			{
-				const auto vertices = static_cast<uint16>(pattern.count * 4);
-				const auto indices = static_cast<uint16>(pattern.count * 6);
+				const bool seamDot = (pattern.count > pattern.cycles);
+				const size_t count = (pattern.count - (closed && seamDot ? 1 : 0));
+				const auto vertices = static_cast<uint16>(count * 4);
+				const auto indices = static_cast<uint16>(count * 6);
 				const auto buffer = bufferCreator(vertices, indices);
 				if (not buffer.pVertex) return 0;
-				for (size_t i = 0; i < pattern.count; ++i)
+				Sample seamPoint{};
+				for (size_t i = 0; i < count; ++i)
 				{
 					const auto run = pattern.next();
 					const double d = (run.origin + pattern.unit * 0.5);
-					const auto point = sample(d);
+					Sample point;
+					// Both fragments of a seam dot use exactly the same center and
+					// tangent. At closure they become one whole quad.
+					if (seamDot && i + 1 == pattern.count) point = seamPoint;
+					else
+					{
+						float parameter;
+						if constexpr (Circular) parameter = (start + direction * static_cast<float>(d / radius));
+						else parameter = CalculateEllipseParameterAtLength(table, static_cast<float>(initialLength + direction * d), static_cast<float>(perimeter));
+						point = sampleParameter(parameter);
+						if (i == 0) seamPoint = point;
+					}
+					const bool whole = (closed && seamDot && i == 0);
+					const float u0 = (whole ? 0.0f : static_cast<float>((run.start - run.origin) / pattern.unit));
+					const float u1 = (whole ? 1.0f : static_cast<float>((run.end - run.origin) / pattern.unit));
 					const Float2 tangent = (Float2{ -point.normal.y, point.normal.x } * direction);
-					const Float2 first = (point.middle + tangent * static_cast<float>(run.start - d));
-					const Float2 last = (point.middle + tangent * static_cast<float>(run.end - d));
+					const Float2 first = (point.middle + tangent * ((u0 - 0.5f) * width));
+					const Float2 last = (point.middle + tangent * ((u1 - 0.5f) * width));
 					const Float2 normal = (point.normal * halfWidth);
-					const float u0 = static_cast<float>((run.start - run.origin) / pattern.unit);
-					const float u1 = static_cast<float>((run.end - run.origin) / pattern.unit);
 					auto dst = (buffer.pVertex + i * 4);
 					dst[0].set(first - normal * direction, { u0, 1 }, color);
 					dst[1].set(first + normal * direction, { u0, 0 }, color);
@@ -3409,25 +3425,33 @@ namespace s3d
 				return indices;
 			}
 
-			// Merge analytic dash endpoints with one bounded curvature grid. No joins
+			// Crop one full-revolution grid so changing the sweep keeps existing
+			// interior vertices fixed. Merge analytic dash endpoints with it. No joins
 			// or per-dash allocations are needed, even for very short terminal pieces.
 			std::array<float, (MaxCircleSegments + 1)> parameters;
 			uint16 gridCount;
 			if constexpr (Circular)
 			{
-				gridCount = CalculateCircleArcQuality((a + Max(Abs(innerThickness), Abs(outerThickness))) * scale, sweep);
-				for (uint16 i = 0; i < gridCount; ++i) parameters[i] = (start + direction * sweep * (float(i) / (gridCount - 1)));
+				gridCount = CalculateCircleArcQuality((a + Max(Abs(innerThickness), Abs(outerThickness))) * scale, Math::TwoPiF);
+				for (uint16 i = 0; i < gridCount; ++i) parameters[i] = (start + direction * Math::TwoPiF * (float(i) / (gridCount - 1)));
 			}
 			else
 			{
-				gridCount = MakeEllipseArcParameters(a, b, (reverse ? finish : start), sweep, innerThickness, outerThickness, scale, parameters);
+				gridCount = MakeEllipseArcParameters(a, b, (reverse ? (start - Math::TwoPiF) : start), Math::TwoPiF, innerThickness, outerThickness, scale, parameters);
 				if (reverse) std::reverse(parameters.begin(), parameters.begin() + gridCount);
 			}
 			std::array<double, (MaxCircleSegments + 1)> distances;
 			distances[0] = 0;
-			for (uint16 i = 1; i + 1 < gridCount; ++i)
-				distances[i] = Clamp(direction * (lengthAt(parameters[i]) - initialLength), 0.0, length);
-			distances[gridCount - 1] = length;
+			uint16 last = 1;
+			for (; last + 1 < gridCount; ++last)
+			{
+				const double distance = (direction * (lengthAt(parameters[last]) - initialLength));
+				if (distance >= length) break;
+				distances[last] = Max(0.0, distance);
+			}
+			gridCount = (last + 1);
+			distances[last] = length;
+			parameters[last] = (closed ? start : finish);
 
 			size_t pointCount = 0, grid = 0, runs = 0;
 			auto counter = pattern;

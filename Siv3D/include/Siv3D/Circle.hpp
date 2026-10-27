@@ -1404,7 +1404,7 @@ namespace s3d
 		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		/// @brief 指定した線のスタイルで弧を描きます。
-		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param style 線のスタイル
 		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
 		/// @param angle 弧の角度（ラジアン、負は反時計回り）
 		/// @param innerThickness 基準の図形から内側への太さ
@@ -1412,8 +1412,9 @@ namespace s3d
 		/// @param color 色
 		/// @anchor styled_arc_drawing
 		/// @pre 座標・寸法・太さ・角度・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
-		/// @remark Solid は通常の drawArc() と同じ線端です。非実線は内外の輪郭の中央の長さで配置し、線端・個数上限は @ref styled_path_drawing と共通です。長さまたは太さの合計が 0 以下なら描画しません。
-		/// @remark 非実線で角度の絶対値が全周以上なら一周を描き、線端を省きます。周期は全周に合わせて調整せず、継ぎ目の間隔は通常部分と異なる場合があります。太い線や継ぎ目付近の丸点は重なる場合があります。
+		/// @remark Solid は通常の drawArc() と同じ線端です。非実線は内外の輪郭の中央に配置し、全ての角度で全周長に整数個の周期が収まるよう調整します。位相は調整後の単位で、開始方向が原点です。丸点の直径は太さの合計を保ちます。
+		/// @remark 非実線の Flat は端で切り、他の線端は太さの半分だけ延長します。未描画の長さが太さ未満なら、その半分まで延長を縮めます。角度の絶対値が全周以上なら一周を描きます。太い線や近接する丸点は重なる場合があります。
+		/// @remark 長さまたは太さの合計が 0 以下、または描画するパターン片が 4,096 個を超える場合は描画しません。継ぎ目で分割される同じ丸点は 1 個と数えます。
 		/// @return *this
 		const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 

@@ -1294,7 +1294,7 @@ namespace s3d
 		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		/// @brief 指定した線のスタイルで弧を描きます。
-		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param style 線のスタイル
 		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
 		/// @param angle 弧の角度（ラジアン、負は反時計回り）
 		/// @param innerThickness 基準の図形から内側への太さ

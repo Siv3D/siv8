@@ -57,7 +57,7 @@ circle.drawArc(LineStyle::Dashed(phase), 0_deg, 270_deg, 3, 3, Palette::Orange);
 ellipse.drawArc(LineStyle::RoundDot(phase), 30_deg, -240_deg, 4, 4, Palette::Skyblue);
 ```
 
-Dash lengths and phase use the sum of the two widths. Placement follows the
+The sum of the two widths gives the nominal dash scale. Placement follows the
 line halfway between the inner and outer boundaries, including its offset when
 the widths differ. Circle distances are analytic. Ellipse distances use an
 approximate arc-length table; the final vertices use the ellipse and its normal
@@ -65,15 +65,27 @@ directly. Angles retain the ordinary arc API's meaning, including the ellipse's
 radial start direction. Negative sweeps advance from the specified start in the
 opposite direction. Distances precede local and camera transforms.
 
-Solid styles delegate to ordinary arc drawing. Patterned full revolutions are
-closed: they omit endpoint extensions, retain the preset pitch and share the
-exact seam position. A dash may continue across the seam with a different total
-length; round-dot spacing across the seam can differ. Existing
-`drawDashedFrame()` APIs instead place a requested number and ratio of dashes
+Every patterned arc fits its period to the **full circumference**, including
+partial sweeps. For circumference C, total width w and preset period P, the
+number of periods is max(1, round(C / (P w))); the fitted pitch is C divided by
+that count. Dash/gap proportions stay the same, while RoundDot keeps diameter w
+and adjusts only center spacing. Phase uses the fitted unit (pitch / P) and is
+anchored to the specified start, independently of sweep and cap. Changing only
+the sweep reveals or clips a fixed pattern; it does not rearrange existing pieces
+at 360°. Resizing the shape or changing width can change the integer count.
+
+Flat clips at the arc endpoints. Other patterned caps extend the ends by half
+the width, shortened to half the remaining circumference as the gap closes.
+Round-dot clips use fixed full-curve centers; two fragments of the same seam dot
+share one center and form a whole dot at closure. The 4,096-piece limit counts
+that dot once. Neighboring dots on tight bends can still overlap.
+
+Solid styles delegate to ordinary arc drawing and retain its cap behavior.
+Existing `drawDashedFrame()` APIs specify a requested number and ratio of dashes
 around the whole perimeter and remain useful for that purpose.
 
 Arc bands use analytic normals and flat dash cuts, so they do not have polyline
-miter joins. The position/normal sampling grid bounds curvature subdivision;
+miter joins. A fixed full-revolution position/normal grid bounds curvature subdivision;
 pattern boundaries add vertices to that grid. Tight inward ellipse offsets can
 still fold over, and nearby round dots or tangent endpoint extensions can
 overlap. These cases retain ordinary blending without boolean union or masks.
@@ -83,7 +95,10 @@ finite-input requirements and the piece budget.
 The canonical [comparison program](../../Test/Manual/DashedPathDrawing.md) has an
 arc page selected with C or `--arcs`. It includes forward/reverse open arcs,
 full circles/ellipses, a flat ellipse and asymmetric widths (I). Its Line column
-keeps the original shader implementation visible alongside every preset.
+keeps the original shader implementation visible alongside every preset. H or
+`--closure` opens a sweep/full-reference/seam comparison. P animates through
+360° while phase can remain paused; J/K step the angle, V reverses it, and O
+alternates the enlarged seam with the full reference.
 
 The shared distance-only [pattern cursor](../../Siv3D/src/Siv3D/Geometry2D/DashPattern.hpp)
 serves both paths and arcs. Arc emission allocates one backend buffer per shape,
@@ -93,7 +108,8 @@ the central offset in their key. Ordinary zero-offset frame drawing retains its
 own specialization. No per-dash owning arrays are created.
 
 [Arc tests](../../Test/Test_StyledArc.cpp) cover independent pattern equations,
-dense double-precision offset-length integration, signed sweeps, seams, buffer
+dense double-precision offset-length integration, fixed vertices across sweeps,
+359.9999°/360° image convergence, signed sweeps, seams, buffer
 bounds, allocation failure, piece limits, public rendering and transforms.
 Run the opt-in Release CPU submission benchmark separately:
 
@@ -103,7 +119,8 @@ CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=StyledArc.submission_ben
 
 It reports median/p10/p90 per call for public submission, the same builder using
 preallocated heap storage, and ordinary solid drawing as different-output
-context. Fixed geometry/phase, moving phase, and changing axes are separate rows;
+context. Fixed geometry/phase, moving phase, changing axes, and a 359°–361° sweep
+with fixed phase are separate rows;
 the changing-axis sequence exceeds the table cache. The public and heap rows
 must produce matching triangle counts. Warmups and rotated method order reduce
 startup/order effects. This measures CPU work, not GPU execution or FPS.
@@ -121,36 +138,42 @@ and warms the CPU for 5 ms before each batch. These are CPU submission timings.
 
 | Shape / semi-axes / width | DashedFlat | DashDot | RoundDot |
 |---|---:|---:|---:|
-| Circle / 20 / 2 | 0.387 [0.385–0.479] | 0.364 [0.362–0.424] | 0.376 [0.371–0.385] |
-| Circle / 120 / 8 | 0.736 [0.730–0.758] | 0.693 [0.668–0.725] | 0.566 [0.561–0.586] |
-| Ellipse / 120 × 60 / 8 | 2.173 [2.094–2.191] | 2.044 [2.040–2.051] | 1.562 [1.506–1.563] |
-| Ellipse / 120 × 12 / 8 | 1.913 [1.910–1.985] | 1.747 [1.744–1.811] | 1.318 [1.317–1.319] |
-| Ellipse / 400 × 200 / 2 | 16.579 [16.533–16.583] | 14.106 [14.054–14.127] | 16.723 [16.678–16.864] |
+| Circle / 20 / 2 | 0.699 [0.538–0.883] | 0.461 [0.385–0.742] | 0.708 [0.469–0.851] |
+| Circle / 120 / 8 | 1.667 [1.417–2.009] | 1.348 [1.182–1.611] | 0.991 [0.981–1.229] |
+| Ellipse / 120 × 60 / 8 | 4.596 [4.337–5.096] | 4.076 [4.004–4.694] | 2.804 [2.797–3.284] |
+| Ellipse / 120 × 12 / 8 | 3.941 [2.701–4.260] | 3.559 [3.253–3.996] | 2.686 [2.432–2.870] |
+| Ellipse / 400 × 200 / 2 | 28.753 [28.220–30.919] | 24.231 [22.982–24.967] | 24.438 [19.292–26.693] |
 
-With changing axes exceeding the cache, DashedFlat medians were 3.096 µs for
-120 × 60, 2.943 µs for 120 × 12, and 20.367 µs for 400 × 200. Thin, long arcs
-emit more pieces: the last row's RoundDot averaged 730 triangles per call,
-compared with 58 for 120 × 60. Compatible commands batched together; a batch
-crossing backend buffer capacity can require another draw.
+With a fixed phase and sweeps changing from 359° to 361°, DashedFlat medians
+were 1.668 µs for Circle 120 and 5.242 µs for Ellipse 120 × 60; RoundDot was
+1.250 µs and 3.059 µs respectively. With changing axes exceeding the cache,
+DashedFlat medians were 6.150 µs for 120 × 60, 5.471 µs for 120 × 12, and
+30.851 µs for 400 × 200. Thin, long arcs emit more pieces. Compatible commands
+batch together; a batch crossing backend buffer capacity can require another draw.
 
 The isolated `-Os` upload comparison used start parameter 0.3, sweep 4.5,
 inner/outer widths 3/5 and phase 0.25. Output attributes and indices matched in
-all storage modes. Median nanoseconds per builder call:
+all storage modes. Median nanoseconds per builder call; the last column uses
+the preceding fixed-pitch implementation with identical input parameters:
 
-| Shape / pattern | RAM | Metal default cache | Metal write-combined |
-|---|---:|---:|---:|
-| Circle 120 / DashedFlat | 581 | 576 | 574 |
-| Circle 120 / RoundDot | 507 | 500 | 493 |
-| Ellipse 120 × 60 / DashedFlat | 2,004 | 2,007 | 2,003 |
-| Ellipse 120 × 60 / RoundDot | 1,188 | 1,187 | 1,187 |
-| Ellipse 120 × 12 / DashedFlat | 1,838 | 1,836 | 1,835 |
-| Ellipse 120 × 12 / RoundDot | 973 | 970 | 971 |
+| Shape / pattern | RAM | Metal default cache | Metal write-combined | Before / write-combined |
+|---|---:|---:|---:|---:|
+| Circle 120 / DashedFlat | 592 | 589 | 591 | 578 |
+| Circle 120 / RoundDot | 470 | 485 | 473 | 495 |
+| Ellipse 120 × 60 / DashedFlat | 2,087 | 2,095 | 2,099 | 2,012 |
+| Ellipse 120 × 60 / RoundDot | 1,041 | 1,043 | 1,041 | 1,194 |
+| Ellipse 120 × 12 / DashedFlat | 1,967 | 1,967 | 1,963 | 1,859 |
+| Ellipse 120 × 12 / RoundDot | 887 | 903 | 888 | 964 |
 
-There was no material write-combined penalty in these cases. Repeating the
-output checks with `-O3` also passed; its arc write-combined medians ranged from
-0.498 to 1.832 µs. The small timing differences do not establish a cache-mode
-speedup. Windows runtime performance
-and visual output require measurement on Windows; Metal results do not cover it.
+The fixed full-revolution grid added about 2–6% (0.01–0.10 µs) to these
+DashedFlat cases. RoundDot took about 4–13% less time in these cases; it now
+samples fixed centers directly, and fitting can also change emitted piece
+counts. These are different-output comparisons, not a general speedup claim.
+No material write-combined penalty appeared. `-O3` output checks also passed;
+its arc write-combined medians ranged from 0.465 to 1.914 µs. Public submission
+and the isolated tool use different angles, width offsets and timing contexts;
+compare storage modes or before/after runs within the same benchmark. Windows
+runtime performance and visual output still require measurement on Windows.
 
 ## Rendering limits
 

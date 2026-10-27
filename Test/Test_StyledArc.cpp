@@ -122,7 +122,10 @@ TEST_CASE("StyledArc.circle_intervals_follow_shader_pattern")
 		for (int32 i = 0; i < 300; ++i)
 		{
 			const double distance = (i + 0.371) / 300 * (81 * 4.5);
-			const double x = distance / 8 - phase;
+			const double period = (preset.type == LinePattern::Dotted ? 2 : preset.type == LinePattern::Dashed ? 4 : 10);
+			const double circumference = (81 * Math::TwoPiF);
+			const double unit = (circumference / (std::round(circumference / (8 * period)) * period));
+			const double x = distance / unit - phase;
 			double coverage = 0;
 			switch (preset.type)
 			{
@@ -162,14 +165,15 @@ TEST_CASE("StyledArc.ellipse_distance_oracle_and_offset_cache")
 		Array<double> distances(Steps + 1, 0.0);
 		for (size_t i = 0; i <= Steps; ++i)
 		{
-			points[i] = MiddleAt(axes, double(start) + double(sweep) * i / Steps, offset);
+			points[i] = MiddleAt(axes, double(start) + direction * Math::TwoPi * i / Steps, offset);
 			if (i) distances[i] = distances[i - 1] + points[i].distanceFrom(points[i - 1]);
 		}
+		const double pitch = (distances.back() / std::round(distances.back() / 4));
 		for (size_t i = 0; i < static_cast<size_t>(mesh.count / 6); ++i)
 		{
 			const auto* quad = mesh.vertices.data() + 1 + i * 4;
 			if (quad[0].tex.x != 0 || quad[2].tex.x != 1) continue;
-			const double target = (1.25 + i * 4);
+			const double target = ((0.3125 + i) * pitch);
 			const auto it = std::lower_bound(distances.begin(), distances.end(), target);
 			REQUIRE(it != distances.end());
 			const size_t j = static_cast<size_t>(it - distances.begin());
@@ -190,9 +194,18 @@ TEST_CASE("StyledArc.empty_budget_and_allocation_failure")
 		CHECK(Build(preset, { 80, 80 }, 0, 1, 0, 0).allocations == 0);
 		CHECK(Build(preset, { 80, 80 }, 0, 1, 200, 0).allocations == 0);
 		CHECK(Build(preset, { 80, 80 }, 0, 1, 3, 5, true).count == 0);
-		CHECK(Build(preset, { 4096, 4096 }, 0, 2, 0.5f, 0.5f).count > 0);
-		CHECK(Build(preset, { 4096, 4096 }, 0, 2.0001f, 0.5f, 0.5f).allocations == 0);
+		CHECK(Build(preset, { 4096, 4096 }, 0, 1.999f, 0.5f, 0.5f).count > 0);
+		CHECK(Build(preset, { 4096, 4096 }, 0, 2.001f, 0.5f, 0.5f).allocations == 0);
+		// Work depends on the visible interval, not the full circle's dot count.
+		CHECK(Build(preset, { 1000000, 1000000 }, 0, 0.001f, 0.5f, 0.5f).count > 0);
+		CHECK(Build(preset, { 1, 1 }, 0, Math::TwoPiF, 10, 10).count > 0);
 	}
+	// Splitting the same seam dot must not consume another logical piece.
+	const float radius = (8192.0f / Math::TwoPiF);
+	CHECK(Build(LineStyle::RoundDotFlat(-0.5), { radius, radius }, 0, Math::TwoPiF, 0.5f, 0.5f).count == 4096 * 6);
+	CHECK(Build(LineStyle::RoundDotFlat(-0.5), { radius, radius }, 0, std::nextafter(Math::TwoPiF, 0.0f), 0.5f, 0.5f).count == 4097 * 6);
+	const float over = (8194.0f / Math::TwoPiF);
+	CHECK(Build(LineStyle::RoundDotFlat(-0.5), { over, over }, 0, Math::TwoPiF, 0.5f, 0.5f).allocations == 0);
 }
 
 TEST_CASE("StyledArc.public_apis_solid_circle_equivalence_and_alpha")
@@ -214,13 +227,9 @@ TEST_CASE("StyledArc.public_apis_solid_circle_equivalence_and_alpha")
 		else
 		{
 			CHECK(actual == Capture([&] { CHECK(&ellipse.drawArc(style, 0, sweep, 3, 9, ink) == &ellipse); }));
-			// Periodic round dots may overlap at the seam. Ordinary dashed bands do not.
-			if (style.type != LinePattern::RoundDot)
-			{
-				uint8 maximum = 0;
-				for (const auto pixel : actual) maximum = Max(maximum, pixel.r);
-				CHECK(maximum <= 129);
-			}
+			uint8 maximum = 0;
+			for (const auto pixel : actual) maximum = Max(maximum, pixel.r);
+			CHECK(maximum <= 129);
 		}
 	}
 	const auto blank = Capture([] {});
@@ -270,6 +279,66 @@ TEST_CASE("StyledArc.closed_seams_phase_periods_and_radial_endpoints")
 	}
 }
 
+TEST_CASE("StyledArc.sweep_keeps_pattern_and_interior_grid_fixed")
+{
+	for (const auto preset : { LineStyle::DottedFlat, LineStyle::DashedFlat, LineStyle::LongDashFlat, LineStyle::DashDotFlat, LineStyle::RoundDotFlat })
+	for (const Float2 axes : { Float2{ 80, 80 }, Float2{ 80, 40 } })
+	for (const float direction : { -1.0f, 1.0f })
+	{
+		const auto full = Build(preset(-0.5), axes, 0.3f, direction * Math::TwoPiF);
+		for (const float sweep : { 0.05f, 2.1f, 6.0f, std::nextafter(Math::TwoPiF, 0.0f) })
+		{
+			const auto part = Build(preset(-0.5), axes, 0.3f, direction * sweep);
+			if (preset.type == LinePattern::RoundDot)
+			{
+				for (size_t i = 1; i + 3 < part.vertices.size() - 1; i += 4)
+				{
+					if (part.vertices[i].tex.x != 0 || part.vertices[i + 2].tex.x != 1) continue;
+					bool found = false;
+					for (size_t j = 1; j + 3 < full.vertices.size() - 1; j += 4)
+						found |= (part.vertices[i].pos == full.vertices[j].pos && part.vertices[i + 2].pos == full.vertices[j + 2].pos);
+					CHECK(found);
+				}
+			}
+			else
+			{
+				// Only the final cut may move; every earlier vertex is identical.
+				for (size_t i = 1; i + 3 < part.vertices.size() - 1; ++i)
+				{
+					bool found = false;
+					for (size_t j = 1; j < full.vertices.size() - 1; ++j) found |= (part.vertices[i].pos == full.vertices[j].pos);
+					CHECK(found);
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("StyledArc.closure_converges_without_hopping_or_duplicate_dots")
+{
+	const SceneScope scope;
+	for (const auto preset : { LineStyle::Dotted, LineStyle::Dashed, LineStyle::LongDash, LineStyle::DashDot, LineStyle::RoundDot,
+		LineStyle::DottedFlat, LineStyle::DashedFlat, LineStyle::LongDashFlat, LineStyle::DashDotFlat, LineStyle::RoundDotFlat })
+	for (const Vec2 axes : { Vec2{ 90, 90 }, Vec2{ 115, 55 } })
+	for (const double direction : { -1.0, 1.0 })
+	{
+		const Ellipse ellipse{ 240, 180, axes.x, axes.y };
+		// Center a dot/dash on the seam, including the split RoundDot case.
+		const LineStyle style{ preset(-0.5) };
+		const auto full = Capture([&] { ellipse.drawArc(style, 35_deg, direction * 360_deg, 2, 6, ColorF{ 1.0, 0.5 }); });
+		const auto near = Capture([&] { ellipse.drawArc(style, 35_deg, direction * 359.9999_deg, 2, 6, ColorF{ 1.0, 0.5 }); });
+		size_t changed = 0;
+		uint8 maximum = 0;
+		for (size_t i = 0; i < full.pixelCount(); ++i)
+		{
+			changed += (full.data()[i] != near.data()[i]);
+			maximum = Max(maximum, Max(full.data()[i].r, near.data()[i].r));
+		}
+		CHECK(changed <= 8); // subpixel movement at the final cut, no global rearrangement
+		CHECK(maximum <= 129);
+	}
+}
+
 TEST_CASE("StyledArc.submission_benchmark", "[.benchmark]")
 {
 	const SceneScope scope;
@@ -294,7 +363,7 @@ TEST_CASE("StyledArc.submission_benchmark", "[.benchmark]")
 	};
 	for (const auto& c : cases)
 	for (const auto preset : { LineStyle::DashedFlat, LineStyle::DashDot, LineStyle::RoundDot })
-	for (const int32 mode : { 0, 1, 2 })
+	for (const int32 mode : { 0, 1, 2, 3 })
 	{
 		Array<double> times[3];
 		uint32 counts[3]{}, draws[3]{};
@@ -313,18 +382,19 @@ TEST_CASE("StyledArc.submission_benchmark", "[.benchmark]")
 			{
 				const float factor = mode == 2 ? (1 + float(i % 8) * 0.01f) : 1.0f;
 				const Float2 axes = c.axes * factor;
-				const LineStyle style{ preset(mode ? double(i % 13) * 0.125 : 0.25) };
+				const LineStyle style{ preset((mode == 1 || mode == 2) ? double(i % 13) * 0.125 : 0.25) };
+				const double angle = (mode == 3 ? Math::ToRadians(359.0 + double(i % 9) * 0.25) : 270_deg);
 				if (method == 0)
 				{
-					if (axes.x == axes.y) Circle{ -1000, -1000, axes.x }.drawArc(style, 0, 270_deg, c.width * 0.5, c.width * 0.5);
-					else Ellipse{ -1000, -1000, axes.x, axes.y }.drawArc(style, 0, 270_deg, c.width * 0.5, c.width * 0.5);
+					if (axes.x == axes.y) Circle{ -1000, -1000, axes.x }.drawArc(style, 0, angle, c.width * 0.5, c.width * 0.5);
+					else Ellipse{ -1000, -1000, axes.x, axes.y }.drawArc(style, 0, angle, c.width * 0.5, c.width * 0.5);
 				}
 				else if (method == 1)
 				{
 					// Match the public radial-angle conversion before comparing CPU
 					// storage with actual upload storage, including its float rounding.
-					float span = static_cast<float>(270_deg);
-					if (axes.x != axes.y)
+					float span = static_cast<float>(Min(angle, Math::TwoPi));
+					if (axes.x != axes.y && span < Math::TwoPiF)
 					{
 						const auto [s, c0] = FastMath::SinCos(span);
 						span = (std::atan2(axes.y * s, axes.x * c0) + Math::TwoPiF);
@@ -333,7 +403,7 @@ TEST_CASE("StyledArc.submission_benchmark", "[.benchmark]")
 						0, span, c.width * 0.5f, c.width * 0.5f, Float4{ 1, 1, 1, 1 }, scale);
 					std::atomic_signal_fence(std::memory_order_seq_cst);
 				}
-				else Ellipse{ -1000, -1000, axes.x, axes.y }.drawArc(0, 270_deg, c.width * 0.5, c.width * 0.5);
+				else Ellipse{ -1000, -1000, axes.x, axes.y }.drawArc(0, angle, c.width * 0.5, c.width * 0.5);
 			}
 			const double ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count() / Batch;
 			if (round >= 0) times[method].push_back(ns);
