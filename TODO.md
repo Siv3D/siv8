@@ -100,11 +100,10 @@
 
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
-## Renderer2D / GPU アップロード先の読み直しを避ける
+## Renderer2D / オフセット付き頂点転送
 
-- `Vertex2DBuilder_StraightEdged.cpp` の `CopyIndicesWithOffset` は、転送先へコピーした後に `+= indexOffset` で読み直している。Metal の write-combined バッファでは遅いため、元配列から読み、オフセットを加えて転送先へ一度で書く方式へ変更する。TriangleIndex 配列と平坦なインデックス配列、32-bit 件数、16-bit 頂点オフセットを維持する。
-- `BuildMesh2D` のオフセット付き頂点転送にもコピー後の転送先読み直しがある。これも別途検証する。
-- [アップロード計測手順](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers)で通常メモリと実際の Metal バッファを比較し、既存のインデックス・画像テストと公開 API の同一メッシュ比較で確認する。D3D11 は現状 CPU 配列へ生成するため、Metal の速度差をそのまま適用しない。
+- `BuildMesh2D` のオフセット付き頂点転送は、コピー後に転送先の座標を読み直して加算している。元配列からオフセットを加えて書き込む方式を検証する。
+- [アップロード計測手順](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers)で通常メモリと実際の Metal バッファを比較し、頂点属性と画像の一致を確認する。D3D11 は CPU 配列へ生成するため、Metal の速度差をそのまま適用しない。
 
 ## Renderer2D / Triangle・Quad の JoinStyle
 

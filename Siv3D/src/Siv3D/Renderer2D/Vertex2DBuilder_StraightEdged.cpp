@@ -11,6 +11,7 @@
 
 # include <array>
 # include <limits>
+# include <type_traits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -24,16 +25,24 @@ namespace s3d
 		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
 
 		template <class SourceIndex>
-		// Retain cursor/base references through inlining to preserve the copy/offset loop.
 		SIV3D_ALWAYS_INLINE
-		static inline void CopyIndicesWithOffset(Vertex2D::IndexType*& pIndex, const std::span<const SourceIndex> source,
-			const uint32 indexCount, const Vertex2D::IndexType& indexOffset)
+		static inline void CopyIndicesWithOffset(Vertex2D::IndexType* pIndex, const std::span<const SourceIndex> source,
+			const Vertex2D::IndexType indexOffset)
 		{
-			std::memcpy(pIndex, source.data(), source.size_bytes());
-
-			for (size_t i = 0; i < indexCount; ++i)
+			// Upload memory may be write-combined: add the offset before storing,
+			// without reading the destination or assuming a flat TriangleIndex layout.
+			for (const auto& index : source)
 			{
-				*(pIndex++) += indexOffset;
+				if constexpr (std::is_same_v<SourceIndex, TriangleIndex>)
+				{
+					*pIndex++ = (index.i0 + indexOffset);
+					*pIndex++ = (index.i1 + indexOffset);
+					*pIndex++ = (index.i2 + indexOffset);
+				}
+				else
+				{
+					*pIndex++ = (index + indexOffset);
+				}
 			}
 		}
 
@@ -717,7 +726,7 @@ namespace s3d
 				}
 			}
 
-			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}
@@ -752,7 +761,7 @@ namespace s3d
 				}
 			}
 
-			CopyIndicesWithOffset(pIndex, indices, IndexCount, indexOffset);
+			CopyIndicesWithOffset(pIndex, indices, indexOffset);
 
 			return IndexCount;
 		}
@@ -797,7 +806,7 @@ namespace s3d
 				}
 			}
 
-			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}
@@ -893,7 +902,7 @@ namespace s3d
 				}
 			}
 
-			CopyIndicesWithOffset(pIndex, triangleIndices, IndexCount, indexOffset);
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}

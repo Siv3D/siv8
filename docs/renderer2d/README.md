@@ -249,14 +249,16 @@ buffers. Metal's vertex/index buffers use
 which is intended for CPU writes without CPU reads. D3D11 currently builds into
 ordinary CPU arrays and copies them to mapped GPU buffers at submission.
 
-The current `CopyIndicesWithOffset` first copies indices into the destination,
-then reads those destination indices to add the base offset. This can make
-Polygon filling disproportionately expensive on Metal, including cached Polygons.
-The same helper serves raw indexed polygons, transformed polygons, and Mesh2D.
-A source-to-destination copy that adds the offset before writing avoids these
-reads. The pending implementation work is tracked in [TODO](../../TODO.md).
-`BuildMesh2D` also adjusts vertex positions in the destination after copying when
-an offset is supplied; inspect that separately when changing the upload path.
+`CopyIndicesWithOffset` reads each source index, adds the base offset, and writes
+once to the destination. It never reads the upload destination. The same helper
+serves raw indexed polygons, transformed polygons, and Mesh2D. TriangleIndex
+members are accessed directly, and span iteration preserves large index counts
+independently of the 16-bit index values. Avoid copying first and adjusting the
+destination afterward, even if a benchmark using ordinary heap arrays looks fast.
+
+The remaining offset-vertex transfer in `BuildMesh2D` still adjusts positions in
+the destination after copying; its separate evaluation is tracked in
+[TODO](../../TODO.md).
 
 Use [renderer2d-index-upload.mm](../../tools/renderer2d-index-upload.mm) to compare
 ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It

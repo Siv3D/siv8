@@ -266,7 +266,7 @@ TEST_CASE("Vertex2DBuilder.indices_scaled_topology")
 
 TEST_CASE("Vertex2DBuilder.indices_copy_offset_and_count")
 {
-	for (const size_t triangleCount : { 0u, 2u, 21846u })
+	for (const size_t triangleCount : { 0u, 1u, 2u, 21846u })
 	{
 		CAPTURE(triangleCount);
 		Array<TriangleIndex> triangles(Max(size_t{ 1 }, triangleCount));
@@ -276,14 +276,24 @@ TEST_CASE("Vertex2DBuilder.indices_copy_offset_and_count")
 			triangles[i] = Triangles[i % 2];
 			for (size_t j = 0; j < 3; ++j) indices[i * 3 + j] = FlatIndices[(i * 3 + j) % 6];
 		}
+		const auto originalTriangles = triangles;
+		const auto originalIndices = indices;
+		for (const bool limit : { false, true })
 		for (int32 variant = 0; variant < 4; ++variant)
 		{
-			CAPTURE(variant);
+			CAPTURE(variant, limit);
 			const auto mesh = Capture([&](const BufferCreatorFunc& allocate)
 			{
 				return BuildIndexed(allocate, variant, { triangles.data(), triangleCount }, { indices.data(), triangleCount * 3 });
-			}, true);
+			}, limit);
 			CheckIndices(mesh, { indices.data(), triangleCount * 3 });
+			CHECK(indices == originalIndices);
+			for (size_t i = 0; i < triangleCount; ++i)
+			{
+				REQUIRE(triangles[i].i0 == originalTriangles[i].i0);
+				REQUIRE(triangles[i].i1 == originalTriangles[i].i1);
+				REQUIRE(triangles[i].i2 == originalTriangles[i].i2);
+			}
 			for (size_t i = 0; i < 4; ++i)
 			{
 				const Float2 expected = ((variant == 1) ? Positions[i] : ((variant == 2)
