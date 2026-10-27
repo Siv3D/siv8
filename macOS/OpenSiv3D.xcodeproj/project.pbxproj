@@ -3426,6 +3426,10 @@
 		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		8E7B8A80CDF64F0D9D0319EE /* Test_WindowFullscreen_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		09CB2E4082514F06BDDADF82 /* RectCornerGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3D79CB30272E4255B928E32E /* RectCornerGeometry.hpp */; };
+		AC40C2B6EE034338AC7BB9B4 /* ShapeExtensions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6102742B73634650A8E5BD74 /* ShapeExtensions.hpp */; };
+		F0DFD061CE1E4CE1AB724597 /* Test_ImageShapeExtensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9524B48DE6744DC48921E091 /* Test_ImageShapeExtensions.cpp */; };
+		FF9D952A0A9F43E5A7FC3A9A /* CircleArcArrowGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5B6F9FB227D3446390063985 /* CircleArcArrowGeometry.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -7008,6 +7012,10 @@
 		0E2FBD7EBF3143538B3A9BD6 /* WindowFullscreenTestHelper_macOS.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_macOS.hpp; sourceTree = "<group>"; };
 		7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_WindowFullscreen_Windows.cpp; sourceTree = "<group>"; };
 		1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_WindowFullscreen_macOS.cpp; sourceTree = "<group>"; };
+		3D79CB30272E4255B928E32E /* RectCornerGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RectCornerGeometry.hpp; sourceTree = "<group>"; };
+		6102742B73634650A8E5BD74 /* ShapeExtensions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShapeExtensions.hpp; sourceTree = "<group>"; };
+		9524B48DE6744DC48921E091 /* Test_ImageShapeExtensions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageShapeExtensions.cpp; sourceTree = "<group>"; };
+		5B6F9FB227D3446390063985 /* CircleArcArrowGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircleArcArrowGeometry.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7381,6 +7389,7 @@
 				6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */,
 				F412C2A96A7D492A954FFCA0 /* Test_Spline2DImage.cpp */,
 				1B5E88E9D7C0496395C0F8D3 /* Test_ImagePolygonFrame.cpp */,
+				9524B48DE6744DC48921E091 /* Test_ImageShapeExtensions.cpp */,
 				AD5DE10CC8DE427E939B73CE /* Test_ImageDrawingTestHelper.cpp */,
 				59055083B5324B3888A5262A /* Test_ImageJoinStyle.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
@@ -9794,6 +9803,7 @@
 			isa = PBXGroup;
 			children = (
 				F90F7A832FACFB9D0077F398 /* SivImageDraw.cpp */,
+				6102742B73634650A8E5BD74 /* ShapeExtensions.hpp */,
 			);
 			path = ImageDraw;
 			sourceTree = "<group>";
@@ -10172,6 +10182,8 @@
 				F93BD7A1300FB1B200B3542E /* SivGeometry2D_ConvexHull.cpp */,
 				F93BD7A2300FB1B200B3542E /* SivGeometry2D_Distance.cpp */,
 				70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */,
+				5B6F9FB227D3446390063985 /* CircleArcArrowGeometry.hpp */,
+				3D79CB30272E4255B928E32E /* RectCornerGeometry.hpp */,
 				D94C71C8E32144768219A411 /* BezierGeometry.hpp */,
 				063CC4C1197F4F1191CFC0A8 /* BezierTessellation.hpp */,
 				484E64BAAE6444DCA17404B2 /* BezierArrowGeometry.hpp */,
@@ -16467,6 +16479,9 @@
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
+				FF9D952A0A9F43E5A7FC3A9A /* CircleArcArrowGeometry.hpp in Headers */,
+				AC40C2B6EE034338AC7BB9B4 /* ShapeExtensions.hpp in Headers */,
+				09CB2E4082514F06BDDADF82 /* RectCornerGeometry.hpp in Headers */,
 				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
 				DB9BFD5CE53F46B2B131CF39 /* BezierTessellation.hpp in Headers */,
 				B1DCDFA333C14CD5BC27EA57 /* BezierArrowGeometry.hpp in Headers */,
@@ -17268,6 +17283,7 @@
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */,
 				CE0A117E82E1402D8D90D4B3 /* Test_ImagePolygonFrame.cpp in Sources */,
+				F0DFD061CE1E4CE1AB724597 /* Test_ImageShapeExtensions.cpp in Sources */,
 				F9D26B80DAE4479EBB8C8CA7 /* Test_ImageDrawingTestHelper.cpp in Sources */,
 				5C02AD14871C4C2DAEA6AFB0 /* Test_ImageJoinStyle.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,

@@ -21,6 +21,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
@@ -521,6 +522,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Circle& Circle::paintArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	overwriteArc
@@ -536,6 +543,12 @@ namespace s3d
 	const Circle& Circle::overwriteArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::CircleArc(dst, *this, lineCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	const Circle& Circle::overwriteArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -584,6 +597,112 @@ namespace s3d
 	const Circle& Circle::overwriteSegmentFromAngles(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::CircleSegmentFromAngles(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintCrescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintCrescent(Image& dst, const double openingAngle, const double width, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Crescent(dst, *this, openingAngle, width, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteCrescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteCrescent(Image& dst, const double openingAngle, const double width, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Crescent(dst, *this, openingAngle, width, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintTeardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintTeardrop(Image& dst, const Vec2& tip, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Teardrop(dst, *this, tip, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteTeardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteTeardrop(Image& dst, const Vec2& tip, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Teardrop(dst, *this, tip, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArcArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintArcArrow(Image& dst, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArcArrow(dst, LineCap::Flat, startAngle, angle, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const Circle& Circle::paintArcArrow(Image& dst, const LineCap startCap, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArcArrow(dst, *this, startCap, startAngle, angle, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArcArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteArcArrow(Image& dst, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArcArrow(dst, LineCap::Flat, startAngle, angle, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const Circle& Circle::overwriteArcArrow(Image& dst, const LineCap startCap, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArcArrow(dst, *this, startCap, startAngle, angle, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArcDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintArcDoubleHeadedArrow(Image& dst, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArcDoubleArrow(dst, *this, startAngle, angle, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArcDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteArcDoubleHeadedArrow(Image& dst, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleArcDoubleArrow(dst, *this, startAngle, angle, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

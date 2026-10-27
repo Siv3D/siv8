@@ -18,7 +18,7 @@ acceptance criterion.
    cycle Flat / Round / Square and **R** to cycle short / major / negative / zero /
    full sweeps. Press **T** to cycle subpixel / thin / wide arcs. For Circle frame
    checks, select arc mode and a full sweep, then vary **A** and **T**.
-   Press **S** to cycle the shape, stroke, arrow, spline, polygon-frame, and centered-join pages. The stroke page has
+   Press **S** to cycle the shape, stroke, arrow, spline, polygon-frame, centered-join, rounded/balloon, circular-extension, and curved-arrow pages. The stroke page has
    Line, LineString, Bezier2, Bezier3, and a short Line. On this page, **J** and **K** independently cycle the
    start and end caps through Flat / Round / Square. **D** changes the last Line
    length between zero, 1.5, and 20 pixels. **Q** cycles Bezier quality through
@@ -40,6 +40,15 @@ acceptance criterion.
    On the centered-join page, **J** cycles Bevel / Round / Miter, **T**
    changes width, and **B** reverses winding. The first column is an acute Triangle;
    the remaining columns reuse the Quads from the polygon-frame page.
+   On the rounded/balloon page, the columns show four-radius fill, its frame,
+   balloon fill, its frame, and a centered RectF frame. **T** changes frame width.
+   On the circular-extension page, the columns show a crescent, teardrop,
+   rotated ellipse fill, rotated ellipse frame, and ellipse arc. **J** / **K**
+   select independent arc caps, **R** changes the sweep, and **T** changes width.
+   On the curved-arrow page, columns show Bezier2, Bezier3, LineString, Spline2D,
+   and Circle arc arrows. **H** switches single/double heads, **D** changes head
+   dimensions, **J** selects the tail cap, **T** changes shaft width, **R** changes
+   the circular sweep, and **Q** / **B** control curve subdivision.
 3. Inspect the first row (`paint`), second row (`overwrite`), third row (paint
    alpha), fourth row (overwrite alpha), and the GPU row at the bottom.
 4. Record the platform, exponent, shape modes, AA setting, and observed result. The program
@@ -53,7 +62,8 @@ acceptance criterion.
   compare at scene-size resolution when inspecting the same numeric target.
 
 - AA edges have intermediate coverage; disabling AA removes intermediate coverage
-  from these shape operations. RectF has no AA toggle and is not in this gallery.
+  from these shape operations. The ordinary RectF frame on the rounded/balloon
+  page retains fractional-edge coverage independently of the AA toggle.
 - Translucent circle fills and thin rounded rectangles have no darker bands.
   Circle segments have a straight chord and a circular arc. Shallow segments
   exclude the center; major segments include it. Height-based segments point
@@ -119,6 +129,19 @@ acceptance criterion.
   preserve the image. The collinear CPU frame has flat extremities for Bevel/Miter
   and rounded extremities for Round. CPU AA need not match GPU samples.
 
+- Rounded and balloon fills have no seam at the tail root. Balloon frames use
+  rounded Image joins. The thick frame can consume the interior. Inspect clipping
+  at the tip and the alpha rows for repeated composition.
+- Crescents keep both circular edges and teardrops meet the circle tangentially.
+  Rotated ellipses keep their centers. Ellipse arc endpoints follow the ellipse
+  parameter angle; caps follow its tangent. Full CPU arcs match Image frames;
+  wide inward bands stop at the medial axis rather than folding over it.
+- Curved arrow heads point from their root on the path toward the endpoint.
+  Short paths shrink heads; a base that cannot fit the shaft falls back to a
+  stroke without heads. Crossings and shaft/head joins composite once on CPU.
+  For a full Circle sweep with Flat tail, the endpoint coincides with the start.
+  Double heads on a closed path can overlap; the CPU alpha must stay uniform.
+
 ## Complete program
 
 ```cpp
@@ -148,7 +171,7 @@ void Main()
 	const Array<double> sweeps{ 0, Math::Pi / 3, Math::Pi * 1.5, -Math::Pi * 1.5, Math::TwoPi };
 	constexpr double PieStart = Math::Pi / 6;
 	int32 page = 0;
-	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines", U"polygon frames", U"centered joins" };
+	const Array<String> pages{ U"shapes", U"strokes", U"arrows", U"splines", U"polygon frames", U"centered joins", U"rounded / balloons", U"circular extensions", U"curved arrows" };
 	const Array<JoinStyle> joins{ JoinStyle::Bevel, JoinStyle::Round, JoinStyle::Miter };
 	size_t joinIndex = 0;
 	const Array<double> arrowWidths{ 0.6, 6.5, 24.5 };
@@ -208,6 +231,8 @@ void Main()
 		const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
 		return superEllipseMode == 1 ? Vec2{ width, 0 } : (superEllipseMode == 2 ? Vec2{ 0, width } : Vec2{ width / 2, width / 2 });
 	};
+	bool doubleHeads = false;
+	const Array<SizeF> headSizes{ SizeF{14,18}, SizeF{30,36}, SizeF{60,110} };
 	bool aa = true;
 	bool dirty = true;
 	Array<Texture> textures;
@@ -217,6 +242,108 @@ void Main()
 	const auto cpu = [&](Image& image, const int32 kind, const bool paint)
 	{
 		const EnableAntialiasing antialiasing{ aa };
+		if (page == 6)
+		{
+			const RectF rect{ 22.25, 20.75, 140, 74 };
+			const RoundRect balloon{rect, 18};
+			const Vec2 tip{178.25, 118.75};
+			const double width = arrowWidths[arcThicknessIndex];
+			if (kind == 0)
+			{
+				if (paint) rect.paintRounded(image, 4, 30, 0, 20, ink, antialiasing);
+				else rect.overwriteRounded(image, 4, 30, 0, 20, ink, antialiasing);
+			}
+			else if (kind == 1)
+			{
+				if (paint) rect.paintRoundedFrame(image, 4, 30, 0, 20, width, ink, antialiasing);
+				else rect.overwriteRoundedFrame(image, 4, 30, 0, 20, width, ink, antialiasing);
+			}
+			else if (kind == 2)
+			{
+				if (paint) balloon.paintBalloon(image, tip, 32, ink, antialiasing);
+				else balloon.overwriteBalloon(image, tip, 32, ink, antialiasing);
+			}
+			else if (kind == 3)
+			{
+				if (paint) balloon.paintBalloonFrame(image, tip, 32, width, ink, antialiasing);
+				else balloon.overwriteBalloonFrame(image, tip, 32, width, ink, antialiasing);
+			}
+			else if (paint) rect.paintFrame(image, width, ink);
+			else rect.overwriteFrame(image, width, ink);
+			return;
+		}
+		if (page == 7)
+		{
+			const Circle circle{76.25, 64.75, 42};
+			const Ellipse ellipse{96.25, 64.75, 72, 27};
+			const auto [inner, outer] = arcThicknesses[arcThicknessIndex];
+			if (kind == 0)
+			{
+				if (paint) circle.paintCrescent(image, 0.7, 24, ink, antialiasing);
+				else circle.overwriteCrescent(image, 0.7, 24, ink, antialiasing);
+			}
+			else if (kind == 1)
+			{
+				if (paint) circle.paintTeardrop(image, Vec2{172.25, 24.75}, ink, antialiasing);
+				else circle.overwriteTeardrop(image, Vec2{172.25, 24.75}, ink, antialiasing);
+			}
+			else if (kind == 2)
+			{
+				if (paint) ellipse.paintRotated(image, 0.5, ink, antialiasing);
+				else ellipse.overwriteRotated(image, 0.5, ink, antialiasing);
+			}
+			else if (kind == 3)
+			{
+				if (paint) ellipse.paintFrameRotated(image, 0.5, inner, outer, ink, antialiasing);
+				else ellipse.overwriteFrameRotated(image, 0.5, inner, outer, ink, antialiasing);
+			}
+			else if (kind == 4)
+			{
+				if (paint) ellipse.paintArc(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 0.5, arcSweeps[arcSweepIndex], inner, outer, ink, antialiasing);
+				else ellipse.overwriteArc(image, arcCaps[startCapIndex], arcCaps[endCapIndex], 0.5, arcSweeps[arcSweepIndex], inner, outer, ink, antialiasing);
+			}
+			return;
+		}
+		if (page == 8)
+		{
+			const double width = arrowWidths[arcThicknessIndex];
+			const SizeF head = headSizes[shortLengthIndex];
+			const auto curve = [&](const auto& shape)
+			{
+				if (doubleHeads)
+				{
+					if (paint) shape.paintDoubleHeadedArrow(image, width, head, ink, antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+					else shape.overwriteDoubleHeadedArrow(image, width, head, ink, antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+				}
+				else if (paint) shape.paintArrow(image, arcCaps[startCapIndex], width, head, ink, antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+				else shape.overwriteArrow(image, arcCaps[startCapIndex], width, head, ink, antialiasing, curveQuality[curveQualityIndex], curveLimited ? 4 : 256);
+			};
+			if (kind == 0) curve(quadratic);
+			else if (kind == 1) curve(cubic);
+			else if (kind == 3) curve(splines[0]);
+			else if (kind == 2)
+			{
+				if (doubleHeads)
+				{
+					if (paint) strokePath.paintDoubleHeadedArrow(image, width, head, ink, antialiasing);
+					else strokePath.overwriteDoubleHeadedArrow(image, width, head, ink, antialiasing);
+				}
+				else if (paint) strokePath.paintArrow(image, arcCaps[startCapIndex], width, head, ink, antialiasing);
+				else strokePath.overwriteArrow(image, arcCaps[startCapIndex], width, head, ink, antialiasing);
+			}
+			else
+			{
+				const Circle circle{96.25,64.75,44};
+				if (doubleHeads)
+				{
+					if (paint) circle.paintArcDoubleHeadedArrow(image, 0, arcSweeps[arcSweepIndex], width, head, ink, antialiasing);
+					else circle.overwriteArcDoubleHeadedArrow(image, 0, arcSweeps[arcSweepIndex], width, head, ink, antialiasing);
+				}
+				else if (paint) circle.paintArcArrow(image, arcCaps[startCapIndex], 0, arcSweeps[arcSweepIndex], width, head, ink, antialiasing);
+				else circle.overwriteArcArrow(image, arcCaps[startCapIndex], 0, arcSweeps[arcSweepIndex], width, head, ink, antialiasing);
+			}
+			return;
+		}
 		if (page == 5)
 		{
 			const double width = std::array<double, 3>{ 0.5, 8, 80 }[arcThicknessIndex];
@@ -350,13 +477,14 @@ void Main()
 
 	while (System::Update())
 	{
+		if (KeyH.down()) { doubleHeads = !doubleHeads; dirty = true; }
 		if (KeyQ.down()) { curveQualityIndex = (curveQualityIndex + 1) % curveQuality.size(); dirty = true; }
 		if (KeyB.down()) { curveLimited = !curveLimited; dirty = true; }
 		if (KeyD.down()) { shortLengthIndex = (shortLengthIndex + 1) % shortLengths.size(); dirty = true; }
-		if (KeyS.down()) { page = (page + 1) % 6; dirty = true; }
+		if (KeyS.down()) { page = (page + 1) % static_cast<int32>(pages.size()); dirty = true; }
 		if (KeyJ.down())
 		{
-			if (page >= 4) joinIndex = (joinIndex + 1) % joins.size();
+			if ((page == 4) || (page == 5)) joinIndex = (joinIndex + 1) % joins.size();
 			else startCapIndex = (startCapIndex + 1) % arcCaps.size();
 			dirty = true;
 		}
@@ -383,12 +511,14 @@ void Main()
 				}
 			dirty = false;
 		}
-		if (page == 5) font(U"S: centered joins   A: AA = {}   J: join = {}   B: reversed = {}"_fmt(aa, joins[joinIndex], curveLimited)).draw(20, 12);
+		if (page >= 6) font(U"S: {}   A: AA = {}   T: width   J/K: caps   R: sweep"_fmt(pages[page], aa)).draw(20, 12);
+		else if (page == 5) font(U"S: centered joins   A: AA = {}   J: join = {}   B: reversed = {}"_fmt(aa, joins[joinIndex], curveLimited)).draw(20, 12);
 		else if (page == 4) font(U"S: polygon frames   A: AA = {}   F: widths = {}   J: {}   B: reversed = {}"_fmt(aa, frameWidths(), joins[joinIndex], curveLimited)).draw(20, 12);
 		else if (page == 1) font(U"S: strokes   A: AA = {}   Q: Bezier target = {}px   B: budget = {}"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 4 : 256)).draw(20, 12);
 		else if (page == 3) font(U"S: splines   A: AA = {}   Q: target = {}px   B: per-curve budget = {} (GPU caps: Square)"_fmt(aa, curveQuality[curveQualityIndex], curveLimited ? 1 : 256)).draw(20, 12);
 		else font(U"S: {}   A: AA = {}   Space: exponent = {}   F: {}"_fmt(pages[page], aa, exponents[exponentIndex], modes[superEllipseMode])).draw(20, 12);
-		if ((page == 4) || (page == 5)) font(U"T: width   triangle / clipped convex / concave / crossed / collinear (GPU omitted)").draw(20, 32);
+		if (page >= 6) font(U"H: double heads = {}   D: head = {}   Q: target = {}   B: limited = {}"_fmt(doubleHeads, headSizes[shortLengthIndex], curveQuality[curveQualityIndex], curveLimited)).draw(20, 32);
+		else if ((page == 4) || (page == 5)) font(U"T: width   triangle / clipped convex / concave / crossed / collinear (GPU omitted)").draw(20, 32);
 		else if (page == 1) font(U"J: start = {}   K: end = {}    Line / LineString / Bezier2 / Bezier3 / D: {}"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], shortLengths[shortLengthIndex])).draw(20, 32);
 		else if (page == 3) font(U"J: start = {}   K: end = {}   T: width = {}    open / closed / crossed / clipped / point"_fmt(arcCaps[startCapIndex], arcCaps[endCapIndex], arrowWidths[arcThicknessIndex])).draw(20, 32);
 		else if (page == 2) font(U"J: tail = {}   T: width = {}    horizontal / diagonal / D: {} / clipped / zero"_fmt(arcCaps[startCapIndex], arrowWidths[arcThicknessIndex], shortLengths[shortLengthIndex])).draw(20, 32);
@@ -402,6 +532,56 @@ void Main()
 				const Vec2 pos{ 160.0 + kind * 204, 54.0 + row * 148 };
 				RectF{ pos, 192, 128 }.draw(ColorF{ 0.3 });
 				if (row < 4) textures[row * 5 + kind].draw(pos);
+				else if (page >= 6)
+				{
+					const ScopedScissorRect2D clip{static_cast<int32>(pos.x), static_cast<int32>(pos.y),192,128};
+					const Transformer2D transform{Mat3x2::Translate(pos)};
+					const double width = arrowWidths[arcThicknessIndex];
+					const auto [inner, outer] = arcThicknesses[arcThicknessIndex];
+					if (page == 6)
+					{
+						const RectF rect{22.25,20.75,140,74};
+						const RoundRect balloon{rect,18};
+						if (kind == 0) rect.drawRounded(4,30,0,20,ink);
+						else if (kind == 1) rect.drawRoundedFrame(4,30,0,20,width,ink);
+						else if (kind == 2) balloon.drawBalloon({178.25,118.75},32,ink);
+						else if (kind == 3) balloon.drawBalloonFrame({178.25,118.75},32,width,ink);
+						else rect.drawFrame(width,ink);
+					}
+					else if (page == 7)
+					{
+						const Circle circle{76.25,64.75,42};
+						const Ellipse ellipse{96.25,64.75,72,27};
+						if (kind == 0) circle.drawCrescent(0.7,24,ink);
+						else if (kind == 1) circle.drawTeardrop({172.25,24.75},ink);
+						else if (kind == 2) ellipse.drawRotated(0.5,ink);
+						else if (kind == 3) ellipse.drawFrameRotated(0.5,inner,outer,ink);
+						else ellipse.drawArc(arcCaps[startCapIndex],arcCaps[endCapIndex],0.5,arcSweeps[arcSweepIndex],inner,outer,ink);
+					}
+					else
+					{
+						const SizeF head = headSizes[shortLengthIndex];
+						const auto curve = [&](const auto& shape)
+						{
+							if (doubleHeads) shape.drawDoubleHeadedArrow(width,head,ink,curveQuality[curveQualityIndex],curveLimited ? 4 : 256);
+							else shape.drawArrow(arcCaps[startCapIndex],width,head,ink,curveQuality[curveQualityIndex],curveLimited ? 4 : 256);
+						};
+						if (kind == 0) curve(quadratic);
+						else if (kind == 1) curve(cubic);
+						else if (kind == 3) curve(splines[0]);
+						else if (kind == 2)
+						{
+							if (doubleHeads) strokePath.drawDoubleHeadedArrow(width,head,ink);
+							else strokePath.drawArrow(arcCaps[startCapIndex],width,head,ink);
+						}
+						else
+						{
+							const Circle circle{96.25,64.75,44};
+							if (doubleHeads) circle.drawArcDoubleHeadedArrow(0,arcSweeps[arcSweepIndex],width,head,ink);
+							else circle.drawArcArrow(arcCaps[startCapIndex],0,arcSweeps[arcSweepIndex],width,head,ink);
+						}
+					}
+				}
 				else if (page == 5)
 				{
 					const ScopedScissorRect2D clip{ static_cast<int32>(pos.x), static_cast<int32>(pos.y), 192, 128 };

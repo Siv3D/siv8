@@ -8,6 +8,7 @@
 # include <algorithm>
 # include <stdexcept>
 # include <Siv3D/Spline2D.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
 # include <Siv3D/Geometry2D/BezierTessellation.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -253,6 +254,74 @@ namespace s3d
 		}
 		return *this;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Spline2D& Spline2D::paintArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return paintArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	const Spline2D& Spline2D::paintArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		detail::ImageShape::SplineArrow(dst, m_segments, startCap, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Spline2D& Spline2D::overwriteArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return overwriteArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing, targetError, maxSegmentsPerCurve);
+	}
+
+	const Spline2D& Spline2D::overwriteArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		detail::ImageShape::SplineArrow(dst, m_segments, startCap, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Spline2D& Spline2D::paintDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		detail::ImageShape::SplineDoubleArrow(dst, m_segments, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Spline2D& Spline2D::overwriteDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		detail::ImageShape::SplineDoubleArrow(dst, m_segments, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
 
 	const Spline2D& Spline2D::draw(const double thickness, const ColorF& color, const double targetError, const int32 maxSegmentsPerCurve) const
 	{

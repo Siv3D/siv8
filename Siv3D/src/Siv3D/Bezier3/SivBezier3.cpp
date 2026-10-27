@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Bezier.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -484,6 +485,64 @@ namespace s3d
 	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
 	{
 		toLineStringAdaptive(targetError, maxSegments).overwrite(dst, startCap, endCap, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::paintArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		return paintArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing, targetError, maxSegments);
+	}
+
+	const Bezier3& Bezier3::paintArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		detail::ImageShape::BezierArrow(dst, *this, startCap, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, targetError, maxSegments);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::overwriteArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		return overwriteArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing, targetError, maxSegments);
+	}
+
+	const Bezier3& Bezier3::overwriteArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		detail::ImageShape::BezierArrow(dst, *this, startCap, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, targetError, maxSegments);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::paintDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		detail::ImageShape::BezierDoubleArrow(dst, *this, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, targetError, maxSegments);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::overwriteDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing, const double targetError, const int32 maxSegments) const
+	{
+		detail::ImageShape::BezierDoubleArrow(dst, *this, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, targetError, maxSegments);
 		return *this;
 	}
 

@@ -18,6 +18,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -288,6 +289,108 @@ namespace s3d
 	const Ellipse& Ellipse::overwritePie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::EllipsePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintRotated(Image& dst, const double rotation, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseRotated(dst, *this, rotation, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteRotated(Image& dst, const double rotation, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseRotated(dst, *this, rotation, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintFrameRotated(Image& dst, const double rotation, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrameRotated(dst, rotation, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintFrameRotated(Image& dst, const double rotation, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseFrameRotated(dst, *this, rotation, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteFrameRotated(Image& dst, const double rotation, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrameRotated(dst, rotation, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteFrameRotated(Image& dst, const double rotation, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseFrameRotated(dst, *this, rotation, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArc(dst, LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArc(dst, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArc(dst, LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArc(dst, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

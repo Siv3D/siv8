@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "YesNo.hpp"
 # include "Geometry2D/Geometry2DConcepts.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
@@ -1689,6 +1690,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中央配置の枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @return *this
+		const RectF& paintFrame(Image& dst, double thickness, const Color& color) const;
+
 		/// @brief 長方形の枠を Image に描き込みます。
 		/// @param dst 描き込み先の画像
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
@@ -1703,6 +1711,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中央配置の枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @return *this
+		const RectF& overwriteFrame(Image& dst, double thickness, const Color& color) const;
+
 		/// @brief 長方形の枠を Image に上書きします。
 		/// @param dst 上書き先の画像
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
@@ -1710,6 +1725,105 @@ namespace s3d
 		/// @param color 色
 		/// @return *this
 		const RectF& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintRounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅別の角丸長方形を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 半径の調整は drawRounded() と共通です。幅または高さが 0 以下なら何も描きません。
+		const RectF& paintRounded(Image& dst, double tl, double tr, double br, double bl, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintRoundedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅別の角丸枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		const RectF& paintRoundedFrame(Image& dst, double tl, double tr, double br, double bl, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 四隅別の角丸枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 半径・内外枠の調整は drawRoundedFrame() と共通です。太さが負、または合計が 0 の場合は何も描きません。
+		const RectF& paintRoundedFrame(Image& dst, double tl, double tr, double br, double bl, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteRounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅別の角丸長方形を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintRounded
+		const RectF& overwriteRounded(Image& dst, double tl, double tr, double br, double bl, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteRoundedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四隅別の角丸枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		const RectF& overwriteRoundedFrame(Image& dst, double tl, double tr, double br, double bl, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 四隅別の角丸枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param tl 左上の角半径
+		/// @param tr 右上の角半径
+		/// @param br 右下の角半径
+		/// @param bl 左下の角半径
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		const RectF& overwriteRoundedFrame(Image& dst, double tl, double tr, double br, double bl, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -23,6 +23,7 @@
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -518,6 +519,54 @@ namespace s3d
 		return *this;
 	}
 	
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paintBalloon(Image& dst, const Vec2& target, const double tailWidth, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Balloon(dst, *this, target, tailWidth, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paintBalloonFrame(Image& dst, const Vec2& target, const double tailWidth, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::BalloonFrame(dst, *this, target, tailWidth, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwriteBalloon(Image& dst, const Vec2& target, const double tailWidth, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Balloon(dst, *this, target, tailWidth, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwriteBalloonFrame(Image& dst, const Vec2& target, const double tailWidth, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::BalloonFrame(dst, *this, target, tailWidth, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	draw

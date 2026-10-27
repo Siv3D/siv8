@@ -698,6 +698,9 @@
     <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageShapeExtensions.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp">
       <Filter>Test</Filter>
     </ClCompile>

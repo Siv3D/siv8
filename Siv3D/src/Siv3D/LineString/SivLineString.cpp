@@ -15,6 +15,7 @@
 # include <Siv3D/Spline2D.hpp>
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Polygon/LineStringBuffer.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -954,6 +955,64 @@ namespace s3d
 	const LineString& LineString::overwriteClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paintArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineArrow(dst, std::span<const Vec2>{ data(), size() }, startCap, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwriteArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineArrow(dst, std::span<const Vec2>{ data(), size() }, startCap, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineDoubleArrow(dst, std::span<const Vec2>{ data(), size() }, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineDoubleArrow(dst, std::span<const Vec2>{ data(), size() }, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

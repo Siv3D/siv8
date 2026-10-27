@@ -229,6 +229,116 @@ namespace s3d
 		/// @see @ref spline2d_image_writing "Spline2D の Image 描画の条件と結果"
 		const Spline2D& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		const Spline2D& paintArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		const Spline2D& paintArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @see paintArrow()
+		const Spline2D& overwriteArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @see paintArrow()
+		const Spline2D& overwriteArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		const Spline2D& paintDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegmentsPerCurve 分割数の上限（1～4096）、区間ごと
+		/// @return *this
+		/// @see paintDoubleHeadedArrow()
+		const Spline2D& overwriteDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 曲線を適応分割して描画します。
 		/// @param thickness 線の太さ。絶対値を使用します。
 		/// @param color 線の色

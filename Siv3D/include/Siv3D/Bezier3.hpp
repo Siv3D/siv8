@@ -737,6 +737,107 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier3& paintArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier3& paintArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintArrow()
+		const Bezier3& overwriteArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintArrow()
+		const Bezier3& overwriteArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier3& paintDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintDoubleHeadedArrow()
+		const Bezier3& overwriteDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////

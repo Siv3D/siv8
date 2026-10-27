@@ -18,6 +18,14 @@
 # include "../ImagePixel/SolidColorWriter.hpp"
 # include "../Geometry2D/EllipseGeometry.hpp"
 # include "../Geometry2D/PolygonGeometry.hpp"
+# include "../Geometry2D/RectCornerGeometry.hpp"
+# include "../Geometry2D/CircularShapes.hpp"
+# include "../Geometry2D/DoubleHeadedArrowGeometry.hpp"
+# include "../Geometry2D/CircleArcArrowGeometry.hpp"
+# include "../Geometry2D/BezierTessellation.hpp"
+# include "../Renderer2D/RoundRectBalloon.hpp"
+# include "ShapeExtensions.hpp"
+# include <numeric>
 
 namespace s3d
 {
@@ -1861,99 +1869,62 @@ namespace s3d
 			}
 		}
 
-		void FillEllipseFrameByDistance(
-			ImageView view,
-			const Ellipse& ellipse,
-			double innerThickness,
-			double outerThickness,
-			ImagePixel::BlendMode blendMode,
-			ImageDraw::DstAlpha dstAlpha,
-			Color color,
-			bool antialiased)
+		template <bool Rotated = false>
+		void FillEllipseFrameByDistance(const ImageView view, const Ellipse& ellipse,
+			const double innerThickness, const double outerThickness, const ImagePixel::BlendMode blendMode,
+			const ImageDraw::DstAlpha dstAlpha, const Color color, const bool antialiased, const double rotation = 0.0)
 		{
-			if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
-			{
-				return;
-			}
+			if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness) || !(0.0 < ellipse.a) || !(0.0 < ellipse.b)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))) return;
+			const double minor = Min(ellipse.a, ellipse.b), major = Max(ellipse.a, ellipse.b);
+			const bool hasInner = (innerThickness < minor);
+			const double edge = (antialiased ? 0.5 : 0.0), support = (outerThickness + edge);
+			const double c = (Rotated ? std::cos(rotation) : 1.0), s = (Rotated ? std::sin(rotation) : 0.0);
+			const double w = (Rotated ? std::hypot(ellipse.a * c, ellipse.b * s) : ellipse.a) + support;
+			const double h = (Rotated ? std::hypot(ellipse.a * s, ellipse.b * c) : ellipse.b) + support;
+			BoundsD bounds; bounds.include({ellipse.x - w, ellipse.y - h}); bounds.include({ellipse.x + w, ellipse.y + h});
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
 
-			if (!(0.0 < ellipse.a) || !(0.0 < ellipse.b))
-			{
-				return;
-			}
-
-			if ((innerThickness == 0.0) && (outerThickness == 0.0))
-			{
-				return;
-			}
-
-			const bool hasInner = (innerThickness < Min(ellipse.a, ellipse.b));
-
-			const double support = outerThickness + (antialiased ? 0.5 : 0.0);
-
-			int32 y0 = FloorToInt(ellipse.y - ellipse.b - support - 0.5);
-			int32 y1 = CeilToInt(ellipse.y + ellipse.b + support - 0.5) + 1;
-
-			y0 = ClampInt(y0, 0, view.height);
-			y1 = ClampInt(y1, 0, view.height);
-
-			if (y0 >= y1)
-			{
-				return;
-			}
-
-			int32 x0 = FloorToInt(ellipse.x - ellipse.a - support - 0.5);
-			int32 x1 = CeilToInt(ellipse.x + ellipse.a + support - 0.5) + 1;
-
-			x0 = ClampInt(x0, 0, view.width);
-			x1 = ClampInt(x1, 0, view.width);
-
-			if (x0 >= x1)
-			{
-				return;
-			}
-
-			const size_t count = static_cast<size_t>(x1 - x0);
-
-			ImagePixel::detail::SolidColorWriter writer{
-				blendMode,
-				color,
-				ToDstAlphaMode(dstAlpha)
-			};
-
-			std::vector<uint8> coverage(count);
-
+			// The ellipse is a linear image of the unit circle. For normalized radius rho,
+			// min(a,b)*abs(rho-1) <= distance to the boundary <= max(a,b)*abs(rho-1).
+			// Squared thresholds classify empty/solid pixels; only uncertain pixels solve
+			// the exact closest-point problem. Strict bounds leave boundary ties to it.
+			const auto square = [](double value) { return value * value; };
+			const double emptyInner = square(Max(0.0, 1 - (innerThickness + edge) / minor));
+			const double emptyOuter = square(1 + (outerThickness + edge) / minor);
+			const double solidInsideMin = square(hasInner ? Max(0.0, 1 + (edge - innerThickness) / major) : 0.0);
+			const double solidInsideMax = square(Max(0.0, Min(1.0, 1 + (outerThickness - edge) / minor)));
+			const double solidOutsideMin = square(hasInner ? Max(1.0, 1 + (edge - innerThickness) / minor) : 1.0);
+			const double solidOutsideMax = square(Max(0.0, 1 + (outerThickness - edge) / major));
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			std::vector<uint8> coverage(static_cast<size_t>(x1 - x0));
 			for (int32 y = y0; y < y1; ++y)
 			{
-				const double py = static_cast<double>(y) + 0.5;
-
-				for (size_t i = 0; i < count; ++i)
+				for (int32 x = x0; x < x1; ++x)
 				{
-					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-					const double sd = EllipseSignedDistance(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
-
-					if (antialiased)
-					{
-						const uint8 outerCoverage = CoverageFromSignedDistance(sd - outerThickness);
-						const uint8 innerCoverage = hasInner
-							? CoverageFromSignedDistance(sd + innerThickness)
-							: 0;
-
-						coverage[i] = static_cast<uint8>(
-							(innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-							);
-					}
+					const double dx = (x + 0.5 - ellipse.x), dy = (y + 0.5 - ellipse.y);
+					const double px = (Rotated ? c * dx + s * dy : dx), py = (Rotated ? -s * dx + c * dy : dy);
+					const double rhoSq = square(px / ellipse.a) + square(py / ellipse.b);
+					uint8& value = coverage[x - x0];
+					if ((emptyOuter < rhoSq) || (hasInner && (rhoSq < emptyInner))) value = 0;
+					else if (((solidInsideMin < rhoSq) && (rhoSq < solidInsideMax))
+						|| ((solidOutsideMin < rhoSq) && (rhoSq < solidOutsideMax))) value = 255;
 					else
 					{
-						coverage[i] = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
+						const double sd = EllipseSignedDistance(px, py, 0, 0, ellipse.a, ellipse.b);
+						if (antialiased)
+						{
+							const uint8 outer = CoverageFromSignedDistance(sd - outerThickness);
+							const uint8 inner = (hasInner ? CoverageFromSignedDistance(sd + innerThickness) : 0);
+							value = (outer - Min(outer, inner));
+						}
+						else value = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
 					}
 				}
-
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
-
-				WriteCoverageRow(writer, row, x0, coverage);
+				WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
 			}
 		}
-
 
 		struct RoundRectDistanceParams
 		{
@@ -4566,7 +4537,7 @@ namespace s3d
 		template <bool Antialias>
 		void FillCircleArcBySpans(
 			const ImageView view, const Circle& circle, const CircleSectorData& sector,
-			const double innerRadius, const double outerRadius, const LineCap lineCap,
+			const double innerRadius, const double outerRadius, const LineCap startCap, const LineCap endCap,
 			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
 		{
 			const bool hasBody = (0.0 < sector.sweep);
@@ -4577,7 +4548,7 @@ namespace s3d
 			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
 			const Vec2 directions[]{ sector.startDir, sector.endDir };
 			const Vec2 outward[]{ -startNormal, -endNormal };
-			const int32 capCount = (lineCap == LineCap::Flat ? 0 : 2);
+			const LineCap styles[]{ startCap, endCap };
 			OrientedRectBasis caps[2];
 			BoundsD bounds;
 			if (hasBody)
@@ -4586,11 +4557,12 @@ namespace s3d
 				IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
 				IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
 			}
-			for (int32 i = 0; i < capCount; ++i)
+			for (int32 i = 0; i < 2; ++i)
 			{
+				if (styles[i] == LineCap::Flat) continue;
 				const Vec2 center = (circle.center + directions[i] * mid);
 				caps[i] = { center, outward[i], directions[i], half * 0.5, half };
-				if (lineCap == LineCap::Round)
+				if (styles[i] == LineCap::Round)
 				{
 					bounds.includeCircle(center, half);
 				}
@@ -4656,11 +4628,12 @@ namespace s3d
 						}
 						else addSector(-outerDx, outerDx);
 					}
-					for (int32 i = 0; i < capCount; ++i)
+					for (int32 i = 0; i < 2; ++i)
 					{
+						if (styles[i] == LineCap::Flat) continue;
 						const OrientedRectBasis& cap = caps[i];
 						const double cy = (py - cap.center.y);
-						if (lineCap == LineCap::Round)
+						if (styles[i] == LineCap::Round)
 						{
 							const double dxSq = (half * half - cy * cy);
 							if (0.0 <= dxSq)
@@ -5245,6 +5218,410 @@ namespace s3d
 			return points;
 		}
 
+		// A small analytic shape produces a bounded number of intervals per sample row.
+		// Union before counting coverage keeps joins and overlapping parts single-covered.
+		template <size_t MaxSpans, class Scan>
+		void DrawSampledSpans(const ImageView view, const BoundsD& bounds, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing aa, Scan&& scan)
+		{
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
+			const int32 samples = (aa == EnableAntialiasing::Yes ? 4 : 1);
+			std::vector<uint8> coverage(samples == 4 ? static_cast<size_t>(x1 - x0) : 0);
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(ImageDraw::DstAlpha::UseStored) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				SpanI pixelSpans[MaxSpans * 4];
+				size_t pixelCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					SpanI spans[MaxSpans];
+					size_t count = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const int32 begin = CeilToInt(Clamp(left, double(x0), double(x1)) * samples - 0.5);
+						const int32 end = CeilToInt(Clamp(right, double(x0), double(x1)) * samples - 0.5);
+						if (begin < end) spans[count++] = { begin, end };
+					};
+					scan(y + (sy + 0.5) / samples, add);
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
+					{
+						if (samples == 4)
+						{
+							AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+							pixelSpans[pixelCount++] = { span.x0 / 4, (span.x1 + 3) / 4 };
+						}
+						else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+					}
+				}
+				if (samples == 4) WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelCount });
+			}
+		}
+
+		// Convex parts and disks are rasterized as a union, with row-local active parts.
+		// This avoids both geometric Boolean operations and repeated alpha composition.
+		class SampledShape
+		{
+			struct Piece
+			{
+				ConvexStrokePiece polygon;
+				Circle disk{ 0, 0, 0 };
+				double minY, maxY;
+			};
+			ImageView m_view;
+			BoundsD m_bounds;
+			std::vector<Piece> m_pieces;
+
+			bool visible(const BoundsD& b) const
+			{
+				return ((0 < b.maxX) && (b.minX < m_view.width) && (0 < b.maxY) && (b.minY < m_view.height));
+			}
+
+		public:
+
+			explicit SampledShape(const ImageView view) : m_view{ view } {}
+
+			void polygon(const std::span<const Vec2> points)
+			{
+				Piece piece;
+				BoundsD bounds;
+				piece.polygon.set(points, bounds);
+				if (!visible(bounds)) return;
+				piece.minY = bounds.minY; piece.maxY = bounds.maxY;
+				m_bounds.include({ bounds.minX, bounds.minY });
+				m_bounds.include({ bounds.maxX, bounds.maxY });
+				m_pieces.push_back(std::move(piece));
+			}
+
+			void triangle(const Vec2 a, const Vec2 b, const Vec2 c)
+			{
+				const Vec2 points[]{ a, b, c };
+				polygon(points);
+			}
+
+			void disk(const Vec2 center, const double radius)
+			{
+				if (radius <= 0) return;
+				BoundsD bounds; bounds.includeCircle(center, radius);
+				if (!visible(bounds)) return;
+				Piece piece;
+				piece.disk = Circle{ center, radius };
+				piece.minY = bounds.minY; piece.maxY = bounds.maxY;
+				m_bounds.include({ bounds.minX, bounds.minY });
+				m_bounds.include({ bounds.maxX, bounds.maxY });
+				m_pieces.push_back(std::move(piece));
+			}
+
+			void cap(const Vec2 center, const Vec2 outward, const double half, const LineCap style)
+			{
+				if (style == LineCap::Round) disk(center, half);
+				else if (style == LineCap::Square)
+				{
+					const Vec2 across = (Vec2{ -outward.y, outward.x } * half), along = (outward * half);
+					const Vec2 points[]{ center + across, center + across + along, center - across + along, center - across };
+					polygon(points);
+				}
+			}
+
+			void stroke(const std::span<const Vec2> points, const double thickness, const LineCap startCap, const LineCap endCap,
+				const Vec2* startCut = nullptr, const Vec2* endCut = nullptr)
+			{
+				if (points.size() < 2) return;
+				const double half = (thickness * 0.5);
+				Vec2 lastDirection{ 0, 0 };
+				bool first = true;
+				for (size_t i = 1; i < points.size(); ++i)
+				{
+					const Vec2 delta = (points[i] - points[i - 1]);
+					const double length = delta.length();
+					if (length == 0) continue;
+					const Vec2 direction = (delta / length), across = (Vec2{ -direction.y, direction.x } * half);
+					Vec2 vertices[]{ points[i - 1] + across, points[i] + across, points[i] - across, points[i - 1] - across };
+					if (startCut && (i == 1)) { vertices[0] = startCut[0]; vertices[3] = startCut[1]; }
+					if (endCut && (i + 1 == points.size())) { vertices[1] = endCut[0]; vertices[2] = endCut[1]; }
+					polygon(vertices);
+					if (first) cap(points[i - 1], -direction, half, startCap);
+					else disk(points[i - 1], half);
+					first = false;
+					lastDirection = direction;
+				}
+				if (!first) cap(points.back(), lastDirection, half, endCap);
+			}
+
+			void draw(const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa) const
+			{
+				if (m_pieces.empty()) return;
+				int32 x0, y0, x1, y1;
+				if (!ClipBoundsToImage(m_bounds, x0, y0, x1, y1, m_view.width, m_view.height)) return;
+				const int32 samples = (aa == EnableAntialiasing::Yes ? 4 : 1);
+				std::vector<size_t> order(m_pieces.size()), active;
+				std::iota(order.begin(), order.end(), size_t{0});
+				std::sort(order.begin(), order.end(), [&](size_t a, size_t b) { return m_pieces[a].minY < m_pieces[b].minY; });
+				std::vector<ConvexStrokePiece::SpanCursor> cursors(m_pieces.size());
+				std::vector<SpanI> spans, touched;
+				std::vector<uint8> coverage(samples == 4 ? static_cast<size_t>(x1 - x0) : 0);
+				size_t next = 0;
+				const ImagePixel::detail::SolidColorWriter writer{ mode, color, ToDstAlphaMode(ImageDraw::DstAlpha::UseStored) };
+				for (int32 y = y0; y < y1; ++y)
+				{
+					Color* row = (m_view.data + static_cast<size_t>(y) * m_view.stride);
+					touched.clear();
+					for (int32 sy = 0; sy < samples; ++sy)
+					{
+						const double py = (y + (sy + 0.5) / samples);
+						std::erase_if(active, [&](size_t i) { return m_pieces[i].maxY <= py; });
+						while ((next < order.size()) && (m_pieces[order[next]].minY <= py))
+						{
+							const size_t i = order[next++];
+							if (py < m_pieces[i].maxY) active.push_back(i);
+						}
+						spans.clear();
+						for (const size_t i : active)
+						{
+							const Piece& piece = m_pieces[i];
+							double left, right;
+							if (0 < piece.disk.r)
+							{
+								const double dy = (py - piece.disk.y), r = piece.disk.r;
+								const double half = std::sqrt(Max(0.0, (r - dy) * (r + dy)));
+								left = piece.disk.x - half; right = piece.disk.x + half;
+							}
+							else if (!piece.polygon.spanAt(py, cursors[i], left, right)) continue;
+							const int32 begin = CeilToInt(Clamp(left, double(x0), double(x1)) * samples - 0.5);
+							const int32 end = CeilToInt(Clamp(right, double(x0), double(x1)) * samples - 0.5);
+							if (begin < end) spans.push_back({ begin, end });
+						}
+						for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans }))
+						{
+							if (samples == 4)
+							{
+								AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+								touched.push_back({ span.x0 / 4, (span.x1 + 3) / 4 });
+							}
+							else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+						}
+					}
+					if (samples == 4) WriteAndClearSampleSpans4x4(writer, row, x0, coverage, touched);
+				}
+			}
+		};
+
+		struct ImageArrowTerminal
+		{
+			Vec2 base, tip, normal, shaftNormal;
+			Vec2 join[2], head[2];
+			bool project = true;
+		};
+
+		Optional<ImageArrowTerminal> MakeImageArrowTerminal(const std::span<const Vec2> points, const bool start,
+			const Vec2 tip, const double thickness, const double width)
+		{
+			const Vec2 base = (start ? points.front() : points.back()), delta = (tip - base);
+			const double length = delta.length();
+			if (length == 0) return none;
+			const Vec2 direction = (delta / length), normal{ -direction.y, direction.x };
+			ImageArrowTerminal result{ base, tip, normal, {}, {}, {base + normal * (width * 0.5), base - normal * (width * 0.5)}, true };
+			if (points.size() == 1) return result;
+			const Vec2 previous = (start ? points[1] : points[points.size() - 2]);
+			const Vec2 shaft = (base - previous).normalized();
+			const double cosine = shaft.dot(direction);
+			if ((cosine <= 0) || (width * cosine < thickness)) return none;
+			result.shaftNormal = (Vec2{ -shaft.y, shaft.x } * (thickness * 0.5));
+			result.join[0] = base + normal * (thickness * 0.5 / cosine);
+			result.join[1] = base - normal * (thickness * 0.5 / cosine);
+			result.project = (((previous + result.shaftNormal - base).dot(direction) <= 0)
+				&& ((previous - result.shaftNormal - base).dot(direction) <= 0));
+			return result;
+		}
+
+		bool DrawImageArrow(Image& image, Array<Vec2>& points, const Vec2 endTip, const double thickness,
+			const double endWidth, const Optional<std::pair<Vec2, double>>& startHead, const LineCap startCap,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			points.erase(std::unique(points.begin(), points.end()), points.end());
+			if (points.empty()) return false;
+			auto end = MakeImageArrowTerminal(points, false, endTip, thickness, endWidth);
+			if (!end) return false;
+			Optional<ImageArrowTerminal> start;
+			if (startHead)
+			{
+				start = MakeImageArrowTerminal(points, true, startHead->first, thickness, startHead->second);
+				if (!start) return false;
+				if ((points.size() == 2) && start->project && end->project)
+				{
+					const auto behind = [](const ImageArrowTerminal& a, const ImageArrowTerminal& b)
+					{
+						return (((b.join[0] - a.base).dot(a.tip - a.base) <= 0) && ((b.join[1] - a.base).dot(a.tip - a.base) <= 0));
+					};
+					if (!behind(*start, *end) || !behind(*end, *start)) start->project = end->project = false;
+				}
+			}
+			SampledShape shape{ MakeImageView(image) };
+			Vec2 startCut[2];
+			if (start) { startCut[0] = start->join[1]; startCut[1] = start->join[0]; }
+			shape.stroke(points, thickness, startCap, LineCap::Flat,
+				(start && start->project ? startCut : nullptr), (end->project ? end->join : nullptr));
+			const auto head = [&](const ImageArrowTerminal& terminal)
+			{
+				shape.triangle(terminal.tip, terminal.head[0], terminal.head[1]);
+				if ((1 < points.size()) && !terminal.project)
+				{
+					shape.triangle(terminal.base, terminal.base + terminal.shaftNormal, terminal.join[0]);
+					shape.triangle(terminal.base, terminal.join[1], terminal.base - terminal.shaftNormal);
+				}
+			};
+			head(*end);
+			if (start) head(*start);
+			else if (points.size() == 1) shape.cap(end->base, (end->base - end->tip).normalized(), thickness * 0.5, startCap);
+			shape.draw(color, mode, aa);
+			return true;
+		}
+
+		template <bool Double, class Bezier>
+		void PaintBezierArrow(Image& image, const Bezier& curve, const LineCap cap, const double thickness,
+			const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa,
+			const double error, const int32 budget)
+		{
+			assert(0 < error);
+			assert(1 <= budget && budget <= 4096);
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			Array<Vec2> points;
+			detail::BezierTessellation::Workspace work;
+			const auto flatten = [&](const Bezier& source)
+			{
+				const detail::BezierTessellation::Curve c{ source };
+				detail::BezierTessellation::Flatten(points, work, c, c, error, static_cast<uint32>(budget));
+			};
+			bool drawn;
+			if constexpr (Double)
+			{
+				const auto heads = detail::FindBezierDoubleArrowHeads(curve, size.y);
+				if (!heads) return;
+				flatten(curve.subcurve(heads->start.parameter, heads->end.parameter));
+				points.front() = heads->start.base; points.back() = heads->end.base;
+				drawn = DrawImageArrow(image, points, heads->end.tip, thickness, thickness + size.x * heads->end.sizeScale,
+					std::pair{heads->start.tip, thickness + size.x * heads->start.sizeScale}, cap, color, mode, aa);
+			}
+			else
+			{
+				const auto head = detail::FindBezierArrowHead(curve, size.y);
+				if (!head) return;
+				flatten(curve.split(head->parameter).first); points.back() = head->base;
+				drawn = DrawImageArrow(image, points, head->tip, thickness, thickness + size.x * head->sizeScale, none, cap, color, mode, aa);
+			}
+			if (!drawn)
+			{
+				flatten(curve);
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		template <bool Double>
+		void PaintSplineArrow(Image& image, const std::span<const Bezier3> curves, const LineCap cap, const double thickness,
+			const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa,
+			const double error, const int32 budget)
+		{
+			if (image.isEmpty() || curves.empty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			detail::DoubleArrowHeads<detail::PathArrowHead> heads;
+			if constexpr (Double)
+			{
+				const auto result = detail::FindSplineDoubleArrowHeads(curves, size.y);
+				if (!result) return;
+				heads = *result;
+			}
+			else
+			{
+				const auto result = detail::FindSplineArrowHead(curves, size.y);
+				if (!result) return;
+				heads = { {0, 0, curves.front().p0, curves.front().p0, 1}, *result };
+			}
+			Array<Vec2> points;
+			detail::BezierTessellation::Workspace work;
+			for (size_t i = heads.start.segment; i <= heads.end.segment; ++i)
+			{
+				const double from = (i == heads.start.segment ? heads.start.parameter : 0);
+				const double to = (i == heads.end.segment ? heads.end.parameter : 1);
+				const detail::BezierTessellation::Curve curve{ curves[i].subcurve(from, to) };
+				detail::BezierTessellation::Append(points, work, curve, curve, error, static_cast<uint32>(budget));
+			}
+			points.front() = heads.start.base; points.back() = heads.end.base;
+			Optional<std::pair<Vec2, double>> startHead;
+			if constexpr (Double) startHead = std::pair{ heads.start.tip, thickness + size.x * heads.start.sizeScale };
+			if (!DrawImageArrow(image, points, heads.end.tip, thickness, thickness + size.x * heads.end.sizeScale, startHead, cap, color, mode, aa))
+			{
+				detail::BezierTessellation::FlattenPath(points, work, curves, false, error, static_cast<uint32>(budget), [](const auto& c) { return c; });
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		void ImageArcPoints(Array<Vec2>& points, const detail::CircleArcArrow::Placement& arc, const double thickness)
+		{
+			points.clear(); points.push_back(arc.start);
+			if (arc.shaftSweep == 0) return;
+			const double step = (4 * std::asin(std::sqrt(Min(1.0, 0.125 / (2 * (arc.radius + thickness * 0.5))))));
+			const int32 segments = static_cast<int32>(Clamp(std::ceil(Abs(arc.shaftSweep) / step), 1.0, 4096.0));
+			points.reserve(static_cast<size_t>(segments) + 1);
+			for (int32 i = 1; i < segments; ++i)
+			{
+				const double a = (arc.startAngle + arc.shaftSweep * i / segments);
+				points.push_back(arc.center + Vec2{ std::sin(a), -std::cos(a) } * arc.radius);
+			}
+			points.push_back(arc.base);
+		}
+
+		template <bool Double>
+		void PaintArcArrow(Image& image, const Circle& circle, const LineCap cap, const double startAngle, const double angle,
+			const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			detail::CircleArcArrow::Placement arc, shaft;
+			Optional<std::pair<Vec2, double>> startHead;
+			double width;
+			if constexpr (Double)
+			{
+				const auto p = detail::CircleArcArrow::PlaceDouble(circle, startAngle, angle, size.y);
+				if (!p) return;
+				arc = shaft = p->arc;
+				shaft.start = p->startBase; shaft.base = p->endBase;
+				shaft.startAngle += p->headSweep; shaft.shaftSweep = arc.sweep - 2 * p->headSweep;
+				width = thickness + size.x * p->sizeScale;
+				startHead = std::pair{ arc.start, width };
+			}
+			else
+			{
+				const auto p = detail::CircleArcArrow::Place(circle, startAngle, angle, size.y);
+				if (!p) return;
+				arc = shaft = *p; width = thickness + size.x * p->sizeScale;
+			}
+			Array<Vec2> points; ImageArcPoints(points, shaft, thickness);
+			if (!DrawImageArrow(image, points, arc.tip, thickness, width, startHead, cap, color, mode, aa))
+			{
+				arc.base = arc.tip; arc.shaftSweep = arc.sweep;
+				ImageArcPoints(points, arc, thickness);
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		struct RoundedImageOutline
+		{
+			RectF rect;
+			std::array<double, 4> radii;
+
+			bool spanAt(const double y, double& left, double& right) const
+			{
+				if ((y < rect.y) || (rect.y + rect.h <= y)) return false;
+				const auto inset = [](const double r, const double distance)
+				{
+					return (distance < r) ? (r - std::sqrt(Max(0.0, distance * (2 * r - distance)))) : 0.0;
+				};
+				const double top = y - rect.y, bottom = rect.y + rect.h - y;
+				left = rect.x + Max(inset(radii[0], top), inset(radii[3], bottom));
+				right = rect.x + rect.w - Max(inset(radii[1], top), inset(radii[2], bottom));
+				return (left < right);
+			}
+		};
+
 		[[nodiscard]]
 		std::vector<PolygonContourView<Vec2>> MakePolygonContourViews(const Polygon& polygon)
 		{
@@ -5265,6 +5642,327 @@ namespace s3d
 			}
 
 			return contours;
+		}
+
+	}
+
+	namespace detail::ImageShape
+	{
+		void Rounded(Image& image, const RectF& rect, std::array<double, 4> radii, const Color color,
+			const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (rect.w <= 0) || (rect.h <= 0)) return;
+			RectCornerGeometry::NormalizeCornerRadii(radii[0], radii[1], radii[2], radii[3], rect.w, rect.h);
+			if ((radii[0] == radii[1]) && (radii[0] == radii[2]) && (radii[0] == radii[3]))
+			{
+				ImageDraw::Fill(image, RoundRect{ rect, radii[0] }, color, mode, aa);
+				return;
+			}
+			const RoundedImageOutline outline{ rect, radii };
+			BoundsD bounds; bounds.include(rect.pos); bounds.include(rect.br());
+			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add) { double l, r; if (outline.spanAt(y, l, r)) add(l, r); });
+		}
+
+		void RoundedFrame(Image& image, const RectF& rect, std::array<double, 4> radii, const double inner, const double outer,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (rect.w <= 0) || (rect.h <= 0) || (inner < 0) || (outer < 0) || (inner + outer == 0)) return;
+			RectCornerGeometry::NormalizeCornerRadii(radii[0], radii[1], radii[2], radii[3], rect.w, rect.h);
+			if ((radii[0] == radii[1]) && (radii[0] == radii[2]) && (radii[0] == radii[3]))
+			{
+				ImageDraw::RoundRectFrame(image, RoundRect{ rect, radii[0] }, inner, outer, color, mode, aa);
+				return;
+			}
+			RoundedImageOutline outside{ rect.stretched(outer), radii }, inside{ rect.stretched(-inner), radii };
+			for (size_t i = 0; i < 4; ++i) { outside.radii[i] += outer; inside.radii[i] -= inner; }
+			const bool hole = ((inside.rect.w > 0) && (inside.rect.h > 0));
+			if (hole) RectCornerGeometry::NormalizeCornerRadii(inside.radii[0], inside.radii[1], inside.radii[2], inside.radii[3], inside.rect.w, inside.rect.h);
+			BoundsD bounds; bounds.include(outside.rect.pos); bounds.include(outside.rect.br());
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add)
+				{
+					double l, r, il, ir;
+					if (!outside.spanAt(y, l, r)) return;
+					if (hole && inside.spanAt(y, il, ir)) { add(l, Min(r, il)); add(Max(l, ir), r); }
+					else add(l, r);
+				});
+		}
+
+		void Balloon(Image& image, const RoundRect& shape, const Vec2& target, const double tailWidth,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (shape.w <= 0) || (shape.h <= 0)) return;
+			const RoundRect normalized{ shape.rect, Min(Abs(shape.r), Min(shape.w, shape.h) * 0.5) };
+			const auto placement = RoundRectBalloon::Place(normalized, target, tailWidth);
+			if (!placement) { ImageDraw::Fill(image, normalized, color, mode, aa); return; }
+			const auto& p = *placement;
+			const double r = p.body.r;
+			const RoundedImageOutline body{ p.body.rect, { r, r, r, r } };
+			BoundsD bounds; bounds.include(p.body.rect.pos); bounds.include(p.body.rect.br());
+			const Vec2 vertices[]{ p.base0, p.tip, p.base1 };
+			ConvexStrokePiece triangle; triangle.set(vertices, bounds);
+			ConvexStrokePiece::SpanCursor cursor;
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add)
+				{
+					double l, right;
+					if (body.spanAt(y, l, right)) add(l, right);
+					if (triangle.spanAt(y, cursor, l, right)) add(l, right);
+				});
+		}
+
+		void BalloonFrame(Image& image, const RoundRect& shape, const Vec2& target, const double tailWidth, const double thickness,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (shape.w <= 0) || (shape.h <= 0) || (thickness <= 0)) return;
+			const RoundRect normalized{ shape.rect, Min(Abs(shape.r), Min(shape.w, shape.h) * 0.5) };
+			const auto placement = RoundRectBalloon::Place(normalized, target, tailWidth);
+			if (!placement) { ImageDraw::RoundRectFrame(image, normalized, thickness * 0.5, thickness * 0.5, color, mode, aa); return; }
+			RoundRectBalloon::Contour contour;
+			RoundRectBalloon::MakeContour(contour, *placement, 1.0f);
+			ImageDraw::ClosedLineString(image, contour.points(), thickness, color, mode, aa);
+		}
+		void Crescent(Image& image, const Circle& circle, const double openingAngle, const double width,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			const auto shape = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
+			if (!shape) return;
+			if (shape->circleOnly) { ImageDraw::Fill(image, shape->circle, color, mode, aa); return; }
+			const Vec2 cutCenter = (circle.center + shape->axis * width);
+			const double r = shape->circle.r;
+			BoundsD bounds; bounds.includeCircle(circle.center, r);
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y);
+					if (r <= Abs(dy)) return;
+					const double half = std::sqrt((r - dy) * (r + dy));
+					const double left = (circle.x - half), right = (circle.x + half);
+					const double cutY = (y - cutCenter.y);
+					if (r <= Abs(cutY)) { add(left, right); return; }
+					const double cutHalf = std::sqrt((r - cutY) * (r + cutY));
+					add(left, Min(right, cutCenter.x - cutHalf));
+					add(Max(left, cutCenter.x + cutHalf), right);
+				});
+		}
+
+		void Teardrop(Image& image, const Circle& circle, const Vec2& tip,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			const auto shape = detail::CircularShapes::PlaceTeardrop(circle, tip);
+			if (!shape) return;
+			if (shape->circleOnly) { ImageDraw::Fill(image, shape->circle, color, mode, aa); return; }
+			const double r = shape->circle.r;
+			const Vec2 along = (shape->axis * (r * shape->tangentCos));
+			const Vec2 across = (Vec2{ -shape->axis.y, shape->axis.x } * (r * shape->tangentSin));
+			const Vec2 points[]{ circle.center + along + across, tip, circle.center + along - across };
+			BoundsD bounds; bounds.includeCircle(circle.center, r);
+			ConvexStrokePiece triangle; triangle.set(points, bounds);
+			ConvexStrokePiece::SpanCursor cursor;
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y);
+					if (Abs(dy) < r)
+					{
+						const double half = std::sqrt((r - dy) * (r + dy));
+						add(circle.x - half, circle.x + half);
+					}
+					double left, right;
+					if (triangle.spanAt(y, cursor, left, right)) add(left, right);
+				});
+		}
+		void CircleArc(Image& image, const Circle& circle, const LineCap startCap, const LineCap endCap,
+			const double startAngle, const double angle, const double innerThickness, const double outerThickness,
+			const Color color, const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| (((startCap == LineCap::Flat) && (endCap == LineCap::Flat)) && !HasNonZeroSweep(angle)))
+			{
+				return;
+			}
+			if (IsFullCircleSweep(angle))
+			{
+				ImageDraw::CircleFrame(image, circle, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			const double innerRadius = Max(0.0, circle.r - innerThickness), outerRadius = (circle.r + outerThickness);
+			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCircleArcBySpans<true>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+			}
+		}
+		void EllipseRotated(Image& image, const Ellipse& ellipse, const double rotation,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (ellipse.a <= 0) || (ellipse.b <= 0)) return;
+			if ((rotation == 0) || (ellipse.a == ellipse.b)) { ImageDraw::Fill(image, ellipse, color, mode, aa); return; }
+			const double c = std::cos(rotation), s = std::sin(rotation);
+			const double a2 = ellipse.a * ellipse.a, b2 = ellipse.b * ellipse.b;
+			const double h2 = (a2 * s * s + b2 * c * c), h = std::sqrt(h2);
+			const double w = std::sqrt(a2 * c * c + b2 * s * s);
+			const double skew = ((a2 - b2) * c * s / h2), width = (ellipse.a * ellipse.b / h);
+			BoundsD bounds; bounds.include({ellipse.x - w, ellipse.y - h}); bounds.include({ellipse.x + w, ellipse.y + h});
+			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - ellipse.y);
+					if (h <= Abs(dy)) return;
+					const double center = (ellipse.x + skew * dy);
+					const double half = (width * std::sqrt((h - dy) * (h + dy) / h2));
+					add(center - half, center + half);
+				});
+		}
+
+		void EllipseFrameRotated(Image& image, const Ellipse& ellipse, const double rotation,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			if ((rotation == 0) || (ellipse.a == ellipse.b))
+			{
+				ImageDraw::EllipseFrame(image, ellipse, innerThickness, outerThickness, color, mode, aa);
+				return;
+			}
+			FillEllipseFrameByDistance<true>(MakeImageView(image), ellipse, innerThickness, outerThickness,
+				mode, ImageDraw::DstAlpha::UseStored, color, (aa == EnableAntialiasing::Yes), rotation);
+		}
+
+		void EllipseArc(Image& image, const Ellipse& ellipse, LineCap startCap, LineCap endCap,
+			const double startAngle, const double angle, const double innerThickness, const double outerThickness,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (ellipse.a <= 0) || (ellipse.b <= 0) || (innerThickness < 0) || (outerThickness < 0)
+				|| (innerThickness + outerThickness == 0)) return;
+			if (ellipse.a == ellipse.b)
+			{
+				CircleArc(image, Circle{ ellipse.center, ellipse.a }, startCap, endCap, startAngle, angle,
+					innerThickness, outerThickness, color, mode, aa);
+				return;
+			}
+			if (IsFullCircleSweep(angle)) { ImageDraw::EllipseFrame(image, ellipse, innerThickness, outerThickness, color, mode, aa); return; }
+			if ((angle == 0) && (startCap == LineCap::Flat) && (endCap == LineCap::Flat)) return;
+			const double start = std::remainder(startAngle + (angle < 0 ? angle : 0), Math::TwoPi), sweep = Abs(angle);
+			if (angle < 0) std::swap(startCap, endCap);
+			struct Section { Vec2 inner, outer, normal; };
+			const auto at = [&](const double t)
+			{
+				const double s = std::sin(t), c = std::cos(t);
+				const Vec2 base{ ellipse.x + ellipse.a * s, ellipse.y - ellipse.b * c };
+				const Vec2 raw{ ellipse.b * s, -ellipse.a * c };
+				const double length = raw.length();
+				const Vec2 normal = (raw / length);
+				// The inward normal reaches the medial axis here; avoid folded inner offsets.
+				const double inward = Min(innerThickness, length * Min(ellipse.a / ellipse.b, ellipse.b / ellipse.a));
+				return Section{ base - normal * inward, base + normal * outerThickness, normal };
+			};
+			SampledShape shape{ MakeImageView(image) };
+			const auto append = [&](auto&& self, double from, double to, const Section& a, const Section& b, int32 depth) -> void
+			{
+				const double mid = ((from + to) * 0.5);
+				const Section m = at(mid);
+				constexpr double ErrorSq = (0.125 * 0.125);
+				if ((depth < 10) && ((ErrorSq < m.inner.distanceFromSq(a.inner.lerp(b.inner, 0.5)))
+					|| (ErrorSq < m.outer.distanceFromSq(a.outer.lerp(b.outer, 0.5)))))
+				{
+					self(self, from, mid, a, m, depth + 1); self(self, mid, to, m, b, depth + 1);
+				}
+				else
+				{
+					shape.triangle(a.inner, a.outer, b.inner);
+					shape.triangle(a.outer, b.outer, b.inner);
+				}
+			};
+			const Section first = at(start), last = at(start + sweep);
+			if (0 < sweep)
+			{
+				const int32 parts = static_cast<int32>(std::ceil(sweep / Math::HalfPi));
+				double previousAngle = start; Section previous = first;
+				for (int32 i = 1; i <= parts; ++i)
+				{
+					const double next = (start + sweep * i / parts); const Section section = (i == parts ? last : at(next));
+					append(append, previousAngle, next, previous, section, 0);
+					previousAngle = next; previous = section;
+				}
+			}
+			shape.cap(first.inner.lerp(first.outer, 0.5), {first.normal.y, -first.normal.x}, first.inner.distanceFrom(first.outer) * 0.5, startCap);
+			shape.cap(last.inner.lerp(last.outer, 0.5), {-last.normal.y, last.normal.x}, last.inner.distanceFrom(last.outer) * 0.5, endCap);
+			shape.draw(color, mode, aa);
+		}
+		void BezierArrow(Image& image, const Bezier2& curve, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<false>(image, curve, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierDoubleArrow(Image& image, const Bezier2& curve, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<true>(image, curve, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierArrow(Image& image, const Bezier3& curve, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<false>(image, curve, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierDoubleArrow(Image& image, const Bezier3& curve, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<true>(image, curve, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void SplineArrow(Image& image, std::span<const Bezier3> curves, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintSplineArrow<false>(image, curves, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void SplineDoubleArrow(Image& image, std::span<const Bezier3> curves, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintSplineArrow<true>(image, curves, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void PolylineArrow(Image& image, std::span<const Vec2> source, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			const auto head = detail::FindLineStringArrowHead(source, size.y);
+			if (!head) return;
+			Array<Vec2> points;
+			detail::WriteLineStringArrowShaft(points, source, *head);
+			if (!DrawImageArrow(image, points, head->tip, thickness, thickness + size.x * head->sizeScale, none, cap, color, mode, aa))
+			{
+				ImageDraw::LineString(image, source, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		void PolylineDoubleArrow(Image& image, std::span<const Vec2> source, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			const auto head = detail::FindLineStringDoubleArrowHeads(source, size.y);
+			if (!head) return;
+			Array<Vec2> points;
+			detail::WriteLineStringDoubleArrowShaft(points, source, *head);
+			if (!DrawImageArrow(image, points, head->end.tip, thickness, thickness + size.x * head->end.sizeScale, std::pair{head->start.tip, thickness + size.x * head->start.sizeScale}, LineCap::Flat, color, mode, aa))
+			{
+				ImageDraw::LineString(image, source, thickness, color, mode, aa, LineCap::Flat, LineCap::Flat);
+			}
+		}
+
+		void CircleArcArrow(Image& image, const Circle& circle, const LineCap cap, const double startAngle, const double angle, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			PaintArcArrow<false>(image, circle, cap, startAngle, angle, thickness, size, color, mode, aa);
+		}
+
+		void CircleArcDoubleArrow(Image& image, const Circle& circle, const double startAngle, const double angle, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			PaintArcArrow<true>(image, circle, LineCap::Flat, startAngle, angle, thickness, size, color, mode, aa);
 		}
 
 	}
@@ -5470,27 +6168,8 @@ namespace s3d
 			const double innerThickness, const double outerThickness, const Color color,
 			const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
 		{
-			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness)
-				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
-				|| ((lineCap == LineCap::Flat) && !HasNonZeroSweep(angle)))
-			{
-				return;
-			}
-			if (IsFullCircleSweep(angle))
-			{
-				CircleFrame(image, circle, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
-				return;
-			}
-			const double innerRadius = Max(0.0, circle.r - innerThickness), outerRadius = (circle.r + outerThickness);
-			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
-			if (enableAntialiasing == EnableAntialiasing::Yes)
-			{
-				FillCircleArcBySpans<true>(MakeImageView(image), circle, sector, innerRadius, outerRadius, lineCap, color, blendMode, dstAlpha);
-			}
-			else
-			{
-				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, lineCap, color, blendMode, dstAlpha);
-			}
+			detail::ImageShape::CircleArc(image, circle, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void CircleSegment(

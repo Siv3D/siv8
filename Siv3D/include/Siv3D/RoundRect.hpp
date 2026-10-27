@@ -1187,6 +1187,72 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しを画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 尾の配置・省略条件は drawBalloon() と共通です。
+		const RoundRect& paintBalloon(Image& dst, const Vec2& target, double tailWidth, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しの枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 尾の配置・省略条件は drawBalloon() と共通です。枠は Image の閉じた折れ線と同じ丸い結合で描きます。
+		const RoundRect& paintBalloonFrame(Image& dst, const Vec2& target, double tailWidth, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しを画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintBalloon
+		const RoundRect& overwriteBalloon(Image& dst, const Vec2& target, double tailWidth, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しの枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintBalloonFrame
+		const RoundRect& overwriteBalloonFrame(Image& dst, const Vec2& target, double tailWidth, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
 # Writing 2D shapes to Image
 
 Shape methods delegate rasterization to [ImageDraw](../../Siv3D/include/Siv3D/ImageDraw.hpp)
-and compositing to [ImagePixel](../../Siv3D/include/Siv3D/ImagePixel.hpp).
+and its internal shape helpers, and compositing to [ImagePixel](../../Siv3D/include/Siv3D/ImagePixel.hpp).
 Keep geometry, coverage, and color compositing separate: a stroke must combine
 its segments, joins, and caps before applying color, or translucent intersections
 become darker. `Image::paint()` is a separate image-to-image path; its historical
@@ -53,6 +53,67 @@ clear the whole row before sampling and share only the conversion step.
 The helpers add no storage. Shape-specific intersection rules, half-open versus
 closed sample intervals, and distance-based AA remain separate.
 
+## Rounded, circular, and arrow extensions
+
+The solid, single-color counterparts use the same suffix as direct drawing:
+`paintRounded` / `overwriteRounded`, `paintBalloonFrame` /
+`overwriteBalloonFrame`, `paintCrescent` / `overwriteCrescent`, and so on.
+The destination Image is first; color is `Color`; AA follows color.
+Bezier and Spline quality/budget arguments follow AA, as on their existing
+Image stroke methods.
+`Shape2D::Lens()` already works through the ordinary Shape2D Image methods.
+
+Four corner radii are passed directly in TL, TR, BR, BL order. Negative radii
+become zero and adjacent sums are scaled to fit the rectangle, using the same
+normalization as direct drawing. Inner/outer frame widths are measured from
+that normalized boundary. A collapsed inner rectangle leaves an outer fill.
+The centered frame convenience overload splits its thickness equally inward
+and outward. Rect/RectF ordinary frames keep their existing fractional-edge
+coverage and therefore have no AA argument.
+
+Crescents scan the difference of equal-radius disks; teardrops scan the union
+of a disk and its tangent triangle. Rounded fills/frames also use analytic
+row intervals. Balloons share the tail placement with direct drawing; their
+fill combines body/tail intervals, while their frame uses the shared bounded
+contour with Image's rounded stroke joins. A missing tail leaves a normalized
+RoundRect. These operations do not construct temporary Polygons.
+
+Rotated ellipse fills solve their row intersections directly. Rotated frames
+share the normal-distance rasterizer with ordinary ellipse frames. Normalizing
+coordinates to the unit circle provides lower/upper bounds on boundary distance:
+`min(a,b) * abs(rho - 1)` and `max(a,b) * abs(rho - 1)`. Squared thresholds
+classify pixels known to be empty or fully covered. Only uncertain pixels use
+the exact closest-point solver, preserving its edge coverage and compositing.
+Keep the thresholds conservative and test subpixel bands, collapsed holes,
+eccentric ellipses, rotation, and clipping when changing this shortcut. Ellipse arc
+angles parameterize `(a * sin(t), -b * cos(t))`; they are not polar angles from
+the center. Partial arcs use adaptively subdivided normal offsets, targeting
+0.125 image pixels with at most 4096 intervals. Inward offsets stop at the
+ellipse's medial axis. This prevents wide inner bands from folding and agrees
+geometrically with the distance-based full frame. Full sweeps reuse the existing
+Image frame, including its AA approximation; partial/full boundary pixels need
+not be identical. Equal-axis ellipses reuse Circle arcs. Independent caps follow
+the sweep direction; negative sweeps exchange their geometric endpoint roles.
+At zero sweep, unlike a reversal of a nonzero arc, exchanging two different
+caps can change which tangent half is covered.
+
+Curve/path arrows share head placement and short-path fitting with direct
+drawing. `headSize.x` is the width added to the shaft width, and `headSize.y`
+is the chord length from the root on the path to the endpoint. Double heads
+share the same requested size. A terminal cross-section that cannot fit inside
+the head base falls back to a stroke without heads. Image joins are rounded;
+renderer transforms do not affect placement or subdivision. Closed Spline
+arrows still follow the stored path from its first point to its final point.
+A full circular arrow preserves exact equality of its endpoint and start.
+Circle arrow centerlines target 0.125 pixels, with a 4096-interval limit.
+
+Partial ellipse arcs and path arrows use a union of convex parts and disks.
+An active list contains only parts crossing the current sample row. Intervals
+are merged before counting the 4x4 samples or applying color. Crossings, wide
+joins, and overlapping heads therefore compose once, without geometric Boolean
+union or an image-sized mask. The cost grows with the sampled geometry and
+visible rows; adversarial paths with many intersections are not constant-time.
+
 ## API inventory and GPU differences
 
 The table lists image-writing families; both `paint` and `overwrite` forms exist
@@ -62,18 +123,18 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | Shape | Image families | Additional GPU drawing features / differences |
 | --- | --- | --- |
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
-| Rect, RectF | Fill, inner/outer frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
-| Circle | Fill, frame, pie, arc (Flat / Square / Round), segment (height / angles) | Dashed frame, shadow, gradients, patterns |
-| Ellipse | Fill, frame, pie | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
+| Rect, RectF | Fill, centered and inner/outer frame, four-radius rounded fill/frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
+| Circle | Fill, frame, pie, arc with independent caps, segment (height / angles), crescent, teardrop, arc arrow / double-headed arc arrow | Dashed frame, shadow, gradients, patterns |
+| Ellipse | Fill, frame, pie, rotated fill/frame, arc with independent caps | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, centered and inner/outer frames with JoinStyle | Vertex colors, patterns |
-| RoundRect | Fill, frame | Dashed frame, shadow, gradients, patterns |
+| RoundRect | Fill, frame, balloon fill/frame | Dashed frame, shadow, gradients, patterns |
 | Line | Stroke with independent end caps, arrow with tail cap, double-headed arrow | Gradients and line styles |
-| LineString | Open stroke with independent end caps, closed stroke | Vertex colors, gradients, patterns, vertex markers |
-| Bezier2, Bezier3 | Adaptive stroke with independent end caps and quality/budget controls | `draw()` uses adaptive subdivision; GPU quality includes renderer transforms and render-target resolution |
+| LineString | Open stroke with independent end caps, closed stroke, arrow / double-headed arrow | Vertex colors, gradients, patterns, vertex markers |
+| Bezier2, Bezier3 | Adaptive stroke, arrow / double-headed arrow, quality/budget controls | `draw()` uses adaptive subdivision; GPU quality includes renderer transforms and render-target resolution |
 | Polygon, MultiPolygon | Fill, frame, offsets | Transformed drawing, wireframe, patterns |
 | Shape2D | Fill, frame, offsets | Wireframe, patterns; CPU uses the vertex contour with even-odd filling; GPU fill uses triangle indices |
-| Spline2D | Adaptive open / closed stroke, independent open end caps, per-curve quality/budget controls | GPU quality includes renderer transforms and render-target resolution; open GPU paths use Square caps |
+| Spline2D | Adaptive open / closed stroke, independent open end caps, arrow / double-headed arrow, per-curve quality/budget controls | GPU quality includes renderer transforms and render-target resolution; open GPU paths use Square caps |
 
 MultiPolygon draws members in order, so overlapping members compose repeatedly.
 Polygon frames combine the outer contour and all holes using maximum stroke
@@ -483,6 +544,11 @@ quality, segment budgets, caps, default overloads, and renderer-state independen
 [Spline Image tests](../../Test/Test_Spline2DImage.cpp) cover open/closed paths,
 independent caps, per-curve budgets, collapsed intervals, reversal, clipping,
 invalid arguments, and one-time compositing at knots, seams, and intersections.
+[Shape extension tests](../../Test/Test_ImageShapeExtensions.cpp) cover rounded
+corner normalization, balloon unions, circular shapes, rotated ellipses,
+independent arc caps, and single/double curve arrows. Their references include
+pointwise containment, unculled ellipse boundary distances, cropped images,
+short-path head fitting, fallback strokes, and source/destination alpha cases.
 [Triangle/Quad frame tests](../../Test/Test_ImagePolygonFrame.cpp) cover independent
 boundary distances, winding, one-sided bands, collapsed geometry, compositing,
 and clipping. [JoinStyle tests](../../Test/Test_ImageJoinStyle.cpp) use an
@@ -508,6 +574,8 @@ Run from the repository root on macOS, outside the sandbox:
 
 ```sh
 ./macOS/run-tests.sh '--test-case=ImageDrawingTestHelper.*'
+./macOS/run-tests.sh '--test-case=~[benchmark]ImageShapeExtensions.*'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageShapeExtensions.rounded_benchmark,ImageShapeExtensions.extensions_benchmark'
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImageDraw.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ImageDraw.benchmark*'
 ./macOS/run-tests.sh '--test-case=~[benchmark]ImagePolygonFrame.*'
@@ -685,3 +753,51 @@ exercise fractional coordinates and clipping, and preserve ImagePixel
 compositing rules. Do not make speed assertions in automated tests. Exceptional-input
 validation and reusable rasterization storage require separate cost and contract
 decisions before adding overhead or a public context type.
+
+### Rounded, circular, and arrow workloads
+
+`ImageShapeExtensions.rounded_benchmark` and `extensions_benchmark` measure the
+public methods in a reused 640x480 Image. The following microseconds per call
+were measured on Apple M2 with macOS 26.6.2, Apple Clang 21.0.0, and Release:
+11 nanobench epochs, 20 warmup calls, and at least 20 calls per epoch. All table
+entries use translucent paint with AA; destination clearing is excluded, so
+repeated calls converge toward opaque. Geometry and cached comparison shapes
+are constructed outside the timed calls. The tests retain their exact fixtures.
+
+| Operation | Direct Image method | Cached Shape2D / Polygon |
+| --- | ---: | ---: |
+| Four-radius rounded fill, 260x170 | 276.4 | 285.0 |
+| Four-radius rounded frame, width 6 | 55.5 | 68.7 |
+| Crescent, radius 90 | 69.5 | 131.8 |
+| Teardrop, radius 90 | 195.2 | 229.1 |
+| Rotated ellipse fill, axes 130/70 | 181.3 | 237.6 |
+| Rotated ellipse frame, width 6 | 376.5 | 90.3 |
+
+These comparisons have the same intended geometry, but analytic curves and
+tessellated contours can differ at boundary pixels. Rounded fill is near parity;
+avoiding Polygon construction does not remove the cost of compositing its large
+interior. Rotated ellipse frames retain normal-distance coverage and remain
+more expensive than stroking a cached Polygon approximation. The conservative
+distance bounds reduce the same frame workload from about 2.55 ms to 0.38 ms,
+and the ordinary unrotated frame from about 2.31 ms to 0.34 ms. An isolated
+before/after comparison over image sizes 16/64/256, axis ratios 0.65/0.08, and
+widths 0.5/6 improved by 1.3–12.9 times. Compare all RGBA bytes as well as timings
+when changing these bounds; they must preserve the original distance coverage.
+
+Balloon fill/frame cost 268.5/71.7 microseconds. Mixed-cap ellipse/circle arcs
+cost 61.7/39.7 microseconds. The existing common-cap circle arc path remained
+within measurement variation after adding independent caps (Flat/Round/Square,
+sweeps 0.12/2.1/6.2, radius 90, width 6; paired optimized builds).
+
+| Arrow, width 6 and head size 24x30 | Single head | Double head |
+| --- | ---: | ---: |
+| Bezier2 | 40.8 | 43.9 |
+| Spline2D through a crossed four-point path | 76.4 | 76.5 |
+| Circle arc, radius 90 and sweep 4.5 | 53.3 | 58.0 |
+
+Bezier3 and LineString single arrows cost 49.0 and 60.7 microseconds. The same
+cubic's ordinary stroke costs 39.9 microseconds as a reference workload, with
+different geometry. A full-circle double arrow costs 82.3 microseconds. No-AA
+overwrite costs 7.6 microseconds for the cubic arrow and 15.8 for the ellipse
+arc. These are bounded fixture costs, not limits for arbitrary paths; denser
+curves, wide strokes, and many intersections need separate measurements.

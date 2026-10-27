@@ -20,6 +20,7 @@
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -464,6 +465,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const Rect& Rect::paintFrame(Image& dst, const double thickness, const Color& color) const
+	{
+		return paintFrame(dst, thickness * 0.5, thickness * 0.5, color);
+	}
+
 	const Rect& Rect::paintFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
 	{
 		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
@@ -482,6 +488,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const Rect& Rect::overwriteFrame(Image& dst, const double thickness, const Color& color) const
+	{
+		return overwriteFrame(dst, thickness * 0.5, thickness * 0.5, color);
+	}
+
 	const Rect& Rect::overwriteFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
 	{
 		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
@@ -491,6 +502,66 @@ namespace s3d
 	const Rect& Rect::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
 	{
 		ImageDraw::RectFrame(dst, RectF{ *this }, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paintRounded(Image& dst, const double tl, const double tr, const double br, const double bl, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.paintRounded(dst, tl, tr, br, bl, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paintRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.paintRoundedFrame(dst, tl, tr, br, bl, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	const Rect& Rect::paintRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.paintRoundedFrame(dst, tl, tr, br, bl, innerThickness, outerThickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwriteRounded(Image& dst, const double tl, const double tr, const double br, const double bl, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.overwriteRounded(dst, tl, tr, br, bl, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwriteRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.overwriteRoundedFrame(dst, tl, tr, br, bl, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	const Rect& Rect::overwriteRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		RectF{ *this }.overwriteRoundedFrame(dst, tl, tr, br, bl, innerThickness, outerThickness, color, enableAntialiasing);
 		return *this;
 	}
 

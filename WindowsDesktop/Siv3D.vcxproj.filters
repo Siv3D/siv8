@@ -4215,6 +4215,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\EllipseGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\CircleArcArrowGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageDraw\ShapeExtensions.hpp">
+      <Filter>src\Siv3D\ImageDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\RectCornerGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>

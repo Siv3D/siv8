@@ -916,6 +916,181 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 楕円の中心を基準に回転します。半軸が 0 以下の場合は何も描きません。
+		const Ellipse& paintRotated(Image& dst, double rotation, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintRotated()
+		const Ellipse& overwriteRotated(Image& dst, double rotation, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrameRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円の枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 半軸が 0 以下の場合は何も描きません。枠の太さは元の楕円の法線方向に測ります。
+		const Ellipse& paintFrameRotated(Image& dst, double rotation, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 回転した楕円の枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 半軸が 0 以下の場合は何も描きません。枠の太さは元の楕円の法線方向に測ります。
+		const Ellipse& paintFrameRotated(Image& dst, double rotation, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrameRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 回転した楕円の枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintFrameRotated()
+		const Ellipse& overwriteFrameRotated(Image& dst, double rotation, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 回転した楕円の枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param rotation 回転角度（時計回りのラジアン）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintFrameRotated()
+		const Ellipse& overwriteFrameRotated(Image& dst, double rotation, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円弧を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc(Image&, LineCap, LineCap, double, double, double, double, const Color&, EnableAntialiasing) const
+		const Ellipse& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 楕円弧を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param lineCap 両端の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc(Image&, LineCap, LineCap, double, double, double, double, const Color&, EnableAntialiasing) const
+		const Ellipse& paintArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 楕円弧を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 半軸が 0 以下、太さが負、または太さの合計が 0 の場合は描きません。全周以上では線端を付けず paintFrame() と一致し、内側は中軸までに制限します。
+		/// @pre 座標・角度・太さと計算途中の値は有限で表現可能であること。
+		const Ellipse& paintArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円弧を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc()
+		const Ellipse& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 楕円弧を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param lineCap 両端の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc()
+		const Ellipse& overwriteArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 楕円弧を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc()
+		const Ellipse& overwriteArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////

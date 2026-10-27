@@ -966,6 +966,20 @@ namespace s3d
 		/// @see @ref image_draw_circle_arc
 		const Circle& paintArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 両端の線端を指定した円弧を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& paintArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwriteArc
@@ -997,6 +1011,20 @@ namespace s3d
 		/// @return *this
 		/// @see @ref image_draw_circle_arc
 		const Circle& overwriteArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 両端の線端を指定した円弧を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc()
+		const Circle& overwriteArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1061,6 +1089,169 @@ namespace s3d
 		/// @return *this
 		/// @see @ref image_draw_circle_segment_angles
 		const Circle& overwriteSegmentFromAngles(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param openingAngle 開口方向（12 時方向を 0 とする時計回りのラジアン）
+		/// @param width 三日月の最大幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 形状の調整・省略条件は drawCrescent() と共通です。
+		const Circle& paintCrescent(Image& dst, double openingAngle, double width, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param openingAngle 開口方向（12 時方向を 0 とする時計回りのラジアン）
+		/// @param width 三日月の最大幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintCrescent()
+		const Circle& overwriteCrescent(Image& dst, double openingAngle, double width, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief しずく形を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param tip 先端の座標
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 形状の調整・省略条件は drawTeardrop() と共通です。
+		const Circle& paintTeardrop(Image& dst, const Vec2& tip, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief しずく形を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param tip 先端の座標
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintTeardrop()
+		const Circle& overwriteTeardrop(Image& dst, const Vec2& tip, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArcArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcArrow(Image& dst, LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcArrow()
+		const Circle& overwriteArcArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcArrow()
+		const Circle& overwriteArcArrow(Image& dst, LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArcDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcDoubleHeadedArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcDoubleHeadedArrow()
+		const Circle& overwriteArcDoubleHeadedArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
