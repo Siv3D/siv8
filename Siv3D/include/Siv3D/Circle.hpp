@@ -1209,6 +1209,40 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円弧の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。
+		/// @param thickness 円周を中心線とする軸の全幅。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @see @ref circle_draw_arc_arrow
+		/// @return *this
+		const Circle& drawArcArrow(double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		/// @anchor circle_draw_arc_arrow
+		/// @brief 円弧上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。負なら反時計回りです。
+		/// @param thickness 円周を中心線とする軸の全幅。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 引数と円の成分は有限で、幾何・変換の中間計算は表現可能であること。
+		/// @remark 半径は絶対値を使います。半径または角度が 0 なら描画しません。
+		/// @remark 根元は、終点からの直線距離が矢じりの長さになる円弧上の点のうち、進行順で最後の点です。三角形の底辺中央を根元に置きます。
+		/// @remark 長さが収まらない場合、終点から円弧までの最大距離に合わせて headSize の両成分を同率で縮小します。軸幅は維持します。
+		/// @remark 配置は描画分割から独立し、軸には始点から根元までの円弧を使います。逆向きの接続や、切り口が底辺に収まらない場合は矢じりを省略し、終端を Flat とした円弧全体を描きます。
+		/// @remark 一周では先端と始点が一致します。始端が Flat なら、その切り口の中央が先端になります。
+		/// @remark 太い軸、大きい矢じり、短い描画区間では形状が重なる場合があり、半透明では濃くなります。
+		/// @return *this
+		const Circle& drawArcArrow(LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawArc
 		//
 		////////////////////////////////////////////////////////////////

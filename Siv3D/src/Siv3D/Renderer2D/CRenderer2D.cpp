@@ -8,6 +8,7 @@
 # include <algorithm>
 # include <cmath>
 # include "IRenderer2D.hpp"
+# include "CircleArcArrow.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include <Siv3D/Image.hpp>
 # include <Siv3D/LineCap.hpp>
@@ -227,6 +228,21 @@ namespace s3d
 		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
 	{
 		DrawBezierArrow(*this, m_curvePoints, curve, startCap, thickness, headSize, color, targetError, maxSegments);
+	}
+
+	void ISiv3DRenderer2D::addCircleArcArrow(const Circle& circle, const LineCap startCap, const double startAngle,
+		const double angle, const float thickness, const SizeF& headSize, const Float4& color)
+	{
+		const auto placement = detail::CircleArcArrow::Place(circle, startAngle, angle, headSize.y);
+		if (not placement) return;
+		const float scale = getRasterScaling();
+		detail::CircleArcArrow::WritePoints(m_curvePoints, *placement, thickness, scale);
+		const float headWidth = (thickness + static_cast<float>(headSize.x * placement->sizeScale));
+		if (not addLineStringArrow(startCap, m_curvePoints, placement->tip, thickness, headWidth, color))
+		{
+			detail::CircleArcArrow::WritePoints(m_curvePoints, *placement, thickness, scale, true);
+			addLineString(startCap, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
+		}
 	}
 
 	void ISiv3DRenderer2D::addSpline(const std::span<const Bezier3> curves, const CloseRing closeRing,

@@ -51,6 +51,7 @@ primitives do not route their contours through that tessellator.
 | Circle pie / arc; Ellipse pie; TexturedCircle pie | Radius or larger axis and sweep; 1 to 252 intervals | Short pieces use the same angular density as ordinary circles, with no forced 4-interval minimum |
 | Ellipse arc | Merges parameter-angle and normal-angle samples within 252 body intervals; caps have separate budgets | Preserves curved offset edges at elongated tips without exceeding the circle budget |
 | Circle segment | Dedicated chord-fill quality, retaining at least 4 intervals | Preserves the thin region between chord and arc; two endpoints alone would collapse it |
+| Circle arc arrow | Outer shaft radius and remaining sweep; at most 252 centerline intervals, plus head and start cap | Analytic head placement is independent of sampling; omitted heads use the full arc budget |
 | Circle dashed frame | Uses the same arc quality independently for each dash | Short dashes grow from 1 to 2, 3, … intervals as needed |
 | Ellipse dashed frame | Short dashes use 2 points when both parameter and normal turns fit one ordinary circle interval; other dashes retain the existing subdivision | Reduces flat portions while preserving detail at high-curvature tips |
 | RoundRect fill / frame / textured fill | Up to 63 intervals per corner, plus straight connections | Matches the curved-part budget; up to 256 contour intervals including the four straight sides |

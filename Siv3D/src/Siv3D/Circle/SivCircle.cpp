@@ -805,6 +805,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawArcArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawArcArrow(const double startAngle, const double angle, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		return drawArcArrow(LineCap::Flat, startAngle, angle, thickness, headSize, color);
+	}
+
+	const Circle& Circle::drawArcArrow(const LineCap startCap, const double startAngle, const double angle, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addCircleArcArrow(*this, startCap, startAngle, angle, static_cast<float>(thickness), headSize, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawArc
 	//
 	////////////////////////////////////////////////////////////////

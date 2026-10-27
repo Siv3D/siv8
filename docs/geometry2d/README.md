@@ -16,7 +16,7 @@ API inventory, validation, and reproducible performance measurements.
 to the 2D drawing API, with SVG galleries, existing API comparisons, external
 examples, and staged implementation options. Remaining candidates are unadopted;
 implemented rotated ellipses and elliptical arcs link to the Renderer2D guide,
-Bezier arrows link to the curve drawing guide, and independent-corner rectangles
+Bezier and circle arc arrows link to the curve drawing guide, and independent-corner rectangles
 link to the rounded drawing guide.
 
 ## Spline paths
@@ -27,7 +27,7 @@ ownership, drawing buffers, and the interactive gallery for `Spline2D` and
 
 ## Bezier drawing
 
-[Curve drawing](bezier-drawing.md) explains Bezier arrows, quality units, segment
+[Curve drawing](bezier-drawing.md) explains Bezier and circle arc arrows, quality units, segment
 budgets, transform handling, and the density placement shared by Bezier2,
 Bezier3, Spline2D, and Bezier Image writing. It
 records the comparison with recursive subdivision and Wang's formula and links

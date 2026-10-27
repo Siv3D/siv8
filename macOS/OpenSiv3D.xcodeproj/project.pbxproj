@@ -139,6 +139,7 @@
 		B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */; };
 		6064B044D57A48688C26F31A /* Test_BezierDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */; };
 		83F3023CE1984AA6A810340E /* Test_BezierArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */; };
+		AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */; };
 		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		184A2FF02587E88823E7452F /* Test_DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */; };
@@ -1207,6 +1208,7 @@
 		F96F96082C359ED90033353E /* morton3D.h in Headers */ = {isa = PBXBuildFile; fileRef = F96F95FF2C359ED90033353E /* morton3D.h */; };
 		F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */; };
 		BDA09007095045A1822ECDAC /* SuperEllipseTessellation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */; };
+		8340869F7867464BB8E61260 /* CircleArcArrow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */; };
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
@@ -3580,6 +3582,7 @@
 		B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierTessellation.cpp; sourceTree = "<group>"; };
 		DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierDraw.cpp; sourceTree = "<group>"; };
 		B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierArrow.cpp; sourceTree = "<group>"; };
+		C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircleArcArrow.cpp; sourceTree = "<group>"; };
 		67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CurveAdaptive.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
 		B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationLegacy.hpp; sourceTree = "<group>"; };
@@ -4714,6 +4717,7 @@
 		F96F95FF2C359ED90033353E /* morton3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morton3D.h; sourceTree = "<group>"; };
 		F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorFillDirection.hpp; sourceTree = "<group>"; };
 		392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipseTessellation.hpp; sourceTree = "<group>"; };
+		DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CircleArcArrow.hpp; sourceTree = "<group>"; };
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
@@ -7338,6 +7342,7 @@
 				B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */,
 				DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */,
 				B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */,
+				C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */,
 				67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */,
 				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
 				B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */,
@@ -11691,6 +11696,7 @@
 				CB2DCAFE0000000000000002 /* ConstantBuffer2DCommands.hpp */,
 				F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */,
 				392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */,
+				DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */,
 				F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */,
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
 				E80D41942D7045A6B95D0004 /* Renderer2DDrawSubmission.hpp */,
@@ -16399,6 +16405,7 @@
 				F98601F22BCFBB53006A4C0F /* SkMatrixPriv.h in Headers */,
 				F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */,
 				BDA09007095045A1822ECDAC /* SuperEllipseTessellation.hpp in Headers */,
+				8340869F7867464BB8E61260 /* CircleArcArrow.hpp in Headers */,
 				F986015E2BCFBB53006A4C0F /* SkBitmapProcState.h in Headers */,
 				F98604372BCFBB54006A4C0F /* SkSLStructDefinition.h in Headers */,
 				F986000C2BCFBB53006A4C0F /* SkContourMeasure.h in Headers */,
@@ -17204,6 +17211,7 @@
 				B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */,
 				6064B044D57A48688C26F31A /* Test_BezierDraw.cpp in Sources */,
 				83F3023CE1984AA6A810340E /* Test_BezierArrow.cpp in Sources */,
+				AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */,
 				E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */,

@@ -9,6 +9,7 @@
 # import <Foundation/Foundation.h>
 # import <Metal/Metal.h>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
+# include <Siv3D/Renderer2D/CircleArcArrow.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <algorithm>
 # include <chrono>
@@ -317,6 +318,34 @@ int main()
 				});
 			}
 		}
+		struct ArcCase { const char* name; double radius, sweep; SizeF head; };
+		for (const auto& c : { ArcCase{ "Ordinary", 100, 4.7, { 40, 32 } },
+			ArcCase{ "Short", 100, 0.2, { 40, 80 } }, ArcCase{ "Full", 100, Math::TwoPi, { 40, 40 } },
+			ArcCase{ "Omitted", 100, 4.7, { 0.001, 100 } }, ArcCase{ "Maximum", 1000, 4.7, { 60, 80 } } })
+		{
+			const Circle circle{ 200, 160, c.radius };
+			MeasureBuilder(device, (std::string("CircleArcReference") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleArc(allocate, LineCap::Flat, circle.center, static_cast<float>(c.radius - 4),
+					0.3f, static_cast<float>(c.sweep), 8, ColorFillDirection::InOut, Float4{ 1, 1, 1, 1 }, Float4{ 1, 1, 1, 1 }, 1);
+			});
+			Array<Vec2> points;
+			MeasureBuilder(device, (std::string("CircleArcArrow") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				const auto p = detail::CircleArcArrow::Place(circle, 0.3, c.sweep, c.head.y);
+				detail::CircleArcArrow::WritePoints(points, *p, 8, 1);
+				const auto result = Vertex2DBuilder::BuildLineStringArrow(allocate, LineCap::Flat, points, p->tip,
+					8, (8 + static_cast<float>(c.head.x * p->sizeScale)), Float4{ 1, 1, 1, 1 }, 1);
+				if (result) return *result;
+				detail::CircleArcArrow::WritePoints(points, *p, 8, 1, true);
+				return Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat, points, none, 8, false, CloseRing::No, Float4{ 1, 1, 1, 1 }, 1);
+			});
+		}
+		Measure("CircleArcArrowPlacement", [&](const int32 i)
+		{
+			const auto p = detail::CircleArcArrow::Place(Circle{ 200, 160, 100.0 + i % 7 }, 0.3 + i * 0.001, 4.7, 20.0 + i % 97);
+			asm volatile("" : : "g"(&p) : "memory");
+		});
 		[device release];
 	}
 }

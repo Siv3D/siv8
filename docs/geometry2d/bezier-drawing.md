@@ -96,6 +96,49 @@ translucency, deformation, and the narrow-head fallback. The focused
 [automated tests](../../Test/Test_BezierArrow.cpp) cover placement, repeated roots,
 mesh bounds, allocation failure, public rendering, and an opt-in placement benchmark.
 
+### Circle arc arrows
+
+```cpp
+Circle{ 320, 240, 90 }.drawArcArrow(-60_deg, 250_deg, 8, SizeF{ 26, 32 }, Palette::Skyblue);
+Circle{ 320, 240, 90 }.drawArcArrow(LineCap::Flat, 0, 360_deg, 8, SizeF{ 50, 60 });
+```
+
+[`Circle::drawArcArrow`](../../Siv3D/include/Siv3D/Circle.hpp) uses the same
+base-to-tip chord, additional head width, proportional head shrinking, start
+caps, and omitted-head fallback as Bezier arrows. The circle is the shaft's
+centerline. A full turn reuses the exact start coordinate for the tip; with a
+Flat start cap the tip meets the midpoint of the starting cross-section.
+This is a geometric contact, not a guarantee of pixel coverage at an isolated tip.
+
+The [circle preparation helper](../../Siv3D/src/Siv3D/Renderer2D/CircleArcArrow.hpp)
+solves placement analytically. On arcs shorter than a semicircle, the start is
+furthest from the tip; on longer arcs, the antipodal point is furthest. A head
+shrunk to that latter point may face across the incoming shaft and be omitted.
+Placement does not depend on subdivision or transforms. The shaft uses
+[Circle's bounded angular density](rounded-drawing.md), with at most 252
+centerline intervals and separate cap geometry, and the same shared arrow mesh
+builder as Bezier. Its polyline offsets are not pixel-identical to `drawArc()`'s
+concentric boundaries. Very wide strokes and head/shaft intersections can overlap.
+
+The [shared arrow gallery](../../Test/Manual/BezierArrow.md) includes positive and
+negative sweeps, full turns, large heads and narrow-head fallbacks. Dedicated
+[CircleArcArrow tests](../../Test/Test_CircleArcArrow.cpp) check analytic placement,
+uploaded endpoint identity, storage reuse, caps, bounds, failure, translucent
+joins, and transformed drawing. The opt-in submission benchmark compares
+`drawArc()` and `drawArcArrow()` in alternating order, with eight warmup rounds
+and 21 timed rounds of 128 draws. It reports median and p10/p90 CPU submission
+times, triangle counts and batch counts; updates and GPU execution are excluded.
+VSync is disabled only for this benchmark and restored afterward.
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=CircleArcArrow.submission_benchmark'
+```
+
+The [upload diagnostic](../../tools/renderer2d-index-upload.mm) also measures the
+same preparation and mesh paths in ordinary RAM and both Metal cache modes, plus
+analytic placement alone. Build and interpret it using the
+[upload measurement guide](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
+
 ## Implementation boundaries
 
 A single [destination-writing kernel](../../Siv3D/src/Siv3D/Geometry2D/BezierTessellation.hpp)

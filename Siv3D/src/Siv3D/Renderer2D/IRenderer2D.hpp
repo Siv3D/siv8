@@ -60,6 +60,8 @@ namespace s3d
 		void addBezierArrow(const Bezier2& curve, LineCap startCap, float thickness, const SizeF& headSize, const Float4& color, double targetError, int32 maxSegments);
 		void addBezierArrow(const Bezier3& curve, LineCap startCap, float thickness, const SizeF& headSize, const Float4& color, double targetError, int32 maxSegments);
 
+		void addCircleArcArrow(const Circle& circle, LineCap startCap, double startAngle, double angle, float thickness, const SizeF& headSize, const Float4& color);
+
 		// false requests ordinary-curve fallback; allocation failure is handled (true).
 		virtual bool addLineStringArrow(LineCap startCap, std::span<const Vec2> points, const Float2& tip, float thickness, float headWidth, const Float4& color) = 0;
 
