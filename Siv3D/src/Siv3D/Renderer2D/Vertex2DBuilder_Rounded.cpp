@@ -2043,6 +2043,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	RoundRectBalloon::MakeContour
+	//
+	////////////////////////////////////////////////////////////////
+
 	void detail::RoundRectBalloon::MakeContour(Contour& destination, const Placement& placement, const float scale)
 	{
 		destination.count = 0;
@@ -2082,6 +2088,12 @@ namespace s3d
 
 	namespace Vertex2DBuilder
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	CalculateCircleArcQuality
+		//
+		////////////////////////////////////////////////////////////////
+
 		Vertex2D::IndexType CalculateCircleArcQuality(const float r, const float angle) noexcept
 		{
 			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
@@ -2693,12 +2705,6 @@ namespace s3d
 			return BuildEllipse<false>(bufferCreator, center, a, b, colorType, color0, color1, scale);
 		}
 
-		Vertex2D::IndexType BuildEllipseRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
-		{
-			const auto [s, c] = FastMath::SinCos(rotation);
-			return BuildEllipse<true>(bufferCreator, center, a, b, colorType, color0, color1, scale, c, s);
-		}
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	BuildEllipseFrame
@@ -2801,12 +2807,6 @@ namespace s3d
 		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
 		{
 			return BuildEllipseFrame<false>(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale);
-		}
-
-		Vertex2D::IndexType BuildEllipseFrameRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
-		{
-			const auto [s, c] = FastMath::SinCos(rotation);
-			return BuildEllipseFrame<true>(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale, c, s);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2964,6 +2964,81 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildEllipseRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipseRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const auto [s, c] = FastMath::SinCos(rotation);
+			return BuildEllipse<true>(bufferCreator, center, a, b, colorType, color0, color1, scale, c, s);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipseFrameRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipseFrameRotated(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float rotation, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const auto [s, c] = FastMath::SinCos(rotation);
+			return BuildEllipseFrame<true>(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale, c, s);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipsePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rx, const float ry, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType Quality = CalculateCircleArcQuality((Max(rx, ry) * scale), Abs(angle));
+
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].setPosition(centerX, centerY);
+
+			// 周（楕円）
+			{
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				WriteArcPositions((pVertex + 1), centerX, centerY, rx, ry, start, radDelta, Quality);
+			}
+
+			// 色
+			{
+				(pVertex++)->setColor(innerColor);
+
+				for (size_t i = 1; i < VertexCount; ++i)
+				{
+					(pVertex++)->setColor(outerColor);
+				}
+			}
+
+			WriteOpenFanIndices(pIndex, indexOffset, Quality);
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildEllipseArc
 		//
 		////////////////////////////////////////////////////////////////
@@ -3083,57 +3158,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	BuildEllipsePie
-		//
-		////////////////////////////////////////////////////////////////
-
-		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rx, const float ry, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
-		{
-			if (angle == 0.0f)
-			{
-				return 0;
-			}
-
-			const Vertex2D::IndexType Quality = CalculateCircleArcQuality((Max(rx, ry) * scale), Abs(angle));
-
-			const Vertex2D::IndexType VertexCount = (Quality + 1);
-			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			const float centerX = center.x;
-			const float centerY = center.y;
-
-			// 中心
-			pVertex[0].setPosition(centerX, centerY);
-
-			// 周（楕円）
-			{
-				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
-				const float radDelta = (Abs(angle) / (Quality - 1));
-				WriteArcPositions((pVertex + 1), centerX, centerY, rx, ry, start, radDelta, Quality);
-			}
-
-			// 色
-			{
-				(pVertex++)->setColor(innerColor);
-
-				for (size_t i = 1; i < VertexCount; ++i)
-				{
-					(pVertex++)->setColor(outerColor);
-				}
-			}
-
-			WriteOpenFanIndices(pIndex, indexOffset, Quality);
-
-			return IndexCount;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	BuildSuperEllipse
 		//
 		////////////////////////////////////////////////////////////////
@@ -3194,41 +3218,6 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		uint32 BuildRoundRectBalloon(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const Float4& color, const float scale)
-		{
-			detail::RoundRectBalloon::Contour contour;
-			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
-			const uint16 n = contour.count, tip = contour.tipIndex;
-			const uint32 indexCount = (n * 3);
-			auto [vertices, indices, offset] = bufferCreator(n + 1, indexCount);
-			if (not vertices) return 0;
-			vertices[0].set(balloon.body.rect.center(), color);
-			for (uint16 i = 0; i < n; ++i) vertices[i + 1].set(contour.vertices[i], color);
-			// The convex body fan skips the tip. Its base and the tail share an edge,
-			// so neither triangulation nor upload-destination reads are necessary.
-			for (uint16 i = 0; i < n; ++i)
-			{
-				if (i == tip) continue;
-				uint16 next = ((i + 1 == n) ? 0 : (i + 1));
-				if (next == tip) next = ((next + 1 == n) ? 0 : (next + 1));
-				*indices++ = offset;
-				*indices++ = (offset + i + 1);
-				*indices++ = (offset + next + 1);
-			}
-			*indices++ = (offset + tip);
-			*indices++ = (offset + tip + 1);
-			*indices++ = (offset + ((tip + 1 == n) ? 0 : (tip + 1)) + 1);
-			return indexCount;
-		}
-
-		uint32 BuildRoundRectBalloonFrame(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color, const float scale)
-		{
-			detail::RoundRectBalloon::Contour contour;
-			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
-			return BuildLineString(bufferCreator, LineCap::Flat, LineCap::Flat, contour.points(), none,
-				thickness, false, CloseRing::Yes, color, scale);
-		}
-
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float r, const Float4& color, const float scale)
 		{
 			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
@@ -3250,6 +3239,29 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float r, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
+			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
+			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
+			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
+			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			WriteRoundRectVertices<true>(pVertex, rect, r, Quality, colorType, color0, color1,
+				[](Vertex2DWriteReference vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
+
+			WriteRoundRectIndices(pIndex, indexOffset, Quality);
+
+			return IndexCount;
+		}
+
 		
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color, const float scale)
 		{
@@ -3273,28 +3285,6 @@ namespace s3d
 			// avoids a compaction pass and keeps reservation/submission counts equal.
 			WriteOpenFanIndices(pIndex, indexOffset, (vertexCount - 1));
 			return indexCount;
-		}
-
-		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float r, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
-		{
-			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
-			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
-			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
-			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
-			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
-			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			WriteRoundRectVertices<true>(pVertex, rect, r, Quality, colorType, color0, color1,
-				[](Vertex2DWriteReference vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
-
-			WriteRoundRectIndices(pIndex, indexOffset, Quality);
-
-			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3322,6 +3312,31 @@ namespace s3d
 			}
 
 			WriteRoundRectFrameVertices<false>(pVertex, innerRect, innerR, outerRect, outerR, Quality, ColorFillDirection::TopBottom, color, color);
+
+			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
+
+			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(outerR * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType ArcOuterVertexCount = (Quality + 1); // 1 つの弧の外側曲線部分の頂点数
+			const Vertex2D::IndexType ArcInnerVertexCount = (Quality + 1); // 1 つの弧の内側曲線部分の頂点数
+			const Vertex2D::IndexType ArcVertexCount = (ArcOuterVertexCount + ArcInnerVertexCount); // 1 つの弧の頂点数
+			const Vertex2D::IndexType ArcTriangleCount = (Quality * 2); // 1 つの弧の三角形の数
+			const Vertex2D::IndexType ArcIndexCount = (ArcTriangleCount * 3); // 1 つの弧のインデックス数
+			const Vertex2D::IndexType VertexCount = (ArcVertexCount * 4); // 頂点数
+			const Vertex2D::IndexType IndexCount = (ArcIndexCount * 4 + (6 * 4)); // インデックス数
+
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			WriteRoundRectFrameVertices<true>(pVertex, innerRect, innerR, outerRect, outerR, Quality, colorType, color0, color1);
 
 			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
 
@@ -3361,31 +3376,6 @@ namespace s3d
 			}
 
 			return indexCount;
-		}
-
-		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
-		{
-			const Vertex2D::IndexType Quality = CalculateCircleQuality(outerR * scale); // 円周の 1/4 に相当する品質
-			const Vertex2D::IndexType ArcOuterVertexCount = (Quality + 1); // 1 つの弧の外側曲線部分の頂点数
-			const Vertex2D::IndexType ArcInnerVertexCount = (Quality + 1); // 1 つの弧の内側曲線部分の頂点数
-			const Vertex2D::IndexType ArcVertexCount = (ArcOuterVertexCount + ArcInnerVertexCount); // 1 つの弧の頂点数
-			const Vertex2D::IndexType ArcTriangleCount = (Quality * 2); // 1 つの弧の三角形の数
-			const Vertex2D::IndexType ArcIndexCount = (ArcTriangleCount * 3); // 1 つの弧のインデックス数
-			const Vertex2D::IndexType VertexCount = (ArcVertexCount * 4); // 頂点数
-			const Vertex2D::IndexType IndexCount = (ArcIndexCount * 4 + (6 * 4)); // インデックス数
-
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			WriteRoundRectFrameVertices<true>(pVertex, innerRect, innerR, outerRect, outerR, Quality, colorType, color0, color1);
-
-			WriteRoundRectFrameIndices(pIndex, indexOffset, Quality);
-
-			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3671,6 +3661,53 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildRoundRectBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 BuildRoundRectBalloon(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const Float4& color, const float scale)
+		{
+			detail::RoundRectBalloon::Contour contour;
+			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
+			const uint16 n = contour.count, tip = contour.tipIndex;
+			const uint32 indexCount = (n * 3);
+			auto [vertices, indices, offset] = bufferCreator(n + 1, indexCount);
+			if (not vertices) return 0;
+			vertices[0].set(balloon.body.rect.center(), color);
+			for (uint16 i = 0; i < n; ++i) vertices[i + 1].set(contour.vertices[i], color);
+			// The convex body fan skips the tip. Its base and the tail share an edge,
+			// so neither triangulation nor upload-destination reads are necessary.
+			for (uint16 i = 0; i < n; ++i)
+			{
+				if (i == tip) continue;
+				uint16 next = ((i + 1 == n) ? 0 : (i + 1));
+				if (next == tip) next = ((next + 1 == n) ? 0 : (next + 1));
+				*indices++ = offset;
+				*indices++ = (offset + i + 1);
+				*indices++ = (offset + next + 1);
+			}
+			*indices++ = (offset + tip);
+			*indices++ = (offset + tip + 1);
+			*indices++ = (offset + ((tip + 1 == n) ? 0 : (tip + 1)) + 1);
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildRoundRectBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 BuildRoundRectBalloonFrame(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color, const float scale)
+		{
+			detail::RoundRectBalloon::Contour contour;
+			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
+			return BuildLineString(bufferCreator, LineCap::Flat, LineCap::Flat, contour.points(), none,
+				thickness, false, CloseRing::Yes, color, scale);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildShape2DFrame
 		//
 		////////////////////////////////////////////////////////////////
@@ -3836,107 +3873,6 @@ namespace s3d
 				triangle(i, last, corners[next].start);
 				triangle(i, corners[next].start, next);
 				for (uint16 k = 1; k < corner.count; ++k) triangle(i, (corner.start + k - 1), (corner.start + k));
-			}
-			return indexCount;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	BuildLineStringArrow
-		//
-		////////////////////////////////////////////////////////////////
-
-		Optional<uint32> BuildLineStringArrow(const BufferCreatorFunc& bufferCreator, const LineCap startCap,
-			const std::span<const Vec2> points, const Float2& tip, const float thickness, const float headWidth,
-			const Float4& color, const float scale)
-		{
-			if (points.empty() || (thickness <= 0.0f) || (headWidth < thickness)) return none;
-			PolylineBuffer& scratch = GetPolylineBuffer();
-			const auto prepared = PreparePolyline<Vec2>(points, none, scale, false, true, false, scratch);
-			const auto pts = prepared.points;
-			const Float2 base = pts.back();
-			const Float2 headVector = (tip - base);
-			const float headLength = headVector.length();
-			if (headLength == 0.0f) return none;
-			if (pts.size() == 1)
-			{
-				return BuildArrow(bufferCreator, startCap, base, tip, thickness,
-					Float2{ (headWidth - thickness), headLength }, { color, color }, scale);
-			}
-			if (MaxLineStringPointCount < pts.size()) return none;
-
-			const size_t n = pts.size();
-			const Float2 lastVector = (base - pts[n - 2]);
-			const float lastLength = lastVector.length();
-			if (lastLength == 0.0f) return none;
-			const Float2 shaftDirection = (lastVector / lastLength), headDirection = (headVector / headLength);
-			const float cosine = shaftDirection.dot(headDirection);
-			// The oblique cross-section must fit inside the head's base. This
-			// also bounds the projection without exceptional-value guards.
-			if ((cosine <= 0.0f) || (headWidth * cosine < thickness)) return none;
-			const float halfThickness = (thickness * 0.5f), joinRadius = (halfThickness / cosine);
-			const Float2 normal{ -headDirection.y, headDirection.x };
-			MiterPair previous;
-			if (n == 2)
-			{
-				const Float2 offset{ -shaftDirection.y * halfThickness, shaftDirection.x * halfThickness };
-				previous = { (pts[0] + offset), (pts[0] - offset) };
-			}
-			else
-			{
-				previous = ComputeMiterPair(pts[n - 2], prepared.directions[n - 3],
-					shaftDirection, pts[n - 3], base, halfThickness);
-			}
-			const bool project = (((previous.a - base).dot(headDirection) <= 0.0f)
-				&& ((previous.b - base).dot(headDirection) <= 0.0f));
-
-			const uint16 quality = ((startCap == LineCap::Round) ? CalculateCircleSegmentQuality(halfThickness * scale, Math::PiF) : 0);
-			const uint16 capVertices = ((startCap == LineCap::Square) ? 4 : ((startCap == LineCap::Round) ? (quality + 1) : 0));
-			const uint32 capIndices = ((startCap == LineCap::Square) ? 6 : ((startCap == LineCap::Round) ? ((quality - 1) * 3) : 0));
-			const uint16 stripVertices = static_cast<uint16>(n * 2);
-			const uint32 stripIndices = static_cast<uint32>((n - 1) * 6);
-			const uint16 headOffset = (stripVertices + capVertices);
-			const uint16 vertexCount = (headOffset + 3 + (project ? 0 : 3));
-			const uint32 indexCount = (stripIndices + capIndices + 3 + (project ? 0 : 6));
-			const auto buffer = bufferCreator(vertexCount, indexCount);
-			if (not buffer.pVertex) return uint32{ 0 };
-
-			float startAngle = 0.0f;
-			EmitLineStringStrip(buffer, prepared, halfThickness, false, [&](size_t) { return color; }, &startAngle);
-			const Vertex2DBufferPointer capBuffer{ buffer.pVertex + stripVertices, buffer.pIndex + stripIndices,
-				static_cast<uint16>(buffer.indexOffset + stripVertices) };
-			const LineStringBuffer caps{ buffer, capBuffer, {}, quality, indexCount };
-			EmitLineStringCaps(caps, startCap, LineCap::Flat, pts.front(), startAngle, base, 0.0f, none, thickness, color, color);
-
-			const Float2 a = (base + normal * joinRadius), b = (base - normal * joinRadius);
-			if (project)
-			{
-				buffer.pVertex[stripVertices - 2].setPosition(a);
-				buffer.pVertex[stripVertices - 1].setPosition(b);
-			}
-			const Float2 headA = (base + normal * (headWidth * 0.5f)), headB = (base - normal * (headWidth * 0.5f));
-			buffer.pVertex[headOffset].set(tip, color);
-			buffer.pVertex[headOffset + 1].set(headA, color);
-			buffer.pVertex[headOffset + 2].set(headB, color);
-			auto indices = (buffer.pIndex + stripIndices + capIndices);
-			const auto triangle = [&](uint16 i, uint16 j, uint16 k, const Float2& p0, const Float2& p1, const Float2& p2)
-			{
-				if ((p1 - p0).cross(p2 - p0) < 0.0f) std::swap(j, k);
-				*indices++ = (buffer.indexOffset + i);
-				*indices++ = (buffer.indexOffset + j);
-				*indices++ = (buffer.indexOffset + k);
-			};
-			triangle(headOffset, (headOffset + 1), (headOffset + 2), tip, headA, headB);
-			if (not project)
-			{
-				// A short/turning terminal strip may already cross the head plane.
-				// Keep its ordinary end and bridge locally; overlap is intentional.
-				buffer.pVertex[headOffset + 3].set(base, color);
-				buffer.pVertex[headOffset + 4].set(a, color);
-				buffer.pVertex[headOffset + 5].set(b, color);
-				const Float2 shaftNormal{ -shaftDirection.y * halfThickness, shaftDirection.x * halfThickness };
-				triangle((headOffset + 3), (stripVertices - 2), (headOffset + 4), base, (base + shaftNormal), a);
-				triangle((headOffset + 3), (headOffset + 5), (stripVertices - 1), base, b, (base - shaftNormal));
 			}
 			return indexCount;
 		}
@@ -4150,6 +4086,107 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildLineStringArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<uint32> BuildLineStringArrow(const BufferCreatorFunc& bufferCreator, const LineCap startCap,
+			const std::span<const Vec2> points, const Float2& tip, const float thickness, const float headWidth,
+			const Float4& color, const float scale)
+		{
+			if (points.empty() || (thickness <= 0.0f) || (headWidth < thickness)) return none;
+			PolylineBuffer& scratch = GetPolylineBuffer();
+			const auto prepared = PreparePolyline<Vec2>(points, none, scale, false, true, false, scratch);
+			const auto pts = prepared.points;
+			const Float2 base = pts.back();
+			const Float2 headVector = (tip - base);
+			const float headLength = headVector.length();
+			if (headLength == 0.0f) return none;
+			if (pts.size() == 1)
+			{
+				return BuildArrow(bufferCreator, startCap, base, tip, thickness,
+					Float2{ (headWidth - thickness), headLength }, { color, color }, scale);
+			}
+			if (MaxLineStringPointCount < pts.size()) return none;
+
+			const size_t n = pts.size();
+			const Float2 lastVector = (base - pts[n - 2]);
+			const float lastLength = lastVector.length();
+			if (lastLength == 0.0f) return none;
+			const Float2 shaftDirection = (lastVector / lastLength), headDirection = (headVector / headLength);
+			const float cosine = shaftDirection.dot(headDirection);
+			// The oblique cross-section must fit inside the head's base. This
+			// also bounds the projection without exceptional-value guards.
+			if ((cosine <= 0.0f) || (headWidth * cosine < thickness)) return none;
+			const float halfThickness = (thickness * 0.5f), joinRadius = (halfThickness / cosine);
+			const Float2 normal{ -headDirection.y, headDirection.x };
+			MiterPair previous;
+			if (n == 2)
+			{
+				const Float2 offset{ -shaftDirection.y * halfThickness, shaftDirection.x * halfThickness };
+				previous = { (pts[0] + offset), (pts[0] - offset) };
+			}
+			else
+			{
+				previous = ComputeMiterPair(pts[n - 2], prepared.directions[n - 3],
+					shaftDirection, pts[n - 3], base, halfThickness);
+			}
+			const bool project = (((previous.a - base).dot(headDirection) <= 0.0f)
+				&& ((previous.b - base).dot(headDirection) <= 0.0f));
+
+			const uint16 quality = ((startCap == LineCap::Round) ? CalculateCircleSegmentQuality(halfThickness * scale, Math::PiF) : 0);
+			const uint16 capVertices = ((startCap == LineCap::Square) ? 4 : ((startCap == LineCap::Round) ? (quality + 1) : 0));
+			const uint32 capIndices = ((startCap == LineCap::Square) ? 6 : ((startCap == LineCap::Round) ? ((quality - 1) * 3) : 0));
+			const uint16 stripVertices = static_cast<uint16>(n * 2);
+			const uint32 stripIndices = static_cast<uint32>((n - 1) * 6);
+			const uint16 headOffset = (stripVertices + capVertices);
+			const uint16 vertexCount = (headOffset + 3 + (project ? 0 : 3));
+			const uint32 indexCount = (stripIndices + capIndices + 3 + (project ? 0 : 6));
+			const auto buffer = bufferCreator(vertexCount, indexCount);
+			if (not buffer.pVertex) return uint32{ 0 };
+
+			float startAngle = 0.0f;
+			EmitLineStringStrip(buffer, prepared, halfThickness, false, [&](size_t) { return color; }, &startAngle);
+			const Vertex2DBufferPointer capBuffer{ buffer.pVertex + stripVertices, buffer.pIndex + stripIndices,
+				static_cast<uint16>(buffer.indexOffset + stripVertices) };
+			const LineStringBuffer caps{ buffer, capBuffer, {}, quality, indexCount };
+			EmitLineStringCaps(caps, startCap, LineCap::Flat, pts.front(), startAngle, base, 0.0f, none, thickness, color, color);
+
+			const Float2 a = (base + normal * joinRadius), b = (base - normal * joinRadius);
+			if (project)
+			{
+				buffer.pVertex[stripVertices - 2].setPosition(a);
+				buffer.pVertex[stripVertices - 1].setPosition(b);
+			}
+			const Float2 headA = (base + normal * (headWidth * 0.5f)), headB = (base - normal * (headWidth * 0.5f));
+			buffer.pVertex[headOffset].set(tip, color);
+			buffer.pVertex[headOffset + 1].set(headA, color);
+			buffer.pVertex[headOffset + 2].set(headB, color);
+			auto indices = (buffer.pIndex + stripIndices + capIndices);
+			const auto triangle = [&](uint16 i, uint16 j, uint16 k, const Float2& p0, const Float2& p1, const Float2& p2)
+			{
+				if ((p1 - p0).cross(p2 - p0) < 0.0f) std::swap(j, k);
+				*indices++ = (buffer.indexOffset + i);
+				*indices++ = (buffer.indexOffset + j);
+				*indices++ = (buffer.indexOffset + k);
+			};
+			triangle(headOffset, (headOffset + 1), (headOffset + 2), tip, headA, headB);
+			if (not project)
+			{
+				// A short/turning terminal strip may already cross the head plane.
+				// Keep its ordinary end and bridge locally; overlap is intentional.
+				buffer.pVertex[headOffset + 3].set(base, color);
+				buffer.pVertex[headOffset + 4].set(a, color);
+				buffer.pVertex[headOffset + 5].set(b, color);
+				const Float2 shaftNormal{ -shaftDirection.y * halfThickness, shaftDirection.x * halfThickness };
+				triangle((headOffset + 3), (stripVertices - 2), (headOffset + 4), base, (base + shaftNormal), a);
+				triangle((headOffset + 3), (headOffset + 5), (stripVertices - 1), base, b, (base - shaftNormal));
+			}
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildTexturedCircle
 		//
 		////////////////////////////////////////////////////////////////
@@ -4244,6 +4281,84 @@ namespace s3d
 		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			return BuildTexturedRoundRect<true>(bufferCreator, rect, w, h, r, uvRect, colorType, color0, color1, scale);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildRectShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRectShadow(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float blur, const Float4& color, const bool fill)
+		{
+			constexpr Vertex2D::IndexType vertexCount = 16, indexCount = 54;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// 頂点情報の書き込み
+			{
+				// ぼかしサイズの半分
+				const float halfBlur = (blur * 0.5f);
+				const float xs[4] =
+				{
+					static_cast<float>(rect.left - halfBlur),
+					static_cast<float>(rect.left + halfBlur),
+					static_cast<float>(rect.right - halfBlur),
+					static_cast<float>(rect.right + halfBlur)
+				};
+				const float ys[4] =
+				{
+					static_cast<float>(rect.top - halfBlur),
+					static_cast<float>(rect.top + halfBlur),
+					static_cast<float>(rect.bottom - halfBlur),
+					static_cast<float>(rect.bottom + halfBlur)
+				};
+				const float uvs[4] = { 0.0f, 0.5f, 0.5f, 1.0f };
+
+				for (int32 y = 0; y < 4; ++y)
+				{
+					for (int32 x = 0; x < 4; ++x)
+					{
+						pVertex->setPosition(xs[x], ys[y]);
+						pVertex->setTex(uvs[x], uvs[y]);
+						pVertex->setColor(color);
+						++pVertex;
+					}
+				}
+			}
+
+			// インデックス情報の書き込み
+			{
+				Index2DWritePointer pBase = pIndex;
+
+				for (Vertex2D::IndexType ty = 0; ty < 3; ++ty)
+				{
+					for (Vertex2D::IndexType tx = 0; tx < 3; ++tx)
+					{
+						const Vertex2D::IndexType base = (((ty * 4) + tx) + indexOffset);
+
+						*pIndex++ = base;
+						*pIndex++ = (base + 1);
+						*pIndex++ = (base + 4);
+
+						*pIndex++ = (base + 4);
+						*pIndex++ = (base + 1);
+						*pIndex++ = (base + 5);
+					}
+				}
+
+				if (not fill)
+				{
+					// 縮退三角形
+					for (size_t i = 25; i < 30; ++i) pBase[i] = (indexOffset + 5);
+				}
+			}
+
+			return indexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -4353,84 +4468,6 @@ namespace s3d
 			}
 
 			return IndexCount;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	BuildRectShadow
-		//
-		////////////////////////////////////////////////////////////////
-
-		Vertex2D::IndexType BuildRectShadow(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float blur, const Float4& color, const bool fill)
-		{
-			constexpr Vertex2D::IndexType vertexCount = 16, indexCount = 54;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			// 頂点情報の書き込み
-			{
-				// ぼかしサイズの半分
-				const float halfBlur = (blur * 0.5f);
-				const float xs[4] =
-				{
-					static_cast<float>(rect.left - halfBlur),
-					static_cast<float>(rect.left + halfBlur),
-					static_cast<float>(rect.right - halfBlur),
-					static_cast<float>(rect.right + halfBlur)
-				};
-				const float ys[4] =
-				{
-					static_cast<float>(rect.top - halfBlur),
-					static_cast<float>(rect.top + halfBlur),
-					static_cast<float>(rect.bottom - halfBlur),
-					static_cast<float>(rect.bottom + halfBlur)
-				};
-				const float uvs[4] = { 0.0f, 0.5f, 0.5f, 1.0f };
-
-				for (int32 y = 0; y < 4; ++y)
-				{
-					for (int32 x = 0; x < 4; ++x)
-					{
-						pVertex->setPosition(xs[x], ys[y]);
-						pVertex->setTex(uvs[x], uvs[y]);
-						pVertex->setColor(color);
-						++pVertex;
-					}
-				}
-			}
-
-			// インデックス情報の書き込み
-			{
-				Index2DWritePointer pBase = pIndex;
-
-				for (Vertex2D::IndexType ty = 0; ty < 3; ++ty)
-				{
-					for (Vertex2D::IndexType tx = 0; tx < 3; ++tx)
-					{
-						const Vertex2D::IndexType base = (((ty * 4) + tx) + indexOffset);
-
-						*pIndex++ = base;
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 4);
-
-						*pIndex++ = (base + 4);
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 5);
-					}
-				}
-
-				if (not fill)
-				{
-					// 縮退三角形
-					for (size_t i = 25; i < 30; ++i) pBase[i] = (indexOffset + 5);
-				}
-			}
-
-			return indexCount;
 		}
 
 		////////////////////////////////////////////////////////////////

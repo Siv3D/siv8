@@ -77,6 +77,13 @@ namespace s3d
 	//
 	//	(destructor)
 	//
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	////////////////////////////////////////////////////////////////
 
 	CRenderer2D_Metal::~CRenderer2D_Metal()
@@ -136,16 +143,6 @@ namespace s3d
 	//	addArrow
 	//
 	////////////////////////////////////////////////////////////////
-
-	bool CRenderer2D_Metal::addLineStringArrow(const LineCap startCap, const std::span<const Vec2> points,
-		const Float2& tip, const float thickness, const float headWidth, const Float4& color)
-	{
-		const auto count = Vertex2DBuilder::BuildLineStringArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			startCap, points, tip, thickness, headWidth, color, m_commandManager.getCurrentRasterScaling());
-		if (not count) return false;
-		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
-		return true;
-	}
 
 	void CRenderer2D_Metal::addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2])
 	{
@@ -248,6 +245,36 @@ namespace s3d
 		if (const auto indexCount = Vertex2DBuilder::BuildRectDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), innerRect, offset, thickness, dashRatio, dashCount, color))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, color))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4(&colors)[4])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, colors))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, pattern.primaryColor))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -435,38 +462,6 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_Metal::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
-		}
-	}
-
-	void CRenderer2D_Metal::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
-		}
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	addEllipseDashedFrame
@@ -483,21 +478,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addEllipseArc
+	//	addEllipseRotated
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	void CRenderer2D_Metal::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
-	void CRenderer2D_Metal::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	void CRenderer2D_Metal::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
@@ -527,6 +544,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addEllipseArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addSuperEllipse
 	//
 	////////////////////////////////////////////////////////////////
@@ -549,67 +588,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addQuad
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, color))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4(&colors)[4])
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, colors))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, pattern.primaryColor))
-		{
-			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	addRoundRect
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloon(std::bind_front(&CRenderer2D_Metal::createBuffer, this), balloon, color, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloonFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), balloon, thickness, color, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
 	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const float r, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, color, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, radii, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
@@ -631,6 +616,14 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, radii, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addRoundRectFrame
@@ -641,15 +634,6 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
 			innerRect, innerR, outerRect, outerR, color, m_commandManager.getCurrentRasterScaling()))
-		{
-			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			innerRect, innerRadii, outerRect, outerRadii, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
@@ -673,6 +657,15 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			innerRect, innerRadii, outerRect, outerRadii, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addRoundRectDashedFrame
@@ -683,6 +676,34 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
 			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloon(std::bind_front(&CRenderer2D_Metal::createBuffer, this), balloon, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloonFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), balloon, thickness, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
@@ -772,7 +793,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addLineString
+	//	tryAddSmallConvexFrame
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -797,6 +818,12 @@ namespace s3d
 		}
 		return true;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addLineString
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color)
 	{
@@ -827,6 +854,44 @@ namespace s3d
 		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colors, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addLineStringArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CRenderer2D_Metal::addLineStringArrow(const LineCap startCap, const std::span<const Vec2> points,
+		const Float2& tip, const float thickness, const float headWidth, const Float4& color)
+	{
+		const auto count = Vertex2DBuilder::BuildLineStringArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			startCap, points, tip, thickness, headWidth, color, m_commandManager.getCurrentRasterScaling());
+		if (not count) return false;
+		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTexturedQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
+		}
+	}
+
+	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
@@ -868,28 +933,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addTexturedQuad
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
-		{
-			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
-		}
-	}
-
-	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
-		{
-			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	addTexturedRoundRect
 	//
 	////////////////////////////////////////////////////////////////
@@ -912,20 +955,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addCircleShadow
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, blur, color, m_commandManager.getCurrentRasterScaling(), fill))
-		{
-			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	addRectShadow
 	//
 	////////////////////////////////////////////////////////////////
@@ -933,6 +962,20 @@ namespace s3d
 	void CRenderer2D_Metal::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, blur, color, fill))
+		{
+			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, blur, color, m_commandManager.getCurrentRasterScaling(), fill))
 		{
 			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
 		}
@@ -984,6 +1027,12 @@ namespace s3d
 	{
 		m_commandManager.pushConstantBuffer(stage, slot, data, size);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	beginConstantBufferScope, endConstantBufferScope
+	//
+	////////////////////////////////////////////////////////////////
 
 	uint32 CRenderer2D_Metal::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
 	{
@@ -1602,6 +1651,12 @@ namespace s3d
 		m_commandManager.pushCameraTransform(matrix);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getQuadWarpTransform, setQuadWarpTransform
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Mat3x3& CRenderer2D_Metal::getQuadWarpTransform() const
 	{
 		return m_commandManager.getCurrentQuadWarpTransform();
@@ -1652,7 +1707,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	(private function)
+	//	createBuffer
 	//
 	////////////////////////////////////////////////////////////////
 
