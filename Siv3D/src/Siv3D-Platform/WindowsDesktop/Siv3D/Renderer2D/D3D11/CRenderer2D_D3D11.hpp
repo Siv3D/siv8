@@ -250,6 +250,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		void addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color) override;
+
+		void addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, float thickness, const Float4& color) override;
+
 		void addRoundRect(const FloatRect& rect, float r, const Float4& color) override;
 
 		void addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color) override;

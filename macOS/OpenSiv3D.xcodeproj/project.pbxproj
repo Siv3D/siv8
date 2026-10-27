@@ -157,6 +157,7 @@
 		DF3B8DD9954B4F75BA6FF239 /* Test_Vertex2DBuilderEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A928975C6DE4597AB8955F7 /* Test_Vertex2DBuilderEllipse.cpp */; };
 		51219B2151C84436947E6F53 /* Test_Vertex2DBuilderRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95413AA563CD4FBF8C9BC466 /* Test_Vertex2DBuilderRoundRect.cpp */; };
 		90F08956E0144A93820E8126 /* Test_RectRoundedDrawing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C4288704F68406EAED3ADB5 /* Test_RectRoundedDrawing.cpp */; };
+		D4DCCC1E4A1C46DAA201A96A /* Test_RoundRectBalloon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE50450B29441AD8541278D /* Test_RoundRectBalloon.cpp */; };
 		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
 		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
@@ -1211,6 +1212,7 @@
 		F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */; };
 		BDA09007095045A1822ECDAC /* SuperEllipseTessellation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */; };
 		8340869F7867464BB8E61260 /* CircleArcArrow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */; };
+		444D201B40DE498C8026D377 /* RoundRectBalloon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FE22558B078441DFAFD7964E /* RoundRectBalloon.hpp */; };
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
@@ -3482,6 +3484,7 @@
 		4A928975C6DE4597AB8955F7 /* Test_Vertex2DBuilderEllipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderEllipse.cpp; sourceTree = "<group>"; };
 		95413AA563CD4FBF8C9BC466 /* Test_Vertex2DBuilderRoundRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderRoundRect.cpp; sourceTree = "<group>"; };
 		3C4288704F68406EAED3ADB5 /* Test_RectRoundedDrawing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RectRoundedDrawing.cpp; sourceTree = "<group>"; };
+		8BE50450B29441AD8541278D /* Test_RoundRectBalloon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RoundRectBalloon.cpp; sourceTree = "<group>"; };
 		49B271520CBD0A5ACF08FF2B /* Test_FontGlyph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FontGlyph.cpp; sourceTree = "<group>"; };
 		4D604008E420486985B6EF7F /* Test_GLFW.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_GLFW.cpp; sourceTree = "<group>"; };
 		58E7A5266E884B548FBB528C /* Test_ScreenCoordinates.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_ScreenCoordinates.cpp; sourceTree = "<group>"; };
@@ -4722,6 +4725,7 @@
 		F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorFillDirection.hpp; sourceTree = "<group>"; };
 		392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipseTessellation.hpp; sourceTree = "<group>"; };
 		DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CircleArcArrow.hpp; sourceTree = "<group>"; };
+		FE22558B078441DFAFD7964E /* RoundRectBalloon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RoundRectBalloon.hpp; sourceTree = "<group>"; };
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
@@ -7394,6 +7398,7 @@
 				4A928975C6DE4597AB8955F7 /* Test_Vertex2DBuilderEllipse.cpp */,
 				95413AA563CD4FBF8C9BC466 /* Test_Vertex2DBuilderRoundRect.cpp */,
 				3C4288704F68406EAED3ADB5 /* Test_RectRoundedDrawing.cpp */,
+				8BE50450B29441AD8541278D /* Test_RoundRectBalloon.cpp */,
 				42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */,
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
 				AB612F20C13844B4B712E002 /* Test_Renderer2DEllipseDashedFrame.cpp */,
@@ -11703,6 +11708,7 @@
 				F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */,
 				392D433539AC4C3A847ED425 /* SuperEllipseTessellation.hpp */,
 				DE14A9D1333E4CFAB07AFC6A /* CircleArcArrow.hpp */,
+				FE22558B078441DFAFD7964E /* RoundRectBalloon.hpp */,
 				F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */,
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
 				E80D41942D7045A6B95D0004 /* Renderer2DDrawSubmission.hpp */,
@@ -16412,6 +16418,7 @@
 				F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */,
 				BDA09007095045A1822ECDAC /* SuperEllipseTessellation.hpp in Headers */,
 				8340869F7867464BB8E61260 /* CircleArcArrow.hpp in Headers */,
+				444D201B40DE498C8026D377 /* RoundRectBalloon.hpp in Headers */,
 				F986015E2BCFBB53006A4C0F /* SkBitmapProcState.h in Headers */,
 				F98604372BCFBB54006A4C0F /* SkSLStructDefinition.h in Headers */,
 				F986000C2BCFBB53006A4C0F /* SkContourMeasure.h in Headers */,
@@ -17101,6 +17108,7 @@
 				DF3B8DD9954B4F75BA6FF239 /* Test_Vertex2DBuilderEllipse.cpp in Sources */,
 				51219B2151C84436947E6F53 /* Test_Vertex2DBuilderRoundRect.cpp in Sources */,
 				90F08956E0144A93820E8126 /* Test_RectRoundedDrawing.cpp in Sources */,
+				D4DCCC1E4A1C46DAA201A96A /* Test_RoundRectBalloon.cpp in Sources */,
 				1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */,
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,
 				AB612F20C13844B4B712E001 /* Test_Renderer2DEllipseDashedFrame.cpp in Sources */,

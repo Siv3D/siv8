@@ -300,3 +300,26 @@ TEST_CASE("PolylineMesh.gradient_zero_lengths_and_failure")
 	CHECK(build(fail, { { 0, 0 }, { 40, 0 }, { 20, 20 } }, none, LineCap::Round) == 0);
 	CHECK(allocations == 1);
 }
+
+TEST_CASE("PolylineMesh.sharp_split_remains_representable")
+{
+	for (const float scale : { 1.0f, 512.0f })
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 100000, -100000 } })
+	for (const bool closed : { false, true })
+	for (const bool tipFirst : { false, true })
+	{
+		CAPTURE(scale, offset, closed, tipFirst);
+		Array<Vec2> points = (tipFirst ? Array<Vec2>{ { 260, 90 }, { 220, 94 }, { 220, 86 } }
+			: Array<Vec2>{ { 220, 86 }, { 260, 90 }, { 220, 94 } });
+		for (auto& p : points) p += offset;
+		const auto mesh = Solid(points, closed, false, scale);
+		for (const auto& v : mesh.vertices)
+		{
+			CHECK(std::isfinite(v.pos.x));
+			CHECK(std::isfinite(v.pos.y));
+		}
+		// Closed first-vertex splits and ordinary internal splits must both survive
+		// when 0.001 / scale is smaller than one float step at the vertex position.
+		if (closed || not tipFirst) CHECK(mesh.vertices.size() > points.size() * 2);
+	}
+}

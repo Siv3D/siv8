@@ -55,6 +55,7 @@ primitives do not route their contours through that tessellator.
 | Circle dashed frame | Uses the same arc quality independently for each dash | Short dashes grow from 1 to 2, 3, … intervals as needed |
 | Ellipse dashed frame | Short dashes use 2 points when both parameter and normal turns fit one ordinary circle interval; other dashes retain the existing subdivision | Reduces flat portions while preserving detail at high-curvature tips |
 | RoundRect fill / frame / textured fill | Up to 63 intervals per corner, plus straight connections | Matches the curved-part budget; up to 256 contour intervals including the four straight sides |
+| RoundRect balloon fill / frame | Up to 63 intervals per corner, plus two roots and a tip; at most 259 contour points | Fill uses one body/tail partition; frame uses the closed polyline stroke budget |
 | RoundRect dashed frame | Up to 63 intervals per complete corner, proportional subdivision of each covered arc; straight portions use endpoints | No forced 5-point minimum for short dashes; total includes dash endpoints and component boundaries |
 | Circle / RoundRect shadows | Circle quality for outer/blur radius; additional rings or bands | Larger triangle totals reflect the bands, not an increased angular limit |
 | Round line caps / Circle arc caps | Half-circle sweep using half the line width | 4 to 126 intervals per cap; two caps represent another full circular contour |
@@ -123,6 +124,44 @@ single coverage, radius fitting, collapsed corners, empty inputs, allocation
 failure, transforms, scene resolution, and translucent rendering. The optional
 benchmark compares CPU submission against temporary and cached Polygons;
 it does not measure GPU time.
+
+## Rounded speech balloons
+
+```cpp
+const RoundRect body{ 80, 80, 180, 72, 16 };
+body.drawBalloon(target, 24, color);
+body.drawBalloonFrame(target, 24, 4, color);
+```
+
+Both APIs share the placement contract in
+[RoundRect.hpp](../../Siv3D/include/Siv3D/RoundRect.hpp): the center-to-tip ray
+selects a straight side, and the base fits between its corner arcs. Automatic
+side changes are discrete; a fixed-side attachment is outside this API's scope.
+The frame width is centered on the outline, so the target describes the reference
+tip rather than the outermost stroke point. These methods currently take one
+color and do not construct a reusable public geometry object.
+
+[Placement and contour generation](../../Siv3D/src/Siv3D/Renderer2D/RoundRectBalloon.hpp)
+are shared by Metal and D3D11. Four bounded quarter arcs and three tail landmarks
+fit in a stack buffer of 259 points. The fill adds a center vertex and emits the
+convex body fan plus the external tail triangle in one reservation: at most
+260 vertices / 259 triangles, with no overlap between body and tail. It requires
+neither Polygon construction nor general triangulation, and writes directly to
+the renderer's write-only upload cursors.
+
+The frame reuses the closed LineString builder and its retained scratch storage.
+It removes the base edge from the contour, rather than outlining a RoundRect and
+a separate triangle. As with other polyline strokes, thick or sharply turning
+frames can overlap; subpixel points can be simplified. Global stroke unions
+would add substantial cost and are not performed. A missing tail delegates to
+ordinary RoundRect drawing, preserving that path's corner and collapse behavior.
+
+The [interactive gallery](../../Test/Manual/RoundRectBalloon.md) is the canonical
+visual program. Its linked automated tests and opt-in benchmark compare direct,
+temporary Polygon, and cached Polygon drawing with the same outline. Cached
+geometry remains useful for repeated fixed shapes; compare preparation and
+submission separately. RAM and actual Metal upload tests use the shared
+[upload diagnostic](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
 
 ## Short-arc findings
 

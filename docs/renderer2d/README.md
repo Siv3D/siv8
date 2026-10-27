@@ -320,6 +320,7 @@ ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
 measures representative copy kernels and the actual shared Polygon, Mesh2D,
 textured round-rectangle, circle/ellipse arc, hollow rectangle shadow, and closed
 line-string builders (smooth and sharp contours at several point counts),
+and rounded balloon fills and frames,
 with preallocated reusable buffers, no renderer initialization, no GPU commands,
 and no presentation. Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:
@@ -365,6 +366,15 @@ Run each revision repeatedly on an otherwise idle machine:
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2DPreparation.closed_frames_benchmark'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2DPreparation.gradient_lines_benchmark'
 ```
+
+Sharp polyline turns use a small auxiliary segment. Its endpoint must remain
+distinct after conversion to the actual float coordinate representation:
+high zoom reduces the intended displacement, while translation increases the
+local float spacing. The shared builder checks only split corners and advances
+a collapsed endpoint by one float step along its dominant direction. Smooth
+vertices do not take this path. The [polyline tests](../../Test/Test_Vertex2DBuilderPolyline.cpp)
+cover internal and closing corners at both zoomed and translated coordinates;
+use those cases when changing stroke preparation or its numeric representation.
 
 The upload diagnostic also measures these frame/shadow builders and smooth/sharp
 solid/gradient polylines in RAM and both Metal cache modes. Use the solid cases

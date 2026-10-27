@@ -25,6 +25,7 @@
 
 namespace s3d
 {
+	namespace detail::RoundRectBalloon { struct Placement; }
 	struct FloatRect;
 	struct FloatQuad;
 	struct LineStyle;
@@ -159,6 +160,10 @@ namespace s3d
 		virtual void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const PatternParameters& pattern) = 0;
+
+		virtual void addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color) = 0;
+
+		virtual void addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, float thickness, const Float4& color) = 0;
 
 		virtual void addRoundRect(const FloatRect& rect, float r, const Float4& color) = 0;
 

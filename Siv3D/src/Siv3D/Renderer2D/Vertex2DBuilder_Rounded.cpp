@@ -14,6 +14,7 @@
 # include <type_traits>
 # include "Vertex2DBuilder.hpp"
 # include "SuperEllipseTessellation.hpp"
+# include "RoundRectBalloon.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/JoinStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -1279,6 +1280,27 @@ namespace s3d
 			return ((0.0001f < v.lengthSq()) ? v.normalized() : Float2{ -inDir.y, inDir.x });
 		}
 
+		[[nodiscard]]
+		static Float2 CornerSplitPoint(const Float2 point, const Float2 direction, const float epsilon) noexcept
+		{
+			Float2 result = (point + direction * epsilon);
+			// At high zoom or translated coordinates the displacement may round away.
+			// Keep the auxiliary segment nonzero; only sharp corners take this path.
+			if (result == point)
+			{
+				constexpr float Infinity = std::numeric_limits<float>::infinity();
+				if (Abs(direction.x) >= Abs(direction.y))
+				{
+					result.x = std::nextafter(point.x, std::copysign(Infinity, direction.x));
+				}
+				else
+				{
+					result.y = std::nextafter(point.y, std::copysign(Infinity, direction.y));
+				}
+			}
+			return result;
+		}
+
 		struct PreparedPolyline
 		{
 			std::span<const Float2> points;
@@ -1460,7 +1482,7 @@ namespace s3d
 					if (inDir.dot(outDir) < SharpCornerThreshold)
 					{
 						if (result.empty()) copyPrefix(i + 1);
-						result.push_back(current + (CornerSplitDirection(inDir, outDir) * epsilon));
+						result.push_back(CornerSplitPoint(current, CornerSplitDirection(inDir, outDir), epsilon));
 
 						if (trackSrcIndices)
 						{
@@ -1477,7 +1499,7 @@ namespace s3d
 					if (inDir.dot(outDir) < SharpCornerThreshold)
 					{
 						if (result.empty()) copyPrefix(simplifiedSize);
-						result.push_back(pSrc[0] - (CornerSplitDirection(inDir, outDir) * epsilon));
+						result.push_back(CornerSplitPoint(pSrc[0], -CornerSplitDirection(inDir, outDir), epsilon));
 
 						if (trackSrcIndices)
 						{
@@ -2019,6 +2041,43 @@ namespace s3d
 
 			return ((cycle * Math::TwoPiF) + (segment * Math::TwoPiF / segmentCount));
 		}
+	}
+
+	void detail::RoundRectBalloon::MakeContour(Contour& destination, const Placement& placement, const float scale)
+	{
+		destination.count = 0;
+		const auto push = [&](const Vec2 p)
+		{
+			if (destination.count && (destination.vertices[destination.count - 1] == p)) return;
+			destination.vertices[destination.count++] = p;
+		};
+		const auto& body = placement.body;
+		const double r = body.r, l = body.x, t = body.y, right = (l + body.w), b = (t + body.h);
+		const Vec2 centers[]{ { right - r, t + r }, { right - r, b - r }, { l + r, b - r }, { l + r, t + r } };
+		const Vec2 starts[]{ { right - r, t }, { right, b - r }, { l + r, b }, { l, t + r } };
+		const Vec2 ends[]{ { right, t + r }, { right - r, b }, { l, b - r }, { l + r, t } };
+		const uint16 quality = (r ? CalculateCircleQuality(static_cast<float>(r) * scale) : 0);
+		const auto table = QuarterArcTable::GetUnitVectors(quality);
+		for (uint8 corner = 0; corner < 4; ++corner)
+		{
+			push(starts[corner]);
+			for (uint16 i = 1; i < quality; ++i)
+			{
+				const Vec2 cs = table[i];
+				const Vec2 v = ((corner == 0) ? cs : ((corner == 1) ? Vec2{ -cs.y, cs.x }
+					: ((corner == 2) ? -cs : Vec2{ cs.y, -cs.x })));
+				push(centers[corner] + v * r);
+			}
+			push(ends[corner]);
+			if (((corner + 1) % 4) == placement.side)
+			{
+				push(placement.base0);
+				destination.tipIndex = destination.count;
+				push(placement.tip);
+				push(placement.base1);
+			}
+		}
+		if (destination.vertices[destination.count - 1] == destination.vertices[0]) --destination.count;
 	}
 
 	namespace Vertex2DBuilder
@@ -3134,6 +3193,41 @@ namespace s3d
 		//	BuildRoundRect
 		//
 		////////////////////////////////////////////////////////////////
+
+		uint32 BuildRoundRectBalloon(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const Float4& color, const float scale)
+		{
+			detail::RoundRectBalloon::Contour contour;
+			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
+			const uint16 n = contour.count, tip = contour.tipIndex;
+			const uint32 indexCount = (n * 3);
+			auto [vertices, indices, offset] = bufferCreator(n + 1, indexCount);
+			if (not vertices) return 0;
+			vertices[0].set(balloon.body.rect.center(), color);
+			for (uint16 i = 0; i < n; ++i) vertices[i + 1].set(contour.vertices[i], color);
+			// The convex body fan skips the tip. Its base and the tail share an edge,
+			// so neither triangulation nor upload-destination reads are necessary.
+			for (uint16 i = 0; i < n; ++i)
+			{
+				if (i == tip) continue;
+				uint16 next = ((i + 1 == n) ? 0 : (i + 1));
+				if (next == tip) next = ((next + 1 == n) ? 0 : (next + 1));
+				*indices++ = offset;
+				*indices++ = (offset + i + 1);
+				*indices++ = (offset + next + 1);
+			}
+			*indices++ = (offset + tip);
+			*indices++ = (offset + tip + 1);
+			*indices++ = (offset + ((tip + 1 == n) ? 0 : (tip + 1)) + 1);
+			return indexCount;
+		}
+
+		uint32 BuildRoundRectBalloonFrame(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color, const float scale)
+		{
+			detail::RoundRectBalloon::Contour contour;
+			detail::RoundRectBalloon::MakeContour(contour, balloon, scale);
+			return BuildLineString(bufferCreator, LineCap::Flat, LineCap::Flat, contour.points(), none,
+				thickness, false, CloseRing::Yes, color, scale);
+		}
 
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float r, const Float4& color, const float scale)
 		{

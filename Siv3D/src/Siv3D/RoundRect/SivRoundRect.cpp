@@ -23,6 +23,7 @@
 # include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
@@ -603,6 +604,34 @@ namespace s3d
 			);
 		}
 
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawBalloon / drawBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::drawBalloon(const Vec2& target, const double tailWidth, const ColorF& color) const
+	{
+		if ((w <= 0) || (h <= 0)) return *this;
+		if (const auto balloon = detail::RoundRectBalloon::Place(*this, target, tailWidth))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRectBalloon(*balloon, color.toFloat4());
+		}
+		else draw(color);
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawBalloonFrame(const Vec2& target, const double tailWidth, const double thickness, const ColorF& color) const
+	{
+		if ((w <= 0) || (h <= 0) || (thickness <= 0)) return *this;
+		if (const auto balloon = detail::RoundRectBalloon::Place(*this, target, tailWidth))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRectBalloonFrame(*balloon, static_cast<float>(thickness), color.toFloat4());
+		}
+		else drawFrame(thickness, color);
 		return *this;
 	}
 

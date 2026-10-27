@@ -21,6 +21,7 @@
 
 namespace s3d
 {
+	namespace detail::RoundRectBalloon { struct Placement; }
 	using BufferCreatorFunc = FunctionRef<Vertex2DBufferPointer(uint16, uint32)>;
 	struct LineStyle;
 	struct FloatQuad;
@@ -114,6 +115,12 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4(&colors)[4]);
+
+		[[nodiscard]]
+		uint32 BuildRoundRectBalloon(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, const Float4& color, float scale);
+
+		[[nodiscard]]
+		uint32 BuildRoundRectBalloonFrame(const BufferCreatorFunc& bufferCreator, const detail::RoundRectBalloon::Placement& balloon, float thickness, const Float4& color, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float r, const Float4& color, float scale);

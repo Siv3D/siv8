@@ -597,6 +597,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	void CRenderer2D_D3D11::addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), balloon, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloonFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), balloon, thickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
 	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, color, m_commandManager.getCurrentRasterScaling()))

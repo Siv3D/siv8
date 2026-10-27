@@ -1214,6 +1214,33 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawBalloon / drawBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor roundrect_balloon
+		/// @brief 角丸長方形に三角形の尾を付けた吹き出しを塗りつぶします。
+		/// @param target 尾の先端の座標
+		/// @param tailWidth 尾の付け根の全幅。選択した辺の直線部分に収まる幅に縮小します。
+		/// @param color 色
+		/// @return *this
+		/// @pre 引数が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 本体中心から target へ向かう辺に尾を付けます。対角方向での同点は左右の辺を優先します。
+		/// target が外接矩形の内部・境界、tailWidth が 0 以下、または選択辺に直線部分がない場合は本体だけを描きます。本体の幅・高さが 0 以下なら描画しません。
+		const RoundRect& drawBalloon(const Vec2& target, double tailWidth, const ColorF& color = Palette::White) const;
+
+		/// @brief 吹き出しの輪郭を中心とする枠を描きます。
+		/// @param target 基準輪郭の尾の先端。枠の外側の先端とは異なります。
+		/// @param tailWidth 尾の付け根の全幅
+		/// @param thickness 枠の全幅。0 以下なら描画しません。
+		/// @param color 色
+		/// @return *this
+		/// @see @ref roundrect_balloon "吹き出しの配置と入力条件"
+		/// @remark 尾がある場合は閉じた折れ線の枠として描きます。鋭角や太い枠では重なりが生じることがあります。尾を省略する場合は drawFrame() と同じです。
+		const RoundRect& drawBalloonFrame(const Vec2& target, double tailWidth, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawFrame
 		//
 		////////////////////////////////////////////////////////////////

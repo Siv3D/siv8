@@ -10,6 +10,7 @@
 # import <Metal/Metal.h>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Renderer2D/CircleArcArrow.hpp>
+# include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <algorithm>
 # include <chrono>
@@ -344,6 +345,28 @@ int main()
 		Measure("CircleArcArrowPlacement", [&](const int32 i)
 		{
 			const auto p = detail::CircleArcArrow::Place(Circle{ 200, 160, 100.0 + i % 7 }, 0.3 + i * 0.001, 4.7, 20.0 + i % 97);
+			asm volatile("" : : "g"(&p) : "memory");
+		});
+		struct BalloonCase { const char* name; RoundRect body; Vec2 target; double width; float scale; };
+		const BalloonCase balloons[]{
+			{ "ordinary", { 40, 40, 160, 100, 20 }, { 260, 90 }, 40, 1 },
+			{ "square", { 40, 40, 160, 100, 0 }, { 260, 90 }, 40, 1 },
+			{ "clamped", { 40, 40, 160, 100, 20 }, { 280, -10 }, 1000, 1 },
+			{ "maximum", { 40, 40, 160, 100, 20 }, { 260, 90 }, 40, 512 } };
+		for (const auto& c : balloons)
+		for (const bool frame : { false, true })
+		{
+			const auto placement = detail::RoundRectBalloon::Place(c.body, c.target, c.width);
+			MeasureBuilder(device, (std::string("RoundRectBalloon_") + c.name + (frame ? "_frame" : "_fill")).c_str(),
+				[&](const BufferCreatorFunc& allocate)
+			{
+				if (frame) return Vertex2DBuilder::BuildRoundRectBalloonFrame(allocate, *placement, 8, Float4{ 1, 1, 1, 1 }, c.scale);
+				return Vertex2DBuilder::BuildRoundRectBalloon(allocate, *placement, Float4{ 1, 1, 1, 1 }, c.scale);
+			});
+		}
+		Measure("RoundRectBalloonPlacement", [&](const int32 i)
+		{
+			const auto p = detail::RoundRectBalloon::Place(RoundRect{ 40, 40, 160, 100, 12.0 + i % 25 }, { 260, 30.0 + i % 120 }, 40);
 			asm volatile("" : : "g"(&p) : "memory");
 		});
 		[device release];
