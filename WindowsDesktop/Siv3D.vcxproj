@@ -4306,6 +4306,7 @@
   <ItemGroup>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierTessellation.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierArrowGeometry.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PathArrowGeometry.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\CRenderer2D.cpp" />

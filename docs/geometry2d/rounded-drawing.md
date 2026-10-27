@@ -90,6 +90,10 @@ outer widths. See [RectF](../../Siv3D/include/Siv3D/RectF.hpp) and
 [Rect](../../Siv3D/include/Siv3D/Rect.hpp) for normalization and boundary behavior.
 A single large corner may exceed half the short side; fitting uses neighboring
 radius sums. The fill shares its adjustment with `rounded(tl, tr, br, bl)`.
+For a frame, the adjusted base radii grow by `outerThickness` on the outside.
+Inside, subtract `innerThickness`, clamp each radius to zero, then proportionally
+shrink the radii again if neighboring sums exceed the contracted rectangle's
+sides. If the inner width or height is nonpositive, the outer shape is filled.
 
 Both direct APIs write into one renderer buffer reservation without constructing
 a Polygon or allocating a temporary contour. The independent-radius fill uses

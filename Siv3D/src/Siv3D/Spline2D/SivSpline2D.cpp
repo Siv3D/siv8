@@ -262,6 +262,22 @@ namespace s3d
 		return *this;
 	}
 
+	const Spline2D& Spline2D::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color,
+		const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, color, targetError, maxSegmentsPerCurve);
+	}
+
+	const Spline2D& Spline2D::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color,
+		const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addSplineArrow(m_segments, startCap, static_cast<float>(thickness), headSize,
+			color.toFloat4(), targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
 	Spline2D& Spline2D::reverse() noexcept
 	{
 		std::reverse(m_segments.begin(), m_segments.end());

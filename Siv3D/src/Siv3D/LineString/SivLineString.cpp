@@ -1069,6 +1069,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, color);
+	}
+
+	const LineString& LineString::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineArrow(*this, startCap, static_cast<float>(thickness), headSize, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawClosed
 	//
 	////////////////////////////////////////////////////////////////

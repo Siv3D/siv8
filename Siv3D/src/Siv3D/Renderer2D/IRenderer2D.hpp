@@ -65,6 +65,9 @@ namespace s3d
 		// false requests ordinary-curve fallback; allocation failure is handled (true).
 		virtual bool addLineStringArrow(LineCap startCap, std::span<const Vec2> points, const Float2& tip, float thickness, float headWidth, const Float4& color) = 0;
 
+		void addPolylineArrow(std::span<const Vec2> points, LineCap startCap, float thickness, const SizeF& headSize, const Float4& color);
+		void addSplineArrow(std::span<const Bezier3> curves, LineCap startCap, float thickness, const SizeF& headSize, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
+
 		void addSpline(std::span<const Bezier3> curves, CloseRing closeRing, float thickness, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
 
 		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;

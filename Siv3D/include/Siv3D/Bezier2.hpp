@@ -823,12 +823,11 @@ namespace s3d
 		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
 		/// @param maxSegments 軸の分割数の上限（1～4096）
 		/// @pre headSize と thickness は有限であること。幾何・変換・品質の入力条件は draw() と共通です。
-		/// @remark 根元は、終点からの直線距離が矢じりの長さになる曲線上の点のうち、パラメータ t が最大の点です。
-		/// @remark 指定の長さが収まらない場合、終点から曲線までの最大距離に合わせて headSize の両成分を同率で縮小します。軸幅は維持します。
-		/// @remark 三角形の底辺中央を根元に置きます。配置は描画分割から独立して計算し、軸には始点から根元までの曲線を使います。
-		/// @remark 根元で軸が矢じりに逆向きに接続する場合や、切り口が底辺に収まらない場合は、矢じりを省略し、終端を Flat とした曲線全体を描きます。
-		/// @remark 急な曲がりや短い描画区間では接合部が重なる場合があります。自己交差や大きい矢じりとの重なりも、半透明では濃くなります。
-		/// @remark 全制御点が同じ場合は描画しません。折り返しのある曲線では根元の候補の切り替わりで向きが不連続に変わる場合があります。
+		/// @remark 根元（底辺中央）は、終点との直線距離が headSize.y になる曲線上の点のうち、進行順で最後の点です。
+		/// @remark 長さが収まらない場合は終点から曲線までの最大距離に合わせて headSize を同率で縮小し、軸幅は維持します。
+		/// @remark 逆向きの接続や底辺に収まらない切り口では、矢じりを省略して終端 Flat の曲線全体を描きます。
+		/// @remark 形状が重なる部分は、半透明では濃くなる場合があります。
+		/// @remark 全制御点が同じ場合は描画しません。
 		/// @return *this
 		const Bezier2& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 

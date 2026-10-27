@@ -2935,6 +2935,33 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @see @ref linestring_draw_arrow
+		/// @return *this
+		const LineString& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		/// @anchor linestring_draw_arrow
+		/// @brief 折れ線上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 座標と引数は有限で、幾何・変換の中間計算は表現可能であること。
+		/// @see @ref bezier2_draw_arrow "矢じりの配置・縮小・省略と半透明描画"
+		/// @remark 空、1 点、または全点が同じ場合は描画しません。
+		/// @remark 閉じる線分は追加しません。末尾に始点を置くと一周の矢印になります。
+		/// @return *this
+		const LineString& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawClosed
 		//
 		////////////////////////////////////////////////////////////////

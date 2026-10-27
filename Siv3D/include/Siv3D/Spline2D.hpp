@@ -241,6 +241,32 @@ namespace s3d
 		/// @remark 区間の接続点を保持し、一つの折れ線として扱います。線端と閉じた経路の扱いは LineString::draw() / drawClosed() と共通です。
 		const Spline2D& draw(double thickness = 1.0, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
+		/// @brief 経路の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @see @ref spline2d_draw_arrow
+		/// @return *this
+		const Spline2D& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @anchor spline2d_draw_arrow
+		/// @brief 経路上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状。閉じた経路にも適用します。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限。1～4096
+		/// @pre headSize と thickness は有限であること。幾何・変換・品質の入力条件は draw() と共通です。
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		/// @see @ref bezier2_draw_arrow "矢じりの配置・縮小・省略と半透明描画"
+		/// @remark 空の経路、または全区間の制御点が同じ場合は描画しません。
+		/// @remark 閉じた経路では一周し、Flat 始端の切り口中央と先端が一致します。
+		/// @return *this
+		const Spline2D& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
 		/// @brief 始点と終点を入れ替え、経路の向きを反転します。
 		/// @return *this
 		Spline2D& reverse() noexcept;

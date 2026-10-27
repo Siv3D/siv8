@@ -457,6 +457,9 @@
     <ClCompile Include="..\Test\Test_CircleArcArrow.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_PathArrow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp">
       <Filter>Test</Filter>
     </ClCompile>

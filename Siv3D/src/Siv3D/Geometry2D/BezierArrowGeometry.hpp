@@ -50,9 +50,10 @@ namespace s3d::detail
 	// per bracket.
 	template <class Bezier>
 	[[nodiscard]]
-	Optional<BezierArrowHead> FindBezierArrowHead(const Bezier& curve, const double length) noexcept
+	Optional<BezierArrowHead> FindBezierArrowHead(const Bezier& curve, const Vec2 tip, const double length) noexcept
 	{
-		const Vec2 tip = BezierControlPoints(curve).back();
+		// The segment's end must be inside the requested circle. A path searches
+		// backwards and stops at the first crossing, preserving this invariant.
 		// Work relative to the tip, avoiding cancellation in the distance queries.
 		const Bezier relative = curve.movedBy(-tip);
 		const auto controls = BezierControlPoints(relative);
@@ -68,12 +69,13 @@ namespace s3d::detail
 			const double t = ((lo + hi) * 0.5);
 			return BezierArrowHead{ t, curve.pointAt(t), tip, 1.0 };
 		};
-		if ((requestedSq < controls.front().lengthSq()) && BezierArrowRootIsUnique(controls, requestedSq))
+		if ((controls.back() == Vec2{ 0, 0 }) && (requestedSq < controls.front().lengthSq())
+			&& BezierArrowRootIsUnique(controls, requestedSq))
 		{
 			return refine(0.0, 1.0);
 		}
 		const auto stationary = BezierPointStationaryParameters(controls, Vec2{ 0, 0 });
-		double maximumSq = 0.0, maximumT = 1.0, upper = 1.0;
+		double maximumSq = controls.back().lengthSq(), maximumT = 1.0, upper = 1.0;
 		for (size_t i = stationary.count + 1; i > 0; --i)
 		{
 			const double lower = ((i == 1) ? 0.0 : stationary.values[i - 2]);
@@ -94,5 +96,12 @@ namespace s3d::detail
 		}
 		if (maximumSq == 0.0) return none;
 		return BezierArrowHead{ maximumT, curve.pointAt(maximumT), tip, (std::sqrt(maximumSq) / length) };
+	}
+
+	template <class Bezier>
+	[[nodiscard]]
+	Optional<BezierArrowHead> FindBezierArrowHead(const Bezier& curve, const double length) noexcept
+	{
+		return FindBezierArrowHead(curve, BezierControlPoints(curve).back(), length);
 	}
 }

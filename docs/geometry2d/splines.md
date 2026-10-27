@@ -85,6 +85,12 @@ path.draw(3, Palette::White);              // Default quality in render pixels
 path.draw(3, Palette::White, 0.75, 128);    // Target and per-curve segment budget
 ```
 
+Use `path.drawArrow(8, SizeF{ 26, 32 })` for a head at the path endpoint.
+It shares Bezier arrow dimensions and places the base on the original spline,
+even when the head spans multiple intervals. Closed paths form one-turn arrows.
+See [path arrows](bezier-drawing.md#linestring-and-spline2d-arrows) for placement,
+fallback, and the interactive gallery.
+
 `paint()` and `overwrite()` use the same subdivision in Image coordinates and
 select the open or closed stroke from the path itself. Open paths default to
 Round ends and accept independent caps; closed paths ignore the caps.

@@ -15,7 +15,7 @@
 # include <Siv3D/Resource.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Geometry2D/BezierTessellation.hpp>
-# include <Siv3D/Geometry2D/BezierArrowGeometry.hpp>
+# include <Siv3D/Geometry2D/PathArrowGeometry.hpp>
 
 namespace s3d::detail::SuperEllipseTessellation
 {
@@ -241,6 +241,46 @@ namespace s3d
 		if (not addLineStringArrow(startCap, m_curvePoints, placement->tip, thickness, headWidth, color))
 		{
 			detail::CircleArcArrow::WritePoints(m_curvePoints, *placement, thickness, scale, true);
+			addLineString(startCap, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
+		}
+	}
+
+	void ISiv3DRenderer2D::addPolylineArrow(const std::span<const Vec2> points, const LineCap startCap,
+		const float thickness, const SizeF& headSize, const Float4& color)
+	{
+		const auto head = detail::FindLineStringArrowHead(points, headSize.y);
+		if (not head) return;
+		detail::WriteLineStringArrowShaft(m_curvePoints, points, *head);
+		const float headWidth = (thickness + static_cast<float>(headSize.x * head->sizeScale));
+		if (not addLineStringArrow(startCap, m_curvePoints, head->tip, thickness, headWidth, color))
+		{
+			addLineString(startCap, LineCap::Flat, points, none, thickness, false, CloseRing::No, color);
+		}
+	}
+
+	void ISiv3DRenderer2D::addSplineArrow(const std::span<const Bezier3> curves, const LineCap startCap,
+		const float thickness, const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegmentsPerCurve)
+	{
+		const auto head = detail::FindSplineArrowHead(curves, headSize.y);
+		if (not head) return;
+		const Mat3x2 affine = getLocalTransform() * getCameraTransform();
+		const Vec2 sceneScale = getSceneScale();
+		detail::BezierTessellation::Workspace workspace;
+		const auto metricFor = [&](const auto& source)
+		{
+			return detail::BezierTessellation::TransformMetric(source, affine, sceneScale);
+		};
+		detail::BezierTessellation::FlattenPath(m_curvePoints, workspace, curves.first(head->segment), false,
+			targetError, static_cast<uint32>(maxSegmentsPerCurve), metricFor);
+		const detail::BezierTessellation::Curve partial{ curves[head->segment].split(head->parameter).first };
+		detail::BezierTessellation::Append(m_curvePoints, workspace, partial, metricFor(partial), targetError,
+			static_cast<uint32>(maxSegmentsPerCurve));
+		m_curvePoints.back() = head->base;
+		const float headWidth = (thickness + static_cast<float>(headSize.x * head->sizeScale));
+		if (not addLineStringArrow(startCap, m_curvePoints, head->tip, thickness, headWidth, color))
+		{
+			detail::BezierTessellation::FlattenPath(m_curvePoints, workspace, curves, false, targetError,
+				static_cast<uint32>(maxSegmentsPerCurve), metricFor);
 			addLineString(startCap, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
 		}
 	}

@@ -127,6 +127,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @anchor textured_circle_draw_pie
 		/// @brief テクスチャ付きの扇形を描きます。
 		/// @remark UV は円全体への貼り付け位置を維持します。半径には絶対値を使用します。
 		/// @param startAngle 開始角度（ラジアン、上方向から時計回り）
@@ -136,7 +137,7 @@ namespace s3d
 		const Circle& drawPie(double startAngle, double angle, const ColorF& diffuse = Palette::White) const;
 
 		/// @brief テクスチャに中心から外周へのグラデーションを乗算した扇形を描きます。
-		/// @remark UV と半径の扱いは単色の drawPie() と同じです。
+		/// @see @ref textured_circle_draw_pie "UV と半径の扱い"
 		/// @param startAngle 開始角度（ラジアン、上方向から時計回り）
 		/// @param angle 扇形の角度（ラジアン、負は反時計回り）。[-2π, 2π] に制限され、0 では描画しません。
 		/// @param innerColor 中心の乗算色

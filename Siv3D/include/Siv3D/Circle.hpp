@@ -1232,12 +1232,9 @@ namespace s3d
 		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
 		/// @param color 色
 		/// @pre 引数と円の成分は有限で、幾何・変換の中間計算は表現可能であること。
+		/// @see @ref bezier2_draw_arrow "矢じりの配置・縮小・省略と半透明描画"
 		/// @remark 半径は絶対値を使います。半径または角度が 0 なら描画しません。
-		/// @remark 根元は、終点からの直線距離が矢じりの長さになる円弧上の点のうち、進行順で最後の点です。三角形の底辺中央を根元に置きます。
-		/// @remark 長さが収まらない場合、終点から円弧までの最大距離に合わせて headSize の両成分を同率で縮小します。軸幅は維持します。
-		/// @remark 配置は描画分割から独立し、軸には始点から根元までの円弧を使います。逆向きの接続や、切り口が底辺に収まらない場合は矢じりを省略し、終端を Flat とした円弧全体を描きます。
-		/// @remark 一周では先端と始点が一致します。始端が Flat なら、その切り口の中央が先端になります。
-		/// @remark 太い軸、大きい矢じり、短い描画区間では形状が重なる場合があり、半透明では濃くなります。
+		/// @remark 一周では先端と始点が一致し、Flat 始端の切り口中央に先端が重なります。
 		/// @return *this
 		const Circle& drawArcArrow(LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
@@ -1343,7 +1340,7 @@ namespace s3d
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param color 弧の色
-		/// @remark 負の angle でも startCap は開始角側です。角度 0 では指定した線端だけを描きます。全周では Square の延長を省きます。
+		/// @remark 角度 0 では指定した線端だけを描きます。全周では Square の延長を省きます。
 		/// @see @ref circle_draw_arc_caps
 		/// @return *this
 		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;

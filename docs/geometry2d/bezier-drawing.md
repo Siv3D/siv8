@@ -69,6 +69,8 @@ The source curve's endpoint is the tip. A point on the curve becomes the base
 center, and the triangle points from that base to the tip. Large heads follow
 this chord instead of the endpoint tangent, without bending the source curve.
 See the public headers linked above for selection, shrinking, and empty-input rules.
+On reversing curves, the last eligible root can switch as the head size or curve
+changes, so the head direction can change abruptly.
 
 Placement uses curve coordinates and is independent of tessellation quality and
 transforms. The remaining shaft uses the adaptive drawing quality and segment
@@ -138,6 +140,49 @@ The [upload diagnostic](../../tools/renderer2d-index-upload.mm) also measures th
 same preparation and mesh paths in ordinary RAM and both Metal cache modes, plus
 analytic placement alone. Build and interpret it using the
 [upload measurement guide](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
+
+### LineString and Spline2D arrows
+
+```cpp
+const LineString path{ { 40, 220 }, { 160, 60 }, { 300, 220 }, { 440, 120 } };
+path.drawArrow(8, SizeF{ 26, 32 }, Palette::Skyblue);
+const auto spline = Spline2D::FromCatmullRom(path);
+spline.drawArrow(LineCap::Round, 8, SizeF{ 80, 100 }, ColorF{ 0.3, 0.7, 1.0, 0.5 });
+```
+
+[`LineString::drawArrow`](../../Siv3D/include/Siv3D/LineString.hpp) and
+[`Spline2D::drawArrow`](../../Siv3D/include/Siv3D/Spline2D.hpp) share the Bezier
+arrow dimensions, last-root selection, shrinking, and omitted-head fallback.
+LineString uses the supplied segments, with no implicit closing edge. Repeat the
+first point at the end to form a one-turn arrow. A closed Spline2D already contains
+the closing interval, so its tip meets its start. Arrow drawing treats both as a
+traversal with a start cap; even the omitted-head fallback has a Flat end.
+
+The [path placement helper](../../Siv3D/src/Siv3D/Geometry2D/PathArrowGeometry.hpp)
+searches backwards. LineString solves the last line/circle intersection and uses
+vertex distances for oversized heads; squared distance is convex on each segment.
+Spline2D queries the original cubic intervals against the final endpoint, stopping
+at the last root. Oversized heads use the maximum over the entire path, including
+interior extrema of earlier intervals. Both searches use constant auxiliary
+storage. Repeated vertices and constant intervals do not introduce new caps.
+
+Spline head placement is independent of tessellation and transforms. Each retained
+cubic interval uses the same `targetError` and `maxSegmentsPerCurve` as `draw()`;
+the interval containing the base is split before tessellation. The renderer reuses
+its point array and the existing arrow mesh builder. LineString fallback can use
+the original points directly; Spline fallback tessellates the full path.
+
+The [shared gallery](../../Test/Manual/BezierArrow.md) covers both path types.
+[PathArrow tests](../../Test/Test_PathArrow.cpp) cover roots spanning intervals,
+interior maxima, repeated points, reversed and closed paths, single-curve rendering
+equivalence, translucency, transforms, and invalid quality arguments. Its opt-in
+benchmark compares retained paths with their ordinary drawing, including large
+heads that shorten the shaft. Creation and GPU execution are excluded; on macOS,
+thread CPU time is also reported to separate scheduling delays from submission work.
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=PathArrow.submission_benchmark'
+```
 
 ## Implementation boundaries
 

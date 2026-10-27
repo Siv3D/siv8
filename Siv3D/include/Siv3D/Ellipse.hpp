@@ -1172,6 +1172,7 @@ namespace s3d
 		/// @return *this
 		const Ellipse& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @anchor ellipse_draw_arc_gradient
 		/// @brief 平らな線端（Flat）で、楕円の法線方向に幅を持つ弧を描きます。
 		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
 		/// @param angle 弧の角度（ラジアン、負は反時計回り）
@@ -1225,8 +1226,7 @@ namespace s3d
 		/// @param outerThickness 楕円から外側への太さ
 		/// @param startColor 始点側の色
 		/// @param endColor 終点側の色
-		/// @see @ref ellipse_draw_arc
-		/// @remark 色は線端の延長を含む長さに沿って補間します。
+		/// @see @ref ellipse_draw_arc_gradient
 		/// @return *this
 		const Ellipse& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
@@ -1275,8 +1275,7 @@ namespace s3d
 		/// @param outerThickness 楕円から外側への太さ
 		/// @param startColor 始点側の色
 		/// @param endColor 終点側の色
-		/// @see @ref ellipse_draw_arc
-		/// @remark 色は線端の延長を含む長さに沿って補間します。
+		/// @see @ref ellipse_draw_arc_gradient
 		/// @return *this
 		const Ellipse& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
