@@ -8,6 +8,7 @@
 # pragma once
 # include "Bezier.hpp"
 # include "LineString.hpp"
+# include "LineStyle.hpp"
 # include "LineCap.hpp"
 # include "Optional.hpp"
 # include "CatmullRomParameterization.hpp"
@@ -240,6 +241,19 @@ namespace s3d
 		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
 		/// @remark 区間の接続点を保持し、一つの折れ線として扱います。線端と閉じた経路の扱いは LineString::draw() / drawClosed() と共通です。
 		const Spline2D& draw(double thickness = 1.0, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
+		/// @brief 指定した線のスタイルで経路を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegmentsPerCurve 1 曲線あたりの分割数の上限。1～4096
+		/// @remark 破線は適応分割した折れ線の距離で配置します。変換や分割設定により配置が変わることがあります。
+		/// @remark 閉じた経路の閉じ目は LineString::drawClosed() と同じ扱いです。
+		/// @see draw(), @ref styled_path_drawing "破線描画の入力条件と制約"
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		/// @return *this
+		const Spline2D& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
 		/// @brief 経路の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
 		/// @param thickness 軸の太さ。0 以下なら描画しません。

@@ -360,6 +360,29 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildRoundDot
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRoundDot(const BufferCreatorFunc& bufferCreator, const Float2& start, const Float2& end,
+			const float thickness, const Float2& uRange, const Float4& color)
+		{
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(4, 6);
+			if (not pVertex) return 0;
+			const Float2 delta = (end - start);
+			const float length = delta.length();
+			const Float2 direction = (length ? (delta / length) : Float2{ 1, 0 });
+			const Float2 normal = (Float2{ -direction.y, direction.x } * (thickness * 0.5f));
+			pVertex[0].set((start + normal), Float2{ uRange.x, 1 }, color);
+			pVertex[1].set((start - normal), Float2{ uRange.x, 0 }, color);
+			pVertex[2].set((end + normal), Float2{ uRange.y, 1 }, color);
+			pVertex[3].set((end - normal), Float2{ uRange.y, 0 }, color);
+			for (const auto index : RectIndexTable) *pIndex++ = (indexOffset + index);
+			return 6;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildTriangle
 		//
 		////////////////////////////////////////////////////////////////

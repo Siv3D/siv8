@@ -1067,6 +1067,13 @@ namespace s3d
 		return *this;
 	}
 
+	const LineString& LineString::draw(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineStyled(m_vertices, CloseRing::No, static_cast<float>(thickness), style, color.toFloat4());
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawArrow
@@ -1151,6 +1158,14 @@ namespace s3d
 		
 		return *this;
 	}
+
+	const LineString& LineString::drawClosed(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineStyled(m_vertices, CloseRing::Yes, static_cast<float>(thickness), style, color.toFloat4());
+		return *this;
+	}
+
 
 	////////////////////////////////////////////////////////////////
 	//

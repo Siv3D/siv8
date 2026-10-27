@@ -19,6 +19,12 @@ implemented rotated ellipses and elliptical arcs link to the Renderer2D guide,
 Bezier and circle arc arrows link to the curve drawing guide, and independent-corner rectangles
 and rounded speech balloons link to the rounded drawing guide.
 
+## Dashed curves and paths
+
+[Dashed drawing](dashed-drawing.md) covers `draw(LineStyle, ...)`, fixed patterns/phase
+settings, closed seams, and the accepted corner/overlap limits. It links the
+public-API manual program, tests, and submission benchmark.
+
 ## Spline paths
 
 [Spline paths](splines.md) explains reusable curves, distance-based movement,

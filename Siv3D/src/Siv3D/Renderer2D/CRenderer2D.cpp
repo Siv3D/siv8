@@ -152,6 +152,19 @@ namespace s3d
 			detail::BezierTessellation::Flatten(destination, workspace, source, metric, targetError, static_cast<uint32>(maxSegments));
 		}
 
+		void TessellatePath(Array<Vec2>& destination, const std::span<const Bezier3> curves, const CloseRing closeRing,
+			ISiv3DRenderer2D& renderer, const double targetError, const int32 maxSegmentsPerCurve)
+		{
+			const Mat3x2 affine = renderer.getLocalTransform() * renderer.getCameraTransform();
+			const Vec2 sceneScale = renderer.getSceneScale();
+			detail::BezierTessellation::Workspace workspace;
+			detail::BezierTessellation::FlattenPath(destination, workspace, curves, static_cast<bool>(closeRing), targetError,
+				static_cast<uint32>(maxSegmentsPerCurve), [&](const auto& source)
+				{
+					return detail::BezierTessellation::TransformMetric(source, affine, sceneScale);
+				});
+		}
+
 		template <class Bezier>
 		void DrawBezierArrow(ISiv3DRenderer2D& renderer, Array<Vec2>& points, const Bezier& curve,
 			const LineCap startCap, const float thickness, const SizeF& headSize, const Float4& color,
@@ -278,6 +291,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addPolylineStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addPolylineStyled(const std::span<const Vec2> points, const CloseRing closeRing,
+		const float thickness, const LineStyle& style, const Float4& color)
+	{
+		const float width = Abs(thickness);
+		if (style.type == LinePattern::Solid)
+		{
+			addLineString(style.cap, style.cap, points, none, width, false, closeRing, color);
+			return;
+		}
+		if (not detail::DashedPath::Split(m_dashedPath, points, static_cast<bool>(closeRing), width, style)) return;
+		for (const auto& run : m_dashedPath.runs)
+		{
+			addLineString(LineCap::Flat, LineCap::Flat, m_dashedPath.view(run), none, width, false,
+				(run.closed ? CloseRing::Yes : CloseRing::No), color);
+		}
+		for (const auto& dot : m_dashedPath.dots)
+		{
+			addRoundDot(dot.start, dot.end, width, dot.uRange, color);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addPolylineArrow
 	//
 	////////////////////////////////////////////////////////////////
@@ -349,6 +389,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addBezierStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addBezierStyled(const Bezier2& curve, const float thickness, const LineStyle& style,
+		const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		Tessellate(m_curvePoints, curve, *this, targetError, maxSegments);
+		addPolylineStyled(m_curvePoints, CloseRing::No, thickness, style, color);
+	}
+
+	void ISiv3DRenderer2D::addBezierStyled(const Bezier3& curve, const float thickness, const LineStyle& style,
+		const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		Tessellate(m_curvePoints, curve, *this, targetError, maxSegments);
+		addPolylineStyled(m_curvePoints, CloseRing::No, thickness, style, color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addBezierArrow
 	//
 	////////////////////////////////////////////////////////////////
@@ -392,15 +452,21 @@ namespace s3d
 	void ISiv3DRenderer2D::addSpline(const std::span<const Bezier3> curves, const CloseRing closeRing,
 		const float thickness, const Float4& color, const double targetError, const int32 maxSegmentsPerCurve)
 	{
-		const Mat3x2 affine = getLocalTransform() * getCameraTransform();
-		const Vec2 sceneScale = getSceneScale();
-		detail::BezierTessellation::Workspace workspace;
-		detail::BezierTessellation::FlattenPath(m_curvePoints, workspace, curves, static_cast<bool>(closeRing), targetError,
-			static_cast<uint32>(maxSegmentsPerCurve), [&](const auto& source)
-			{
-				return detail::BezierTessellation::TransformMetric(source, affine, sceneScale);
-			});
+		TessellatePath(m_curvePoints, curves, closeRing, *this, targetError, maxSegmentsPerCurve);
 		addLineString(LineCap::Square, LineCap::Square, m_curvePoints, none, Abs(thickness), false, closeRing, color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addSplineStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addSplineStyled(const std::span<const Bezier3> curves, const CloseRing closeRing,
+		const float thickness, const LineStyle& style, const Float4& color, const double targetError, const int32 maxSegmentsPerCurve)
+	{
+		TessellatePath(m_curvePoints, curves, closeRing, *this, targetError, maxSegmentsPerCurve);
+		addPolylineStyled(m_curvePoints, closeRing, thickness, style, color);
 	}
 
 	////////////////////////////////////////////////////////////////

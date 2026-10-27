@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "LineStyle.hpp"
 # include "PointVector.hpp"
 # include "LineString.hpp"
 # include "ListUtility.hpp"
@@ -797,6 +798,17 @@ namespace s3d
 		/// @see @ref bezier2_draw_gradient
 		/// @return *this
 		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 指定した線のスタイルで曲線を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 破線は適応分割した折れ線の距離で配置します。変換や分割設定により配置が変わることがあります。
+		/// @see draw(), @ref styled_path_drawing "破線描画の入力条件と制約"
+		/// @return *this
+		const Bezier2& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//

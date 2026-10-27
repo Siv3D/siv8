@@ -140,6 +140,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRoundDot
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addRoundDot(const Float2& start, const Float2& end, const float thickness, const Float2& uRange, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundDot(std::bind_front(&CRenderer2D_Metal::createBuffer, this), start, end, thickness, uRange, color))
+		{
+			Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addArrow
 	//
 	////////////////////////////////////////////////////////////////

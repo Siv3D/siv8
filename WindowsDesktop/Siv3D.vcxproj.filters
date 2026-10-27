@@ -9518,6 +9518,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierArrowGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DashedPath.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PathArrowGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>

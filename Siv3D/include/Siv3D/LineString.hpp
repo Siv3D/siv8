@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "LineStyle.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
 # include "Array.hpp"
@@ -2933,6 +2934,17 @@ namespace s3d
 		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, std::span<const ColorF> colors) const;
 
+		/// @anchor styled_path_drawing
+		/// @brief 指定した線のスタイルで経路を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @pre 座標・太さ・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark Solid の線端は通常の draw() と共通です。非実線では長さが 0、太さが 0、または連結前の破線・点が 4096 個を超える場合は描画しません。
+		/// @remark 非実線の cap は経路全体の端に適用し、Round は Square と同じ扱いです。各破線の切り口は Flat、RoundDot は経路上の丸い点です。角や急な曲がりでは輪郭が歪み、重なる部分は複数回合成されます。
+		/// @return *this
+		const LineString& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawArrow
@@ -3014,6 +3026,15 @@ namespace s3d
 		/// @param colors 頂点ごとの色
 		/// @return *this
 		const LineString& drawClosed(double thickness, std::span<const ColorF> colors) const;
+
+		/// @brief 指定した線のスタイルで終点と始点を結んだ経路を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @remark cap は無視し、周期は周長に合わせて調整しません。閉じ目をまたぐ破線は連結し、RoundDot は中心が一周内にある点を描きます。
+		/// @see @ref styled_path_drawing "破線描画の入力条件と制約"
+		/// @return *this
+		const LineString& drawClosed(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

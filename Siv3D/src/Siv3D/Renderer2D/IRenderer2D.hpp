@@ -20,6 +20,7 @@
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
+# include "../Geometry2D/DashedPath.hpp"
 # include "ColorFillDirection.hpp"
 # include <Siv3D/ShaderStage.hpp>
 
@@ -77,6 +78,14 @@ namespace s3d
 		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
 		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundDot
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual void addRoundDot(const Float2& start, const Float2& end, float thickness, const Float2& uRange, const Float4& color) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -453,6 +462,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addPolylineStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addPolylineStyled(std::span<const Vec2> points, CloseRing closeRing, float thickness, const LineStyle& style, const Float4& color);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addPolylineArrow
 		//
 		////////////////////////////////////////////////////////////////
@@ -484,6 +501,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addBezierStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addBezierStyled(const Bezier2& curve, float thickness, const LineStyle& style, const Float4& color, double targetError, int32 maxSegments);
+
+		void addBezierStyled(const Bezier3& curve, float thickness, const LineStyle& style, const Float4& color, double targetError, int32 maxSegments);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addBezierArrow
 		//
 		////////////////////////////////////////////////////////////////
@@ -509,6 +536,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addSpline(std::span<const Bezier3> curves, CloseRing closeRing, float thickness, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addSplineStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addSplineStyled(std::span<const Bezier3> curves, CloseRing closeRing, float thickness, const LineStyle& style, const Float4& color, double targetError, int32 maxSegmentsPerCurve);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -808,6 +843,8 @@ namespace s3d
 		static std::unique_ptr<Texture> CreateShadowTexture();
 
 	private:
+
+		detail::DashedPath::Workspace m_dashedPath;
 
 		Array<Vec2> m_curvePoints;
 	};

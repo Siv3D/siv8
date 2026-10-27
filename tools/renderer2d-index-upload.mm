@@ -222,6 +222,14 @@ int main()
 			[ib release];
 			[vb release];
 		}
+		for (const bool clipped : { false, true })
+		{
+			MeasureBuilder(device, (clipped ? "RoundDotClipped" : "RoundDot"), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildRoundDot(allocate, { 10, 20 }, { 16, 24 }, 8,
+					(clipped ? Float2{ 0.25f, 0.875f } : Float2{ 0, 1 }), Float4{ 0.2f, 0.4f, 0.6f, 0.5f });
+			});
+		}
 		std::vector<Vertex2D> meshVertices(source.size());
 		for (size_t i = 0; i < source.size(); ++i)
 		{

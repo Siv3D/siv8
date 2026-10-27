@@ -262,6 +262,15 @@ namespace s3d
 		return *this;
 	}
 
+	const Spline2D& Spline2D::draw(const LineStyle& style, const double thickness, const ColorF& color, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addSplineStyled(m_segments, isClosed() ? CloseRing::Yes : CloseRing::No,
+			static_cast<float>(thickness), style, color.toFloat4(), targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
 	const Spline2D& Spline2D::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color,
 		const double targetError, const int32 maxSegmentsPerCurve) const
 	{

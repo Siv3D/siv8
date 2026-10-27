@@ -528,6 +528,13 @@ namespace s3d
 		return *this;
 	}
 
+	const Bezier2& Bezier2::draw(const LineStyle& style, const double thickness, const ColorF& color, const double targetError, const int32 maxSegments) const
+	{
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addBezierStyled(*this, static_cast<float>(thickness), style, color.toFloat4(), targetError, maxSegments);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawArrow
