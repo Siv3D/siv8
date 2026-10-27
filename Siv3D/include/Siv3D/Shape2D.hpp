@@ -253,6 +253,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	Crescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月の形状を作成します。
+		/// @param circle 元の円
+		/// @param openingAngle 開く方向（ラジアン）。12 時方向が 0、時計回りが正です。
+		/// @param width 円中心を通る開口方向の線で測った厚み
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 作成した形状。半径が 0、または width が 0 以下なら空の形状
+		/// @see @ref circle_crescent "三日月の定義と入力条件"
+		[[nodiscard]]
+		static Shape2D Crescent(const Circle& circle, double openingAngle, double width, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Teardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円と先端の凸包である、しずくの形状を作成します。
+		/// @param circle 丸い膨らみの円
+		/// @param tip 先端の座標
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 作成した形状。半径が 0 なら空の形状
+		/// @see @ref circle_teardrop "しずくの定義と入力条件"
+		[[nodiscard]]
+		static Shape2D Teardrop(const Circle& circle, const Vec2& tip, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Heart
 		//
 		////////////////////////////////////////////////////////////////

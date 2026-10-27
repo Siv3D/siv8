@@ -15,6 +15,7 @@
 # include "Vertex2DBuilder.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include "RoundRectBalloon.hpp"
+# include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/JoinStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -2751,6 +2752,56 @@ namespace s3d
 			WriteOpenFanIndices(pIndex, indexOffset, Quality);
 
 			return IndexCount;
+		}
+
+		template <class Placement>
+		static uint32 BuildCircularShape(const BufferCreatorFunc& bufferCreator, const Placement& placement, const Float4& color, const float scale)
+		{
+			if (placement.circleOnly)
+			{
+				return BuildCircle(bufferCreator, placement.circle.center, static_cast<float>(placement.circle.r),
+					ColorFillDirection::InOut, color, color, scale);
+			}
+			const uint16 quality = (CalculateCircleQuality(static_cast<float>(placement.circle.r) * scale) * 4);
+			const uint16 count = detail::CircularShapes::VertexCount(placement, quality);
+			const uint32 indexCount = ((count - 2) * 3);
+			auto [vertices, indices, offset] = bufferCreator(count, indexCount);
+			if (not vertices) return 0;
+			detail::CircularShapes::Write(placement, quality,
+				[&](uint16 i, const Float2& point) { vertices[i].set(point, color); },
+				[&](uint16 a, uint16 b, uint16 c)
+				{
+					*indices++ = (offset + a);
+					*indices++ = (offset + b);
+					*indices++ = (offset + c);
+				});
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 BuildCircleCrescent(const BufferCreatorFunc& bufferCreator, const Circle& circle, const double openingAngle, const double width, const Float4& color, const float scale)
+		{
+			const auto placement = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
+			if (not placement) return 0;
+			return BuildCircularShape(bufferCreator, *placement, color, scale);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 BuildCircleTeardrop(const BufferCreatorFunc& bufferCreator, const Circle& circle, const Vec2& tip, const Float4& color, const float scale)
+		{
+			const auto placement = detail::CircularShapes::PlaceTeardrop(circle, tip);
+			if (not placement) return 0;
+			return BuildCircularShape(bufferCreator, *placement, color, scale);
 		}
 
 		////////////////////////////////////////////////////////////////

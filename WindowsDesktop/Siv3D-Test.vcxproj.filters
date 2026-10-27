@@ -466,6 +466,9 @@
     <ClCompile Include="..\Test\Test_DoubleHeadedArrow.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_CircularShapes.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp">
       <Filter>Test</Filter>
     </ClCompile>

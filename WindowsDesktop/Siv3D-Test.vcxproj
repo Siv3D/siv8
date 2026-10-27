@@ -142,6 +142,7 @@
     <ClCompile Include="..\Test\Test_CircleArcArrow.cpp" />
     <ClCompile Include="..\Test\Test_PathArrow.cpp" />
     <ClCompile Include="..\Test\Test_DoubleHeadedArrow.cpp" />
+    <ClCompile Include="..\Test\Test_CircularShapes.cpp" />
     <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
     <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
     <ClInclude Include="..\Test\BezierTessellationLegacy.hpp" />

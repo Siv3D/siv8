@@ -420,6 +420,36 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircleCrescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircleCrescent(const Circle& circle, const double openingAngle, const double width, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleCrescent(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			circle, openingAngle, width, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleTeardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircleTeardrop(const Circle& circle, const Vec2& tip, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleTeardrop(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
+			circle, tip, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addEllipse
 	//
 	////////////////////////////////////////////////////////////////

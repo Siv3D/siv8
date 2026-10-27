@@ -137,6 +137,7 @@
 		B1DCDFA333C14CD5BC27EA57 /* BezierArrowGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 484E64BAAE6444DCA17404B2 /* BezierArrowGeometry.hpp */; };
 		993B325A8D074F79A4254F20 /* PathArrowGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A9489765188E41B9BDD442DC /* PathArrowGeometry.hpp */; };
 		F403E9A8A3F3429580C1592A /* DoubleHeadedArrowGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 548C8F1976A84BC8952C601F /* DoubleHeadedArrowGeometry.hpp */; };
+		1016CCB3F94F47C895DE2674 /* CircularShapes.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 71FA8743C17C40C8AC48D308 /* CircularShapes.hpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
 		B8E21B2076484F32A048A001 /* Test_BezierTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */; };
 		6064B044D57A48688C26F31A /* Test_BezierDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */; };
@@ -144,6 +145,7 @@
 		AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */; };
 		0B4FAB28DF5B421EBCCEA926 /* Test_PathArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */; };
 		9D6B29FD8EC740BAA28DDC39 /* Test_DoubleHeadedArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */; };
+		A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */; };
 		E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		184A2FF02587E88823E7452F /* Test_DisjointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */; };
@@ -3587,6 +3589,7 @@
 		484E64BAAE6444DCA17404B2 /* BezierArrowGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierArrowGeometry.hpp; sourceTree = "<group>"; };
 		A9489765188E41B9BDD442DC /* PathArrowGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PathArrowGeometry.hpp; sourceTree = "<group>"; };
 		548C8F1976A84BC8952C601F /* DoubleHeadedArrowGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DoubleHeadedArrowGeometry.hpp; sourceTree = "<group>"; };
+		71FA8743C17C40C8AC48D308 /* CircularShapes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularShapes.hpp; sourceTree = "<group>"; };
 		D94C71C8E32144768219A413 /* Test_Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A002 /* Test_BezierTessellation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierTessellation.cpp; sourceTree = "<group>"; };
 		DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierDraw.cpp; sourceTree = "<group>"; };
@@ -3594,6 +3597,7 @@
 		C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircleArcArrow.cpp; sourceTree = "<group>"; };
 		2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PathArrow.cpp; sourceTree = "<group>"; };
 		D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DoubleHeadedArrow.cpp; sourceTree = "<group>"; };
+		3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircularShapes.cpp; sourceTree = "<group>"; };
 		67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CurveAdaptive.cpp; sourceTree = "<group>"; };
 		B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationStudy.hpp; sourceTree = "<group>"; };
 		B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BezierTessellationLegacy.hpp; sourceTree = "<group>"; };
@@ -7357,6 +7361,7 @@
 				C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */,
 				2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */,
 				D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */,
+				3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */,
 				67EB559CEFD649CA859C5726 /* Test_CurveAdaptive.cpp */,
 				B8E21B2076484F32A048A003 /* BezierTessellationStudy.hpp */,
 				B837C20DEFFA41D0A76A1EF6 /* BezierTessellationLegacy.hpp */,
@@ -10159,6 +10164,7 @@
 				484E64BAAE6444DCA17404B2 /* BezierArrowGeometry.hpp */,
 				A9489765188E41B9BDD442DC /* PathArrowGeometry.hpp */,
 				548C8F1976A84BC8952C601F /* DoubleHeadedArrowGeometry.hpp */,
+				71FA8743C17C40C8AC48D308 /* CircularShapes.hpp */,
 				F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */,
 				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
 				0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */,
@@ -16451,6 +16457,7 @@
 				B1DCDFA333C14CD5BC27EA57 /* BezierArrowGeometry.hpp in Headers */,
 				993B325A8D074F79A4254F20 /* PathArrowGeometry.hpp in Headers */,
 				F403E9A8A3F3429580C1592A /* DoubleHeadedArrowGeometry.hpp in Headers */,
+				1016CCB3F94F47C895DE2674 /* CircularShapes.hpp in Headers */,
 				D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
@@ -17236,6 +17243,7 @@
 				AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */,
 				0B4FAB28DF5B421EBCCEA926 /* Test_PathArrow.cpp in Sources */,
 				9D6B29FD8EC740BAA28DDC39 /* Test_DoubleHeadedArrow.cpp in Sources */,
+				A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */,
 				E01AF9096A8445F2A9AEF0E7 /* Test_CurveAdaptive.cpp in Sources */,
 				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				9E724BE5EFB04B80B5B0062D /* Test_Spline2DImage.cpp in Sources */,

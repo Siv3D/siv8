@@ -47,6 +47,7 @@ primitives do not route their contours through that tessellator.
 | Drawing path | Detail criterion and limit | Assessment |
 | --- | --- | --- |
 | Circle fill / frame | Radius / outer radius; `4*Q`, at most 252 contour intervals | Matches the reference budget |
+| Circle crescent / teardrop | Crescent: at most 252 paired ray intervals (504 boundary vertices); teardrop: at most 252 exposed arc intervals (254 vertices) | Both preserve one ordered boundary; see [circular shapes](circular-shapes.md#geometry-and-upload-construction) |
 | Ellipse fill / frame, including rotated drawing | Larger axis; frames add the larger absolute inner/outer width; `4*Q`, at most 252 | Bounded like Circle; uniform parameter sampling may be conservative for elongated ellipses |
 | Circle pie / arc; Ellipse pie; TexturedCircle pie | Radius or larger axis and sweep; 1 to 252 intervals | Short pieces use the same angular density as ordinary circles, with no forced 4-interval minimum |
 | Ellipse arc | Merges parameter-angle and normal-angle samples within 252 body intervals; caps have separate budgets | Preserves curved offset edges at elongated tips without exceeding the circle budget |

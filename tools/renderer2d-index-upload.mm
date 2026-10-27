@@ -368,6 +368,22 @@ int main()
 			const auto p = detail::CircleArcArrow::Place(Circle{ 200, 160, 100.0 + i % 7 }, 0.3 + i * 0.001, 4.7, 20.0 + i % 97);
 			asm volatile("" : : "g"(&p) : "memory");
 		});
+		struct CircularCase { const char* name; double radius, width, tipDistance; };
+		for (const auto& c : { CircularCase{ "ordinary", 64, 36, 110 }, CircularCase{ "thin", 64, 0.1, 64.01 },
+			CircularCase{ "near_circle", 64, 127.9, 64.001 }, CircularCase{ "circle", 64, 128, 40 },
+			CircularCase{ "maximum", 1000, 1999, 2500 } })
+		{
+			const Circle circle{ 200, 160, c.radius };
+			MeasureBuilder(device, (std::string("Crescent_") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleCrescent(allocate, circle, 0.7, c.width, Float4{ 1, 1, 1, 0.5f }, 1);
+			});
+			MeasureBuilder(device, (std::string("Teardrop_") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleTeardrop(allocate, circle, circle.center + Vec2{ c.tipDistance, 0 },
+					Float4{ 1, 1, 1, 0.5f }, 1);
+			});
+		}
 		struct BalloonCase { const char* name; RoundRect body; Vec2 target; double width; float scale; };
 		const BalloonCase balloons[]{
 			{ "ordinary", { 40, 40, 160, 100, 20 }, { 260, 90 }, 40, 1 },

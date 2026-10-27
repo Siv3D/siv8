@@ -1403,6 +1403,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor circle_crescent
+		/// @brief 同じ半径の円をずらして差し引いた三日月を塗りつぶします。
+		/// @param openingAngle 開く方向（ラジアン）。12 時方向が 0、時計回りが正です。
+		/// @param width 円中心を通る開口方向の線で測った厚み。0 以下なら描画せず、直径以上なら円を描きます。
+		/// @param color 色
+		/// @pre 入力が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 半径は絶対値を使い、0 なら描画しません。差し引く円の中心を openingAngle 方向へ width だけ移動します。
+		/// @return *this
+		const Circle& drawCrescent(double openingAngle, double width, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor circle_teardrop
+		/// @brief 円と先端の凸包である、しずくの外形を塗りつぶします。
+		/// @param tip 先端の座標。円の内部・境界なら円を描きます。
+		/// @param color 色
+		/// @pre 入力が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 半径は絶対値を使い、0 なら描画しません。円の外部の先端とは二本の接線で接続します。
+		/// @return *this
+		const Circle& drawTeardrop(const Vec2& tip, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawSegment
 		//
 		////////////////////////////////////////////////////////////////

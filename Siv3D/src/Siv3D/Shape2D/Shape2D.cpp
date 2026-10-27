@@ -12,6 +12,7 @@
 # include <array>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -25,6 +26,20 @@ namespace s3d
 {
 	namespace
 	{
+		template <class Placement>
+		Shape2D MakeCircularShape(const Placement& placement, const QualityFactor& quality)
+		{
+			const uint16 fullQuality = static_cast<uint16>(quality.toPointsPerCircle(placement.circle.r).value());
+			const uint16 count = detail::CircularShapes::VertexCount(placement, fullQuality);
+			Array<Float2> vertices(count);
+			Array<TriangleIndex> indices(count - 2);
+			size_t triangle = 0;
+			detail::CircularShapes::Write(placement, fullQuality,
+				[&](uint16 i, const Float2& point) { vertices[i] = point; },
+				[&](uint16 a, uint16 b, uint16 c) { indices[triangle++] = { a, b, c }; });
+			return { std::move(vertices), std::move(indices) };
+		}
+
 		[[nodiscard]]
 		static RectF MakeRectFromMinMax(const double minX, const double minY, const double maxX, const double maxY) noexcept
 		{
@@ -510,6 +525,32 @@ namespace s3d
 
 		const RectF boundingRect = upStairs ? RectF{ (base.x - w), (base.y - h), w, h } : RectF{ base.x, (base.y - h), w, h };
 		return{ std::move(vertices), std::move(indices), boundingRect };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Crescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Crescent(const Circle& circle, const double openingAngle, const double width, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Teardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Teardrop(const Circle& circle, const Vec2& tip, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceTeardrop(circle, tip);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
