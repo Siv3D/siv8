@@ -276,6 +276,47 @@ int main()
 					contour, none, 8, false, CloseRing::Yes, Float4{ 1, 1, 1, 0.5f }, 1);
 			});
 		}
+		for (const float radius : { 1.0f, 40.0f, 1000.0f })
+		{
+			const std::string suffix = std::to_string(static_cast<int>(radius));
+			MeasureBuilder(device, ("CircleFrame" + suffix).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleFrame(allocate, { 160, 120 }, radius * 0.9f, radius * 0.2f,
+					Float4{ 1, 1, 1, 1 }, Float4{ 1, 1, 1, 1 }, 1);
+			});
+			MeasureBuilder(device, ("EllipseFrame" + suffix).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildEllipseFrame(allocate, { 160, 120 }, radius, radius * 0.5f, radius * 0.1f, radius * 0.1f,
+					Float4{ 1, 1, 1, 1 }, Float4{ 1, 1, 1, 1 }, 1);
+			});
+			for (const bool fill : { false, true })
+			{
+				MeasureBuilder(device, ((fill ? "ShadowFill" : "ShadowRing") + suffix).c_str(), [&](const BufferCreatorFunc& allocate)
+				{
+					return Vertex2DBuilder::BuildCircleShadow(allocate, Circle{ 160, 120, radius }, radius * 0.25f,
+						Float4{ 0, 0, 0, 0.5f }, 1, fill);
+				});
+			}
+		}
+		for (const size_t count : { 3u, 40u, 512u })
+		for (const bool sharp : { false, true })
+		{
+			std::vector<Vec2> points(count);
+			for (size_t i = 0; i < count; ++i)
+			{
+				points[i] = { double(i * 8), sharp ? double((i % 2) * 32) : 20 * std::sin(i * 0.1) };
+			}
+			for (const bool gradient : { false, true })
+			{
+				const std::string name = (std::string(sharp ? "Sharp" : "Smooth") + (gradient ? "Gradient" : "Solid") + std::to_string(count));
+				MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+				{
+					const Float4 red{ 1, 0, 0, 1 }, blue{ 0, 0, 1, 1 };
+					return gradient ? Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat, points, none, 4, false, red, blue, 1)
+						: Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat, points, none, 4, false, CloseRing::No, red, 1);
+				});
+			}
+		}
 		[device release];
 	}
 }

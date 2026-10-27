@@ -171,6 +171,10 @@ triangle winding and the rounded-frame writer retains its four-corner traversal.
 These helpers write directly into the reserved buffer; allocation stays in each
 builder. Indexed copies retain a 32-bit element count
 independently of the 16-bit vertex indices.
+Closed strips and the inner fan of a filled circle shadow emit consecutive
+indices for the ordinary segments and handle the closing segment separately.
+This avoids per-index remainder operations while preserving triangle order and
+winding; open strips retain their different winding.
 [Test_Vertex2DBuilderIndices.cpp](../../Test/Test_Vertex2DBuilderIndices.cpp) checks
 triangle order, winding, strip closure, cap/body boundaries, positive and negative
 sweeps, scaled tessellation, destination bounds, large index counts and allocation
@@ -182,10 +186,16 @@ segment directions. Sharp-corner checks and strip generation reuse those
 directions; a second point array is populated only when a corner needs an
 auxiliary point. Directions are rebuilt after such insertions. Miter offsets
 use the unnormalized bisector because its length cancels in the offset ratio.
+Start/end-gradient strokes retain segment lengths and their total while
+normalizing directions, then reuse them for color interpolation. Compile-time
+specialization omits length storage and accumulation from solid, per-point-color,
+and pattern paths. The gradient uses the final contour after any sharp-corner
+insertions and preserves cap lengths and the order of distance accumulation.
 This keeps scale-dependent preparation at draw time without adding per-Polygon
 caches. [Test_Vertex2DBuilderPolyline.cpp](../../Test/Test_Vertex2DBuilderPolyline.cpp)
 checks strip width and closure, sharp corners including the first ring point,
-source colors, simplification, scratch reuse, and allocation failure.
+source colors, simplification, scratch reuse, gradient distances with all cap
+combinations, zero-length edges after Float2 conversion, and allocation failure.
 
 Circle, ellipse and textured-circle fills share a vertex writer for their center
 and four quarter arcs. Compile-time specialization keeps the circle's two radial
@@ -332,6 +342,26 @@ and measures both wall and thread CPU time on macOS. Matching GPU work matters
 when comparing APIs with different tessellation rules. Use repeated A/B/A runs
 on the same machine; a large CPU ratio alone does not establish a GPU cost or a
 benefit inherent to a particular public shape API.
+
+[Test_Renderer2DPreparation.cpp](../../Test/Test_Renderer2DPreparation.cpp) provides
+opt-in public API benchmarks for closed frames/shadows at small, ordinary and
+maximum tessellation, and for solid/gradient line strings and Bezier curves.
+Inputs are created before timing. Each case warms the buffers for eight samples,
+then measures 21 samples of 128 offscreen draws and reports the median and 10th/90th percentiles
+alongside triangle counts and draw calls. System updates and GPU execution are
+outside timing. VSync is disabled and restored afterward. On macOS a scoped QoS
+override reduces core-scheduling variation.
+Run each revision repeatedly on an otherwise idle machine:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2DPreparation.closed_frames_benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2DPreparation.gradient_lines_benchmark'
+```
+
+The upload diagnostic also measures these frame/shadow builders and smooth/sharp
+solid/gradient polylines in RAM and both Metal cache modes. Use the solid cases
+as controls when changing gradient-only work; do not infer end-to-end improvement
+from a smaller arithmetic count alone.
 
 [Renderer2DDrawSubmission.hpp](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DDrawSubmission.hpp)
 shares the subsequent command registration using inline templates for shapes,

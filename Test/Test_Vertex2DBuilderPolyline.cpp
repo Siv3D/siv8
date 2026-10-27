@@ -209,3 +209,94 @@ TEST_CASE("PolylineMesh.collapsed_and_allocation_failure")
 	CHECK(allocations == 1);
 	CheckStrip(Solid(square, true), { { 0, 0 }, { 40, 0 }, { 40, 40 }, { 0, 40 } }, true);
 }
+
+TEST_CASE("PolylineMesh.gradient_distances_and_caps")
+{
+	const Float4 red{ 1, 0, 0, 0.25f }, blue{ 0, 0, 1, 0.75f };
+	for (const bool sharp : { false, true })
+	for (const bool inner : { false, true })
+	for (const float scale : { 0.5f, 4.0f })
+	for (const LineCap start : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	for (const LineCap end : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	{
+		CAPTURE(sharp, inner, scale, static_cast<int>(start), static_cast<int>(end));
+		const Array<Vec2> source = sharp ? Array<Vec2>{ { 0, 0 }, { 40, 0 }, { 20, 20 } }
+			: Array<Vec2>{ { 0, 0 }, { 0, 0 }, { 0.02, 0 }, { 40, 0 }, { 40, 30 } };
+		Array<Float2> contour{ { 0, 0 }, { 40, 0 } };
+		if (sharp && not inner)
+		{
+			const float epsilon = (0.001f / scale);
+			contour.push_back(Float2{ 40, 0 } + Float2{ float(std::cos(Math::Pi * 3 / 8)) * epsilon, float(std::sin(Math::Pi * 3 / 8)) * epsilon });
+		}
+		contour.push_back(sharp ? Float2{ 20, 20 } : Float2{ 40, 30 });
+		const auto solid = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildLineString(allocate, start, end, source, none, 8, inner, CloseRing::No, Ink, scale);
+		});
+		const auto gradient = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildLineString(allocate, start, end, source, none, 8, inner, red, blue, scale);
+		});
+		REQUIRE(gradient.vertices.size() == solid.vertices.size());
+		CHECK(gradient.indices == solid.indices);
+		for (size_t i = 0; i < solid.vertices.size(); ++i) CHECK(gradient.vertices[i].pos == solid.vertices[i].pos);
+
+		// Independent double-precision distances along the expected contour.
+		// The start/end caps each contribute half the stroke width to the ramp.
+		Array<double> distances{ 0.0 };
+		for (size_t i = 1; i < contour.size(); ++i)
+		{
+			const Vec2 delta = (Vec2{ contour[i] } - Vec2{ contour[i - 1] });
+			distances.push_back(distances.back() + std::hypot(delta.x, delta.y));
+		}
+		const double startLength = (start == LineCap::Flat ? 0.0 : 4.0);
+		const double total = (startLength + distances.back() + (end == LineCap::Flat ? 0.0 : 4.0));
+		for (size_t i = 0; i < contour.size(); ++i)
+		{
+			const double t = ((startLength + distances[i]) / total);
+			for (size_t side = 0; side < 2; ++side)
+			{
+				const auto color = gradient.vertices[i * 2 + side].color;
+				CHECK(color.x == Catch::Approx(1 - t).margin(0.000002));
+				CHECK(color.y == 0);
+				CHECK(color.z == Catch::Approx(t).margin(0.000002));
+				CHECK(color.w == Catch::Approx(0.25 + 0.5 * t).margin(0.000002));
+			}
+		}
+	}
+}
+
+TEST_CASE("PolylineMesh.gradient_zero_lengths_and_failure")
+{
+	const Float4 red{ 1, 0, 0, 1 }, blue{ 0, 0, 1, 1 };
+	const auto build = [&](const BufferCreatorFunc& allocate, const Array<Vec2>& points, const Optional<Float2>& offset, const LineCap cap)
+	{
+		return Vertex2DBuilder::BuildLineString(allocate, cap, cap, points, offset, 8, false, red, blue, 1);
+	};
+	// The double-precision source keeps both points, but its Float2 offset
+	// makes the prepared edge zero length. Reuse scratch after a longer path.
+	(void)Capture([&](const BufferCreatorFunc& allocate) { return build(allocate, { { 0, 0 }, { 40, 0 }, { 20, 20 } }, none, LineCap::Round); });
+	const auto zero = Capture([&](const BufferCreatorFunc& allocate)
+	{
+		return build(allocate, { { 0, 0 }, { 1, 0 } }, Float2{ 16777216, 0 }, LineCap::Flat);
+	});
+	REQUIRE(zero.vertices.size() == 4);
+	for (const auto& v : zero.vertices)
+	{
+		CHECK(v.pos == Float2{ 16777216, 0 });
+		CHECK(v.color == red);
+	}
+	const auto single = Capture([&](const BufferCreatorFunc& allocate) { return build(allocate, { { 10, 20 } }, none, LineCap::Round); });
+	const auto collapsed = Capture([&](const BufferCreatorFunc& allocate) { return build(allocate, Array<Vec2>(4, Vec2{ 10, 20 }), none, LineCap::Round); });
+	REQUIRE(collapsed.vertices.size() == single.vertices.size());
+	CHECK(collapsed.indices == single.indices);
+	for (size_t i = 0; i < single.vertices.size(); ++i)
+	{
+		CHECK(collapsed.vertices[i].pos == single.vertices[i].pos);
+		CHECK(collapsed.vertices[i].color == single.vertices[i].color);
+	}
+	uint32 allocations = 0;
+	const auto fail = [&](uint16, uint32) { ++allocations; return Vertex2DBufferPointer{}; };
+	CHECK(build(fail, { { 0, 0 }, { 40, 0 }, { 20, 20 } }, none, LineCap::Round) == 0);
+	CHECK(allocations == 1);
+}

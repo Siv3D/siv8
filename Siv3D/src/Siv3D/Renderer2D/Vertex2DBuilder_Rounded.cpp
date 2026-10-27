@@ -31,8 +31,6 @@ namespace s3d
 
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
-		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
-
 		// Keep index emission in the builder without an extra call per shape.
 		SIV3D_ALWAYS_INLINE
 		static inline void WriteOpenFanIndices(Index2DWritePointer& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
@@ -162,13 +160,25 @@ namespace s3d
 		SIV3D_ALWAYS_INLINE
 		static inline void WriteClosedStripIndices(Index2DWritePointer& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
 		{
-			for (Vertex2D::IndexType i = 0; i < pairCount; ++i)
+			Vertex2D::IndexType base = indexOffset;
+			for (Vertex2D::IndexType i = 0; i < (pairCount - 1); ++i)
 			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
-				{
-					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (pairCount * 2));
-				}
+				*pIndex++ = base;
+				*pIndex++ = (base + 2);
+				*pIndex++ = (base + 1);
+				*pIndex++ = (base + 1);
+				*pIndex++ = (base + 2);
+				*pIndex++ = (base + 3);
+				base += 2;
 			}
+
+			// Only the final quad wraps; preserve the ring's winding and order.
+			*pIndex++ = base;
+			*pIndex++ = indexOffset;
+			*pIndex++ = (base + 1);
+			*pIndex++ = (base + 1);
+			*pIndex++ = indexOffset;
+			*pIndex++ = (indexOffset + 1);
 		}
 
 		SIV3D_ALWAYS_INLINE
@@ -1239,6 +1249,10 @@ namespace s3d
 			Array<uint32> srcIndices;	// points[i] が入力点列の何番目由来か
 
 			Array<Float2> directions;	// 各セグメントの単位方向。角分割判定とメッシュ生成で共有
+
+			Array<float> segmentLengths;	// グラデーション専用。前処理時に resize して全要素を上書きする
+
+			float totalLength = 0.0f;
 		};
 
 		/// @brief 前処理用の共有スクラッチバッファを返します。
@@ -1274,18 +1288,45 @@ namespace s3d
 			std::span<const Float2> directions;	// points[i] から次の点へ。closed は末尾から先頭も含む
 		};
 
-		static void CalculatePolylineDirections(const std::span<const Float2> points, const bool closed, Array<Float2>& directions)
+		template <bool StoreLengths>
+		static void CalculatePolylineDirections(const std::span<const Float2> points, const bool closed, PolylineBuffer& buffer)
 		{
+			auto& directions = buffer.directions;
 			const size_t size = points.size();
 			const bool ring = (closed && (3 <= size));
 			directions.resize(ring ? size : (size - 1));
+			if constexpr (StoreLengths)
+			{
+				buffer.segmentLengths.resize(directions.size());
+			}
+			float totalLength = 0.0f;
+			const auto setSegment = [&](const size_t i, const Float2 delta)
+			{
+				if constexpr (StoreLengths)
+				{
+					const float lengthSq = delta.lengthSq();
+					const float length = std::sqrt(lengthSq);
+					buffer.segmentLengths[i] = length;
+					totalLength += length;
+					// Match Float2::normalized(), sharing its square root with the gradient.
+					directions[i] = ((lengthSq == 0.0f) ? delta : (delta * (1.0f / length)));
+				}
+				else
+				{
+					directions[i] = delta.normalized();
+				}
+			};
 			for (size_t i = 0; i < (size - 1); ++i)
 			{
-				directions[i] = (points[i + 1] - points[i]).normalized();
+				setSegment(i, (points[i + 1] - points[i]));
 			}
 			if (ring)
 			{
-				directions.back() = (points.front() - points.back()).normalized();
+				setSegment((size - 1), (points.front() - points.back()));
+			}
+			if constexpr (StoreLengths)
+			{
+				buffer.totalLength = totalLength;
 			}
 		}
 
@@ -1296,8 +1337,9 @@ namespace s3d
 		///         ε = 0.001px ずらした補助点を挿入し、マイター長の暴走を防ぐ。
 		/// @param trackSrcIndices true のとき、各出力点の入力インデックスを記録する
 		///        （点ごとの色指定の参照用。補助点は元の頂点と同じインデックスを持つ）。
+		/// @tparam StoreLengths true のとき、出力点列の区間長と全長を buffer に保存する。
 		/// @return buffer 内を指す span。次に GetPolylineBuffer() が呼ばれるまで有効。
-		template <class PointType>
+		template <class PointType, bool StoreLengths = false>
 		[[nodiscard]]
 		static PreparedPolyline PreparePolyline(const std::span<const PointType> points, const Optional<Float2>& offset, const float scale, const bool closed, const bool splitSharpCorners, const bool trackSrcIndices, PolylineBuffer& buffer)
 		{
@@ -1373,7 +1415,7 @@ namespace s3d
 			}
 
 			const size_t simplifiedSize = simplified.size();
-			CalculatePolylineDirections(simplified, closed, buffer.directions);
+			CalculatePolylineDirections<StoreLengths>(simplified, closed, buffer);
 
 			// 角分割の対象が無い場合は間引き結果をそのまま返す（コピーしない）
 			if ((simplifiedSize < 3) || (not splitSharpCorners))
@@ -1459,22 +1501,9 @@ namespace s3d
 				}
 
 				// 補助点を挿入した場合だけ、変更された点列から方向を求め直す。
-				CalculatePolylineDirections(result, closed, buffer.directions);
+				CalculatePolylineDirections<StoreLengths>(result, closed, buffer);
 				return{ result, resultSrc, buffer.directions };
 			}
-		}
-
-		[[nodiscard]]
-		static float CalculateLength(const std::span<const Float2> points) noexcept
-		{
-			float length = 0.0f;
-			
-			for (size_t i = 1; i < points.size(); ++i)
-			{
-				length += points[i].distanceFrom(points[i - 1]);
-			}
-
-			return length;
 		}
 
 		struct MiterPair
@@ -3910,7 +3939,7 @@ namespace s3d
 			}
 
 			PolylineBuffer& buffer = GetPolylineBuffer();
-			const PreparedPolyline prepared = PreparePolyline<Vec2>(points, offset, scale, false, (not inner), false, buffer);
+			const PreparedPolyline prepared = PreparePolyline<Vec2, true>(points, offset, scale, false, (not inner), false, buffer);
 
 			if (prepared.points.size() < 2)
 			{
@@ -3922,7 +3951,7 @@ namespace s3d
 			const bool hasEndCap = (endCap != LineCap::Flat);
 
 			// 色はキャップ部分も含めた全長 (allLength) に対して線形に補間する。
-			const float baseLength = CalculateLength(prepared.points);
+			const float baseLength = buffer.totalLength;
 			const float startDistance = (hasStartCap ? halfThickness : 0.0f);
 			const float allLength = (baseLength + startDistance + (hasEndCap ? halfThickness : 0.0f));
 			const float lengthInv = ((0.0f < allLength) ? (1.0f / allLength) : 0.0f);
@@ -3932,12 +3961,12 @@ namespace s3d
 			const Float4 stripStartColor = (colorStart + colorDiff * (startDistance * lengthInv));
 			const Float4 stripEndColor = (colorStart + colorDiff * ((startDistance + baseLength) * lengthInv));
 
-			const Float2* const pts = prepared.points.data();
+			const float* const segmentLengths = buffer.segmentLengths.data();
 			auto colorAt = [&, distance = startDistance](const size_t i) mutable
 			{
 				if (0 < i)
 				{
-					distance += pts[i].distanceFrom(pts[i - 1]);
+					distance += segmentLengths[i - 1];
 				}
 
 				return (colorStart + colorDiff * (distance * lengthInv));
@@ -4214,15 +4243,18 @@ namespace s3d
 				{
 					const Vertex2D::IndexType centerIndex = indexOffset; // 中心頂点のインデックス
 
-					for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+					for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
 					{
 						const Vertex2D::IndexType innerCurrent = (ringStartIndex + i * 2 + 1); // 内円の現在の頂点
-						const Vertex2D::IndexType innerNext = (ringStartIndex + ((i * 2 + 3) % (FullQuality * 2))); // 内円の次の頂点
+						const Vertex2D::IndexType innerNext = (innerCurrent + 2);
 
 						*pIndex++ = centerIndex;
 						*pIndex++ = innerCurrent;
 						*pIndex++ = innerNext;
 					}
+					*pIndex++ = centerIndex;
+					*pIndex++ = (ringStartIndex + FullQuality * 2 - 1);
+					*pIndex++ = (ringStartIndex + 1);
 				}
 			}
 

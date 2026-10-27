@@ -501,6 +501,34 @@ TEST_CASE("Vertex2DBuilder.indices_rounded_bounds_and_closure")
 	}
 }
 
+TEST_CASE("Vertex2DBuilder.indices_closed_strip_all_qualities")
+{
+	for (const auto shape : { RoundedShape::CircleFrame, RoundedShape::EllipseFrame, RoundedShape::ShadowRing, RoundedShape::ShadowFill })
+	for (const float scale : { 1.0f, 8.0f, 512.0f })
+	for (const bool limit : { false, true })
+	{
+		CAPTURE(static_cast<int32>(shape), scale, limit);
+		const auto mesh = Capture([&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, scale); }, limit);
+		const bool filled = (shape == RoundedShape::ShadowFill);
+		const size_t pairs = ((mesh.vertices.size() - 2 - size_t(filled)) / 2);
+		Array<Index> expected;
+		for (size_t i = 0; i < pairs; ++i)
+		{
+			const Index outer = static_cast<Index>(size_t(filled) + i * 2);
+			const Index next = static_cast<Index>(size_t(filled) + ((i + 1) % pairs) * 2);
+			expected << outer << next << Index(outer + 1) << Index(outer + 1) << next << Index(next + 1);
+		}
+		if (filled)
+		{
+			for (size_t i = 0; i < pairs; ++i)
+			{
+				expected << Index{ 0 } << Index(i * 2 + 2) << Index(((i + 1) % pairs) * 2 + 2);
+			}
+		}
+		CheckIndices(mesh, expected);
+	}
+}
+
 # if SIV3D_PLATFORM(MACOS)
 
 namespace
