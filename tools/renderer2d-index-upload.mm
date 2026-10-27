@@ -319,6 +319,16 @@ int main()
 				});
 			}
 		}
+		for (const double shaftLength : { 0.0, 0.1, 100.0 })
+		{
+			const std::array<Vec2, 2> points{ Vec2{ 100, 100 }, Vec2{ 100 + shaftLength, 100 } };
+			const std::span<const Vec2> shaft{ points.data(), (shaftLength == 0 ? size_t{ 1 } : size_t{ 2 }) };
+			MeasureBuilder(device, ("DoubleHeadedArrowShaft" + std::to_string(shaftLength)).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildLineStringDoubleHeadedArrow(allocate, shaft,
+					{ 60, 110 }, { static_cast<float>(140 + shaftLength), 110 }, 12, 60, 60, Float4{ 1, 1, 1, 0.5f }, 1).value();
+			});
+		}
 		struct ArcCase { const char* name; double radius, sweep; SizeF head; };
 		for (const auto& c : { ArcCase{ "Ordinary", 100, 4.7, { 40, 32 } },
 			ArcCase{ "Short", 100, 0.2, { 40, 80 } }, ArcCase{ "Full", 100, Math::TwoPi, { 40, 40 } },
@@ -339,6 +349,17 @@ int main()
 					8, (8 + static_cast<float>(c.head.x * p->sizeScale)), Float4{ 1, 1, 1, 1 }, 1);
 				if (result) return *result;
 				detail::CircleArcArrow::WritePoints(points, *p, 8, 1, true);
+				return Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat, points, none, 8, false, CloseRing::No, Float4{ 1, 1, 1, 1 }, 1);
+			});
+			MeasureBuilder(device, (std::string("CircleArcDoubleHeadedArrow") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				const auto p = detail::CircleArcArrow::PlaceDouble(circle, 0.3, c.sweep, c.head.y);
+				detail::CircleArcArrow::WriteDoublePoints(points, *p, 8, 1);
+				const float width = (8 + static_cast<float>(c.head.x * p->sizeScale));
+				const auto result = Vertex2DBuilder::BuildLineStringDoubleHeadedArrow(allocate, points,
+					p->arc.start, p->arc.tip, 8, width, width, Float4{ 1, 1, 1, 1 }, 1);
+				if (result) return *result;
+				detail::CircleArcArrow::WritePoints(points, p->arc, 8, 1, true);
 				return Vertex2DBuilder::BuildLineString(allocate, LineCap::Flat, LineCap::Flat, points, none, 8, false, CloseRing::No, Float4{ 1, 1, 1, 1 }, 1);
 			});
 		}

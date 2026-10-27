@@ -1,7 +1,8 @@
 # Curved and polyline arrow gallery
 
 This program compares Bezier, circle, LineString, and Spline2D arrows with small
-and large heads, short curves, and heads too narrow to join. It uses the public drawing API.
+and large heads, short curves, and heads too narrow to join, for both single-ended
+and double-headed arrows. It uses the public drawing API.
 The adopted design and API links are in the
 [curve drawing guide](../../docs/geometry2d/bezier-drawing.md#curved-arrows).
 
@@ -10,6 +11,7 @@ The adopted design and API links are in the
 1. Use the complete program below as `Main.cpp` in a separate Siv3D application.
    Do not replace the repository's test entry point.
 2. Press **E** to cycle through Bezier, circle, LineString, and Spline2D arrows.
+   Press **H** to toggle double-headed arrows (the start-cap setting then has no effect).
    Press **N** to toggle narrow heads in the circle and path views. Press **A** to toggle translucent drawing, **C** to cycle the start cap,
    **Space** to animate, **G** to toggle the thin original curve, and **B** to
    switch between 256 segments and a deliberately coarse one-segment budget
@@ -22,6 +24,9 @@ Expected results:
 - The tip stays at the source endpoint; the head's base center lies on the original
   curve. Larger heads change direction according to that base-to-tip chord.
 - The short-curve row shrinks oversized heads while retaining shaft thickness.
+  Double-headed arrows use a common root when the heads consume the path.
+- In double-headed mode both tips stay at the path endpoints. A full circle or
+  closed path has coincident tips. If either head cannot join, both are omitted.
 - The narrow-head row omits the triangle and displays the full original curve.
 - Ordinary joins remain uniformly translucent. Sharp turns, short terminal
   segments, and intersections may darken where geometry overlaps.
@@ -44,7 +49,7 @@ void Main()
     Scene::SetBackground(ColorF{ 0.10, 0.12, 0.15 });
     const Font font{ 18 };
     bool translucent = false, animate = false, guides = true, coarse = false;
-    bool narrowHeads = false;
+    bool narrowHeads = false, doubleHeaded = false;
     int32 family = 0;
     int32 capIndex = 0;
     const std::array caps{ LineCap::Flat, LineCap::Square, LineCap::Round };
@@ -57,6 +62,7 @@ void Main()
     while (System::Update())
     {
         if (KeyE.down()) family = ((family + 1) % 4);
+        if (KeyH.down()) doubleHeaded = !doubleHeaded;
         if (KeyN.down()) narrowHeads = !narrowHeads;
         if (KeyA.down()) translucent = !translucent;
         if (KeyC.down()) capIndex = ((capIndex + 1) % 3);
@@ -67,8 +73,9 @@ void Main()
         const double bend = (30 * Math::Sin(phase));
         const ColorF color{ 0.3, 0.8, 1.0, (translucent ? 0.5 : 1.0) };
         const int32 budget = (coarse ? 1 : 256);
-        font(U"E: family   A: alpha   C: cap   Space: animate   G: guides   B: Bezier/Spline budget   N: narrow heads").draw(20, 12);
-        font(families[family], U"    Cap: ", capNames[capIndex], U"    Bezier/Spline budget: ", budget).draw(20, 38);
+        font(U"E: family   H: heads   A: alpha   C: cap   Space: animate   G: guides   B: budget   N: narrow").draw(20, 12);
+        font(families[family], (doubleHeaded ? U"    Double-headed" : U"    Single-ended"),
+            U"    Cap (single only): ", capNames[capIndex], U"    Budget: ", budget).draw(20, 38);
         for (int32 row = 0; row < 4; ++row)
         for (int32 column = 0; column < 3; ++column)
         {
@@ -82,8 +89,9 @@ void Main()
                 const double start = (row == 2 ? 0.0 : -60_deg);
                 const double sweep = (row == 2 ? 360_deg : (row == 3 ? 35_deg : (row == 1 ? -250_deg : 250_deg)));
                 const double headLength = (length + (animate ? bend * 0.3 : 0));
-                circle.drawArcArrow((row == 2 ? LineCap::Flat : caps[capIndex]), start, sweep,
-                    8, SizeF{ (narrowHeads ? 0.001 : length * 0.9), headLength }, color);
+                const SizeF head{ (narrowHeads ? 0.001 : length * 0.9), headLength };
+                if (doubleHeaded) circle.drawArcDoubleHeadedArrow(start, sweep, 8, head, color);
+                else circle.drawArcArrow((row == 2 ? LineCap::Flat : caps[capIndex]), start, sweep, 8, head, color);
                 if (guides)
                 {
                     circle.drawArc(start, sweep, 0.5, 0.5, ColorF{ 0.5 });
@@ -103,13 +111,15 @@ void Main()
                 if (family == 2)
                 {
                     if (row == 2) path.push_back(path.front());
-                    path.drawArrow(cap, 8, head, color);
+                    if (doubleHeaded) path.drawDoubleHeadedArrow(8, head, color);
+                    else path.drawArrow(cap, 8, head, color);
                     if (guides) path.draw(1, ColorF{ 0.5 });
                 }
                 else
                 {
                     const auto spline = Spline2D::FromCatmullRom(path, row == 2 ? CloseRing::Yes : CloseRing::No);
-                    spline.drawArrow(cap, 8, head, color, 0.5, budget);
+                    if (doubleHeaded) spline.drawDoubleHeadedArrow(8, head, color, 0.5, budget);
+                    else spline.drawArrow(cap, 8, head, color, 0.5, budget);
                     if (guides) spline.draw(1, ColorF{ 0.5 });
                 }
                 if (guides) path.front().asCircle(3).draw(Palette::Orange);
@@ -123,7 +133,8 @@ void Main()
             const auto draw = [&](const auto& curve, const double extraWidth)
             {
                 if (guides) curve.draw(1, ColorF{ 0.5 });
-                curve.drawArrow(caps[capIndex], 8, SizeF{ extraWidth, length }, color, 0.5, budget);
+                if (doubleHeaded) curve.drawDoubleHeadedArrow(8, SizeF{ extraWidth, length }, color, 0.5, budget);
+                else curve.drawArrow(caps[capIndex], 8, SizeF{ extraWidth, length }, color, 0.5, budget);
             };
             if (row == 0) draw(quadratic, length * 0.9);
             if (row == 1) draw(cubic, length * 0.9);
@@ -139,11 +150,12 @@ void Main()
 On macOS, from the repository root:
 
 ```sh
-./macOS/run-tests.sh '--test-case=BezierArrow.*,CircleArcArrow.*,PathArrow.*'
+./macOS/run-tests.sh '--test-case=~[benchmark]BezierArrow.*,~[benchmark]CircleArcArrow.*,~[benchmark]PathArrow.*,~[benchmark]DoubleHeadedArrow.*'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=BezierArrow.placement_benchmark'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=BezierArrow.submission_benchmark'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=CircleArcArrow.submission_benchmark'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=PathArrow.submission_benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=DoubleHeadedArrow.submission_benchmark'
 ```
 
 The opt-in benchmark reports CPU nanoseconds per placement for an ordinary cubic
@@ -169,3 +181,10 @@ and GPU work are outside the timed section. On macOS it reports both elapsed
 and thread CPU time with median and p10/p90. VSync and benchmark thread QoS are
 restored afterward. Oversized heads may remove most or all of the shaft, so
 compare triangle counts along with submission time.
+
+The double-headed benchmark compares single and double heads on the same retained
+geometry for all five types, with ordinary and oversized heads. It uses the same
+eight/21/128 sampling pattern and reports triangle counts; on macOS it also reports
+thread CPU time. The output measures the added placement and submission cost,
+not two pixel-equivalent rendering methods. Both head placements and the retained
+shaft are prepared once per double-headed call, with one upload reservation.

@@ -2962,6 +2962,22 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 経路の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 幾何・変換の入力条件は drawArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @remark 点が 2 個未満、またはすべて同じ位置なら描画しません。端点を結ぶ閉じる線分は追加しません。
+		/// @return *this
+		const LineString& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawClosed
 		//
 		////////////////////////////////////////////////////////////////

@@ -548,6 +548,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier2& Bezier2::drawDoubleHeadedArrow(const double thickness, const SizeF& headSize, const ColorF& color, const double targetError, const int32 maxSegments) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addBezierDoubleHeadedArrow(*this, static_cast<float>(thickness), headSize, color.toFloat4(), targetError, maxSegments);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////

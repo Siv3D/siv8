@@ -889,6 +889,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲線の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegments 軸の分割数の上限（1～4096）
+		/// @pre 幾何・変換・品質の入力条件は drawArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @return *this
+		const Bezier3& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator <<
 		//
 		////////////////////////////////////////////////////////////////

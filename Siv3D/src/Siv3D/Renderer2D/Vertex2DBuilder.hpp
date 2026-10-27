@@ -375,6 +375,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildLineStringDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		// Same handled/fallback contract as BuildLineStringArrow.
+		[[nodiscard]]
+		Optional<uint32> BuildLineStringDoubleHeadedArrow(const BufferCreatorFunc& bufferCreator, std::span<const Vec2> points,
+			const Float2& startTip, const Float2& endTip, float thickness, float startHeadWidth, float endHeadWidth, const Float4& color, float scale);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildTexturedQuad
 		//
 		////////////////////////////////////////////////////////////////

@@ -823,6 +823,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawArcDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawArcDoubleHeadedArrow(const double startAngle, const double angle, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addCircleArcDoubleHeadedArrow(*this, startAngle, angle, static_cast<float>(thickness), headSize, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawArc
 	//
 	////////////////////////////////////////////////////////////////

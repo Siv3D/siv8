@@ -16,6 +16,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Geometry2D/BezierTessellation.hpp>
 # include <Siv3D/Geometry2D/PathArrowGeometry.hpp>
+# include <Siv3D/Geometry2D/DoubleHeadedArrowGeometry.hpp>
 
 namespace s3d::detail::SuperEllipseTessellation
 {
@@ -178,6 +179,33 @@ namespace s3d
 			}
 		}
 
+		template <class Head>
+		bool SubmitDoubleArrow(ISiv3DRenderer2D& renderer, const Array<Vec2>& points,
+			const detail::DoubleArrowHeads<Head>& heads, const float thickness, const SizeF& headSize, const Float4& color)
+		{
+			return renderer.addLineStringDoubleHeadedArrow(points, heads.start.tip, heads.end.tip, thickness,
+				(thickness + static_cast<float>(headSize.x * heads.start.sizeScale)),
+				(thickness + static_cast<float>(headSize.x * heads.end.sizeScale)), color);
+		}
+
+		template <class Bezier>
+		void DrawBezierDoubleHeadedArrow(ISiv3DRenderer2D& renderer, Array<Vec2>& points, const Bezier& curve,
+			const float thickness, const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
+		{
+			assert(0 < targetError);
+			assert(1 <= maxSegments && maxSegments <= 4096);
+			const auto heads = detail::FindBezierDoubleArrowHeads(curve, headSize.y);
+			if (not heads) return;
+			Tessellate(points, curve.subcurve(heads->start.parameter, heads->end.parameter), renderer, targetError, maxSegments);
+			points.front() = heads->start.base;
+			points.back() = heads->end.base;
+			if (not SubmitDoubleArrow(renderer, points, *heads, thickness, headSize, color))
+			{
+				Tessellate(points, curve, renderer, targetError, maxSegments);
+				renderer.addLineString(LineCap::Flat, LineCap::Flat, points, none, thickness, false, CloseRing::No, color);
+			}
+		}
+
 		template <class Fill>
 		void DrawFrame(ISiv3DRenderer2D& renderer, Array<Vec2>& points, const SuperEllipse& shape,
 			const float thickness, const Fill& fill)
@@ -213,6 +241,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircleArcDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addCircleArcDoubleHeadedArrow(const Circle& circle, const double startAngle,
+		const double angle, const float thickness, const SizeF& headSize, const Float4& color)
+	{
+		const auto placement = detail::CircleArcArrow::PlaceDouble(circle, startAngle, angle, headSize.y);
+		if (not placement) return;
+		const float scale = getRasterScaling();
+		detail::CircleArcArrow::WriteDoublePoints(m_curvePoints, *placement, thickness, scale);
+		const float width = (thickness + static_cast<float>(headSize.x * placement->sizeScale));
+		if (not addLineStringDoubleHeadedArrow(m_curvePoints, placement->arc.start, placement->arc.tip, thickness, width, width, color))
+		{
+			detail::CircleArcArrow::WritePoints(m_curvePoints, placement->arc, thickness, scale, true);
+			addLineString(LineCap::Flat, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addSuperEllipseFrame
 	//
 	////////////////////////////////////////////////////////////////
@@ -243,6 +292,24 @@ namespace s3d
 		if (not addLineStringArrow(startCap, m_curvePoints, head->tip, thickness, headWidth, color))
 		{
 			addLineString(startCap, LineCap::Flat, points, none, thickness, false, CloseRing::No, color);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addPolylineDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addPolylineDoubleHeadedArrow(const std::span<const Vec2> points, const float thickness,
+		const SizeF& headSize, const Float4& color)
+	{
+		const auto heads = detail::FindLineStringDoubleArrowHeads(points, headSize.y);
+		if (not heads) return;
+		detail::WriteLineStringDoubleArrowShaft(m_curvePoints, points, *heads);
+		if (not SubmitDoubleArrow(*this, m_curvePoints, *heads, thickness, headSize, color))
+		{
+			addLineString(LineCap::Flat, LineCap::Flat, points, none, thickness, false, CloseRing::No, color);
 		}
 	}
 
@@ -300,6 +367,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addBezierDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addBezierDoubleHeadedArrow(const Bezier2& curve, const float thickness,
+		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		DrawBezierDoubleHeadedArrow(*this, m_curvePoints, curve, thickness, headSize, color, targetError, maxSegments);
+	}
+
+	void ISiv3DRenderer2D::addBezierDoubleHeadedArrow(const Bezier3& curve, const float thickness,
+		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegments)
+	{
+		DrawBezierDoubleHeadedArrow(*this, m_curvePoints, curve, thickness, headSize, color, targetError, maxSegments);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addSpline
 	//
 	////////////////////////////////////////////////////////////////
@@ -348,6 +433,43 @@ namespace s3d
 			detail::BezierTessellation::FlattenPath(m_curvePoints, workspace, curves, false, targetError,
 				static_cast<uint32>(maxSegmentsPerCurve), metricFor);
 			addLineString(startCap, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addSplineDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ISiv3DRenderer2D::addSplineDoubleHeadedArrow(const std::span<const Bezier3> curves, const float thickness,
+		const SizeF& headSize, const Float4& color, const double targetError, const int32 maxSegmentsPerCurve)
+	{
+		const auto heads = detail::FindSplineDoubleArrowHeads(curves, headSize.y);
+		if (not heads) return;
+		const Mat3x2 affine = getLocalTransform() * getCameraTransform();
+		const Vec2 sceneScale = getSceneScale();
+		detail::BezierTessellation::Workspace workspace;
+		const auto metricFor = [&](const auto& source)
+		{
+			return detail::BezierTessellation::TransformMetric(source, affine, sceneScale);
+		};
+		m_curvePoints.clear();
+		for (size_t i = heads->start.segment; i <= heads->end.segment; ++i)
+		{
+			const double from = ((i == heads->start.segment) ? heads->start.parameter : 0.0);
+			const double to = ((i == heads->end.segment) ? heads->end.parameter : 1.0);
+			const detail::BezierTessellation::Curve source{ curves[i].subcurve(from, to) };
+			detail::BezierTessellation::Append(m_curvePoints, workspace, source, metricFor(source), targetError,
+				static_cast<uint32>(maxSegmentsPerCurve));
+		}
+		m_curvePoints.front() = heads->start.base;
+		m_curvePoints.back() = heads->end.base;
+		if (not SubmitDoubleArrow(*this, m_curvePoints, *heads, thickness, headSize, color))
+		{
+			detail::BezierTessellation::FlattenPath(m_curvePoints, workspace, curves, false, targetError,
+				static_cast<uint32>(maxSegmentsPerCurve), metricFor);
+			addLineString(LineCap::Flat, LineCap::Flat, m_curvePoints, none, thickness, false, CloseRing::No, color);
 		}
 	}
 

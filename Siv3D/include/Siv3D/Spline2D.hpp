@@ -267,6 +267,25 @@ namespace s3d
 		/// @return *this
 		const Spline2D& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 経路の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegmentsPerCurve 各 Bezier3 区間の分割数の上限（1～4096）
+		/// @pre 幾何・変換・品質の入力条件は drawArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @throws std::invalid_argument targetError が 0 以下、または maxSegmentsPerCurve が 1～4096 の範囲外の場合
+		/// @remark 空の経路、または全制御点が同じ場合は描画しません。閉じた経路では一周し、両先端が一致します。
+		/// @return *this
+		const Spline2D& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegmentsPerCurve = 256) const;
+
 		/// @brief 始点と終点を入れ替え、経路の向きを反転します。
 		/// @return *this
 		Spline2D& reverse() noexcept;

@@ -833,6 +833,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor curve_draw_double_headed_arrow
+		/// @brief 曲線の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegments 軸の分割数の上限（1～4096）
+		/// @pre 幾何・変換・品質の入力条件は drawArrow() と共通です。
+		/// @remark 各矢じりは経路上の根元から端点へ向きます。根元の順序が逆転する場合は共通の根元に縮め、軸幅を維持して軸を省略します。
+		/// 接続が逆向き、または切り口が底辺に収まらない場合は両矢じりを省略し、両端 Flat の経路全体を描きます。重なる部分は半透明では濃くなる場合があります。
+		/// 全制御点が同じ場合は描画しません。
+		/// @return *this
+		const Bezier2& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	FromMidpoint
 		//
 		////////////////////////////////////////////////////////////////

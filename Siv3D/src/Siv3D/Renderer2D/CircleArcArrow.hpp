@@ -70,4 +70,39 @@ namespace s3d::detail::CircleArcArrow
 		}
 		destination.back() = (fullArc ? placement.tip : placement.base);
 	}
+
+	struct DoublePlacement
+	{
+		Placement arc;
+		Vec2 startBase, endBase;
+		double headSweep, sizeScale;
+	};
+
+	[[nodiscard]]
+	inline Optional<DoublePlacement> PlaceDouble(const Circle& circle, const double startAngle, const double angle, const double headLength) noexcept
+	{
+		const auto arc = Place(circle, startAngle, angle, headLength);
+		if (not arc) return none;
+		const double headAngle = Min(Abs(arc->sweep - arc->shaftSweep), Abs(arc->sweep) * 0.5);
+		const double headSweep = std::copysign(headAngle, arc->sweep);
+		const auto pointAt = [&](const double a)
+		{
+			return circle.center + Vec2{ std::sin(a) * arc->radius, -std::cos(a) * arc->radius };
+		};
+		const Vec2 startBase = pointAt(startAngle + headSweep);
+		const Vec2 endBase = ((headAngle == Abs(arc->sweep) * 0.5) ? startBase : arc->base);
+		return DoublePlacement{ *arc, startBase, endBase, headSweep,
+			Min(1.0, (2 * arc->radius * std::sin(headAngle * 0.5)) / headLength) };
+	}
+
+	inline void WriteDoublePoints(Array<Vec2>& destination, const DoublePlacement& placement, const float thickness, const float scale)
+	{
+		Placement shaft = placement.arc;
+		shaft.start = placement.startBase;
+		shaft.base = placement.endBase;
+		shaft.startAngle += placement.headSweep;
+		shaft.shaftSweep = (shaft.sweep - 2 * placement.headSweep);
+		WritePoints(destination, shaft, thickness, scale);
+	}
+
 }

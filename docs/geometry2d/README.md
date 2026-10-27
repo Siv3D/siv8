@@ -27,7 +27,8 @@ ownership, drawing buffers, and the interactive gallery for `Spline2D` and
 
 ## Bezier drawing
 
-[Curve drawing](bezier-drawing.md) explains Bezier, circle arc, LineString, and Spline2D arrows, quality units, segment
+[Curve drawing](bezier-drawing.md) explains single-ended and double-headed arrows for Bezier, circle arcs, LineString,
+and Spline2D, quality units, segment
 budgets, transform handling, and the density placement shared by Bezier2,
 Bezier3, Spline2D, and Bezier Image writing. It
 records the comparison with recursive subdivision and Wang's formula and links

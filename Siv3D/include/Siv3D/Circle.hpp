@@ -1240,6 +1240,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円弧の両端を先端とする矢印を描きます。
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 幾何・変換の入力条件は drawArcArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @remark 半径は絶対値を使い、半径または角度が 0 なら描画しません。一周では両先端が一致します。
+		/// @return *this
+		const Circle& drawArcDoubleHeadedArrow(double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawArc
 		//
 		////////////////////////////////////////////////////////////////

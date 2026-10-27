@@ -889,6 +889,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addLineStringDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CRenderer2D_D3D11::addLineStringDoubleHeadedArrow(const std::span<const Vec2> points, const Float2& startTip,
+		const Float2& endTip, const float thickness, const float startHeadWidth, const float endHeadWidth, const Float4& color)
+	{
+		const auto count = Vertex2DBuilder::BuildLineStringDoubleHeadedArrow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			points, startTip, endTip, thickness, startHeadWidth, endHeadWidth, color, m_commandManager.getCurrentRasterScaling());
+		if (not count) return false;
+		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTexturedQuad
 	//
 	////////////////////////////////////////////////////////////////

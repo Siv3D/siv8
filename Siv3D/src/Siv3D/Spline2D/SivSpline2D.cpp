@@ -278,6 +278,20 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Spline2D& Spline2D::drawDoubleHeadedArrow(const double thickness, const SizeF& headSize, const ColorF& color, const double targetError, const int32 maxSegmentsPerCurve) const
+	{
+		ValidateTessellation(targetError, maxSegmentsPerCurve);
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addSplineDoubleHeadedArrow(m_segments, static_cast<float>(thickness), headSize, color.toFloat4(), targetError, maxSegmentsPerCurve);
+		return *this;
+	}
+
 	Spline2D& Spline2D::reverse() noexcept
 	{
 		std::reverse(m_segments.begin(), m_segments.end());

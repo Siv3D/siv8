@@ -184,6 +184,79 @@ thread CPU time is also reported to separate scheduling delays from submission w
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=PathArrow.submission_benchmark'
 ```
 
+### Double-headed curves and paths
+
+```cpp
+const Bezier3 curve{ { 40, 220 }, { 100, 30 }, { 320, 220 }, { 440, 220 } };
+curve.drawDoubleHeadedArrow(8, SizeF{ 26, 32 }, Palette::Skyblue);
+Circle{ 320, 240, 90 }.drawArcDoubleHeadedArrow(-60_deg, 250_deg, 8, SizeF{ 26, 32 });
+```
+
+`Bezier2`, `Bezier3`, `LineString`, and `Spline2D` provide
+`drawDoubleHeadedArrow`; Circle provides `drawArcDoubleHeadedArrow`. Both ends
+share a requested `SizeF`, using the existing additional-width/chord-length
+convention. Each head points from its own root on the path toward its endpoint.
+There is no cap argument. Quality controls match each type's single-ended arrow.
+The shared contract is in [Bezier2.hpp](../../Siv3D/include/Siv3D/Bezier2.hpp).
+
+Placement searches inward from both endpoints. When the roots cross, the heads
+meet at a common root and shrink while retaining shaft thickness. On short
+straight paths this balances the heads even with unevenly spaced vertices or
+control points. Complex paths use a bounded search within the crossed interval;
+large heads can still overlap each other or earlier parts of the path. Ordinary
+joins avoid double blending. If either end cannot connect, both heads are omitted
+and the entire path is drawn with Flat ends. No global outline union is performed.
+A full-circle arrow and a closed Spline2D have coincident tips.
+
+The [double-head placement helper](../../Siv3D/src/Siv3D/Geometry2D/DoubleHeadedArrowGeometry.hpp)
+reuses the single-head queries in opposite directions, without allocating a
+reversed path. The renderer tessellates only the retained shaft and reserves its
+mesh and both heads together. Circle placement remains analytic. The
+[shared gallery](../../Test/Manual/BezierArrow.md) switches between one and two
+heads with **H**, so short paths, large heads and fallbacks can be compared.
+
+[Dedicated tests](../../Test/Test_DoubleHeadedArrow.cpp) cover root placement,
+reversal, uneven short paths, repeated points, closed paths, exact full-turn
+endpoints, allocation failure, winding, translucent joins and rendered API
+equivalence. Run the opt-in submission benchmark in Release:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=DoubleHeadedArrow.submission_benchmark'
+```
+
+It compares single and double heads on all five types, with ordinary and oversized
+heads. Construction, frame updates and GPU execution are outside the timed
+region. The [upload diagnostic](../../tools/renderer2d-index-upload.mm) covers
+both heads, short shafts, omitted heads and maximum arc subdivision in ordinary
+RAM and Metal upload buffers. Follow the existing
+[upload measurement guide](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
+
+On Apple M2 in Release, two runs of this corpus gave these median thread CPU
+submission times (microseconds per call):
+
+| Shape | Single head, ordinary | Double head, ordinary | Double head, oversized |
+| --- | ---: | ---: | ---: |
+| Bezier2 | 1.66–1.77 | 2.44 | 1.36–1.38 |
+| Bezier3 | 2.79–2.85 | 3.68–3.72 | 2.93–2.95 |
+| Circle arc | 2.23–2.24 | 2.13–2.14 | 0.33–0.34 |
+| LineString, 4 points | 0.16–0.35 | 0.19–0.41 | 1.17–1.18 |
+| Spline2D, 2 intervals | 4.50–4.51 | 5.41–5.62 | 3.55–3.57 |
+
+Ordinary heads use `SizeF{ 60, 40 }`; oversized heads use `{ 60, 1000 }`,
+with an 8-unit shaft. Oversized double heads leave two triangles in these cases.
+Their common-root search can cost more than a single head even with less mesh
+output. The ordinary arc becomes cheaper because the retained shaft is shorter.
+The very small LineString timings vary between runs; the paired double/single
+ratio is about 1.15–1.18. These are corpus-specific CPU costs, not frame-rate bounds.
+
+In the upload diagnostic's ordinary arc case, double-head preparation and mesh
+writing take about 0.62 µs in RAM and 0.67 µs in Metal write-combined memory at
+`-Os`, or 0.47/0.46 µs at `-O3`. The maximum-density case is about 2.27/2.37 µs
+at `-Os`. Both cache modes verify against the CPU mesh after timing. Sharing
+terminal construction leaves the existing ordinary, full-turn, omitted-head,
+and maximum single-head arc cases within about 1% of their previous `-Os`
+RAM/write-combined timings in this comparison.
+
 ## Implementation boundaries
 
 A single [destination-writing kernel](../../Siv3D/src/Siv3D/Geometry2D/BezierTessellation.hpp)
