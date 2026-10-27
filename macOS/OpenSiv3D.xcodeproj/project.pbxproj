@@ -145,6 +145,7 @@
 		E928752BE27A427C911BFA01 /* Ripple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = E928752BE27A427C911BFA02 /* Ripple.hpp */; };
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
 		EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */; };
+		D08E683BD1A64CA09BFF16FF /* Test_Renderer2DUpload.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FFEF7DE6CEC4841879D4233 /* Test_Renderer2DUpload.cpp */; };
 		E458686BD1B44E7C87802280 /* Test_Vertex2DBuilderIndices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08E99A8B827A4A4CA2473F91 /* Test_Vertex2DBuilderIndices.cpp */; };
 		62BABE911B1A49E9ABF336EF /* Test_Vertex2DBuilderCircleShadow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F29F2B60F14CE2AA373253 /* Test_Vertex2DBuilderCircleShadow.cpp */; };
 		09F74E8429DE427EA3716FA2 /* Test_Vertex2DBuilderArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E5F665024D3A436B86DBE038 /* Test_Vertex2DBuilderArc.cpp */; };
@@ -3466,6 +3467,7 @@
 		46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat4x4.cpp; sourceTree = "<group>"; };
 		46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedQuadWarp2D.hpp; sourceTree = "<group>"; };
 		479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DIndexCount.cpp; sourceTree = "<group>"; };
+		7FFEF7DE6CEC4841879D4233 /* Test_Renderer2DUpload.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DUpload.cpp; sourceTree = "<group>"; };
 		08E99A8B827A4A4CA2473F91 /* Test_Vertex2DBuilderIndices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderIndices.cpp; sourceTree = "<group>"; };
 		08F29F2B60F14CE2AA373253 /* Test_Vertex2DBuilderCircleShadow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderCircleShadow.cpp; sourceTree = "<group>"; };
 		E5F665024D3A436B86DBE038 /* Test_Vertex2DBuilderArc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Vertex2DBuilderArc.cpp; sourceTree = "<group>"; };
@@ -7369,6 +7371,7 @@
 				D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */,
 				2555DB1F071C4B7AA73723B3 /* Test_MonitorInfo.cpp */,
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
+				7FFEF7DE6CEC4841879D4233 /* Test_Renderer2DUpload.cpp */,
 				08E99A8B827A4A4CA2473F91 /* Test_Vertex2DBuilderIndices.cpp */,
 				08F29F2B60F14CE2AA373253 /* Test_Vertex2DBuilderCircleShadow.cpp */,
 				E5F665024D3A436B86DBE038 /* Test_Vertex2DBuilderArc.cpp */,
@@ -17069,6 +17072,7 @@
 				D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */,
 				1F287AC7063E47A9861C8AF4 /* Test_MonitorInfo.cpp in Sources */,
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
+				D08E683BD1A64CA09BFF16FF /* Test_Renderer2DUpload.cpp in Sources */,
 				E458686BD1B44E7C87802280 /* Test_Vertex2DBuilderIndices.cpp in Sources */,
 				62BABE911B1A49E9ABF336EF /* Test_Vertex2DBuilderCircleShadow.cpp in Sources */,
 				09F74E8429DE427EA3716FA2 /* Test_Vertex2DBuilderArc.cpp in Sources */,

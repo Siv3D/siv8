@@ -249,6 +249,24 @@ buffers. Metal's vertex/index buffers use
 which is intended for CPU writes without CPU reads. D3D11 currently builds into
 ordinary CPU arrays and copies them to mapped GPU buffers at submission.
 
+[Vertex2DBufferPointer](../../Siv3D/src/Siv3D/Renderer2D/Vertex2DBufferPointer.hpp)
+is the boundary between backend storage and geometry emission. Backends retain
+their raw buffers, but builders receive borrowed, write-only vertex and index
+cursors. Cursor arithmetic addresses output slots; vertex setters and index
+assignment return `void`. The cursors expose neither values nor raw destination
+pointers. `copyFrom()` handles bulk copies from CPU source spans without exposing
+the destination. Geometry helpers keep these cursor types throughout emission;
+readable intermediate geometry belongs in CPU locals or reusable CPU arrays.
+
+[Test_Renderer2DUpload.cpp](../../Test/Test_Renderer2DUpload.cpp) is compiled by
+both platform test projects. Its compile-time checks reject destination reads,
+read/modify/write operations, proxy-to-proxy copies, chained index assignment,
+and implicit raw-pointer escapes. Runtime tests check cursor offsets, attribute
+preservation, and bulk copies. They inspect the CPU storage owned by the test,
+not the output cursors. These checks contain no hardware timing thresholds.
+Run the focused tests with `./macOS/run-tests.sh '--test-case=Renderer2DUpload.*'`
+on macOS, followed by affected geometry/image tests and the full host suite.
+
 `CopyIndicesWithOffset` reads each source index, adds the base offset, and writes
 once to the destination. It never reads the upload destination. The same helper
 serves raw indexed polygons, transformed polygons, and Mesh2D. TriangleIndex
@@ -260,9 +278,10 @@ The same rule applies to vertex attributes and topology: add Mesh2D offsets
 while reading the source vertices, calculate textured round-rectangle UVs from
 local positions, and retain local positions for square arc caps and arrow-head
 winding. Hollow rectangle shadows derive their degenerate indices from the
-base index. Write a local color to each vertex separately: chained assignments
-such as `vertices[a].color = vertices[b].color = color` can also generate
-destination reads, including in circle and ellipse arc gradients.
+base index. Write a local color to each vertex separately with `setColor()`:
+chained assignments through raw vertex fields can also generate destination
+reads, including in circle and ellipse arc gradients. Such field access is not
+available through the write-only cursor.
 Do not use an upload buffer as geometry scratch storage.
 Buffer growth still copies existing uploaded data to preserve pending draws;
 this occurs when capacity grows, rather than on each draw.

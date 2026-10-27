@@ -35,7 +35,7 @@ namespace s3d
 
 		// Keep index emission in the builder without an extra call per shape.
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteOpenFanIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
+		static inline void WriteOpenFanIndices(Index2DWritePointer& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < (rimVertexCount - 1); ++i)
 			{
@@ -46,7 +46,7 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteClosedFanIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
+		static inline void WriteClosedFanIndices(Index2DWritePointer pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType rimVertexCount)
 		{
 			WriteOpenFanIndices(pIndex, indexOffset, rimVertexCount);
 
@@ -56,7 +56,7 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteRoundRectIndices(Vertex2D::IndexType* pIndex, Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
+		static inline void WriteRoundRectIndices(Index2DWritePointer pIndex, Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
 		{
 			const Vertex2D::IndexType FanOuterVertexCount = (quality + 1);
 			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
@@ -145,7 +145,7 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteOpenStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
+		static inline void WriteOpenStripIndices(Index2DWritePointer& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < (pairCount - 1); ++i)
 			{
@@ -160,7 +160,7 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteClosedStripIndices(Vertex2D::IndexType*& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
+		static inline void WriteClosedStripIndices(Index2DWritePointer& pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType pairCount)
 		{
 			for (Vertex2D::IndexType i = 0; i < pairCount; ++i)
 			{
@@ -172,15 +172,15 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteRoundRectFrameIndices(Vertex2D::IndexType* pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
+		static inline void WriteRoundRectFrameIndices(Index2DWritePointer pIndex, const Vertex2D::IndexType indexOffset, const Vertex2D::IndexType quality)
 		{
 			const Vertex2D::IndexType ArcVertexCount = ((quality + 1) * 2);
 			const Vertex2D::IndexType ArcIndexCount = (quality * 6);
 
-			Vertex2D::IndexType* pDst0 = pIndex;
-			Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
-			Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
-			Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
+			Index2DWritePointer pDst0 = pIndex;
+			Index2DWritePointer pDst1 = (pIndex + ArcIndexCount * 1 + 6);
+			Index2DWritePointer pDst2 = (pIndex + ArcIndexCount * 2 + 12);
+			Index2DWritePointer pDst3 = (pIndex + ArcIndexCount * 3 + 18);
 
 			const Vertex2D::IndexType trIndexBase = indexOffset;
 			const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
@@ -247,7 +247,7 @@ namespace s3d
 
 		template <EllipseFanType Type>
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteEllipseFanVertices(Vertex2D* const& pVertex, const float centerX, const float centerY, const float a, const float b,
+		static inline void WriteEllipseFanVertices(Vertex2DWritePointer const& pVertex, const float centerX, const float centerY, const float a, const float b,
 			const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const FloatRect& uv = {}, const float rotationCos = 1.0f, const float rotationSin = 0.0f)
 		{
 			constexpr bool Circular = ((Type == EllipseFanType::Circle) || (Type == EllipseFanType::TexturedCircle) || (Type == EllipseFanType::TexturedCircleGradient));
@@ -267,7 +267,7 @@ namespace s3d
 			}
 			else
 			{
-				pVertex[0].pos.set(centerX, centerY);
+				pVertex[0].setPosition(centerX, centerY);
 			}
 
 			if constexpr (Gradient)
@@ -276,10 +276,10 @@ namespace s3d
 			}
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
-			Vertex2D* pDst0 = &pVertex[1];
-			Vertex2D* pDst1 = (pDst0 + quality);
-			Vertex2D* pDst2 = (pDst1 + quality);
-			Vertex2D* pDst3 = (pDst2 + quality);
+			Vertex2DWritePointer pDst0 = (pVertex + 1);
+			Vertex2DWritePointer pDst1 = (pDst0 + quality);
+			Vertex2DWritePointer pDst2 = (pDst1 + quality);
+			Vertex2DWritePointer pDst3 = (pDst2 + quality);
 
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
 			{
@@ -289,7 +289,7 @@ namespace s3d
 				const float ya = (cs.y * a);
 				const float yb = (Circular ? ya : (cs.y * b));
 
-				const auto writeVertex = [&](Vertex2D& vertex, const float x, const float y, const float ux, const float uy, const Float4& color)
+				const auto writeVertex = [&](Vertex2DWriteReference vertex, const float x, const float y, const float ux, const float uy, const Float4& color)
 				{
 					if constexpr (Rotated)
 					{
@@ -359,22 +359,22 @@ namespace s3d
 				// 中心の色
 				if (colorType == ColorFillDirection::InOut)
 				{
-					pVertex->color = color0;
+					pVertex->setColor(color0);
 				}
 				else
 				{
-					pVertex->color = color0.getMidpoint(color1);
+					pVertex->setColor(color0.getMidpoint(color1));
 				}
 			}
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteCircleShadowRingVertices(Vertex2D* pDst0, const std::span<const Float2> pCS,
+		static inline void WriteCircleShadowRingVertices(Vertex2DWritePointer pDst0, const std::span<const Float2> pCS,
 			const float centerX, const float centerY, const float rInner, const float rOuter, const Vertex2D::IndexType quality, const Float4& color)
 		{
-			Vertex2D* pDst1 = (pDst0 + quality * 2);
-			Vertex2D* pDst2 = (pDst0 + quality * 4);
-			Vertex2D* pDst3 = (pDst0 + quality * 6);
+			Vertex2DWritePointer pDst1 = (pDst0 + quality * 2);
+			Vertex2DWritePointer pDst2 = (pDst0 + quality * 4);
+			Vertex2DWritePointer pDst3 = (pDst0 + quality * 6);
 
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
 			{
@@ -400,7 +400,7 @@ namespace s3d
 
 		template <bool Gradient, class VertexWriter>
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteRoundRectVertices(Vertex2D* const& pVertex, const FloatRect& rect, const float r, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const VertexWriter& writeVertex)
+		static inline void WriteRoundRectVertices(Vertex2DWritePointer const& pVertex, const FloatRect& rect, const float r, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const VertexWriter& writeVertex)
 		{
 			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
 
@@ -423,10 +423,10 @@ namespace s3d
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
 
-			Vertex2D* pDst0 = pVertex;
-			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
-			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
-			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
+			Vertex2DWritePointer pDst0 = pVertex;
+			Vertex2DWritePointer pDst1 = (pDst0 + FanOuterVertexCount);
+			Vertex2DWritePointer pDst2 = (pDst1 + FanOuterVertexCount);
+			Vertex2DWritePointer pDst3 = (pDst2 + FanOuterVertexCount);
 
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
 			{
@@ -527,7 +527,7 @@ namespace s3d
 
 		template <bool Gradient>
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteRoundRectFrameVertices(Vertex2D* const& pVertex, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
+		static inline void WriteRoundRectFrameVertices(Vertex2DWritePointer const& pVertex, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Vertex2D::IndexType quality, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
 		{
 			using CornerColor = std::conditional_t<Gradient, Float4, const Float4&>;
 
@@ -567,10 +567,10 @@ namespace s3d
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(quality);
 
-			Vertex2D* pDst0 = pVertex;
-			Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
-			Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
-			Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
+			Vertex2DWritePointer pDst0 = pVertex;
+			Vertex2DWritePointer pDst1 = (pVertex + ArcVertexCount * 1);
+			Vertex2DWritePointer pDst2 = (pVertex + ArcVertexCount * 2);
+			Vertex2DWritePointer pDst3 = (pVertex + ArcVertexCount * 3);
 
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
 			{
@@ -721,7 +721,7 @@ namespace s3d
 		// One contour writer for independent-radius fills and both frame boundaries.
 		// Quality 0 emits a single square corner; a collapsed inner arc repeats that
 		// corner at the outer arc's quality so the frame remains a simple strip.
-		static void WriteRoundedRectContour(Vertex2D* const pVertex, const FloatRect& rect,
+		static void WriteRoundedRectContour(Vertex2DWritePointer const pVertex, const FloatRect& rect,
 			const std::array<float, 4>& radii, const std::array<Vertex2D::IndexType, 4>& qualities,
 			const Float4& color, const uint16 stride)
 		{
@@ -797,7 +797,7 @@ namespace s3d
 
 		template <bool Rotated = false>
 		static void SetEllipseFrameVertexPair(
-			Vertex2D*& pDst,
+			Vertex2DWritePointer& pDst,
 			const float centerX,
 			const float centerY,
 			const float a,
@@ -812,8 +812,8 @@ namespace s3d
 				const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
 				const Float2 outer{ a * ux + normal.x * outerThickness, b * uy + normal.y * outerThickness };
 				const Float2 inner{ a * ux - normal.x * innerThickness, b * uy - normal.y * innerThickness };
-				(pDst++)->pos.set((centerX + rotationCos * outer.x - rotationSin * outer.y), (centerY + rotationSin * outer.x + rotationCos * outer.y));
-				(pDst++)->pos.set((centerX + rotationCos * inner.x - rotationSin * inner.y), (centerY + rotationSin * inner.x + rotationCos * inner.y));
+				(pDst++)->setPosition((centerX + rotationCos * outer.x - rotationSin * outer.y), (centerY + rotationSin * outer.x + rotationCos * outer.y));
+				(pDst++)->setPosition((centerX + rotationCos * inner.x - rotationSin * inner.y), (centerY + rotationSin * inner.x + rotationCos * inner.y));
 			}
 			else
 			{
@@ -823,12 +823,12 @@ namespace s3d
 				const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
 
 				// outer vertex
-				(pDst++)->pos.set(
+				(pDst++)->setPosition(
 					(baseX + normal.x * outerThickness),
 					(baseY + normal.y * outerThickness));
 
 				// inner vertex
-				(pDst++)->pos.set(
+				(pDst++)->setPosition(
 					(baseX - normal.x * innerThickness),
 					(baseY - normal.y * innerThickness));
 			}
@@ -836,7 +836,7 @@ namespace s3d
 
 		template <class VertexWriter>
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteArcVertices(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
+		static inline void WriteArcVertices(Vertex2DWritePointer pDst, const float centerX, const float centerY, const float rx, const float ry,
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality, const VertexWriter& writeVertex)
 		{
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
@@ -849,16 +849,16 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteArcPositions(Vertex2D* pDst, const float centerX, const float centerY, const float rx, const float ry,
+		static inline void WriteArcPositions(Vertex2DWritePointer pDst, const float centerX, const float centerY, const float rx, const float ry,
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
 		{
 			WriteArcVertices(pDst, centerX, centerY, rx, ry, startAngle, radDelta, quality,
-				[](Vertex2D& vertex, const float x, const float y, float, float, float) { vertex.pos.set(x, y); });
+				[](Vertex2DWriteReference vertex, const float x, const float y, float, float, float) { vertex.setPosition(x, y); });
 		}
 
 		template <bool SquareCaps = false>
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteArcStripPositions(Vertex2D* pDst, const float centerX, const float centerY, const float rInner, const float rOuter,
+		static inline void WriteArcStripPositions(Vertex2DWritePointer pDst, const float centerX, const float centerY, const float rInner, const float rOuter,
 			const float startAngle, const float radDelta, const Vertex2D::IndexType quality)
 		{
 			const auto writePair = [&](const Vertex2D::IndexType i)
@@ -868,8 +868,8 @@ namespace s3d
 				const Float2 inner{ (centerX + rInner * s), (centerY - rInner * c) };
 				const Float2 outer{ (centerX + rOuter * s), (centerY - rOuter * c) };
 				const size_t base = ((i + (SquareCaps ? 1 : 0)) * 2);
-				pDst[base].pos = inner;
-				pDst[base + 1].pos = outer;
+				pDst[base].setPosition(inner);
+				pDst[base + 1].setPosition(outer);
 				return std::array{ inner, outer };
 			};
 			if constexpr (SquareCaps)
@@ -881,10 +881,10 @@ namespace s3d
 				const Float2 endHalfWidth = ((last[1] - last[0]) * 0.5f);
 				const Float2 startExtension{ startHalfWidth.y, -startHalfWidth.x };
 				const Float2 endExtension{ -endHalfWidth.y, endHalfWidth.x };
-				pDst[0].pos = (first[0] + startExtension);
-				pDst[1].pos = (first[1] + startExtension);
-				pDst[(quality + 1) * 2].pos = (last[0] + endExtension);
-				pDst[(quality + 1) * 2 + 1].pos = (last[1] + endExtension);
+				pDst[0].setPosition((first[0] + startExtension));
+				pDst[1].setPosition((first[1] + startExtension));
+				pDst[(quality + 1) * 2].setPosition((last[0] + endExtension));
+				pDst[(quality + 1) * 2 + 1].setPosition((last[1] + endExtension));
 				for (Vertex2D::IndexType i = 1; (i + 1) < quality; ++i) writePair(i);
 			}
 			else
@@ -894,23 +894,23 @@ namespace s3d
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteArcStripAlongColors(Vertex2D* pDst, const int32 quality, const Float4& startColor, const Float4& colorDelta)
+		static inline void WriteArcStripAlongColors(Vertex2DWritePointer pDst, const int32 quality, const Float4& startColor, const Float4& colorDelta)
 		{
 			for (Vertex2D::IndexType i = 0; i < quality; ++i)
 			{
 				const Float4 color = (startColor + (colorDelta * i));
-				(pDst++)->color = color;
-				(pDst++)->color = color;
+				(pDst++)->setColor(color);
+				(pDst++)->setColor(color);
 			}
 		}
 
 		SIV3D_ALWAYS_INLINE
-		static inline void WriteArcStripRadialColors(Vertex2D* pDst, const size_t pairCount, const Float4& color0, const Float4& color1)
+		static inline void WriteArcStripRadialColors(Vertex2DWritePointer pDst, const size_t pairCount, const Float4& color0, const Float4& color1)
 		{
 			for (size_t i = 0; i < pairCount; ++i)
 			{
-				(pDst++)->color = color0;
-				(pDst++)->color = color1;
+				(pDst++)->setColor(color0);
+				(pDst++)->setColor(color1);
 			}
 		}
 
@@ -924,7 +924,7 @@ namespace s3d
 			const float centerY = center.y;
 
 			// 中心
-			pVertex[0].pos.set(centerX, centerY);
+			pVertex[0].setPosition(centerX, centerY);
 
 			// 周
 			{
@@ -934,7 +934,7 @@ namespace s3d
 
 			for (size_t i = 0; i < VertexCount; ++i)
 			{
-				(pVertex++)->color = color;
+				(pVertex++)->setColor(color);
 			}
 
 			WriteOpenFanIndices(pIndex, indexOffset, quality);
@@ -959,7 +959,7 @@ namespace s3d
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
 					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
-						[&](Vertex2D& vertex, const float x, const float y, const float delta, float, float)
+						[&](Vertex2DWriteReference vertex, const float x, const float y, const float delta, float, float)
 						{
 							const float f = std::sin(delta);
 							vertex.set(x, y, (c0 + colorDiff * f));
@@ -975,7 +975,7 @@ namespace s3d
 				{
 					const float radDelta = (Math::PiF / (quality - 1));
 					WriteArcVertices((pVertex + 1), centerX, centerY, r, r, startAngle, radDelta, quality,
-						[&](Vertex2D& vertex, const float x, const float y, const float delta, float, float)
+						[&](Vertex2DWriteReference vertex, const float x, const float y, const float delta, float, float)
 						{
 							const float f = (std::cos(delta) * -0.5f + 0.5f);
 							vertex.set(x, y, (c0 + colorDiff * f));
@@ -1066,8 +1066,8 @@ namespace s3d
 			if (angle != 0.0)
 			{
 				// 本体の書き込み先は、始端の半円の直後。
-				Vertex2D* pVertex = (buffer.pVertex + capVertexCount);
-				Vertex2D::IndexType* pIndex = (buffer.pIndex + capIndexCount);
+				Vertex2DWritePointer pVertex = (buffer.pVertex + capVertexCount);
+				Index2DWritePointer pIndex = (buffer.pIndex + capIndexCount);
 				const Vertex2D::IndexType indexOffset = (buffer.indexOffset + capVertexCount);
 
 				{
@@ -1151,10 +1151,10 @@ namespace s3d
 				Float4 endColor = ((angle < 0.0f) ? color0 : color1);
 				if constexpr (SquareCaps)
 				{
-					pVertex[0].color = startColor;
-					pVertex[1].color = startColor;
-					pVertex[VertexCount - 2].color = endColor;
-					pVertex[VertexCount - 1].color = endColor;
+					pVertex[0].setColor(startColor);
+					pVertex[1].setColor(startColor);
+					pVertex[VertexCount - 2].setColor(endColor);
+					pVertex[VertexCount - 1].setColor(endColor);
 					const float halfThickness = (thickness * 0.5f);
 					const float length = ((rInner + halfThickness) * Abs(angle) + thickness);
 					const float offset = ((Quality == 1) ? 0.5f : (halfThickness / length));
@@ -1210,7 +1210,7 @@ namespace s3d
 				const Float2 radial = (normal * halfWidth);
 				const Float2 extension{ -radial.y, radial.x };
 				const Float2 inner = (center - radial), outer = (center + radial);
-				auto* v = buffer.pVertex;
+				auto v = buffer.pVertex;
 				const Float4& tip0 = ((coloring == ColorFillDirection::LeftRight) ? tipColor : bodyColor0);
 				const Float4& tip1 = ((coloring == ColorFillDirection::LeftRight) ? tipColor : bodyColor1);
 				if (end)
@@ -1223,7 +1223,7 @@ namespace s3d
 					v[0].set(inner - extension, tip0); v[1].set(outer - extension, tip1);
 					v[2].set(inner, bodyColor0); v[3].set(outer, bodyColor1);
 				}
-				auto* indices = buffer.pIndex;
+				auto indices = buffer.pIndex;
 				WriteOpenStripIndices(indices, buffer.indexOffset, 2);
 			}
 		}
@@ -2202,10 +2202,10 @@ namespace s3d
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
-			Vertex2D* pDst0 = &pVertex[0];
-			Vertex2D* pDst1 = (pDst0 + Quality * 2);
-			Vertex2D* pDst2 = (pDst0 + Quality * 4);
-			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+			Vertex2DWritePointer pDst0 = (pVertex + 0);
+			Vertex2DWritePointer pDst1 = (pDst0 + Quality * 2);
+			Vertex2DWritePointer pDst2 = (pDst0 + Quality * 4);
+			Vertex2DWritePointer pDst3 = (pDst0 + Quality * 6);
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
@@ -2215,23 +2215,23 @@ namespace s3d
 				const float oy = (cs.y * rOuter);
 				const float iy = (cs.y * rInner);
 
-				(pDst0++)->pos.set((centerX + ox), (centerY + oy));
-				(pDst0++)->pos.set((centerX + ix), (centerY + iy));
+				(pDst0++)->setPosition((centerX + ox), (centerY + oy));
+				(pDst0++)->setPosition((centerX + ix), (centerY + iy));
 
-				(pDst1++)->pos.set((centerX - oy), (centerY + ox));
-				(pDst1++)->pos.set((centerX - iy), (centerY + ix));
+				(pDst1++)->setPosition((centerX - oy), (centerY + ox));
+				(pDst1++)->setPosition((centerX - iy), (centerY + ix));
 
-				(pDst2++)->pos.set((centerX - ox), (centerY - oy));
-				(pDst2++)->pos.set((centerX - ix), (centerY - iy));
+				(pDst2++)->setPosition((centerX - ox), (centerY - oy));
+				(pDst2++)->setPosition((centerX - ix), (centerY - iy));
 
-				(pDst3++)->pos.set((centerX + oy), (centerY - ox));
-				(pDst3++)->pos.set((centerX + iy), (centerY - ix));
+				(pDst3++)->setPosition((centerX + oy), (centerY - ox));
+				(pDst3++)->setPosition((centerX + iy), (centerY - ix));
 			}
 
 			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
 			{
-				(pVertex++)->color = outerColor;
-				(pVertex++)->color = innerColor;
+				(pVertex++)->setColor(outerColor);
+				(pVertex++)->setColor(innerColor);
 			}
 
 			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
@@ -2288,7 +2288,7 @@ namespace s3d
 				const float centerY = center.y;
 				const float radDelta = (dashAngle / (Quality - 1));
 				float dashStartAngle = startAngle;
-				Vertex2D* pDst = pVertex;
+				Vertex2DWritePointer pDst = pVertex;
 
 				for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
 				{
@@ -2354,7 +2354,7 @@ namespace s3d
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
 				const float radDelta = (Abs(angle) / (Quality - 1));
 				WriteArcVertices((pVertex + 1), centerX, centerY, r, r, start, radDelta, Quality,
-					[&](Vertex2D& vertex, const float x, const float y, float, const float s, const float c)
+					[&](Vertex2DWriteReference vertex, const float x, const float y, float, const float s, const float c)
 					{
 						vertex.set(x, y, (centerU + rU * s), (centerV - rV * c), outerColor);
 					});
@@ -2362,7 +2362,7 @@ namespace s3d
 			else
 			{
 				// 中心
-				pVertex[0].pos.set(centerX, centerY);
+				pVertex[0].setPosition(centerX, centerY);
 
 				// 周
 				{
@@ -2372,11 +2372,11 @@ namespace s3d
 				}
 
 				{
-					(pVertex++)->color = innerColor;
+					(pVertex++)->setColor(innerColor);
 
 					for (size_t i = 1; i < VertexCount; ++i)
 					{
-						(pVertex++)->color = outerColor;
+						(pVertex++)->setColor(outerColor);
 					}
 				}
 			}
@@ -2467,8 +2467,8 @@ namespace s3d
 				(along ? bodyFirst : color0), (along ? bodyFirst : color1), firstColor, capQuality);
 			if (bodyVertices)
 			{
-				auto* vertices = (buffer.pVertex + firstVertices);
-				auto* indices = (buffer.pIndex + firstIndices);
+				auto vertices = (buffer.pVertex + firstVertices);
+				auto indices = (buffer.pIndex + firstIndices);
 				WriteArcStripPositions(vertices, center.x, center.y, rInner, (rInner + thickness), start, (Abs(angle) / (quality - 1)), quality);
 				if (along) WriteArcStripAlongColors(vertices, quality, bodyFirst, ((bodyLast - bodyFirst) / (quality - 1)));
 				else WriteArcStripRadialColors(vertices, quality, color0, color1);
@@ -2517,7 +2517,7 @@ namespace s3d
 				const Float2 mid = ((p1 + p2) * 0.5f * r);
 
 				// 中心
-				pVertex[0].pos = (mid + Float2{ centerX, centerY });
+				pVertex[0].setPosition((mid + Float2{ centerX, centerY }));
 			}
 
 			// 周
@@ -2530,7 +2530,7 @@ namespace s3d
 			{
 				for (size_t i = 0; i < VertexCount; ++i)
 				{
-					(pVertex++)->color = color;
+					(pVertex++)->setColor(color);
 				}
 			}
 
@@ -2611,10 +2611,10 @@ namespace s3d
 
 			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
-			Vertex2D* pDst0 = &pVertex[0];
-			Vertex2D* pDst1 = (pDst0 + Quality * 2);
-			Vertex2D* pDst2 = (pDst0 + Quality * 4);
-			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+			Vertex2DWritePointer pDst0 = (pVertex + 0);
+			Vertex2DWritePointer pDst1 = (pDst0 + Quality * 2);
+			Vertex2DWritePointer pDst2 = (pDst0 + Quality * 4);
+			Vertex2DWritePointer pDst3 = (pDst0 + Quality * 6);
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
@@ -2669,8 +2669,8 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
 			{
-				(pVertex++)->color = outerColor;
-				(pVertex++)->color = innerColor;
+				(pVertex++)->setColor(outerColor);
+				(pVertex++)->setColor(innerColor);
 			}
 
 			WriteClosedStripIndices(pIndex, indexOffset, FullQuality);
@@ -2803,7 +2803,7 @@ namespace s3d
 			{
 				const float centerX = center.x;
 				const float centerY = center.y;
-				Vertex2D* pDst = pVertex;
+				Vertex2DWritePointer pDst = pVertex;
 
 				for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
 				{
@@ -2831,8 +2831,8 @@ namespace s3d
 							innerThickness,
 							outerThickness);
 
-						pDst[-2].color = outerColor;
-						pDst[-1].color = innerColor;
+						pDst[-2].setColor(outerColor);
+						pDst[-1].setColor(innerColor);
 					}
 
 					WriteOpenStripIndices(pIndex, vertexOffset, dashPointCount);
@@ -2910,7 +2910,7 @@ namespace s3d
 			const Vertex2D::IndexType indexCount = (firstIndices + bodyIndices + lastIndices);
 			const auto buffer = bufferCreator(static_cast<uint16>(firstVertices + bodyVertices + lastVertices), indexCount);
 			if (not buffer.pVertex) return 0;
-			auto* vertices = (buffer.pVertex + firstVertices);
+			auto vertices = (buffer.pVertex + firstVertices);
 			Float2 firstNormal, lastNormal, firstCenter, lastCenter, previous;
 			std::array<float, (MaxCircleSegments + 1)> lengths;
 			float bodyLength = 0.0f;
@@ -2947,13 +2947,13 @@ namespace s3d
 				for (uint16 i = 0; bodyVertices && (i < pointCount); ++i)
 				{
 					const Float4 color = firstColor.lerp(lastColor, (firstLength + lengths[i]) * inverseLength);
-					vertices[i * 2].color = color;
-					vertices[i * 2 + 1].color = color;
+					vertices[i * 2].setColor(color);
+					vertices[i * 2 + 1].setColor(color);
 				}
 			}
 			EmitArcEndCap(buffer, firstCap, firstCenter, firstNormal, halfWidth, false, colorType,
 				(along ? bodyFirst : color0), (along ? bodyFirst : color1), firstColor, capQuality);
-			auto* indices = (buffer.pIndex + firstIndices);
+			auto indices = (buffer.pIndex + firstIndices);
 			WriteOpenStripIndices(indices, static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices), pointCount);
 			EmitArcEndCap({ buffer.pVertex + firstVertices + bodyVertices, buffer.pIndex + firstIndices + bodyIndices,
 				static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices + bodyVertices) }, lastCap, lastCenter, lastNormal,
@@ -2988,7 +2988,7 @@ namespace s3d
 			const float centerY = center.y;
 
 			// 中心
-			pVertex[0].pos.set(centerX, centerY);
+			pVertex[0].setPosition(centerX, centerY);
 
 			// 周（楕円）
 			{
@@ -2999,11 +2999,11 @@ namespace s3d
 
 			// 色
 			{
-				(pVertex++)->color = innerColor;
+				(pVertex++)->setColor(innerColor);
 
 				for (size_t i = 1; i < VertexCount; ++i)
 				{
-					(pVertex++)->color = outerColor;
+					(pVertex++)->setColor(outerColor);
 				}
 			}
 
@@ -3032,11 +3032,11 @@ namespace s3d
 				return 0;
 			}
 
-			pVertex[0].pos = center;
+			pVertex[0].setPosition(center);
 			const Float4 colorDiff = (color1 - color0);
 			const float invW = (1.0f / (2.0f * a));
 			const float invH = (1.0f / (2.0f * b));
-			Vertex2D* destination = (pVertex + 1);
+			Vertex2DWritePointer destination = (pVertex + 1);
 			detail::SuperEllipseTessellation::VisitContour(quarter, [&](const Vec2 point)
 			{
 				const Float2 offset{ point };
@@ -3056,11 +3056,11 @@ namespace s3d
 			// 中心の色
 			if (colorType == ColorFillDirection::InOut)
 			{
-				pVertex->color = color0;
+				pVertex->setColor(color0);
 			}
 			else
 			{
-				pVertex->color = color0.getMidpoint(color1);
+				pVertex->setColor(color0.getMidpoint(color1));
 			}
 
 			WriteClosedFanIndices(pIndex, indexOffset, FullQuality);
@@ -3089,7 +3089,7 @@ namespace s3d
 			}
 
 			WriteRoundRectVertices<false>(pVertex, rect, r, Quality, ColorFillDirection::TopBottom, color, color,
-				[](Vertex2D& vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
+				[](Vertex2DWriteReference vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
 
 			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
@@ -3135,7 +3135,7 @@ namespace s3d
 			}
 
 			WriteRoundRectVertices<true>(pVertex, rect, r, Quality, colorType, color0, color1,
-				[](Vertex2D& vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
+				[](Vertex2DWriteReference vertex, const float x, const float y, const Float4& c) { vertex.set(x, y, c); });
 
 			WriteRoundRectIndices(pIndex, indexOffset, Quality);
 
@@ -3476,8 +3476,8 @@ namespace s3d
 			}
 
 			// パス 2: 頂点とインデックスを書き込む。ダッシュごとに頂点数が異なるので頂点オフセットを加算していく。
-			Vertex2D* pDst = pVertex;
-			Vertex2D::IndexType* pIndexDst = pIndex;
+			Vertex2DWritePointer pDst = pVertex;
+			Index2DWritePointer pIndexDst = pIndex;
 			Vertex2D::IndexType vertexBase = indexOffset;
 
 			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
@@ -3648,9 +3648,9 @@ namespace s3d
 
 			for (size_t i = 0; i < n; ++i)
 			{
-				pVertex[i].pos = corners[i].inner;
-				pVertex[corners[i].start].pos = corners[i].first;
-				pVertex[corners[i].start + corners[i].count - 1].pos = corners[i].last;
+				pVertex[i].setPosition(corners[i].inner);
+				pVertex[corners[i].start].setPosition(corners[i].first);
+				pVertex[corners[i].start + corners[i].count - 1].setPosition(corners[i].last);
 				if ((1 < corners[i].count) && (joinStyle == JoinStyle::Round))
 				{
 					const auto& corner = corners[i];
@@ -3660,13 +3660,13 @@ namespace s3d
 					for (uint16 k = 1; k + 1 < corner.count; ++k)
 					{
 						const double angle = (start + step * k);
-						pVertex[corner.start + k].pos = (points[i] + Vec2{ std::cos(angle), std::sin(angle) } * radius);
+						pVertex[corner.start + k].setPosition((points[i] + Vec2{ std::cos(angle), std::sin(angle) } * radius));
 					}
 				}
 			}
-			for (uint16 i = 0; i < vertexCount; ++i) pVertex[i].color = color;
+			for (uint16 i = 0; i < vertexCount; ++i) pVertex[i].setColor(color);
 
-			auto* dst = pIndex;
+			auto dst = pIndex;
 			const auto triangle = [&](const uint16 a, const uint16 b, const uint16 c)
 			{
 				*dst++ = (indexOffset + a);
@@ -3756,14 +3756,14 @@ namespace s3d
 			const Float2 a = (base + normal * joinRadius), b = (base - normal * joinRadius);
 			if (project)
 			{
-				buffer.pVertex[stripVertices - 2].pos = a;
-				buffer.pVertex[stripVertices - 1].pos = b;
+				buffer.pVertex[stripVertices - 2].setPosition(a);
+				buffer.pVertex[stripVertices - 1].setPosition(b);
 			}
 			const Float2 headA = (base + normal * (headWidth * 0.5f)), headB = (base - normal * (headWidth * 0.5f));
 			buffer.pVertex[headOffset].set(tip, color);
 			buffer.pVertex[headOffset + 1].set(headA, color);
 			buffer.pVertex[headOffset + 2].set(headB, color);
-			auto* indices = (buffer.pIndex + stripIndices + capIndices);
+			auto indices = (buffer.pIndex + stripIndices + capIndices);
 			const auto triangle = [&](uint16 i, uint16 j, uint16 k, const Float2& p0, const Float2& p1, const Float2& p2)
 			{
 				if ((p1 - p0).cross(p2 - p0) < 0.0f) std::swap(j, k);
@@ -4069,7 +4069,7 @@ namespace s3d
 			const float ws = ((uvRect.right - uvRect.left) / w);
 			const float hs = ((uvRect.bottom - uvRect.top) / h);
 			WriteRoundRectVertices<Gradient>(pVertex, rect, r, Quality, colorType, color0, color1,
-				[&](Vertex2D& vertex, const float x, const float y, const Float4& color)
+				[&](Vertex2DWriteReference vertex, const float x, const float y, const Float4& color)
 				{
 					const float u = (uvRect.left + (x - rect.left) * ws);
 					const float v = (uvRect.top + (y - rect.top) * hs);
@@ -4237,9 +4237,9 @@ namespace s3d
 				{
 					for (int32 x = 0; x < 4; ++x)
 					{
-						pVertex->pos.set(xs[x], ys[y]);
-						pVertex->tex.set(uvs[x], uvs[y]);
-						pVertex->color = color;
+						pVertex->setPosition(xs[x], ys[y]);
+						pVertex->setTex(uvs[x], uvs[y]);
+						pVertex->setColor(color);
 						++pVertex;
 					}
 				}
@@ -4247,7 +4247,7 @@ namespace s3d
 
 			// インデックス情報の書き込み
 			{
-				Vertex2D::IndexType* pBase = pIndex;
+				Index2DWritePointer pBase = pIndex;
 
 				for (Vertex2D::IndexType ty = 0; ty < 3; ++ty)
 				{
@@ -4354,9 +4354,9 @@ namespace s3d
 					const float cx = centersX[corner];
 					const float cy = centersY[corner];
 
-					Vertex2D* pOuter = &pVertex[corner * roundVertexCount];
-					Vertex2D* pInner = (pOuter + fanVertexCount);
-					Vertex2D* pC = (pInner + fanVertexCount);
+					Vertex2DWritePointer pOuter = (pVertex + corner * roundVertexCount);
+					Vertex2DWritePointer pInner = (pOuter + fanVertexCount);
+					Vertex2DWritePointer pC = (pInner + fanVertexCount);
 
 					const auto offset = angleOffsets[corner];
 
@@ -4365,21 +4365,21 @@ namespace s3d
 						const float rad = (radDelta * i);
 						const auto [s, c] = FastMath::SinCos(rad + offset);
 
-						pOuter->pos.set((cx + farRadius * c), (cy + farRadius * s));
-						pOuter->tex.set(0.0f, 0.5f);
-						pOuter->color = color;
+						pOuter->setPosition((cx + farRadius * c), (cy + farRadius * s));
+						pOuter->setTex(0.0f, 0.5f);
+						pOuter->setColor(color);
 
-						pInner->pos.set((cx + nearRadius * c), (cy + nearRadius * s));
-						pInner->tex.set(0.5f, 0.5f);
-						pInner->color = color;
+						pInner->setPosition((cx + nearRadius * c), (cy + nearRadius * s));
+						pInner->setTex(0.5f, 0.5f);
+						pInner->setColor(color);
 
 						++pOuter;
 						++pInner;
 					}
 
-					pC->pos.set(cx, cy);
-					pC->tex.set(0.5f, 0.5f);
-					pC->color = color;
+					pC->setPosition(cx, cy);
+					pC->setTex(0.5f, 0.5f);
+					pC->setColor(color);
 				};
 
 				for (Vertex2D::IndexType corner = 0; corner < 4; ++corner)

@@ -277,6 +277,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DUpload.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Vertex2DBuilderIndices.cpp">
       <Filter>Test</Filter>
     </ClCompile>

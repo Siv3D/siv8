@@ -26,7 +26,7 @@ namespace s3d
 
 		template <class SourceIndex>
 		SIV3D_ALWAYS_INLINE
-		static inline void CopyIndicesWithOffset(Vertex2D::IndexType* pIndex, const std::span<const SourceIndex> source,
+		static inline void CopyIndicesWithOffset(Index2DWritePointer pIndex, const std::span<const SourceIndex> source,
 			const Vertex2D::IndexType indexOffset)
 		{
 			// Upload memory may be write-combined: add the offset before storing,
@@ -479,14 +479,14 @@ namespace s3d
 				return 0;
 			}
 
-			pVertex[0].pos.set((innerRect.left - thickness), (innerRect.top - thickness));
-			pVertex[1].pos.set(innerRect.left, innerRect.top);
-			pVertex[2].pos.set((innerRect.right + thickness), (innerRect.top - thickness));
-			pVertex[3].pos.set(innerRect.right, innerRect.top);
-			pVertex[4].pos.set((innerRect.right + thickness), (innerRect.bottom + thickness));
-			pVertex[5].pos.set(innerRect.right, innerRect.bottom);
-			pVertex[6].pos.set((innerRect.left - thickness), (innerRect.bottom + thickness));
-			pVertex[7].pos.set(innerRect.left, innerRect.bottom);
+			pVertex[0].setPosition((innerRect.left - thickness), (innerRect.top - thickness));
+			pVertex[1].setPosition(innerRect.left, innerRect.top);
+			pVertex[2].setPosition((innerRect.right + thickness), (innerRect.top - thickness));
+			pVertex[3].setPosition(innerRect.right, innerRect.top);
+			pVertex[4].setPosition((innerRect.right + thickness), (innerRect.bottom + thickness));
+			pVertex[5].setPosition(innerRect.right, innerRect.bottom);
+			pVertex[6].setPosition((innerRect.left - thickness), (innerRect.bottom + thickness));
+			pVertex[7].setPosition(innerRect.left, innerRect.bottom);
 
 			switch (colorType)
 			{
@@ -494,8 +494,8 @@ namespace s3d
 				{
 					for (size_t i = 0; i < 4; ++i)
 					{
-						(pVertex++)->color = color1;
-						(pVertex++)->color = color0;
+						(pVertex++)->setColor(color1);
+						(pVertex++)->setColor(color0);
 					}
 
 					break;
@@ -505,14 +505,14 @@ namespace s3d
 					const float v1 = (thickness / (innerRect.bottom - innerRect.top + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
 
-					pVertex[0].color = colors[0];
-					pVertex[1].color = colors[1];
-					pVertex[2].color = colors[0];
-					pVertex[3].color = colors[1];
-					pVertex[4].color = colors[3];
-					pVertex[5].color = colors[2];
-					pVertex[6].color = colors[3];
-					pVertex[7].color = colors[2];
+					pVertex[0].setColor(colors[0]);
+					pVertex[1].setColor(colors[1]);
+					pVertex[2].setColor(colors[0]);
+					pVertex[3].setColor(colors[1]);
+					pVertex[4].setColor(colors[3]);
+					pVertex[5].setColor(colors[2]);
+					pVertex[6].setColor(colors[3]);
+					pVertex[7].setColor(colors[2]);
 
 					break;
 				}
@@ -521,14 +521,14 @@ namespace s3d
 					const float v1 = (thickness / (innerRect.right - innerRect.left + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
 
-					pVertex[0].color = colors[0];
-					pVertex[1].color = colors[1];
-					pVertex[2].color = colors[3];
-					pVertex[3].color = colors[2];
-					pVertex[4].color = colors[3];
-					pVertex[5].color = colors[2];
-					pVertex[6].color = colors[0];
-					pVertex[7].color = colors[1];
+					pVertex[0].setColor(colors[0]);
+					pVertex[1].setColor(colors[1]);
+					pVertex[2].setColor(colors[3]);
+					pVertex[3].setColor(colors[2]);
+					pVertex[4].setColor(colors[3]);
+					pVertex[5].setColor(colors[2]);
+					pVertex[6].setColor(colors[0]);
+					pVertex[7].setColor(colors[1]);
 
 					break;
 				}
@@ -710,8 +710,8 @@ namespace s3d
 
 					while (pSrc != pSrcEnd)
 					{
-						pVertex->pos = (_offset + *pSrc++);
-						pVertex->color = color;
+						pVertex->setPosition((_offset + *pSrc++));
+						pVertex->setColor(color);
 						++pVertex;
 					}
 				}
@@ -719,8 +719,8 @@ namespace s3d
 				{
 					while (pSrc != pSrcEnd)
 					{
-						pVertex->pos = *pSrc++;
-						pVertex->color = color;
+						pVertex->setPosition(*pSrc++);
+						pVertex->setColor(color);
 						++pVertex;
 					}
 				}
@@ -755,8 +755,8 @@ namespace s3d
 
 				while (pSrc != pSrcEnd)
 				{
-					pVertex->pos = *pSrc++;
-					pVertex->color = color;
+					pVertex->setPosition(*pSrc++);
+					pVertex->setColor(color);
 					++pVertex;
 				}
 			}
@@ -800,8 +800,8 @@ namespace s3d
 					const Float2 v = *pSrc++;
 					const float x = (v.x * c - v.y * s + _offset.x);
 					const float y = (v.x * s + v.y * c + _offset.y);
-					pVertex->pos.set(x, y);
-					pVertex->color = color;
+					pVertex->setPosition(x, y);
+					pVertex->setColor(color);
 					++pVertex;
 				}
 			}
@@ -900,7 +900,7 @@ namespace s3d
 				}
 				else
 				{
-					std::memcpy(pVertex, vertices.data(), vertices.size_bytes());
+					pVertex.copyFrom(vertices);
 				}
 			}
 

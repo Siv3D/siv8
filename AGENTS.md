@@ -14,6 +14,9 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 - Consider avoidable allocations, copies, and repeated work, and inspect nearby implementation patterns before choosing an approach.
 - Prefer designs that allow storage or state to be reused. When both destination-writing and value-returning forms are appropriate, keep one canonical implementation and make the convenience form a wrapper around it.
 - Get the user's explicit approval before adding runtime overhead (branches or extra arithmetic) to a frequently called function to defend against infinities, NaNs, extreme values, or similarly exceptional inputs.
+- Treat GPU upload destinations as write-only. Compute positions, UVs, colors, index offsets, and winding from source data or CPU locals; do not read back uploaded values, use read/modify/write operations, or chain assignments through destination elements. Keep necessary buffer-growth copies inside the backend's storage management.
+- In Renderer2D, preserve the write-only cursors from `Vertex2DBufferPointer` throughout geometry helpers. Do not expose raw destination pointers or add readable conversions to bypass them. Extend the compile-time rejection checks in `Test/Test_Renderer2DUpload.cpp` when changing this boundary.
+- For upload-path changes, run `Renderer2DUpload.*` and the affected geometry/image tests, and compare Release performance in ordinary CPU memory and the actual backend upload memory. A heap-array benchmark alone is insufficient. Follow [the upload validation guide](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers), including generated-code inspection when destination access is uncertain; keep hardware-dependent timing thresholds out of automated correctness tests.
 
 # Public APIs and tests
 
