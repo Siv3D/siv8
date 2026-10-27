@@ -2,7 +2,8 @@
 
 [AGENTS.md](../../AGENTS.md) defines repository-wide rules;
 [docs/AGENTS.md](../AGENTS.md) defines documentation ownership and organization.
-This page describes the existing validation workflows.
+This page describes the existing validation workflows. For public-header
+Doxygen changes, follow [API documentation](api-documentation.md).
 
 For the vendored window library and its local integration changes, see
 [GLFW maintenance](glfw.md).
@@ -72,6 +73,8 @@ The runner checks test registration, then builds and launches the application.
 `CONFIGURATION` selects the build configuration (default `Debug`); other arguments
 are passed to the shared Catch2 runner. `--test-only` and `--test-verbose` are
 application options; the latter enables the normal engine logs.
+Preserve the `--test-only` early-exit block in `macOS/Main.cpp`; keep test-only
+logging and configuration in `Test/`.
 On macOS, the shared runner also consumes Xcode's automatically supplied
 `-NSDocumentRevisionsDebugMode YES` (or `NO`) preference before parsing test
 options. Running from Xcode with no user arguments executes the default suite.
@@ -303,6 +306,7 @@ blanket warning suppression or edits to vendored Catch2 sources.
 
 Distinguish compiler/linker failures from runtime failures. Treat MSVC `C1001`
 as a likely toolchain issue and preserve its build log before changing source.
+Document reusable workarounds; retain incident-specific evidence in reports.
 For an exception such as `EXCEPTION_ILLEGAL_INSTRUCTION` or an incomplete test
 report after an incremental build, use the diagnosis below. Missing or incomplete
 XML is a failed run even if the process exits with zero. Clean rebuilding is a
@@ -373,7 +377,22 @@ The [TextFileReader benchmark](text-file-reader-benchmark.md) measures UTF-8
 whole-file and line reading with generated application workloads, memory/file
 inputs, reusable destinations, and the JSON loading path. It is an opt-in test.
 
+## Test authoring
+
+Keep tests focused on the feature they exercise. Do not force new cases into an
+unrelated test file; add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
+
+Store visual or interactive programs under `Test/Manual/` as self-contained
+Markdown with an English description, execution steps, expected results, and
+complete sample code. Do not leave temporary programs in a platform `Main.cpp`.
+
 ## Test output and configuration
+
+Prefer in-memory checks unless file I/O is under test. Let the runner own output
+setup and cleanup, and restore any process state changed by a test. Configure
+tests with explicit arguments, not ambient environment variables. Use environment
+variables only for platform/tool requirements or environment-handling tests,
+scoped to the relevant process or restored afterward.
 
 [RunTest](../../Test/Siv3DTest.cpp) verifies the platform `App/` working directory
 and clears `Test/output/` before and after the suite. Cleanup failure fails the
@@ -386,9 +405,9 @@ path beneath that root, independent of later working-directory changes.
 Retained output is documented with its producer:
 [Array instrumentation](../array/testing.md#isolated-instrumentation-on-macos),
 [Mesh3D preview](../mesh3d/preview.md), and the complete programs in
-[Test/Manual](../../Test/Manual/). Temporary Python self-test fixtures are removed
-on scope exit. The test configuration policy is in
-[AGENTS.md](../../AGENTS.md#test-output-and-configuration).
+[Test/Manual](../../Test/Manual/). Keep retained artifacts in manual tests or tools
+with documented output locations. Temporary Python self-test fixtures are removed
+on scope exit.
 
 The [RemoveContents Trash check](../../Test/Manual/FileSystemRemoveContentsTrash.md)
 uses a separate macOS application to verify native Trash behavior and documents

@@ -1,63 +1,77 @@
 # Repository instructions
 
-- Use LF line endings in source files, preserve LF in existing ones, and verify the line endings of every modified source file before finishing. Byte-exact test fixtures are exempt: mark them as binary in the nearest `.gitattributes`, do not normalize them, and verify their actual bytes.
-- Run `git diff --check` before finishing any code change.
-- Preserve the user's uncommitted changes and do not revert unrelated diffs.
-- For public classes, place ordinary inline function bodies in the corresponding `.ipp` files and keep declarations and Doxygen in `.hpp` files. Keep non-public class implementations, internal helpers, and hidden friend definitions in `.hpp` files. Keep `= default` and `= delete` on their original declarations.
-- Treat `Siv3D/src/ThirdParty/` as vendored code and do not change it unless the task requires it. Suppress third-party warnings with target- or file-scoped build settings instead of source edits.
-- Before adding local complexity, examine callers, callees, and responsibility boundaries for a simpler overall design. Proactively propose changes at the source of the complexity, including broader refactoring when justified, and break larger changes into small, reviewable stages.
+## Siv3D design priorities
 
-# Runtime performance
+Siv3D is used to create games and other interactive applications in C++. Preserve
+its emphasis on expressing useful operations in a small amount of clear code,
+with runtime performance suitable for repeated use in a real-time frame loop.
 
-Siv3D is used for games and other real-time applications, so treat runtime performance as an important design constraint for code that may run frequently or process substantial data.
+- Start API design with realistic caller code. Favor readable expressions, useful defaults, and operations that compose naturally with Siv3D's existing types. Keep naming, argument order, and behavior consistent across related APIs; add conveniences when they meaningfully simplify common tasks.
+- Make ease of use and efficiency work together. Consider the cost of the whole caller operation, including intermediate objects and repeated preparation. Simple drawing calls should have efficient direct paths where worthwhile, and repeated work should be able to reuse storage or prepared data.
+- Judge drawing APIs by their visible results as well as their contracts and measured cost. Handle boundaries reached naturally during animation, such as zero size or short paths. Balance visual quality and bounded work; describe practical limits instead of promising expensive perfection for every geometry.
+- Keep API documentation useful for creating things: clear conditions and outcomes, concise explanations, and concrete examples. Let implementation and verification details live in development guides.
 
-- Consider avoidable allocations, copies, and repeated work, and inspect nearby implementation patterns before choosing an approach.
-- Prefer designs that allow storage or state to be reused. When both destination-writing and value-returning forms are appropriate, keep one canonical implementation and make the convenience form a wrapper around it.
+## Repository layout
+
+Use this map to locate existing work and choose where new files belong.
+
+| Location | Role |
+|---|---|
+| `Siv3D/include/Siv3D/` | Public headers and Doxygen; inline definitions in `detail/*.ipp`. `Siv3D/include/Siv3D.hpp` is the umbrella header. |
+| `Siv3D/src/Siv3D/` | Shared engine implementations and internal helpers, organized by subsystem. |
+| `Siv3D/src/Siv3D-Platform/` | Platform-specific implementations and backend integrations. |
+| `macOS/`, `WindowsDesktop/` | Platform projects, build/test runners, application entry points, and app resources. |
+| `Test/` | Automated tests and shared test support. `Test/data/` holds read-only fixtures; the runner manages `Test/output/`. |
+| `Test/Manual/` | Self-contained Markdown programs for visual or interactive checks, with an English description, execution steps, expected results, and complete sample code. |
+| `tools/` | Reusable development utilities: validators, diagnostics, benchmarks, and previews. Document usage and output locations in the relevant subject guide. |
+| `docs/` | Durable usage, design, and development guides, organized by subject and indexed in [docs/README.md](docs/README.md). Unadopted designs belong in the subject's `proposals/`. |
+| `Siv3D/include/ThirdParty/`, `Siv3D/src/ThirdParty*/`, `Test/ThirdParty/`, `Dependencies/` | Bundled external headers, sources, and dependency packages. |
+| Root `README.md`, `AGENTS.md`, `TODO.md` | Project introduction, contributor instructions, and unfinished work respectively. |
+
+## Repository care
+
+- Preserve the user's uncommitted changes; do not revert unrelated diffs.
+- Use and verify LF in every modified source file. Byte-exact fixtures are exempt: mark them binary in the nearest `.gitattributes`, do not normalize them, and verify their bytes.
+- In public classes, keep declarations and Doxygen in `.hpp`, ordinary inline bodies in the corresponding `.ipp` files. Keep non-public class implementations, internal helpers, and hidden friends in `.hpp`; keep `= default` / `= delete` on their declarations.
+- Treat `Siv3D/src/ThirdParty/` as vendored. Edit it only when the task requires it; suppress third-party warnings through target- or file-scoped build settings.
+
+## Design and public APIs
+
+- Examine callers, callees, and responsibilities before adding local complexity. Prefer fixes at its source; propose broader refactoring when justified and split it into reviewable stages.
+- Treat runtime performance as a real-time constraint. Inspect nearby patterns; avoid unnecessary allocations, copies, and repeated work. Reuse storage/state, and make value-returning conveniences wrap a canonical destination-writing implementation when both forms fit.
 - Get the user's explicit approval before adding runtime overhead (branches or extra arithmetic) to a frequently called function to defend against infinities, NaNs, extreme values, or similarly exceptional inputs.
-- Treat GPU upload destinations as write-only. Compute positions, UVs, colors, index offsets, and winding from source data or CPU locals; do not read back uploaded values, use read/modify/write operations, or chain assignments through destination elements. Keep necessary buffer-growth copies inside the backend's storage management.
-- In Renderer2D, preserve the write-only cursors from `Vertex2DBufferPointer` throughout geometry helpers. Do not expose raw destination pointers or add readable conversions to bypass them. Extend the compile-time rejection checks in `Test/Test_Renderer2DUpload.cpp` when changing this boundary.
-- For upload-path changes, run `Renderer2DUpload.*` and the affected geometry/image tests, and compare Release performance in ordinary CPU memory and the actual backend upload memory. A heap-array benchmark alone is insufficient. Follow [the upload validation guide](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers), including generated-code inspection when destination access is uncertain; keep hardware-dependent timing thresholds out of automated correctness tests.
+- For public API changes, update concise Doxygen contracts and add focused normal, boundary, and failure or round-trip tests as applicable. Share common contracts instead of duplicating them.
+- Treat pre-implementation API documentation as provisional. If a guarantee or permissive precondition requires unusually complex or costly code, ask the user whether to revise the contract instead of silently preserving it.
+- Treat GPU upload destinations as write-only. Compute positions, UVs, colors, index offsets, and winding from source data or CPU locals; do not read back, use read/modify/write operations, or chain assignments through destination elements. Keep necessary buffer-growth copies inside backend storage management.
+- Preserve the write-only cursors from [Vertex2DBufferPointer](Siv3D/src/Siv3D/Renderer2D/Vertex2DBufferPointer.hpp) throughout geometry helpers. Do not expose raw destination pointers or readable conversions to bypass them. Extend the compile-time rejection checks in [Test_Renderer2DUpload.cpp](Test/Test_Renderer2DUpload.cpp) when changing this boundary.
 
-# Public APIs and tests
+## Tests and test output
 
-- When adding or changing a public API, update its Doxygen documentation and add focused tests for normal, boundary, and failure or round-trip cases as applicable.
-- Treat pre-implementation API documentation as provisional. If implementing it reveals that a guarantee or permissive precondition would require unusually complex or costly code, ask the user whether to revise the contract instead of silently preserving it.
-- Do not force new tests into an unrelated existing test file. Add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
-- Store visual or interactive test programs under `Test/Manual/` as self-contained Markdown documentation with an English description, execution steps, expected results, and complete sample code. Do not leave temporary visual tests in a platform `Main.cpp`.
+- Keep tests focused on their feature; add a dedicated `Test/Test_<Feature>.cpp` rather than forcing new tests into an unrelated file. Store visual/interactive programs in `Test/Manual/` as described above; do not leave temporary tests in a platform `Main.cpp`.
+- Prefer in-memory validation unless file I/O is under test. Use `Test::OutputPath()` for files under `Test/output/`; keep `Test/data/` read-only. Let the runner own output setup and cleanup, and restore process state changed by a test. Retained artifacts belong in manual tests or tools with documented output locations.
+- Configure tests through explicit arguments, not ambient environment variables. Limit environment-variable use to platform/tool requirements or environment-handling tests, scoped to the relevant process or restored afterward.
 
-# Public API documentation
+## Validation
 
-- Do not expose temporary migration states or incomplete backend ports in user-facing API documentation. Describe the adopted contract there; track implementation gaps and temporary differences in development documentation, test instructions, and TODO.md.
-- Document facts that affect how callers use the API: preconditions, return values, failure behavior, side effects, ownership, and non-obvious boundary cases. Omit assurances of expected behavior, such as Unicode support or an empty file having size zero.
-- Keep Doxygen concise and direct. Omit incidental advice such as "no extra X is needed"; keep broader usage guidance in docs and reference shared contracts instead of repeating them.
-- Do not turn each tested edge case into a separate `@remark`. Keep shared behavior in one canonical API contract and link to it from related types and overloads. Put geometric derivations, implementation choices, and detailed shape examples in subject guides; keep caller-relevant conditions and outcomes in Doxygen.
-- Describe observable behavior, not implementation steps, bug-fix history, or verification status. A fix that restores an already documented contract does not by itself require new prose. Add platform notes only for meaningful differences in the public contract; combine identical behavior across platforms.
-- Keep each fact in the appropriate Doxygen field. Do not repeat `@param` or `@return` information in `@remark`. Retain examples that help readers understand an operation, including ordinary cases. Prefer input/output pairs, and improve incomplete examples rather than deleting them merely because the behavior can be inferred from prose.
-- State concrete conditions for empty or absent results instead of calling every such result a failure. Preserve useful guarantees, such as whether partial results are returned or completed side effects are rolled back.
-- When simplifying documentation, check the implementation and tests so that the wording does not silently strengthen guarantees or erase actual platform differences.
+- Determine the host OS first; never run another OS's build/test workflow. After shared-code changes, run the full host suite from the repository root: `./macOS/run-tests.sh` on macOS or `./WindowsDesktop/run-tests.ps1` on Windows. If no host workflow is documented, report unverified work rather than substituting another platform's workflow.
+- For focused iteration, use `./macOS/run-tests.sh '--test-case=<pattern>'` or, on Windows, `./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=<pattern>'`. Preserve the `--test-only` early-exit block in `macOS/Main.cpp`; keep test-only logging and configuration in `Test/`.
+- Run Xcode and Metal builds outside the sandbox. A sandboxed Metal Toolchain lookup failure does not establish that the toolchain is missing.
+- For Windows build/test failures, preserve build logs and the reports from `WindowsDesktop/Intermediate/TestReports/` and follow the [diagnosis guide](docs/development/README.md#windows-incremental-build-failures) before retries or source attribution. Treat MSVC `C1001` as a likely toolchain issue; document reusable workarounds, not incident histories.
+- For GPU upload-path changes, run `Renderer2DUpload.*` and affected geometry/image tests, then the full host suite. Compare Release performance in ordinary CPU memory and the actual backend's upload memory; a heap-array benchmark alone is insufficient. Follow the [upload guide](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers), including generated-code inspection when destination access is uncertain. Keep hardware timing thresholds out of correctness tests.
+- When adding, removing, or renaming shared sources, public headers, or tests, update the Xcode project, Visual Studio project, and `.filters`; add public headers to `Siv3D/include/Siv3D.hpp` when appropriate. Validate changed projects with `./macOS/validate-projects.sh`; report any platform project the host cannot validate.
+- Run `git diff --check` before finishing code or documentation changes. For documentation changes, also run `python3 tools/check_docs.py` and update affected links. Documentation-only changes do not require an engine rebuild; verify executable examples if changed.
+- At feature completion, follow [docs/AGENTS.md](docs/AGENTS.md) to consolidate durable knowledge and remove superseded galleries, completed handoffs, obsolete proposals, and temporary artifacts within scope. Keep one canonical gallery per feature, separate manual programs only for distinct validation needs, and use Git history instead of archival copies.
 
-# Project files
+## Task-specific rules
 
-- When adding, removing, or renaming shared source files, public headers, or tests, update the macOS Xcode project and the Windows Visual Studio project and its `.filters` file. Add new public headers to `Siv3D/include/Siv3D.hpp` when appropriate.
-- Validate changed project files with `./macOS/validate-projects.sh`. If the current host cannot validate a changed platform project, report that limitation explicitly.
+Read and follow the applicable sections before the listed work; unrelated sections need not be loaded.
 
-# Build and test
+| Work | Required guidance |
+|---|---|
+| Writing or revising public API documentation | [API documentation](docs/development/api-documentation.md) |
+| Adding or changing tests or visual programs | [Test authoring](docs/development/README.md#test-authoring) and [output/configuration](docs/development/README.md#test-output-and-configuration) |
+| Building or running tests | [Build and test](docs/development/README.md#build-and-test), using the host's section |
+| GPU upload paths in shared code or platform backends | [Upload rules and validation](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers) |
+| Documentation changes or feature completion | [Documentation ownership and cleanup](docs/AGENTS.md) |
 
-- Determine the host OS first, and never run build or test commands intended for a different host OS.
-- For Windows build/test failures, preserve the reports and follow the [diagnosis guide](docs/development/README.md#windows-incremental-build-failures) before retries or source attribution. Treat MSVC `C1001` as a likely toolchain issue; document reusable workarounds, not incident histories.
-- After changing shared code, run the full automated test suite available for the current host. If no automated test workflow is documented for that host, do not substitute another platform's workflow; report the unverified items explicitly.
-- On macOS that suite is `./macOS/run-tests.sh`, run from the repository root; pass `'--test-case=<pattern>'` for focused iteration. It relies on the `--test-only` early-exit block in `macOS/Main.cpp`, so keep that block intact and keep test-only logging and configuration in `Test/`.
-- Run Xcode and Metal builds outside the sandbox. A Metal Toolchain lookup failure inside the sandbox does not mean that it is not installed.
-
-# Test output and configuration
-
-- Prefer in-memory validation unless file I/O is under test. Use `Test::OutputPath()` for files under `Test/output/`; keep `Test/data/` read-only.
-- Let the test runner own output setup and cleanup; restore process state changed by a test. Retained artifacts belong in manual tests or tools with documented output locations. See [the development guide](docs/development/README.md#test-output-and-configuration).
-- Configure tests through explicit arguments, not ambient environment variables. Limit environment-variable use to platform/tool requirements or environment-handling tests, with changes scoped to the relevant process or restored afterward.
-
-# Documentation organization
-
-- Store durable usage guides and development knowledge under `docs/<subject>/`, with a subject `README.md` linked from `docs/README.md`. Follow `docs/AGENTS.md` for documentation changes.
-- Keep pending work in root `TODO.md`; place unadopted designs in the relevant subject's `proposals/` directory with an explicit status. Root README and AGENTS remain entry points.
-- At feature completion, consolidate durable knowledge in existing guides and remove superseded galleries, completed handoffs, obsolete proposals, and temporary artifacts within the work scope. Keep one canonical gallery per feature; separate manual programs only for distinct validation needs. Use Git history instead of archival copies.
-- Update affected links when moving or removing documents and run `python3 tools/check_docs.py` after documentation changes.
+Optimize this file for reliable work and low lookup cost, not minimum length. Keep frequent decisions, approval conditions, key paths, and routine commands here. Detailed guidance may move to subject guides with direct task-specific links; preserve the underlying knowledge and verify that it remains discoverable. Consolidate repetition without removing useful context or adding unnecessary navigation.

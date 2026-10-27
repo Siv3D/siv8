@@ -278,15 +278,22 @@ assignment return `void`. The cursors expose neither values nor raw destination
 pointers. `copyFrom()` handles bulk copies from CPU source spans without exposing
 the destination. Geometry helpers keep these cursor types throughout emission;
 readable intermediate geometry belongs in CPU locals or reusable CPU arrays.
+Do not expose raw destination pointers or add readable conversions to bypass
+these cursors. Extend the compile-time rejection checks below when changing
+this boundary.
 
 [Test_Renderer2DUpload.cpp](../../Test/Test_Renderer2DUpload.cpp) is compiled by
 both platform test projects. Its compile-time checks reject destination reads,
 read/modify/write operations, proxy-to-proxy copies, chained index assignment,
 and implicit raw-pointer escapes. Runtime tests check cursor offsets, attribute
 preservation, and bulk copies. They inspect the CPU storage owned by the test,
-not the output cursors. These checks contain no hardware timing thresholds.
-Run the focused tests with `./macOS/run-tests.sh '--test-case=Renderer2DUpload.*'`
-on macOS, followed by affected geometry/image tests and the full host suite.
+not the output cursors. Keep hardware-dependent timing thresholds out of automated
+correctness tests. For upload-path changes, run `Renderer2DUpload.*` and affected
+geometry/image tests, followed by the full host suite. On macOS, the focused
+command is `./macOS/run-tests.sh '--test-case=Renderer2DUpload.*'`.
+Also compare Release performance in ordinary CPU memory and the actual backend's
+upload memory; a heap-array benchmark alone is insufficient. Inspect generated
+code when destination access is uncertain.
 
 `CopyIndicesWithOffset` reads each source index, adds the base offset, and writes
 once to the destination. It never reads the upload destination. The same helper
@@ -305,7 +312,8 @@ reads, including in circle and ellipse arc gradients. Such field access is not
 available through the write-only cursor.
 Do not use an upload buffer as geometry scratch storage.
 Buffer growth still copies existing uploaded data to preserve pending draws;
-this occurs when capacity grows, rather than on each draw.
+this occurs when capacity grows, rather than on each draw. Keep these copies
+inside backend storage management.
 
 Use [renderer2d-index-upload.mm](../../tools/renderer2d-index-upload.mm) to compare
 ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
