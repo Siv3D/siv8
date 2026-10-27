@@ -301,7 +301,10 @@ TEST_CASE("CircularShapes.public_rendering_transform_alpha_and_fallback")
 		CHECK(direct == saved);
 		uint8 maximum = 0;
 		for (const auto pixel : direct) maximum = Max(maximum, pixel.r);
-		CHECK(maximum == 128);
+		// Half-opacity white over black is 127.5 in UNORM8. Allow either
+		// adjacent integer while retaining the upper bound against double coverage.
+		CHECK(int32(maximum) >= 127);
+		CHECK(int32(maximum) <= 128);
 	}
 	const auto disk = Capture([&] { circle.draw(ink); });
 	CHECK(disk == Capture([&] { circle.drawCrescent(0.3, 128, ink); }));

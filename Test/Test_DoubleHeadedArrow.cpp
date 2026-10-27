@@ -270,7 +270,10 @@ TEST_CASE("DoubleHeadedArrow.public_straight_shrink_alpha_and_curve_equivalence"
 		{
 			uint8 maximum = 0;
 			for (const auto pixel : reference) maximum = Max(maximum, pixel.r);
-			CHECK(maximum == 128);
+			// Half-opacity white over black is 127.5 in UNORM8. Allow either
+			// adjacent integer while retaining the upper bound against double coverage.
+			CHECK(int32(maximum) >= 127);
+			CHECK(int32(maximum) <= 128);
 			const auto heads = detail::FindBezierDoubleArrowHeads(curve, 45);
 			REQUIRE(heads);
 			for (const auto& h : { heads->start, heads->end })

@@ -363,6 +363,20 @@ Preserve both build logs and run the full suite after a successful rebuild.
 Changing the host compiler and regenerating build artifacts together does not
 isolate which change avoided the failure.
 
+If MSBuild itself exits with an access violation before producing compiler
+diagnostics, preserve its log and the Windows Application error events separately
+from the test application's reports. On a 64-bit host, select the 64-bit MSBuild
+executable explicitly before running the same recovery commands:
+
+```powershell
+$siv3dMSBuild = Join-Path $siv3dVs 'MSBuild/Current/Bin/amd64/MSBuild.exe'
+```
+
+Add `/p:PreferredToolArchitecture=x64` to select the 64-bit compiler host as well;
+the target configuration and toolset stay unchanged. Require a successful build
+and complete full-suite reports before accepting the recovery. A successful run
+with different tool hosts does not establish the cause of the original crash.
+
 ## Performance experiments
 
 The [Renderer2D JoinStyle benchmark](renderer2d-join-benchmark.md) separates
