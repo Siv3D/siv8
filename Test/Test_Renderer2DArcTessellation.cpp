@@ -224,7 +224,7 @@ TEST_CASE("Renderer2D.arc_tessellation_caps_segments_and_limits")
 	CHECK(BuildPrimitive(Shape::EllipsePie, 80, 0).indices.isEmpty());
 	CHECK(BuildPrimitive(Shape::SquareArc, 80, 0).indices.size() == 12);
 	CHECK(BuildPrimitive(Shape::RoundArc, 80, 0).indices.size() == 30);
-	for (const auto [width, triangles] : { std::pair{ 2.0f, 8 }, { 1000.0f, 252 } })
+	for (const auto [width, triangles] : { std::pair<float, size_t>{ 2.0f, 8 }, { 1000.0f, 252 } })
 	{
 		const auto caps = BuildMesh([&](const BufferCreatorFunc& allocate)
 		{

@@ -65,8 +65,10 @@ can overlap. An open endpoint cuts a partial round dot in its local tangent
 direction. Shader antialiasing on Line and geometry-cut dashes can differ near
 the cut edges. There is no mask, boolean union, or expensive fallback.
 
-The [manual program](../../Test/Manual/DashedPathDrawing.md) lets you vary the
-preset, phase, path cap and opacity on angular paths, curves and a closed seam.
+The [manual program](../../Test/Manual/DashedPathDrawing.md) compares all thirteen
+LineStyle presets across Line, straight and angular LineStrings, Bezier2/3,
+Spline2D and a closed path. It provides a shared phase, width and opacity, endpoint
+guides, and an enlarged view of the selected preset.
 
 ## Implementation and measurement
 
