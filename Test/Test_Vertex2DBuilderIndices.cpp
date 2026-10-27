@@ -23,7 +23,7 @@ namespace
 	using Index = Vertex2D::IndexType;
 	constexpr Index Guard = std::numeric_limits<Index>::max();
 	const Float4 Red{ 1, 0, 0, 0.5f }, Blue{ 0, 0, 1, 0.5f };
-	const FloatRect Rect{ -10, -7, 10, 7 }, UV{ 0.2f, 0.3f, 0.8f, 0.9f };
+	const FloatRect Bounds{ -10, -7, 10, 7 }, UV{ 0.2f, 0.3f, 0.8f, 0.9f };
 	const Float2 Positions[]{ { 0, 0 }, { 4, 0 }, { 4, 3 }, { 0, 3 } };
 	const TriangleIndex Triangles[]{ { 0, 1, 2 }, { 2, 3, 0 } };
 	const Index FlatIndices[]{ 0, 1, 2, 2, 3, 0 };
@@ -113,13 +113,13 @@ namespace
 		case Shape::TexturedCircle:
 			return BuildTexturedCircle(allocate, Circle{ 3, 5, 1 }, UV, Red, scale);
 		case Shape::RoundRect:
-			return BuildRoundRect(allocate, Rect, 1, Red, scale);
+			return BuildRoundRect(allocate, Bounds, 1, Red, scale);
 		case Shape::RoundRectTB:
-			return BuildRoundRect(allocate, Rect, 1, ColorFillDirection::TopBottom, Red, Blue, scale);
+			return BuildRoundRect(allocate, Bounds, 1, ColorFillDirection::TopBottom, Red, Blue, scale);
 		case Shape::RoundRectLR:
-			return BuildRoundRect(allocate, Rect, 1, ColorFillDirection::LeftRight, Red, Blue, scale);
+			return BuildRoundRect(allocate, Bounds, 1, ColorFillDirection::LeftRight, Red, Blue, scale);
 		case Shape::TexturedRoundRect:
-			return BuildTexturedRoundRect(allocate, Rect, 20, 14, 1, UV, Red, scale);
+			return BuildTexturedRoundRect(allocate, Bounds, 20, 14, 1, UV, Red, scale);
 		}
 		return 0;
 	}
@@ -186,12 +186,12 @@ namespace
 		case RoundedShape::EllipseDashed:
 			return BuildEllipseDashedFrame(allocate, { 3, 5 }, 1, 0.5f, 0.1f, 0.25f, 0.2f, 0.25f, 8, Red, Blue, scale);
 		case RoundedShape::RoundRectDashed:
-			return BuildRoundRectDashedFrame(allocate, inner, 0.5f, Rect, 1, 0.2f, 0.25f, 8, Red, scale);
+			return BuildRoundRectDashedFrame(allocate, inner, 0.5f, Bounds, 1, 0.2f, 0.25f, 8, Red, scale);
 		case RoundedShape::RoundRectFrame:
-			return BuildRoundRectFrame(allocate, inner, 0.5f, Rect, 1, Red, scale);
+			return BuildRoundRectFrame(allocate, inner, 0.5f, Bounds, 1, Red, scale);
 		case RoundedShape::RoundRectFrameTB:
 		case RoundedShape::RoundRectFrameLR:
-			return BuildRoundRectFrame(allocate, inner, 0.5f, Rect, 1,
+			return BuildRoundRectFrame(allocate, inner, 0.5f, Bounds, 1,
 				((shape == RoundedShape::RoundRectFrameTB) ? ColorFillDirection::TopBottom : ColorFillDirection::LeftRight), Red, Blue, scale);
 		case RoundedShape::ShadowFill:
 		case RoundedShape::ShadowRing:
@@ -302,6 +302,64 @@ TEST_CASE("Vertex2DBuilder.indices_copy_offset_and_count")
 				CHECK(mesh.vertices[i + 1].color == Red);
 				if (variant == 3) CHECK(mesh.vertices[i + 1].tex == Float2{ 0.25f, 0.75f });
 			}
+		}
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.mesh_offset_preserves_attributes_and_source")
+{
+	std::array<Vertex2D, 4> source;
+	for (size_t i = 0; i < source.size(); ++i)
+	{
+		const float t = (static_cast<float>(i) / 4);
+		source[i].set(Positions[i], Float2{ t, (1 - t) }, Float4{ t, (1 - t), 0.25f, (0.2f + t) });
+	}
+	const auto original = source;
+	for (const Optional<Float2> offset : { Optional<Float2>{}, Optional<Float2>{ Float2{ 0, 0 } }, Optional<Float2>{ Float2{ -20, 30 } } })
+	for (const bool limit : { false, true })
+	{
+		CAPTURE(offset, limit);
+		const auto mesh = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildMesh2D(allocate, source, Triangles, offset);
+		}, limit);
+		CheckIndices(mesh, FlatIndices);
+		for (size_t i = 0; i < source.size(); ++i)
+		{
+			CHECK(mesh.vertices[i + 1].pos == (original[i].pos + offset.value_or(Float2{ 0, 0 })));
+			CHECK(mesh.vertices[i + 1].tex == original[i].tex);
+			CHECK(mesh.vertices[i + 1].color == original[i].color);
+			CHECK(source[i].pos == original[i].pos);
+			CHECK(source[i].tex == original[i].tex);
+			CHECK(source[i].color == original[i].color);
+		}
+	}
+}
+
+TEST_CASE("Vertex2DBuilder.rect_shadow_hollow_indices")
+{
+	for (const bool limit : { false, true })
+	{
+		const auto filled = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildRectShadow(allocate, Bounds, 4, Red, true);
+		}, limit);
+		const auto hollow = Capture([&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildRectShadow(allocate, Bounds, 4, Red, false);
+		}, limit);
+		REQUIRE(hollow.count == 54);
+		REQUIRE(hollow.vertices.size() == filled.vertices.size());
+		for (size_t i = 1; i + 1 < hollow.vertices.size(); ++i)
+		{
+			CHECK(hollow.vertices[i].pos == filled.vertices[i].pos);
+			CHECK(hollow.vertices[i].tex == filled.vertices[i].tex);
+			CHECK(hollow.vertices[i].color == filled.vertices[i].color);
+		}
+		for (size_t i = 0; i < hollow.count; ++i)
+		{
+			// Only the two center triangles become degenerate; the surrounding ring is unchanged.
+			CHECK(hollow.indices[i + 1] == filled.indices[((24 <= i) && (i < 30) ? 24 : i) + 1]);
 		}
 	}
 }

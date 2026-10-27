@@ -100,11 +100,6 @@
 
 - RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
-## Renderer2D / オフセット付き頂点転送
-
-- `BuildMesh2D` のオフセット付き頂点転送は、コピー後に転送先の座標を読み直して加算している。元配列からオフセットを加えて書き込む方式を検証する。
-- [アップロード計測手順](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers)で通常メモリと実際の Metal バッファを比較し、頂点属性と画像の一致を確認する。D3D11 は CPU 配列へ生成するため、Metal の速度差をそのまま適用しない。
-
 ## Renderer2D / Triangle・Quad の JoinStyle
 
 - Windows / D3D11 で [手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。

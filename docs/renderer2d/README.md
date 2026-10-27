@@ -256,13 +256,21 @@ members are accessed directly, and span iteration preserves large index counts
 independently of the 16-bit index values. Avoid copying first and adjusting the
 destination afterward, even if a benchmark using ordinary heap arrays looks fast.
 
-The remaining offset-vertex transfer in `BuildMesh2D` still adjusts positions in
-the destination after copying; its separate evaluation is tracked in
-[TODO](../../TODO.md).
+The same rule applies to vertex attributes and topology: add Mesh2D offsets
+while reading the source vertices, calculate textured round-rectangle UVs from
+local positions, and retain local positions for square arc caps and arrow-head
+winding. Hollow rectangle shadows derive their degenerate indices from the
+base index. Write a local color to each vertex separately: chained assignments
+such as `vertices[a].color = vertices[b].color = color` can also generate
+destination reads, including in circle and ellipse arc gradients.
+Do not use an upload buffer as geometry scratch storage.
+Buffer growth still copies existing uploaded data to preserve pending draws;
+this occurs when capacity grows, rather than on each draw.
 
 Use [renderer2d-index-upload.mm](../../tools/renderer2d-index-upload.mm) to compare
 ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
-measures representative copy kernels and the actual shared Polygon builder,
+measures representative copy kernels and the actual shared Polygon, Mesh2D,
+textured round-rectangle, circle/ellipse arc, and hollow rectangle shadow builders,
 with preallocated reusable buffers, no renderer initialization, no GPU commands,
 and no presentation. Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:
@@ -273,6 +281,8 @@ xcrun clang++ -std=c++23 -Os -DNDEBUG \
     -framework Foundation -framework Metal -Wl,-dead_strip \
     tools/renderer2d-index-upload.mm \
     Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_StraightEdged.cpp \
+    Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder_Rounded.cpp \
+    Siv3D/src/Siv3D/QuarterArcTable/SivQuarterArcTable.cpp \
     -o /tmp/siv8-index-upload
 /tmp/siv8-index-upload
 ```

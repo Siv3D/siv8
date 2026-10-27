@@ -187,6 +187,32 @@ TEST_CASE("BezierArrow.mesh_join_caps_and_failure")
 	CHECK(maximum.vertices.size() >= 8197);
 }
 
+TEST_CASE("BezierArrow.head_and_bridge_winding")
+{
+	const Float4 color{ 0.3f, 0.6f, 0.9f, 0.5f };
+	for (const bool bridge : { false, true })
+	for (const double angle : { -2.2, 0.0, 1.3 })
+	for (const double side : { -1.0, 1.0 })
+	{
+		CAPTURE(bridge, angle, side);
+		const Array<Vec2> points{ Vec2{ 0, 0 }, Vec2{ (bridge ? 99 : 50), 0 }.rotated(angle), Vec2{ 100, 0 }.rotated(angle) };
+		const Float2 tip = Vec2{ 130, (30 * side) }.rotated(angle);
+		const auto mesh = CaptureMesh([&](const auto& allocate)
+		{
+			return Vertex2DBuilder::BuildLineStringArrow(allocate, LineCap::Flat, points, tip, 8, 30, color, 1);
+		});
+		REQUIRE(mesh.indices.size() == (bridge ? 21 : 15));
+		for (size_t i = 12; i < mesh.indices.size(); i += 3)
+		{
+			const Float2 a = mesh.vertices[mesh.indices[i] - 37].pos;
+			const Float2 b = mesh.vertices[mesh.indices[i + 1] - 37].pos;
+			const Float2 c = mesh.vertices[mesh.indices[i + 2] - 37].pos;
+			CHECK((b - a).cross(c - a) >= 0.0f);
+		}
+		for (const auto& vertex : mesh.vertices) CHECK(vertex.color == color);
+	}
+}
+
 TEST_CASE("BezierArrow.public_straight_and_alpha")
 {
 	const SceneScope scene;

@@ -889,16 +889,18 @@ namespace s3d
 
 			// 頂点バッファへの書き込み
 			{
-				std::memcpy(pVertex, vertices.data(), vertices.size_bytes());
-
 				if (offset)
 				{
 					const Float2 _offset = *offset;
 
-					for (Vertex2D::IndexType i = 0; i < VertexCount; ++i)
+					for (const auto& vertex : vertices)
 					{
-						pVertex[i].pos += _offset;
+						(pVertex++)->set((vertex.pos + _offset), vertex.tex, vertex.color);
 					}
+				}
+				else
+				{
+					std::memcpy(pVertex, vertices.data(), vertices.size_bytes());
 				}
 			}
 

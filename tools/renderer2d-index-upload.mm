@@ -9,11 +9,13 @@
 # import <Foundation/Foundation.h>
 # import <Metal/Metal.h>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <algorithm>
 # include <chrono>
 # include <cmath>
 # include <cstring>
 # include <iostream>
+# include <string>
 # include <vector>
 # include <time.h>
 
@@ -71,6 +73,66 @@ namespace
 		std::sort(cpu.begin(), cpu.end());
 		std::cout << name << " wall_ns=" << wall[5] << " cpu_ns=" << cpu[5]
 			<< " p10=" << wall[1] << " p90=" << wall[9] << '\n';
+	}
+
+	template <class Build>
+	void MeasureBuilder(id<MTLDevice> device, const char* name, Build build)
+	{
+		Vertex2D sentinel;
+		sentinel.set(-123, -456, -7, -8, Float4{ -1, -2, -3, -4 });
+		std::vector<Vertex2D> expectedVertices;
+		std::vector<Index> expectedIndices;
+		const auto capture = [&](uint16 vertices, uint32 indices)
+		{
+			expectedVertices.assign(vertices, sentinel);
+			expectedIndices.resize(indices);
+			return Vertex2DBufferPointer{ expectedVertices.data(), expectedIndices.data(), Offset };
+		};
+		if (build(capture) != expectedIndices.size()) std::abort();
+		std::cout << name << " vertices=" << expectedVertices.size() << " indices=" << expectedIndices.size() << '\n';
+		std::vector<Vertex2D> ramVertices(expectedVertices.size() * Slots, sentinel);
+		std::vector<Index> ramIndices(expectedIndices.size() * Slots);
+		const char* modes[]{ "RAM", "DefaultCache", "WriteCombined" };
+		for (int32 mode = 0; mode < 3; ++mode)
+		{
+			const auto options = (MTLResourceStorageModeShared
+				| ((mode == 2) ? MTLResourceCPUCacheModeWriteCombined : MTLResourceCPUCacheModeDefaultCache));
+			id<MTLBuffer> vb = nil, ib = nil;
+			auto* vertices = ramVertices.data();
+			auto* indices = ramIndices.data();
+			if (mode)
+			{
+				vb = [device newBufferWithLength:sizeof(Vertex2D) * ramVertices.size() options:options];
+				ib = [device newBufferWithLength:sizeof(Index) * ramIndices.size() options:options];
+				if ((not vb) || (not ib)) std::abort();
+				vertices = static_cast<Vertex2D*>(vb.contents);
+				indices = static_cast<Index*>(ib.contents);
+				std::fill_n(vertices, ramVertices.size(), sentinel);
+			}
+			Measure((std::string(name) + "_" + modes[mode]).c_str(), [&](const int32 i)
+			{
+				const auto allocate = [&](uint16, uint32)
+				{
+					return Vertex2DBufferPointer{ vertices + (i % Slots) * expectedVertices.size(),
+						indices + (i % Slots) * expectedIndices.size(), Offset };
+				};
+				const auto count = build(allocate);
+				asm volatile("" : : "g"(count) : "memory");
+			});
+			// Validate all written attributes and indices outside the timed region.
+			for (size_t slot = 0; slot < Slots; ++slot)
+			{
+				for (size_t i = 0; i < expectedVertices.size(); ++i)
+				{
+					const auto& actual = vertices[slot * expectedVertices.size() + i];
+					const auto& expected = expectedVertices[i];
+					if ((actual.pos != expected.pos) || (actual.tex != expected.tex) || (actual.color != expected.color)) std::abort();
+				}
+				if (not std::equal(expectedIndices.begin(), expectedIndices.end(), indices + slot * expectedIndices.size())) std::abort();
+			}
+			[ib release];
+			[vb release];
+		}
 	}
 }
 
@@ -158,6 +220,43 @@ int main()
 			[ib release];
 			[vb release];
 		}
+		std::vector<Vertex2D> meshVertices(source.size());
+		for (size_t i = 0; i < source.size(); ++i)
+		{
+			meshVertices[i].set(source[i], Float2{ float(i) / source.size(), 0.75f }, Float4{ 1, 0.5f, 0.25f, 0.5f });
+		}
+		for (const bool moved : { false, true })
+		{
+			MeasureBuilder(device, (moved ? "MeshOffset" : "Mesh"), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildMesh2D(allocate, meshVertices, triangles, (moved ? Optional<Float2>{ Float2{ 20, 30 } } : none));
+			});
+		}
+		for (const bool gradient : { false, true })
+		{
+			MeasureBuilder(device, (gradient ? "TexturedRoundRectGradient" : "TexturedRoundRect"), [&](const BufferCreatorFunc& allocate)
+			{
+				const FloatRect rect{ 10, 20, 210, 140 }, uv{ 0.8f, 0.9f, 0.2f, 0.3f };
+				const Float4 color{ 0.2f, 0.4f, 0.6f, 0.5f };
+				return gradient ? Vertex2DBuilder::BuildTexturedRoundRect(allocate, rect, 200, 120, 30, uv,
+					ColorFillDirection::TopBottom, color, Float4{ 1, 1, 1, 1 }, 1)
+					: Vertex2DBuilder::BuildTexturedRoundRect(allocate, rect, 200, 120, 30, uv, color, 1);
+			});
+		}
+		MeasureBuilder(device, "SquareCircleArc", [&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildCircleArc(allocate, LineCap::Square, { 100, 100 }, 80, 0.3f, 2.0f, 12,
+				ColorFillDirection::LeftRight, Float4{ 1, 0, 0, 0.5f }, Float4{ 0, 0, 1, 0.5f }, 1);
+		});
+		MeasureBuilder(device, "RectShadowHollow", [&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildRectShadow(allocate, { 10, 20, 210, 140 }, 20, Float4{ 0, 0, 0, 0.5f }, false);
+		});
+		MeasureBuilder(device, "EllipseArcGradient", [&](const BufferCreatorFunc& allocate)
+		{
+			return Vertex2DBuilder::BuildEllipseArc(allocate, LineCap::Flat, LineCap::Flat, { 100, 100 }, 80, 40,
+				0.3f, 2.0f, 6, 6, ColorFillDirection::LeftRight, Float4{ 1, 0, 0, 0.5f }, Float4{ 0, 0, 1, 0.5f }, 1);
+		});
 		[device release];
 	}
 }
