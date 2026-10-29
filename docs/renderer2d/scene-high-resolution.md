@@ -83,6 +83,34 @@ changes, size limits, and allocation failure, are in
 issuing that frame's draws. Unchanged configurations and filter-only changes
 preserve already rendered pixels.
 
+## Background color
+
+The background timing contract has been adopted in
+[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp). Backend changes and validation
+remain in [TODO.md](../../TODO.md).
+
+Set a fixed background before entering `while (System::Update())` so it applies
+to the frame drawn by the first loop iteration. Each update presents the preceding
+frame, then starts the frame for the next loop iteration. Calling
+`Scene::SetBackground()` inside the loop affects the next iteration's background;
+it does not recolor the image presented by the immediately following update.
+Changing both the background setting and a shape's color inside the loop therefore
+changes the shape one frame before the background.
+
+For an animated background that must change with the shapes drawn in that
+iteration, draw an opaque scene-sized rectangle first, using scene coordinates
+before applying camera transforms. This uses the same drawing order as the rest
+of the scene. `Scene::GetBackground()` reads the configured color, which may
+differ from the background in the frame being drawn.
+
+The renderer needs to keep the configured color separately from the color chosen
+for the current frame. Choose that frame's color when starting the frame, before
+clearing its scene buffer, and reuse it if a size or MSAA change clears the scene
+again. Metal can keep its deferred clear at the first scene pass; the pass must
+use the saved color. D3D11 must use the saved color for both its frame-start clear
+and its clears after scene changes. Changing the setting itself requires no
+clear or additional render pass.
+
 ## Scene MSAA
 
 Set the sample count independently of the presentation configuration:

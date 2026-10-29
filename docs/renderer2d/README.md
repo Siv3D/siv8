@@ -12,7 +12,8 @@
 ## Scene rendering
 
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,
-  fullscreen presentation, scene sizing, resolution scaling, and validation.
+  fullscreen presentation, scene sizing, resolution scaling, background timing,
+  and validation.
 
 ## Textured circles
 
