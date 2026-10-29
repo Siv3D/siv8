@@ -103,3 +103,21 @@ ordinary-drawing results before and after a change on the same idle host;
 repeat noisy comparisons. Use native GPU tools separately for GPU duration,
 upload bytes, and binding/PSO counts. The gallery remains the place for visual
 inspection; automatic pixel comparisons do not establish manual inspection.
+
+For a Metal GPU comparison, use an isolated application linked against the
+current Release engine. Retain the current command buffer before drawing,
+submit through the normal frame update, and read `GPUStartTime` / `GPUEndTime`
+after completion. Their difference includes the scene pass and presentation
+composition, not just triangle rendering. Compare an empty frame and the same
+triangle workload in each mode, both offscreen and visible. Warm up and
+interleave the modes to reduce clock and temperature drift. Keep screenshots,
+API instrumentation, and Instruments recording out of the timing run.
+
+When inspecting native calls, count the scene encoder separately from the
+presentation encoder. With an unchanged shader and drawing state, repeated
+procedural draws should retain one initial geometry-buffer binding at vertex
+slot 0 and one pipeline setting per scene encoder. Each API call still issues
+its own native draw. Alternating ordinary and procedural draws legitimately changes the VS
+and pipeline for each draw; a single call generating many triangles avoids
+that repeated submission work. Use Metal System Trace to check render-pass
+counts and command-buffer errors separately from per-method call counts.
