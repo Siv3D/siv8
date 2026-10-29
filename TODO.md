@@ -108,7 +108,7 @@
 
 ## `Siv3D/include/Siv3D/Graphics2D.hpp` / DrawTriangles
 
-- Windows で `Graphics2DDrawTriangles.*` と全ホストテストを実行し、D3D11 の input layout 復帰と HLSL の描画を検証する。両ホストで [既存ギャラリーのページ 5](Test/Manual/ScopedCustomShader2D.md) のアニメーション・重なりを目視確認する。
+- macOS で `Graphics2DDrawTriangles.*` と全ホストテストを再実行し、[既存ギャラリーのページ 5](Test/Manual/ScopedCustomShader2D.md) のアニメーション・重なりを目視確認する。
 - [測定手順](docs/renderer2d/draw-triangles.md#validation-and-measurement)に従い、D3D11 / Metal の GPU 時間とネイティブ設定回数を確認する。初期バインド省略や入力モード追跡は、実測上の必要性と通常描画への影響を比較してから検討する。
 
 ## Renderer2D / Triangle・Quad の JoinStyle

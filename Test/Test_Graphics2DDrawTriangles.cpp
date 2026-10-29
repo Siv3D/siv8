@@ -66,6 +66,8 @@ namespace
 			Scene::Configure(SceneConfig::Fixed({ 320, 240 }, SceneResolution::SceneSize));
 			Scene::SetMSAASampleCount(MSAASampleCount::NoMSAA);
 			Scene::SetBackground(Palette::Black);
+			// D3D11 clears at frame start; apply the new background before capturing.
+			REQUIRE(System::Update());
 		}
 
 		~SceneScope()
@@ -96,11 +98,18 @@ namespace
 	{
 		REQUIRE(actual.size() == expected.size());
 		int32 maximumDifference = 0;
+		size_t maximumDifferenceIndex = 0;
 		for (size_t i = 0; i < (actual.size_bytes() / sizeof(Color)); ++i)
 		{
 			const auto a = actual.data()[i], b = expected.data()[i];
-			maximumDifference = Max(maximumDifference, Max(Abs(int32(a.r) - b.r), Abs(int32(a.g) - b.g), Abs(int32(a.b) - b.b)), Abs(int32(a.a) - b.a));
+			const int32 difference = Max(Max(Abs(int32(a.r) - b.r), Abs(int32(a.g) - b.g), Abs(int32(a.b) - b.b)), Abs(int32(a.a) - b.a));
+			if (maximumDifference < difference)
+			{
+				maximumDifference = difference;
+				maximumDifferenceIndex = i;
+			}
 		}
+		CAPTURE(maximumDifferenceIndex, actual.data()[maximumDifferenceIndex], expected.data()[maximumDifferenceIndex]);
 		CHECK(maximumDifference <= 1);
 	}
 
@@ -374,15 +383,15 @@ TEST_CASE("Graphics2DDrawTriangles.states_and_batch_ranges")
 		{ const ScopedCustomShader2D shader{ vs }; Graphics2D::DrawTriangles(3); }
 		Rect{ 30, 30, 12, 12 }.draw(Palette::Blue);
 	};
-	const auto small = CaptureDraw(mixed);
+	const auto smallBatch = CaptureDraw(mixed);
 	const auto large = CaptureDraw([&]
 	{
 		for (int32 i = 0; i < 16383; ++i) Rect{ -10, -10, 1, 1 }.draw();
 		mixed();
 		Graphics2D::Flush();
 	});
-	CheckImage(large.image, small.image);
-	CHECK(large.metrics.triangleCount == small.metrics.triangleCount + 32766);
+	CheckImage(large.image, smallBatch.image);
+	CHECK(large.metrics.triangleCount == smallBatch.metrics.triangleCount + 32766);
 }
 
 TEST_CASE("Graphics2DDrawTriangles.msaa_and_resolution")

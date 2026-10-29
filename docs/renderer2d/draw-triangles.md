@@ -81,7 +81,7 @@ viewport/scissor, culling/wireframe, MSAA, and scene resolution.
 
 Run focused checks and then the full suite using the
 [host's workflow](../development/README.md#build-and-test). The focused
-correctness filter is `Graphics2DDrawTriangles.*~[benchmark]`. Include the
+correctness filter is `~[benchmark]Graphics2DDrawTriangles.*`. Include the
 existing Renderer2D and ConstantBuffer checks when changing command replay.
 Windows execution is required to validate D3D11 and the paired HLSL; macOS
 execution validates Metal and MSL.
