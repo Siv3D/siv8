@@ -7,7 +7,8 @@ Custom vertex shaders must preserve homogeneous W.
 
 This program compares file-based custom shaders with built-in 2D rendering on
 Windows (D3D11) and macOS (Metal). Pages 1–3 use the standard vertex/pixel constant
-buffers; page 4 also supplies custom constants at slot 2. Textures and samplers
+buffers; pages 4–5 also supply custom constants at slot 2. Page 5 generates
+triangles from vertex IDs without a vertex array. Textures and samplers
 use slot 0. Shader objects and textures are created
 once, before the drawing loop. The generated diagnostic image is explicitly
 premultiplied before upload; constructing a texture from an Image does not
@@ -25,6 +26,7 @@ Each shader is self-contained. Load the HLSL or MSL file at runtime using
 | Red/blue exchange | [rgb_to_bgr.hlsl](../../WindowsDesktop/App/example/shader/hlsl/rgb_to_bgr.hlsl) | [rgb_to_bgr.metal](../../macOS/App/example/shader/msl/rgb_to_bgr.metal) | `PS_RGBToBGR` |
 | Posterization | [posterize.hlsl](../../WindowsDesktop/App/example/shader/hlsl/posterize.hlsl) | [posterize.metal](../../macOS/App/example/shader/msl/posterize.metal) | `PS_Posterize` |
 | Custom constants | [constant_buffer.hlsl](../../WindowsDesktop/App/example/shader/hlsl/constant_buffer.hlsl) | [constant_buffer.metal](../../macOS/App/example/shader/msl/constant_buffer.metal) | `VS_Offset`, `PS_TintShape`, `PS_TintTexture` |
+| Procedural triangles | [procedural_triangles.hlsl](../../WindowsDesktop/App/example/shader/hlsl/procedural_triangles.hlsl) | [procedural_triangles.metal](../../macOS/App/example/shader/msl/procedural_triangles.metal) | `VS_Procedural`, `PS_Procedural` |
 | Horizontal UV flip | [uv_flip.hlsl](../../WindowsDesktop/App/example/shader/hlsl/uv_flip.hlsl) | [uv_flip.metal](../../macOS/App/example/shader/msl/uv_flip.metal) | `VS_UVFlip` |
 
 The standard VS applies the drawing transform and color multiplication, then
@@ -58,10 +60,10 @@ these custom shader scopes. The default template's `PS_Shape` is for solid shape
    `example/shader/hlsl/` or `example/shader/msl/` directory into your application's
    asset directory. The program loads `.hlsl`/`.metal` source files; the sample
    Metal files do not need to be added to the default Metal library.
-3. Run on Windows (D3D11) and macOS (Metal). Press 1, 2, 3, or 4 to select a page.
-   Press Space on page 3 to animate/pause rotation. Escape closes the application.
-4. Optionally launch with `--capture` to save all four stationary pages and exit.
-   Output is `Screenshot/ScopedCustomShader2D/page-1.png` through `page-4.png`,
+3. Run on Windows (D3D11) and macOS (Metal). Press 1, 2, 3, 4, or 5 to select a page.
+   Press Space on pages 3 and 5 to animate/pause rotation. Escape closes the application.
+4. Optionally launch with `--capture` to save all five stationary pages and exit.
+   Output is `Screenshot/ScopedCustomShader2D/page-1.png` through `page-5.png`,
    relative to the asset working directory. Repeating capture replaces these
    files. Delete that directory when the captures are no longer needed.
 
@@ -104,6 +106,12 @@ below. Capture mode records images; it does not automatically judge them.
   restore their specified slots. The automated tests also cover shader scopes
   across frame boundaries, initially unset slots, moved scopes, slots 2/13,
   integer payloads, and 4096/4112/65536-byte buffers.
+- **Page 5 — procedural triangles:** Compare a moving triangle with
+  standard/custom PS, CPU-built and vertex-ID-generated rows, and two calls with
+  one triangle each against one call with two triangles. Repeated calls overlap
+  and brighten the first triangle; one call produces two separated triangles.
+  White/blue markers verify ordinary drawing before and after the custom VS.
+  Space animates position and rotation.
 - The footer's colored shapes, photo, and white text remain unchanged on every
   page, demonstrating restoration before subsequent built-in draws.
 
@@ -143,6 +151,8 @@ namespace
 
 	struct Shaders
 	{
+		VertexShader proceduralVS = LoadVS(U"procedural_triangles", U"VS_Procedural");
+		PixelShader proceduralPS = LoadPS(U"procedural_triangles", U"PS_Procedural");
 		VertexShader shapeVS = LoadVS(U"default2d", U"VS_Shape");
 		VertexShader offsetVS = LoadVS(U"constant_buffer", U"VS_Offset");
 		PixelShader tintPS = LoadPS(U"constant_buffer", U"PS_TintTexture");
@@ -464,6 +474,59 @@ namespace
 		}
 	}
 
+	struct TriangleParameters
+	{
+		Float4 originSize;
+		Float4 stepRotation;
+		Float4 color;
+	};
+
+	void DrawProcedural(const Font& font, const Shaders& shaders,
+		ConstantBuffer<TriangleParameters>& parameters, const double elapsed)
+	{
+		const std::array<StringView, 6> titles{
+			U"One triangle / standard PS", U"One triangle / custom PS", U"CPU strip reference",
+			U"One call / eight triangles", U"Two calls / ID restarts", U"One call / two triangles" };
+		const float angle = static_cast<float>(std::sin(elapsed) * 0.3);
+		for (int32 i = 0; i < 6; ++i)
+		{
+			const Transformer2D tile{ Mat3x2::Translate(TilePosition(i)) };
+			DrawTile(font, titles[i], ((i < 2) ? U"Same animated triangle" : ((i < 4) ? U"Same strip" : U"Compare vertex ID reset")));
+			parameters->originSize = Float4{ (48.0f + static_cast<float>(std::sin(elapsed) * 12)), 100, 48, 64 };
+			parameters->stepRotation = Float4{ 32, 0, std::cos(angle), std::sin(angle) };
+			parameters->color = Float4{ 1, 0.4f, 0.2f, 0.5f };
+			Rect{ 42, 94, 12, 12 }.draw(Palette::White);
+			if (i == 2)
+			{
+				const auto& p = *std::as_const(parameters);
+				for (int32 j = 0; j < 8; ++j)
+				{
+					const Vec2 origin{ (p.originSize.x + j * p.stepRotation.x), p.originSize.y };
+					const Vec2 x{ p.originSize.z * p.stepRotation.z, p.originSize.z * p.stepRotation.w };
+					const Vec2 y{ -p.originSize.w * p.stepRotation.w, p.originSize.w * p.stepRotation.z };
+					Triangle{ origin, origin + x, origin + y }.draw(ColorF{ p.color });
+				}
+			}
+			else
+			{
+				const ScopedCustomShader2D vertex{ shaders.proceduralVS };
+				const ScopedVSConstantBuffer2D constants{ 2, parameters };
+				if (i == 1)
+				{
+					const ScopedCustomShader2D pixel{ shaders.proceduralPS };
+					Graphics2D::DrawTriangles(1);
+				}
+				else if (i == 4)
+				{
+					Graphics2D::DrawTriangles(1);
+					Graphics2D::DrawTriangles(1);
+				}
+				else Graphics2D::DrawTriangles((i == 3) ? 8 : ((i == 5) ? 2 : 1));
+			}
+			Rect{ 48, 100, 8, 8 }.draw(Palette::Blue);
+		}
+	}
+
 	void DrawStates(const Font& font, const Shaders& shaders, const Texture& diagnostic, const double angle)
 	{
 		const std::array<StringView, 6> titles{
@@ -500,11 +563,12 @@ void Main()
 		ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 18, 14, 0, 0 } } } };
 	const ScopedPSConstantBuffer2D persistentTint{ 2,
 		ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 0.5f, 1, 0.75f, 0.65f } } } };
+	ConstantBuffer<TriangleParameters> triangleParameters;
 	int32 page = 0;
 	int32 frame = 0;
 	bool animate = false;
 	double elapsed = 0.0;
-	const std::array<StringView, 4> titles{ U"Effects", U"Nested scopes", U"Standard drawing states", U"Custom constant buffers" };
+	const std::array<StringView, 5> titles{ U"Effects", U"Nested scopes", U"Standard drawing states", U"Custom constant buffers", U"Procedural triangles" };
 	while (System::Update())
 	{
 		if (capture)
@@ -517,11 +581,12 @@ void Main()
 			if (Key2.down()) { page = 1; }
 			if (Key3.down()) { page = 2; }
 			if (Key4.down()) { page = 3; }
+			if (Key5.down()) { page = 4; }
 			if (KeySpace.down()) { animate = not animate; }
 			if (animate) { elapsed += Scene::DeltaTime(); }
 		}
 		font(U"ScopedCustomShader2D / {}. {}"_fmt((page + 1), titles[page])).draw(28, Vec2{ 24, 18 });
-		font(U"1: Effects   2: Nested scopes   3: Drawing states   4: Constants   Space: animate   Esc: exit")
+		font(U"1: Effects   2: Nested scopes   3: Drawing states   4: Constants   5: Triangles   Space: animate   Esc: exit")
 			.draw(16, Vec2{ 24, 60 }, ColorF{ 0.75 });
 		switch (page)
 		{
@@ -538,6 +603,9 @@ void Main()
 		case 3:
 			DrawConstants(font, shaders, diagnostic);
 			break;
+		case 4:
+			DrawProcedural(font, shaders, triangleParameters, elapsed);
+			break;
 		}
 
 		// All custom shader, transform, and color scopes have ended here.
@@ -550,7 +618,7 @@ void Main()
 		{
 			ScreenCapture::SaveCurrentFrame(U"page-{}.png"_fmt(page + 1));
 		}
-		if (capture && (++frame == 32))
+		if (capture && (++frame == 40))
 		{
 			break; // The last requested capture was consumed by System::Update().
 		}

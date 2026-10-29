@@ -44,13 +44,16 @@ namespace s3d
 
 		void flush();
 
-		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty()); }
+		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty() || not m_buffer.proceduralDraws.isEmpty()); }
 
 		void setSceneScale(Float2 scale);
 		Float2 getSceneScale() const noexcept { return m_current.transform.sceneScale; }
 		float getCurrentRasterScaling() const noexcept { return m_current.transform.rasterScaling; }
 
 		const Array<MetalRenderer2DCommand>& getCommands() const noexcept;
+
+		void pushProceduralDraw(uint32 vertexCount);
+		uint32 getProceduralDraw(uint32 index) const noexcept;
 
 		void pushDraw(uint32 indexCount);
 		const MetalDrawCommand& getDraw(uint32 index) const noexcept;
@@ -143,6 +146,8 @@ namespace s3d
 		struct Buffer
 		{
 			Array<MetalDrawCommand> draws;
+
+			Array<uint32> proceduralDraws;
 
 			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			

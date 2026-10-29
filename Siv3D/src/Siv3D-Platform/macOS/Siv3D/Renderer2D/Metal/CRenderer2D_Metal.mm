@@ -118,6 +118,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addProceduralVertices
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addProceduralVertices(const uint32 vertexCount)
+	{
+		Renderer2DDrawSubmission::SubmitProcedural(m_commandManager, m_engineShader, m_currentCustomShader, vertexCount);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addLine
 	//
 	////////////////////////////////////////////////////////////////
@@ -1242,6 +1253,36 @@ namespace s3d
 			commandState.startIndexLocation = m_indexReadPos;
 			
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
+
+			// 通常 Draw に関数呼び出しを追加せず、両描画の状態準備を共通化する。
+			const auto prepareDraw = [&] SIV3D_ALWAYS_INLINE
+			{
+				// 変換・色・テクスチャ・頂点区間だけの変更では、同じパイプラインを再利用する。
+				if (pipelineDirty)
+				{
+					const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
+					renderCommandEncoder->setRenderPipelineState(pipeline);
+					pipelineDirty = false;
+				}
+
+				if (m_vsConstants.isDirty())
+				{
+					m_vsConstants._update_if_dirty();
+					renderCommandEncoder->setVertexBytes(m_vsConstants.data(), m_vsConstants.size(), 1);
+				}
+
+				if (m_psConstants.isDirty())
+				{
+					m_psConstants._update_if_dirty();
+					renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
+				}
+
+				if (m_psEffectConstants.isDirty())
+				{
+					m_psEffectConstants._update_if_dirty();
+					renderCommandEncoder->setFragmentBytes(m_psEffectConstants.data(), m_psEffectConstants.size(), 1);
+				}
+			};
 			
 			for (const auto& command : m_commandManager.getCommands())
 			{
@@ -1254,31 +1295,7 @@ namespace s3d
 					}
 				case MetalRenderer2DCommandType::Draw:
 					{
-						// 変換・色・テクスチャ・頂点区間だけの変更では、同じパイプラインを再利用する。
-						if (pipelineDirty)
-						{
-							const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
-							renderCommandEncoder->setRenderPipelineState(pipeline);
-							pipelineDirty = false;
-						}
-						
-						if (m_vsConstants.isDirty())
-						{
-							m_vsConstants._update_if_dirty();
-							renderCommandEncoder->setVertexBytes(m_vsConstants.data(), m_vsConstants.size(), 1);
-						}
-
-						if (m_psConstants.isDirty())
-						{
-							m_psConstants._update_if_dirty();
-							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
-						}
-
-						if (m_psEffectConstants.isDirty())
-						{
-							m_psEffectConstants._update_if_dirty();
-							renderCommandEncoder->setFragmentBytes(m_psEffectConstants.data(), m_psEffectConstants.size(), 1);
-						}
+						prepareDraw();
 
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
@@ -1293,6 +1310,17 @@ namespace s3d
 						++stat.drawCalls;
 						stat.triangleCount += (indexCount / 3);
 
+						break;
+					}
+				case MetalRenderer2DCommandType::DrawProcedural:
+					{
+						prepareDraw();
+						const uint32 vertexCount = m_commandManager.getProceduralDraw(command.index);
+						renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, vertexCount);
+
+						++stat.drawCalls;
+						stat.triangleCount += (vertexCount / 3);
+						LOG_COMMAND(fmt::format("DrawProcedural[{}] vertexCount = {}", command.index, vertexCount));
 						break;
 					}
 				case MetalRenderer2DCommandType::SetConstantBuffer:

@@ -1,5 +1,8 @@
 # Renderer2D
 
+- [Vertex-ID triangles](draw-triangles.md): custom vertex shader generation,
+  command integration, examples, and validation on D3D11 and Metal.
+
 - [Scoped projective drawing](quad-warp.md): transform scopes, homography generation,
   custom VS layout, and migration from dedicated texture warping.
 

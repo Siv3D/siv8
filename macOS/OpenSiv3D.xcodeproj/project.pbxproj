@@ -121,6 +121,7 @@
 		CB2DCAFE0000000000000011 /* Test_ConstantBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB2DCAFE0000000000000012 /* Test_ConstantBuffer.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		D17C8F3E20984E4B83160001 /* Test_Renderer2DPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D17C8F3E20984E4B83160002 /* Test_Renderer2DPipelineState.cpp */; };
 		E80D41942D7045A6B95D0001 /* Test_Renderer2DDrawSubmission.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */; };
+		DC725990A1EF4B8D92810001 /* Test_Graphics2DDrawTriangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC725990A1EF4B8D92810002 /* Test_Graphics2DDrawTriangles.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		F1442106E9CC4233BBE7C370 /* Test_Renderer2DEngineShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		5E794FEECE7949AE941BC2ED /* Test_Renderer2DStateUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		BE7D1E46ADE340BBBF94E070 /* Test_Renderer2DResourceStateUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
@@ -3583,6 +3584,7 @@
 		CB2DCAFE0000000000000012 /* Test_ConstantBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ConstantBuffer.cpp; sourceTree = "<group>"; };
 		D17C8F3E20984E4B83160002 /* Test_Renderer2DPipelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DPipelineState.cpp; sourceTree = "<group>"; };
 		E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DDrawSubmission.cpp; sourceTree = "<group>"; };
+		DC725990A1EF4B8D92810002 /* Test_Graphics2DDrawTriangles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DDrawTriangles.cpp; sourceTree = "<group>"; };
 		D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DEngineShaders.cpp; sourceTree = "<group>"; };
 		5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DStateUpdate.cpp; sourceTree = "<group>"; };
 		B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DResourceStateUpdate.cpp; sourceTree = "<group>"; };
@@ -7444,6 +7446,7 @@
 				EAC19A7085F349D199B20002 /* Test_Renderer2DJoinStyle.cpp */,
 				D17C8F3E20984E4B83160002 /* Test_Renderer2DPipelineState.cpp */,
 				E80D41942D7045A6B95D0002 /* Test_Renderer2DDrawSubmission.cpp */,
+				DC725990A1EF4B8D92810002 /* Test_Graphics2DDrawTriangles.cpp */,
 				D3B070A1892C44FB8F657F4F /* Test_Renderer2DEngineShaders.cpp */,
 				5EBF91ED3C1F4C2E881EA710 /* Test_Renderer2DStateUpdate.cpp */,
 				B731E92D05DE4FF3B1BCCC16 /* Test_Renderer2DResourceStateUpdate.cpp */,
@@ -17168,6 +17171,7 @@
 				EAC19A7085F349D199B20001 /* Test_Renderer2DJoinStyle.cpp in Sources */,
 				D17C8F3E20984E4B83160001 /* Test_Renderer2DPipelineState.cpp in Sources */,
 				E80D41942D7045A6B95D0001 /* Test_Renderer2DDrawSubmission.cpp in Sources */,
+				DC725990A1EF4B8D92810001 /* Test_Graphics2DDrawTriangles.cpp in Sources */,
 				F1442106E9CC4233BBE7C370 /* Test_Renderer2DEngineShaders.cpp in Sources */,
 				5E794FEECE7949AE941BC2ED /* Test_Renderer2DStateUpdate.cpp in Sources */,
 				BE7D1E46ADE340BBBF94E070 /* Test_Renderer2DResourceStateUpdate.cpp in Sources */,

@@ -346,6 +346,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DDrawSubmission.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Graphics2DDrawTriangles.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DEngineShaders.cpp">
       <Filter>Test</Filter>
     </ClCompile>

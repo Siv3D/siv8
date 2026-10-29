@@ -94,7 +94,7 @@ namespace s3d
 		// clear buffers
 		{
 			m_buffer.draws.clear();
-			//m_nullDraws.clear();
+			m_buffer.proceduralDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
 			m_buffer.patternParameters	= { m_buffer.patternParameters.back() };
@@ -393,6 +393,29 @@ namespace s3d
 		// 確保だけでは描画されるとは限らないため、切り替えは次の pushDraw() まで保留する。
 		// その間に別のバッチへ進んだ場合、中間のバッチには Draw がないので転送を省略できる。
 		m_pendingBatchIndex = batchIndex;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushProceduralDraw, getProceduralDraw
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushProceduralDraw(const uint32 vertexCount)
+	{
+		// 通常の保留 Draw も確定し、同じ状態でも専用 Draw の前後で結合しない。
+		if (m_current.draw.indexCount || m_stateTracker.hasStateChange())
+		{
+			flush();
+		}
+
+		m_commands.emplace_back(D3D11Renderer2DCommandType::DrawProcedural, static_cast<uint32>(m_buffer.proceduralDraws.size()));
+		m_buffer.proceduralDraws.push_back(vertexCount);
+	}
+
+	uint32 D3D11Renderer2DCommandManager::getProceduralDraw(const uint32 index) const noexcept
+	{
+		return m_buffer.proceduralDraws[index];
 	}
 
 	////////////////////////////////////////////////////////////////

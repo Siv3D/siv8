@@ -54,6 +54,9 @@ namespace s3d
 
 		void deferUpdateBuffers(uint32 batchIndex);
 
+		void pushProceduralDraw(uint32 vertexCount);
+		uint32 getProceduralDraw(uint32 index) const noexcept;
+
 		void pushDraw(uint32 indexCount);
 		const D3D11DrawCommand& getDraw(uint32 index) const noexcept;
 
@@ -146,6 +149,8 @@ namespace s3d
 		struct Buffer
 		{
 			Array<D3D11DrawCommand> draws;
+
+			Array<uint32> proceduralDraws;
 
 			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			

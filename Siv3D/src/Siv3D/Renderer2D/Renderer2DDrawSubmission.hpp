@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <cassert>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 
@@ -20,6 +21,19 @@ namespace s3d
 
 	namespace Renderer2DDrawSubmission
 	{
+		// Vertex IDs start at zero for each call. No engine VS or geometry buffers are used.
+		template <class CommandManager, class EngineShader, class CustomShader>
+		inline void SubmitProcedural(CommandManager& commands, const EngineShader& shaders, const CustomShader& custom, const uint32 vertexCount)
+		{
+			assert(custom.vs && vertexCount && ((vertexCount % 3) == 0));
+			if (not custom.ps)
+			{
+				commands.pushEnginePS(shaders.psShape);
+			}
+
+			commands.pushProceduralDraw(vertexCount);
+		}
+
 		// Call after a successful build with a nonzero index count.
 		template <class CommandManager, class EngineShader, class CustomShader>
 		inline void SubmitShape(CommandManager& commands, const EngineShader& shaders, const CustomShader& custom, const uint32 indexCount)

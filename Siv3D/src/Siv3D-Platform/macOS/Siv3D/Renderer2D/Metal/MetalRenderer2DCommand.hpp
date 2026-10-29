@@ -21,7 +21,7 @@ namespace s3d
 
 		Draw,
 
-		//DrawNull,
+		DrawProcedural,
 
 		ColorMul,
 

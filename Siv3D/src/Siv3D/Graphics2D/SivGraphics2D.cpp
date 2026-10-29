@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Graphics2D.hpp>
+# include <cassert>
+# include <limits>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/TextStyle.hpp>
@@ -53,6 +55,23 @@ namespace s3d
 		{
 			SIV3D_ENGINE(Renderer2D)->flush();
 		}
+		////////////////////////////////////////////////////////////////
+		//
+		//	DrawTriangles
+		//
+		////////////////////////////////////////////////////////////////
+
+		void DrawTriangles(const uint32 triangleCount)
+		{
+			if (triangleCount == 0)
+			{
+				return;
+			}
+
+			assert(triangleCount <= (std::numeric_limits<uint32>::max() / 3));
+			SIV3D_ENGINE(Renderer2D)->addProceduralVertices(triangleCount * 3);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetColorMul

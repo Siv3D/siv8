@@ -93,7 +93,7 @@ namespace s3d
 		// clear buffers
 		{
 			m_buffer.draws.clear();
-			//m_nullDraws.clear();
+			m_buffer.proceduralDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
 			m_buffer.patternParameters	= { m_buffer.patternParameters.back() };
@@ -370,6 +370,29 @@ namespace s3d
 	const Array<MetalRenderer2DCommand>& MetalRenderer2DCommandManager::getCommands() const noexcept
 	{
 		return m_commands;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushProceduralDraw, getProceduralDraw
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushProceduralDraw(const uint32 vertexCount)
+	{
+		// 通常の保留 Draw も確定し、同じ状態でも専用 Draw の前後で結合しない。
+		if (m_current.draw.indexCount || m_stateTracker.hasStateChange())
+		{
+			flush();
+		}
+
+		m_commands.emplace_back(MetalRenderer2DCommandType::DrawProcedural, static_cast<uint32>(m_buffer.proceduralDraws.size()));
+		m_buffer.proceduralDraws.push_back(vertexCount);
+	}
+
+	uint32 MetalRenderer2DCommandManager::getProceduralDraw(const uint32 index) const noexcept
+	{
+		return m_buffer.proceduralDraws[index];
 	}
 
 	////////////////////////////////////////////////////////////////

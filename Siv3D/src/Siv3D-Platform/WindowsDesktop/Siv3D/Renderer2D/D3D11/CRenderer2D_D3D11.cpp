@@ -132,6 +132,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addProceduralVertices
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addProceduralVertices(const uint32 vertexCount)
+	{
+		Renderer2DDrawSubmission::SubmitProcedural(m_commandManager, m_engineShader, m_currentCustomShader, vertexCount);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addLine
 	//
 	////////////////////////////////////////////////////////////////
@@ -1253,6 +1264,22 @@ namespace s3d
 					++stat.drawCalls;
 					stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::DrawProcedural:
+				{
+					m_vsConstants._update_if_dirty();
+					m_psConstants._update_if_dirty();
+					m_psEffectConstants._update_if_dirty();
+
+					const uint32 vertexCount = m_commandManager.getProceduralDraw(command.index);
+					m_context->IASetInputLayout(nullptr);
+					m_context->Draw(vertexCount, 0);
+					m_context->IASetInputLayout(m_inputLayout.Get());
+
+					++stat.drawCalls;
+					stat.triangleCount += (vertexCount / 3);
+					LOG_COMMAND(fmt::format("DrawProcedural[{}] vertexCount = {}", command.index, vertexCount));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetConstantBuffer:
