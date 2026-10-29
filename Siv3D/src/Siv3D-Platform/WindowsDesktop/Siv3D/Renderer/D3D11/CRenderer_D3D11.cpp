@@ -123,6 +123,7 @@ namespace s3d
 
 	void CRenderer_D3D11::beginFrame()
 	{
+		m_backBuffer.getSceneStyle().beginFrame();
 		m_backBuffer.clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;

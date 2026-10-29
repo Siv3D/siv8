@@ -86,11 +86,11 @@
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
-### 背景色の反映タイミングの統一（D3D11 / Metal）
+### 背景色の反映タイミングの残る検証
 
-- [採用済みの公開契約](Siv3D/include/Siv3D/Scene.hpp)と[背景色の設計](docs/renderer2d/scene-high-resolution.md#background-color)に両バックエンドを揃える。設定値と各フレームで使う色を分け、フレーム開始時に選んだ色をそのフレーム内のクリアで使う。Metal は最初のシーン描画パスでクリアする方式を維持し、D3D11 はシーンサイズ・描画解像度・MSAA 変更時の再クリアも修正する。
-- 現行実装では、D3D11 は通常 `System::Update()` 内のフレーム開始時、Metal は最初のシーン描画パス開始時に背景色を採用する。D3D11 もサイズ・MSAA 変更時には最新の設定値で再クリアする。D3D11 の旧背景残留は実測済み、Metal のタイミングはコード確認に基づくため実機でも再現を確認する。テストで設定後に追加の `System::Update()` を呼ぶ対応は比較条件を揃えるもので、この差異の解決とはしない。
-- 初回更新前の設定、更新までの複数回設定、`GetBackground()` の即時取得、背景と図形の色を毎フレーム同時に変更する場合、空／描画ありの途中 `Flush()` の前後、シーンサイズ・描画解像度・MSAA 変更との組み合わせを、両ホストの画素比較と目視で検証する。背景色の設定による追加のクリアや実行済み描画の消失を防ぎ、通常描画の CPU / GPU コストも確認する。
+- Windows / D3D11 で [SceneBackground](Test/Test_SceneBackground.cpp) と関連する Scene / WindowSceneSync テスト、および全テストを実行する。初回更新前の検査は専用プロセスで単独実行する。[実行方法と設計](docs/renderer2d/scene-high-resolution.md#validation)を参照。
+- [背景色の手動プログラム](Test/Manual/SceneBackground.md)で、両ホストのアニメーション、Flush の位置、サイズ・解像度・MSAA 変更を目視確認する。画素比較とは区別して記録する。
+- 両ホストの Release で通常描画の CPU / GPU 時間を比較する。実装上の追加処理はフレーム開始時の `ColorF` コピーで、GPU コマンドは増やしていない。Metal の既存パス数検査と生成コードの確認を、実フレームの時間計測とは区別する。
 
 ### 描画の境界・失敗時の検証
 

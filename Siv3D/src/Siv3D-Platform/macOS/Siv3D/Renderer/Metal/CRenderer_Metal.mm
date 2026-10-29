@@ -182,6 +182,8 @@ namespace s3d
 
 	void CRenderer_Metal::beginFrame()
 	{
+		m_sceneStyle.beginFrame();
+
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 			(0 < windowFrameBufferSize.x) && (0 < windowFrameBufferSize.y)
 			&& (windowFrameBufferSize != getBackBufferSize()))

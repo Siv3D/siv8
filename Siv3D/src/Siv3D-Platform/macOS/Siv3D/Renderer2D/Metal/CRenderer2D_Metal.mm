@@ -1212,7 +1212,7 @@ namespace s3d
 		}
 
 		cd->setLoadAction(m_scenePassStarted ? MTL::LoadActionLoad : MTL::LoadActionClear);
-		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
+		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().getFrameBackgroundColor();
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
 		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore
 			: (finalScenePass ? MTL::StoreActionMultisampleResolve : MTL::StoreActionStoreAndMultisampleResolve));

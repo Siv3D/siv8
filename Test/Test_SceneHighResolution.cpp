@@ -168,8 +168,8 @@ TEST_CASE("SceneHighResolution.draw_camera_flush_and_state_restore")
 	const Transformer2D local{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	Scene::Configure(SceneConfig::Fixed(Size{ 200, 100 }, SceneResolution::Display));
 	const Size renderSize = Scene::RenderResolution();
 	REQUIRE(renderSize.x > Scene::Width());
@@ -216,8 +216,8 @@ TEST_CASE("SceneHighResolution.resize_keeps_pending_draws")
 	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	{
 		auto config = Scene::GetConfig();
 		config.sizeMode = SceneSizeMode::Fixed;
@@ -259,8 +259,8 @@ TEST_CASE("SceneHighResolution.toggle_keeps_pending_draws")
 	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	{
 		auto config = Scene::GetConfig();
 		config.sizeMode = SceneSizeMode::Fixed;
@@ -295,8 +295,8 @@ TEST_CASE("SceneHighResolution.resize_discards_only_executed_drawing")
 	const RestoreScene restore;
 	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	{
 		auto config = Scene::GetConfig();
 		config.sizeMode = SceneSizeMode::Fixed;
@@ -337,8 +337,8 @@ TEST_CASE("SceneHighResolution.pending_batches_and_clipping_after_shrink")
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 	const ScopedViewport2D viewport{ none };
 	const ScopedScissorRect2D scissor{ none };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	Scene::Configure(SceneConfig::Fixed(Size{ 400, 300 }, SceneResolution::SceneSize));
 	{
 		// The command stream, not the scene buffer, keeps this texture alive.
@@ -395,8 +395,8 @@ TEST_CASE("SceneHighResolution.pixel_viewport_and_scissor")
 	const RestoreScene restore;
 	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
-	REQUIRE(System::Update());
 	Scene::SetBackground(Palette::Black);
+	REQUIRE(System::Update());
 	Scene::Configure(SceneConfig::Fixed(Size{ 200, 100 }, SceneResolution::Display));
 	const Size pixels = Scene::RenderResolution();
 	const Rect viewport{ pixels.x / 4, pixels.y / 4, pixels.x / 2, pixels.y / 2 };
@@ -429,13 +429,13 @@ TEST_CASE("SceneHighResolution.standard_drawing_matches_explicit_scale")
 	REQUIRE(vs);
 	const ConstantBuffer<Float4> offset{ Float4{ 5, 3, 0, 0 } };
 	const ScopedVSConstantBuffer2D constants{ 2, offset };
+	Scene::SetBackground(ColorF{ 0.1, 0.15, 0.2 });
 	REQUIRE(System::Update());
 	{
 		auto config = Scene::GetConfig();
 		config.sizeMode = SceneSizeMode::Fixed;
 		Scene::Configure(config);
 	}
-	Scene::SetBackground(ColorF{ 0.1, 0.15, 0.2 });
 	const Size logical{ 400, 300 };
 	{
 		auto config = Scene::GetConfig();

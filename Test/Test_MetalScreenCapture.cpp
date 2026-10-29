@@ -36,8 +36,8 @@ namespace s3d
 
 			SceneScope()
 			{
-				REQUIRE(System::Update());
 				Scene::SetBackground(Palette::Black);
+				REQUIRE(System::Update());
 				Scene::Configure(SceneConfig::Fixed({ 17, 13 }));
 			}
 

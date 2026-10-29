@@ -251,7 +251,6 @@ namespace s3d
 
 	TEST_CASE("WindowSceneSync.macOS.center_propagates_scene_allocation_error")
 	{
-		REQUIRE(System::Update());
 		REQUIRE_FALSE(Window::GetState().fullscreen);
 		const RestoreWindowAndScene restore;
 		const auto originalSamples = Scene::GetMSAASampleCount();
@@ -265,6 +264,7 @@ namespace s3d
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		const auto config = SceneConfig::Window();
 		Scene::SetBackground(Palette::Black);
+		REQUIRE(System::Update());
 		for (const auto samples : { MSAASampleCount::NoMSAA, Scene::DefaultMSAASampleCount })
 		{
 			Scene::SetMSAASampleCount(samples);

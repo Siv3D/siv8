@@ -161,6 +161,7 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
     <ClCompile Include="..\Test\Test_SceneHighResolution.cpp" />
     <ClCompile Include="..\Test\Test_SceneConfig.cpp" />
+    <ClCompile Include="..\Test\Test_SceneBackground.cpp" />
     <ClCompile Include="..\Test\Test_WindowMacOS.cpp" />
     <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

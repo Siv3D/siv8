@@ -35,8 +35,8 @@ namespace s3d
 
 			SceneTest()
 			{
-				REQUIRE(System::Update());
 				Scene::SetBackground(Palette::Black);
+				REQUIRE(System::Update());
 				Scene::Configure(SceneConfig::Fixed({ 80, 60 }));
 			}
 

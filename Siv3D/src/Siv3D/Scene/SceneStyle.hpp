@@ -20,5 +20,21 @@ namespace s3d
 		ColorF letterboxColor		= Scene::DefaultLetterboxColor;
 
 		ColorF backgroundColor		= Scene::DefaultBackgroundColor;
+
+		void beginFrame() noexcept
+		{
+			m_frameBackgroundColor = backgroundColor;
+		}
+
+		[[nodiscard]]
+		const ColorF& getFrameBackgroundColor() const noexcept
+		{
+			return m_frameBackgroundColor;
+		}
+
+	private:
+
+		// サイズ・MSAA の変更で再クリアするときも、フレーム開始時の色を使う。
+		ColorF m_frameBackgroundColor = Scene::DefaultBackgroundColor;
 	};
 }

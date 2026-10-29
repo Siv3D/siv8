@@ -43,8 +43,8 @@ namespace s3d
 		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 		const ScopedViewport2D viewport{ none };
 		const ScopedScissorRect2D scissor{ none };
-		REQUIRE(System::Update());
 		Scene::SetBackground(Palette::Black);
+		REQUIRE(System::Update());
 		Scene::SetLetterbox(Palette::Green);
 		Scene::Configure(SceneConfig::PixelArt({ 2, 2 }));
 		auto* renderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
@@ -124,8 +124,8 @@ namespace s3d
 		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 		const ScopedViewport2D viewport{ none };
 		const ScopedScissorRect2D scissor{ none };
-		REQUIRE(System::Update());
 		Scene::SetBackground(Palette::Black);
+		REQUIRE(System::Update());
 		Scene::SetMSAASampleCount(Scene::DefaultMSAASampleCount);
 		Scene::Configure(SceneConfig::Fixed({ 81, 63 }));
 		auto* renderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
@@ -193,11 +193,11 @@ namespace s3d
 		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
 		const ScopedViewport2D viewport{ none };
 		const ScopedScissorRect2D scissor{ none };
+		Scene::SetBackground(Palette::Black);
 		REQUIRE(System::Update());
 		auto* renderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
 		auto& buffer = renderer->getBackBuffer();
 		const Size size = buffer.getBackBufferSize();
-		Scene::SetBackground(Palette::Black);
 		Scene::Configure(SceneConfig::Fixed(size));
 		CHECK(buffer.getLetterboxComposition().second == RectF{ size });
 		D3D11_TEXTURE2D_DESC desc{};

@@ -85,9 +85,8 @@ preserve already rendered pixels.
 
 ## Background color
 
-The background timing contract has been adopted in
-[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp). Backend changes and validation
-remain in [TODO.md](../../TODO.md).
+The background timing contract is in
+[Scene.hpp](../../Siv3D/include/Siv3D/Scene.hpp).
 
 Set a fixed background before entering `while (System::Update())` so it applies
 to the frame drawn by the first loop iteration. Each update presents the preceding
@@ -103,13 +102,13 @@ before applying camera transforms. This uses the same drawing order as the rest
 of the scene. `Scene::GetBackground()` reads the configured color, which may
 differ from the background in the frame being drawn.
 
-The renderer needs to keep the configured color separately from the color chosen
-for the current frame. Choose that frame's color when starting the frame, before
-clearing its scene buffer, and reuse it if a size or MSAA change clears the scene
-again. Metal can keep its deferred clear at the first scene pass; the pass must
-use the saved color. D3D11 must use the saved color for both its frame-start clear
-and its clears after scene changes. Changing the setting itself requires no
-clear or additional render pass.
+[SceneStyle](../../Siv3D/src/Siv3D/Scene/SceneStyle.hpp) keeps the configured color
+separately from the color chosen for the current frame. Each renderer copies the
+setting in `beginFrame()` and reuses it if a size or MSAA change clears the scene
+again. Metal reads the saved color at its first scene pass. D3D11 uses it for both
+its frame-start clear and its clears after scene changes. This adds one `ColorF`
+copy per frame; it adds no GPU commands, render passes, or allocations. Changing
+the setting itself still only stores the color.
 
 ## Scene MSAA
 
@@ -239,11 +238,30 @@ The default fits the existing scene with letterboxing. See the
 
 | Tests | Responsibility |
 | --- | --- |
+| [SceneBackground](../../Test/Test_SceneBackground.cpp) | Background timing across updates, empty and drawing flushes, setting/getter values, alpha, scene size/resolution/MSAA changes, and rejected changes |
 | [SceneConfig](../../Test/Test_SceneConfig.cpp) | Factories, six common uses, keep/follow policy, configuration copies, size limits and invalid values, reconfiguration while fullscreen/minimized |
 | [SceneHighResolution](../../Test/Test_SceneHighResolution.cpp) | Size/rounding calculations, user transforms and cursor mapping, pixel viewports/scissors, pending/executed draws, target replacement and texture lifetime; image and subdivision comparisons |
 | [ScenePresentation](../../Test/Test_ScenePresentation.cpp) | Actual final composition: Metal into an offscreen target and D3D11 into the swap chain; Nearest/Linear changes, buffer reuse, scaled presentation and direct MSAA resolve |
 | [SceneMSAA](../../Test/Test_SceneMSAA.cpp) | Native sample counts, resource reuse, drawing/capture pixels and dimensions, repeated changes, invalid/unsupported counts |
 | [SceneAllocationFailure](../../Test/Test_SceneAllocationFailure.cpp) | Injected Metal allocation failure during Configure/MSAA changes, retention of configuration/resources/input/drawing, and successful retry |
+
+Run `SceneBackground.before_first_update` alone in a fresh test process. It is
+hidden with `[.startup]` because it checks the initial frame count before any
+other test can call `System::Update()`. On macOS:
+
+```sh
+./macOS/run-tests.sh '--test-case=SceneBackground.before_first_update'
+./macOS/run-tests.sh '--test-case=~[startup]SceneBackground.*'
+```
+
+On Windows, pass the same filters through `-TestArguments` to
+`./WindowsDesktop/run-tests.ps1`. The
+[background timing program](../../Test/Manual/SceneBackground.md) slows the
+animation for visual comparison and covers flush placement and scene changes.
+Use a Release build and a native GPU capture to compare frame preparation costs
+and scene clear/pass counts when changing this path; timing thresholds do not
+belong in the correctness tests. Keep unverified host and measurement conditions
+in [TODO.md](../../TODO.md).
 
 The [allocation helper](../../Test/MetalTextureAllocationFailure.hpp) rejects a
 selected texture creation; it does not reproduce physical GPU exhaustion.

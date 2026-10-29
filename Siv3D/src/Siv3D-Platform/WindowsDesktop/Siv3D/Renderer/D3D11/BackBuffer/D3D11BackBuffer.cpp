@@ -85,7 +85,7 @@ namespace s3d
 		if (clearTarget & D3D11ClearTarget::Scene)
 		{
 			m_sceneBuffers.resolved = false;
-			m_sceneBuffers.getSceneTexture().clear(m_context, m_sceneStyle.backgroundColor);
+			m_sceneBuffers.getSceneTexture().clear(m_context, m_sceneStyle.getFrameBackgroundColor());
 		}
 
 		if (clearTarget & D3D11ClearTarget::BackBuffer)
