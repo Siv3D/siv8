@@ -86,11 +86,6 @@
 
 ## `Siv3D/include/Siv3D/Scene.hpp`
 
-### 背景色の反映タイミングの残る検証
-
-- [背景色の手動プログラム](Test/Manual/SceneBackground.md)で、macOS / Metal のアニメーション、Flush の位置、サイズ・解像度・MSAA 変更を目視確認する。画素比較とは区別して記録する。
-- macOS / Metal の Release で通常描画の CPU / GPU 時間を比較する。実装上の追加処理はフレーム開始時の `ColorF` コピーで、GPU コマンドは増やしていない。Metal の既存パス数検査と生成コードの確認を、実フレームの時間計測とは区別する。
-
 ### 描画の境界・失敗時の検証
 
 - 有効な MSAA 列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` による `Error` と以前の状態の維持を確認する。
