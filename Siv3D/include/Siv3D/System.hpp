@@ -13,7 +13,6 @@
 # include "Common.hpp"
 # include "Duration.hpp"
 # include "URL.hpp"
-# include "EngineOption.hpp"
 
 namespace s3d
 {
@@ -127,16 +126,5 @@ namespace s3d
 		/// @param fileName ファイル名 | File name
 		/// @return テキストエディタの起動に成功した場合 true, それ以外の場合は false | Returns true if the text editor was launched successfully, otherwise false.
 		bool LaunchFileWithTextEditor(FilePathView fileName);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetRendererType
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief レンダラーの設定を返します。
-		/// @return レンダラーの設定
-		[[nodiscard]]
-		EngineOption::Renderer GetRendererType();
 	}
 }

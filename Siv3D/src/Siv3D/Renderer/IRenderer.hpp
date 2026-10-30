@@ -12,7 +12,6 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/PointVector.hpp>
-# include <Siv3D/EngineOption.hpp>
 
 namespace s3d
 {
@@ -29,8 +28,6 @@ namespace s3d
 		virtual ~ISiv3DRenderer() = default;
 
 		virtual StringView getName() const = 0;
-
-		virtual EngineOption::Renderer getRendererType() const noexcept = 0;
 
 		virtual void init() = 0;
 

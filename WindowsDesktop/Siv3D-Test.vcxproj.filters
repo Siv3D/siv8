@@ -109,6 +109,9 @@
     <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ShaderGroup.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Unicode.cpp">
       <Filter>Test</Filter>
     </ClCompile>

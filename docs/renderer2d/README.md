@@ -1,5 +1,10 @@
 # Renderer2D
 
+The renderer is fixed by the target platform: Direct3D 11 on Windows and Metal
+on macOS. [ShaderGroup](../../Siv3D/include/Siv3D/ShaderGroup.hpp) selects HLSL or
+MSL at compile time. Windows applications can select the Direct3D 11 driver with
+`SIV3D_SET(EngineOption::D3D11Driver::...)`.
+
 - [Vertex-ID triangles](draw-triangles.md): custom vertex shader generation,
   command integration, examples, and validation on D3D11 and Metal.
 

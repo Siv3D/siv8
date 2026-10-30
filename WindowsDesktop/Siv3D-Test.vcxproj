@@ -42,6 +42,7 @@
     <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_EnumFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
+    <ClCompile Include="..\Test\Test_ShaderGroup.cpp" />
     <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

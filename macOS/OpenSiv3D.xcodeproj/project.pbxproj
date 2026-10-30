@@ -171,6 +171,7 @@
 		D4DCCC1E4A1C46DAA201A96A /* Test_RoundRectBalloon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE50450B29441AD8541278D /* Test_RoundRectBalloon.cpp */; };
 		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
 		ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
+		A8E1FCC3BB284F4A9E7822D0 /* Test_ShaderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99580978B650427DAAC71E10 /* Test_ShaderGroup.cpp */; };
 		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };
@@ -4246,6 +4247,7 @@
 		F91D41602F5E999A00E7FEEF /* CNotifications.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CNotifications.mm; sourceTree = "<group>"; };
 		F91D41642F5E9BCD00E7FEEF /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScreenCapture.cpp; sourceTree = "<group>"; };
+		99580978B650427DAAC71E10 /* Test_ShaderGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ShaderGroup.cpp; sourceTree = "<group>"; };
 		F933ACF52E54A2A2005624D7 /* MSDFGlyphRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyphRenderer.hpp; sourceTree = "<group>"; };
 		F933ACF62E54A2A2005624D7 /* MSDFGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSDFGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyph.hpp; sourceTree = "<group>"; };
@@ -7312,6 +7314,7 @@
 				F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */,
 				F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */,
 				F921CAFEFD7C465788673A1F /* Test_ScreenCapture.cpp */,
+				99580978B650427DAAC71E10 /* Test_ShaderGroup.cpp */,
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
 				F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */,
 				F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */,
@@ -17254,6 +17257,7 @@
 				F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */,
 				F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */,
 				ECD0800FE220446B9A1EC6B4 /* Test_ScreenCapture.cpp in Sources */,
+				A8E1FCC3BB284F4A9E7822D0 /* Test_ShaderGroup.cpp in Sources */,
 				F93BD7EA3016825E00B3542E /* Test_Format_2DShapes.cpp in Sources */,
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */,

@@ -42,7 +42,6 @@ namespace
 		}
 
 		StringView getName() const override { return U"Capture test renderer"; }
-		EngineOption::Renderer getRendererType() const noexcept override { return EngineOption::Renderer::Direct3D11; }
 		void init() override {}
 		void waitForFrame() override {}
 		void beginFrame() override {}

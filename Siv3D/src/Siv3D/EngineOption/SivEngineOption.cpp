@@ -17,12 +17,6 @@ namespace s3d
 
 	namespace Internal
 	{
-		//int SetEngineOption(const EngineOption::Renderer value) noexcept
-		//{
-		//	g_engineOptions.renderer = value;
-		//	return 0;
-		//}
-
 		int SetEngineOption(const EngineOption::D3D11Driver value) noexcept
 		{
 			g_engineOptions.d3d11Driver = value;

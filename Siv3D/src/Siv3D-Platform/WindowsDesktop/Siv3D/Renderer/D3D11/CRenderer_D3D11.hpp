@@ -34,9 +34,6 @@ namespace s3d
 		[[nodiscard]]
 		StringView getName() const override;
 
-		[[nodiscard]]
-		EngineOption::Renderer getRendererType() const noexcept override;
-
 		void init() override;
 
 		void waitForFrame() override;
