@@ -174,8 +174,8 @@ overloads against their original rendering paths.
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):
   adopted changes, remaining evaluation, D3D11/Metal evidence, and compatibility boundaries.
-- [MSDF font rendering](msdf-font.md): scoped color multiplication, atlas dimensions,
-  UV derivatives, shadow offsets, and font shader validation.
+- [MSDF font rendering](msdf-font.md): atlas dimensions, shader parameters,
+  color composition, and font shader validation.
 
 ## Development boundaries
 

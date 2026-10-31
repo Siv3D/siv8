@@ -22,11 +22,6 @@ Shadow, OutlineShadow, and Print also use `invTextureSize` to convert a shadow
 displacement in texels into UVs. Compilers can remove its calculation when the
 selected pixel shader does not use it. Glow does not call `MSDF_Init`.
 
-Texture dimensions are queried from the bound texture, so atlas growth requires
-no additional inverse-size constant or CPU-side state tracking. Foreground PMA,
-outline and shadow colors, coverage thresholds, and texture sampling are separate
-from this scale calculation.
-
 ## Shader parameter interpretation
 
 [TextStyle::getShaderParams](../../Siv3D/include/Siv3D/detail/TextStyle.ipp)
@@ -50,42 +45,15 @@ uses its own outline-distance offset and shadow displacement constants, followed
 by its square-root alpha and grayscale composition. Glow uses the texture alpha
 channel; the other styles obtain `sampledDistance` from the RGB median.
 
-## Scoped color multiplication
+## Color composition
 
-`TextStyle::Outline`, `Shadow`, and `OutlineShadow` use the current
-`ScopedColorMul2D` for their decoration colors as well as the text fill. Each
-style color retains its own alpha, multiplied by the scope's effective alpha.
-The text fill's drawing color remains independent of the style colors.
-
-```cpp
-const TextStyle style = TextStyle::OutlineShadow(
-    0.2, Palette::Orange, Vec2{ 4, 3 }, ColorF{ 0.0, 0.5 });
-const ScopedColorMul2D fade{ 1.0, 0.5 };
-font(U"Ready").draw(style, Vec2{ 40, 40 });
-```
-
-Here `font` is an MSDF font. The fill, outline, and shadow fade together; a scope
-alpha of zero makes all three invisible, including with ColorAdd enabled.
-Nested Push and explicit Set use the same
-[independent color-scope rules](color-scopes.md). ColorAdd is applied after
-the shader combines the fill and decoration coverage.
-
-Style colors are stored in PMA form. The Metal and D3D11 pixel shaders multiply
-them component-wise by `(r*a, g*a, b*a, a)` for the effective straight multiplier
-`(r, g, b, a)`, before combining their coverage with the text fill. The fill has
-already received ColorMul in the vertex shader and is not multiplied again.
-
-The existing pixel-shader constant `g_patternBackgroundColorMul` carries the
-effective straight multiplier, despite its historical pattern-specific name.
-`g_sdfOutlineColorPMA` and `g_sdfShadowColorPMA` retain the original style PMA
-colors. The CPU copies these independent constants without recalculating style
-colors or tracking a dependency between ColorMul and the style. Restoring from
-zero and flushing inside a scope therefore require no special handling.
-
-The constant-buffer layout is unchanged. Custom pixel shaders reading the style
-colors receive untinted PMA values and must apply the multiplier themselves if
-they need the same behavior. Print's dedicated grayscale shader does not consume
-these style colors.
+The vertex shader applies ColorMul to the text fill. The Outline, Shadow, and
+OutlineShadow pixel shaders receive the original style PMA colors in
+`g_sdfOutlineColorPMA` and `g_sdfShadowColorPMA`. They multiply these by
+`(r*a, g*a, b*a, a)`, using the effective straight multiplier `(r, g, b, a)` from
+`g_patternBackgroundColorMul`, then combine the fill and decoration coverage
+before applying ColorAdd.
+Print's dedicated grayscale shader does not consume these style colors.
 
 ## Validation
 
@@ -100,25 +68,13 @@ avoid accepting empty output.
 
 `MSDFFont.scoped_color_mul_styles` compares actual MSDF text drawing with a
 reference that bakes the multiplier into the fill and straight style colors.
-It covers all three decorated styles, translucent style colors, RGB tint,
-alpha zero and one, nested fades, Set, scope restoration, and ColorAdd. It
-changes ColorMul without changing the style and changes the style without
-changing ColorMul, including a flush at alpha zero and repeated frame captures.
-Visible reference glyphs prevent vacuous comparisons. Both reference and scoped
-draws must leave zero-alpha cells exactly equal to the background, including with
-ColorAdd enabled.
+It covers independent changes to ColorMul and style, nested Push and Set, Flush,
+and ColorAdd. Zero-alpha cells must match the background exactly.
 
 Use the [host test workflow](../development/README.md#build-and-test) with
-`--test-case=MSDFFont*` for focused iteration, then run the full suite. When
-changing `MSDF_Init`, regenerate all five affected Windows pixel-shader assets:
-`msdffont.ps`, `msdffont_outline.ps`, `msdffont_shadow.ps`,
-`msdffont_outline_shadow.ps`, and `msdffont_print.ps`. Changes to Glow also
-require regenerating `msdffont_glow.ps`.
-Changes to decorated style-color multiplication require regenerating
-`msdffont_outline.ps`, `msdffont_shadow.ps`, and `msdffont_outline_shadow.ps`.
+`--test-case=MSDFFont*` for focused iteration, then run the full suite. Regenerate
+affected Windows bytecode following
+[backend shader maintenance](pattern-payload.md#backend-shader-maintenance).
 [CEngineShader_D3D11::init](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)
-defines their entry-point and file mappings; its enabled startup compilation
-block compiles the HLSL source before loading these assets on Windows. Follow
-[backend shader maintenance](pattern-payload.md#backend-shader-maintenance) when
-updating the checked-in bytecode. GPU-time measurements are separate from image
-regression tests and intermediate instruction counts.
+defines the entry-point and asset mappings. GPU-time measurements are separate
+from image regression tests and intermediate instruction counts.

@@ -49,31 +49,31 @@ namespace s3d
 		[[nodiscard]]
 		ScopedColorAdd2D() = default;
 
-		/// @brief 加算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 加算カラーを適用します。
 		/// @param rgb RGB 各成分の加算量
 		/// @param target 現在の加算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorAdd2D(const ColorF& rgb, Target target = Target::Push);
 
-		/// @brief 加算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 加算カラーを適用します。
 		/// @param rgb RGB 各成分の加算量
 		/// @param target 現在の加算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorAdd2D(const Float4& rgb, Target target = Target::Push);
 
-		/// @brief 加算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 加算カラーを適用します。
 		/// @param rgb RGB 各成分の加算量
 		/// @param target 現在の加算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorAdd2D(const Float3& rgb, Target target = Target::Push);
 
-		/// @brief 加算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 加算カラーを適用します。
 		/// @param rgb RGB 共通の加算量
 		/// @param target 現在の加算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorAdd2D(double rgb, Target target = Target::Push);
 
-		/// @brief 加算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 加算カラーを適用します。
 		/// @param r 赤の加算量
 		/// @param g 緑の加算量
 		/// @param b 青の加算量

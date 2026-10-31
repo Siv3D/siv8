@@ -48,45 +48,45 @@ namespace s3d
 		[[nodiscard]]
 		ScopedColorMul2D() = default;
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param color 乗算カラー
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorMul2D(const ColorF& color, Target target = Target::Push);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param color RGBA 各成分の乗算係数
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorMul2D(const Float4& color, Target target = Target::Push);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param rgb RGB 各成分の乗算係数
 		/// @param a アルファの乗算係数
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorMul2D(const Float3& rgb, double a = 1.0, Target target = Target::Push);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param rgb RGB 各成分の乗算係数。アルファの乗算係数は 1.0
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		ScopedColorMul2D(const Float3& rgb, Target target);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param rgb RGB 共通の乗算係数
 		/// @param a アルファの乗算係数
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		explicit ScopedColorMul2D(double rgb, double a = 1.0, Target target = Target::Push);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param rgb RGB 共通の乗算係数。アルファの乗算係数は 1.0
 		/// @param target 現在の乗算カラーとの合成方法
 		[[nodiscard]]
 		ScopedColorMul2D(double rgb, Target target);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param r 赤の乗算係数
 		/// @param g 緑の乗算係数
 		/// @param b 青の乗算係数
@@ -95,7 +95,7 @@ namespace s3d
 		[[nodiscard]]
 		ScopedColorMul2D(double r, double g, double b, double a = 1.0, Target target = Target::Push);
 
-		/// @brief 乗算カラーを適用し、破棄時に以前の状態を復元します。
+		/// @brief 乗算カラーを適用します。
 		/// @param r 赤の乗算係数
 		/// @param g 緑の乗算係数
 		/// @param b 青の乗算係数。アルファの乗算係数は 1.0
