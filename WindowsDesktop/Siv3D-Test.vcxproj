@@ -73,6 +73,7 @@
     <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp" />
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
+    <ClCompile Include="..\Test\Test_RenderTexture.cpp" />
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp" />
     <ClCompile Include="..\Test\Test_MetalShader.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
@@ -175,6 +176,9 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">

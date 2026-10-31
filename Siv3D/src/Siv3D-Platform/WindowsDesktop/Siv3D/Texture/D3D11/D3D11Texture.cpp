@@ -67,6 +67,110 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	D3D11Texture::D3D11Texture(Render, ID3D11Device* device, ID3D11DeviceContext* context,
+		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color)
+		: m_desc{ desc, TextureType::Render, size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, 0, format, false }
+	{
+		UINT support = 0;
+		const UINT required = (D3D11_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE
+			| D3D11_FORMAT_SUPPORT_RENDER_TARGET | ((1 < m_desc.mipLevels) ? D3D11_FORMAT_SUPPORT_MIP_AUTOGEN : 0u));
+		if (FAILED(device->CheckFormatSupport(m_desc.DXGIFormat(), &support)) || ((support & required) != required))
+		{
+			return;
+		}
+		const auto textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(
+			(D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET), D3D11_USAGE_DEFAULT, 0, { 1, 0 },
+			((1 < m_desc.mipLevels) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0u));
+		if (const HRESULT hr = device->CreateTexture2D(&textureDesc, nullptr, &m_texture); FAILED(hr))
+		{
+			Error_Texture2D(hr);
+			return;
+		}
+		const auto srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+		if (const HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView); FAILED(hr))
+		{
+			Error_ShaderResourceView(hr);
+			return;
+		}
+		if (FAILED(device->CreateRenderTargetView(m_texture.Get(), nullptr, &m_renderTargetView)))
+		{
+			LOG_FAIL("RenderTexture: CreateRenderTargetView() failed");
+			return;
+		}
+		if (not data.empty())
+		{
+			context->UpdateSubresource(m_texture.Get(), 0, nullptr, data.data(), (size.x * format.pixelSize()), 0);
+		}
+		else
+		{
+			clearRT(context, color);
+		}
+		if (1 < m_desc.mipLevels)
+		{
+			context->GenerateMips(m_shaderResourceView.Get());
+		}
+		m_initialized = true;
+	}
+
+	void D3D11Texture::clearRT(ID3D11DeviceContext* context, const ColorF& color)
+	{
+		if (m_desc.type != TextureType::Render)
+		{
+			return;
+		}
+		const Float4 clearColor = color.toFloat4();
+		context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor.getPointer());
+	}
+
+	bool D3D11Texture::readRT(ID3D11Device* device, ID3D11DeviceContext* context,
+		const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		if ((m_desc.type != TextureType::Render) || (m_desc.mipLevels <= mipLevel))
+		{
+			return false;
+		}
+		const uint32 width = Max(1, (m_desc.size.x >> mipLevel));
+		const uint32 height = Max(1, (m_desc.size.y >> mipLevel));
+		const uint32 rowBytes = (width * m_desc.format.pixelSize());
+		if (destination.size_bytes() != (static_cast<size_t>(rowBytes) * height))
+		{
+			return false;
+		}
+		// 同じレベルの繰り返し読み戻しでステージング領域を再利用する。
+		D3D11_TEXTURE2D_DESC stagingDesc{};
+		if (m_stagingTexture)
+		{
+			m_stagingTexture->GetDesc(&stagingDesc);
+		}
+		if ((stagingDesc.Width != width) || (stagingDesc.Height != height))
+		{
+			stagingDesc = {
+				.Width = width, .Height = height, .MipLevels = 1, .ArraySize = 1,
+				.Format = m_desc.DXGIFormat(), .SampleDesc = { 1, 0 },
+				.Usage = D3D11_USAGE_STAGING, .BindFlags = 0, .CPUAccessFlags = D3D11_CPU_ACCESS_READ, .MiscFlags = 0 };
+			ComPtr<ID3D11Texture2D> staging;
+			if (FAILED(device->CreateTexture2D(&stagingDesc, nullptr, &staging)))
+			{
+				return false;
+			}
+			m_stagingTexture = std::move(staging);
+		}
+		context->CopySubresourceRegion(m_stagingTexture.Get(), 0, 0, 0, 0, m_texture.Get(), mipLevel, nullptr);
+		D3D11_MAPPED_SUBRESOURCE mapped{};
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped)))
+		{
+			return false;
+		}
+		const auto* source = static_cast<const Byte*>(mapped.pData);
+		for (uint32 y = 0; y < height; ++y)
+		{
+			std::memcpy((destination.data() + static_cast<size_t>(y) * rowBytes), (source + static_cast<size_t>(y) * mapped.RowPitch), rowBytes);
+		}
+		context->Unmap(m_stagingTexture.Get(), 0);
+		return true;
+	}
+
 	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,

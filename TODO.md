@@ -21,9 +21,17 @@
 - 四隅別角丸枠や Shape2D / Polygon 枠の LineStyle、楕円弧の矢印、LineString / 図形枠の JoinStyle は、自然な退化境界と半透明の見た目、描画の準備費用を比較する。
 - 形状生成や複合パスは、保存形状と既存の変換・点列生成で不足する具体的な用途を確認してから設計する。
 
-## NinePatch / 9-slice（RenderTexture 実装後）
+## RenderTexture / DepthTexture
 
-- RenderTexture の実装後に着手する。伸縮型 9-slice 自体に RenderTexture は必須ではないが、作業順序として後にまとめる。
+- Windows / D3D11 で `RenderTexture.*` とフルスイートを実行し、各フォーマットの生成・クリア・ミップ生成・読み戻し、sRGB、同一フレーム内の順序を検証する。macOS でのプロジェクト登録確認とは区別する。
+- 描画先切り替えを追加する。単一出力から複数の色 attachment に拡張できる内部表現、viewport・描画サイズ・Scene 解像度変換、読み書き競合、Metal のパイプラインキーを整える。[リソースの設計](docs/renderer2d/render-texture.md)を維持する。
+- 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。
+- MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
+- `MSRenderTexture` は MSAA 用と resolve 後の単一サンプル用の色テクスチャを 2 枚内包する方針とする。深度は別に持ち、継承関係、resolve のタイミング、各操作の対象は実装前に決める。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
+
+## NinePatch / 9-slice（RenderTexture の描画先切り替え実装後）
+
+- RenderTexture の描画先切り替え実装後に着手する。伸縮型 9-slice 自体に RenderTexture は必須ではないが、作業順序として後にまとめる。
 - v0.6.16 との互換性を前提にせず、[新クラスの設計候補](docs/geometry2d/proposals/drawing-extensions.md#ninepatch9-slice)から再開する。Texture / TextureRegion を使う値型、分割位置と表示時の枠倍率の分離、小さい描画先での連続した縮小を検討する。
 - 再開時に初期範囲とタイリングの採否・方式を決める。独立テクスチャへの切り出し、幾何分割、専用シェーダの準備費用・メモリ・フィルタリング品質を比較し、旧版の RenderTexture キャッシュをそのまま引き継ぐ前提にはしない。
 

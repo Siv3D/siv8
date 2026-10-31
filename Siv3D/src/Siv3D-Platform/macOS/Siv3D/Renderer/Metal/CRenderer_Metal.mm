@@ -409,6 +409,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool CRenderer_Metal::finishTextureReadback()
+	{
+		return m_frameContext.flushAndWait(m_commandQueue.get());
+	}
+
 	const MetalFrameContext& CRenderer_Metal::getFrameContext() const noexcept
 	{
 		return m_frameContext;

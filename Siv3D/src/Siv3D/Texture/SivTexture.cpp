@@ -137,6 +137,18 @@ namespace s3d
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
+	Texture::Texture(Render, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"RenderTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createRender(size, data, format, desc, ColorF{ 0.0, 0.0 }))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Texture::Texture(Render, const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"RenderTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createRender(size, {}, format, desc, color))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	Texture::Texture(Dynamic, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, data, format, desc))) }
 	{

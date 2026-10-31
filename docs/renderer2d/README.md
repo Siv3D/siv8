@@ -17,6 +17,9 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
 - [Triangle and Quad GPU joins](gpu-joins.md): direct mesh eligibility, alpha
   coverage, compatibility, tests, and CPU benchmarks.
 
+- [RenderTexture resources](render-texture.md): color resources, native readback,
+  mipmap generation, and GPU operation ordering.
+
 ## Scene rendering
 
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,

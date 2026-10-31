@@ -17,6 +17,7 @@
 # include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <cstring>
+# include <Siv3D/Error/InternalEngineError.hpp>
 
 namespace s3d
 {
@@ -25,6 +26,122 @@ namespace s3d
 	//	(constructor)
 	//
 	////////////////////////////////////////////////////////////////
+
+	MetalTexture::MetalTexture(Render, MTL::Device* device, MTL::CommandBuffer* commands,
+		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color)
+		: m_desc{ desc, TextureType::Render, size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, format, false }
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto descriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		descriptor->setTextureType(MTL::TextureType2D);
+		descriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(format.MTLPixelFormat()));
+		descriptor->setWidth(size.x);
+		descriptor->setHeight(size.y);
+		descriptor->setMipmapLevelCount(m_desc.mipLevels);
+		descriptor->setStorageMode(MTL::StorageModePrivate);
+		descriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+		m_texture = NS::TransferPtr(device->newTexture(descriptor.get()));
+		if (not m_texture)
+		{
+			return;
+		}
+		if (not data.empty())
+		{
+			const uint32 rowBytes = (size.x * format.pixelSize());
+			const uint32 rowPitch = ((rowBytes + 255) & ~255u);
+			auto upload = NS::TransferPtr(device->newBuffer(static_cast<size_t>(rowPitch) * size.y,
+				MTL::ResourceStorageModeShared | MTL::ResourceCPUCacheModeWriteCombined));
+			if (not upload)
+			{
+				return;
+			}
+			auto* destination = static_cast<Byte*>(upload->contents());
+			for (int32 y = 0; y < size.y; ++y)
+			{
+				std::memcpy((destination + static_cast<size_t>(y) * rowPitch), (data.data() + static_cast<size_t>(y) * rowBytes), rowBytes);
+			}
+			auto* encoder = commands->blitCommandEncoder();
+			if (not encoder)
+			{
+				return;
+			}
+			encoder->copyFromBuffer(upload.get(), 0, rowPitch, 0,
+				MTL::Size{ static_cast<NS::UInteger>(size.x), static_cast<NS::UInteger>(size.y), 1 },
+				m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			if (1 < m_desc.mipLevels)
+			{
+				encoder->generateMipmaps(m_texture.get());
+			}
+			encoder->endEncoding();
+		}
+		else
+		{
+			clearRT(commands, color);
+			if (1 < m_desc.mipLevels)
+			{
+				generateRenderMips(commands);
+			}
+		}
+		m_initialized = true;
+	}
+
+	void MetalTexture::clearRT(MTL::CommandBuffer* commands, const ColorF& color)
+	{
+		if (m_desc.type != TextureType::Render)
+		{
+			return;
+		}
+		auto pass = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+		auto* attachment = pass->colorAttachments()->object(0);
+		attachment->setTexture(m_texture.get());
+		attachment->setLoadAction(MTL::LoadActionClear);
+		attachment->setStoreAction(MTL::StoreActionStore);
+		attachment->setClearColor(MTL::ClearColor{ color.r, color.g, color.b, color.a });
+		auto* encoder = commands->renderCommandEncoder(pass.get());
+		if (not encoder)
+		{
+			throw InternalEngineError{ "RenderTexture::clear(): renderCommandEncoder() failed" };
+		}
+		encoder->endEncoding();
+	}
+
+	void MetalTexture::generateRenderMips(MTL::CommandBuffer* commands)
+	{
+		auto* encoder = commands->blitCommandEncoder();
+		if (not encoder)
+		{
+			throw InternalEngineError{ "RenderTexture::generateMips(): blitCommandEncoder() failed" };
+		}
+		encoder->generateMipmaps(m_texture.get());
+		encoder->endEncoding();
+	}
+
+	MTL::Buffer* MetalTexture::encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands,
+		const uint32 mipLevel, const uint32 bytesPerRow)
+	{
+		const uint32 width = Max(1, (m_desc.size.x >> mipLevel));
+		const uint32 height = Max(1, (m_desc.size.y >> mipLevel));
+		const size_t bytes = (static_cast<size_t>(bytesPerRow) * height);
+		if (not m_readbackBuffer || (m_readbackBuffer->length() < bytes))
+		{
+			auto buffer = NS::TransferPtr(device->newBuffer(bytes, MTL::ResourceStorageModeShared));
+			if (not buffer)
+			{
+				return nullptr;
+			}
+			m_readbackBuffer = std::move(buffer);
+		}
+		auto* encoder = commands->blitCommandEncoder();
+		if (not encoder)
+		{
+			return nullptr;
+		}
+		encoder->copyFromTexture(m_texture.get(), 0, mipLevel, MTL::Origin{ 0, 0, 0 }, MTL::Size{ width, height, 1 },
+			m_readbackBuffer.get(), 0, bytesPerRow, bytes);
+		encoder->endEncoding();
+		return m_readbackBuffer.get();
+	}
 
 	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const TextureDesc desc)
 		: m_desc{ desc,

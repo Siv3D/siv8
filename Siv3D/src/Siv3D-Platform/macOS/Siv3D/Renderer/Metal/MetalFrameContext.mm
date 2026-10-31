@@ -111,6 +111,27 @@ namespace s3d
 		m_frameIndex = ((m_frameIndex + 1) % MaxInflightFrames);
 	}
 
+	bool MetalFrameContext::flushAndWait(MTL::CommandQueue* commandQueue)
+	{
+		assert(m_frameAcquired && m_commandBuffer);
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		// 次のバッファを確保してから現在の記録を送信する。
+		auto next = NS::RetainPtr(commandQueue->commandBuffer());
+		if (not next)
+		{
+			return false;
+		}
+		m_commandBuffer->commit();
+		m_commandBuffer->waitUntilCompleted();
+		const bool succeeded = (m_commandBuffer->status() == MTL::CommandBufferStatusCompleted);
+		if (not succeeded)
+		{
+			LOG_ERROR("RenderTexture: Metal readback command buffer failed");
+		}
+		m_commandBuffer = std::move(next);
+		return succeeded;
+	}
+
 	void MetalFrameContext::cancel() noexcept
 	{
 		if (not m_frameAcquired)

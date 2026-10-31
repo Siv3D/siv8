@@ -14,6 +14,9 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/Texture/TextureUtility.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <cstring>
 
 namespace s3d
 {
@@ -206,6 +209,111 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	RenderTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	MTL::CommandBuffer* CTexture_Metal::renderCommands(const bool flushDraws)
+	{
+		if (auto* commands = m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			if (flushDraws)
+			{
+				SIV3D_ENGINE(Renderer2D)->flush();
+			}
+			return commands;
+		}
+		auto* commands = m_commandQueue->commandBuffer();
+		if (not commands)
+		{
+			throw InternalEngineError{ "RenderTexture: commandBuffer() failed" };
+		}
+		return commands;
+	}
+
+	Texture::IDType CTexture_Metal::createRender(const Size& size, const std::span<const Byte> data,
+		const TextureFormat& format, TextureDesc desc, const ColorF& color)
+	{
+		if (not IsValidRenderTexture(size, data, format))
+		{
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(false);
+		auto texture = std::make_unique<MetalTexture>(MetalTexture::Render{}, m_device, commands, size, data, format, desc, color);
+		if (not m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			commands->commit();
+		}
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	void CTexture_Metal::clearRT(const Texture::IDType handleID, const ColorF& color)
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(true);
+		m_textures[handleID]->clearRT(commands, color);
+		if (not m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			commands->commit();
+		}
+	}
+
+	bool CTexture_Metal::readRT(const Texture::IDType handleID, const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		auto* texture = m_textures[handleID];
+		const auto& desc = texture->getDesc();
+		if ((desc.type != TextureType::Render) || (desc.mipLevels <= mipLevel))
+		{
+			return false;
+		}
+		const uint32 width = Max(1, (desc.size.x >> mipLevel));
+		const uint32 height = Max(1, (desc.size.y >> mipLevel));
+		const uint32 rowBytes = (width * desc.format.pixelSize());
+		if (destination.size_bytes() != (static_cast<size_t>(rowBytes) * height))
+		{
+			return false;
+		}
+		const uint32 rowPitch = ((rowBytes + 255) & ~255u);
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(true);
+		auto* buffer = texture->encodeReadRT(m_device, commands, mipLevel, rowPitch);
+		if (not buffer)
+		{
+			return false;
+		}
+		if (m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			if (not m_pRenderer->finishTextureReadback())
+			{
+				return false;
+			}
+		}
+		else
+		{
+			commands->commit();
+			commands->waitUntilCompleted();
+			if (commands->status() != MTL::CommandBufferStatusCompleted)
+			{
+				return false;
+			}
+		}
+		const auto* source = static_cast<const Byte*>(buffer->contents());
+		for (uint32 y = 0; y < height; ++y)
+		{
+			std::memcpy((destination.data() + static_cast<size_t>(y) * rowBytes), (source + static_cast<size_t>(y) * rowPitch), rowBytes);
+		}
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	release
 	//
 	////////////////////////////////////////////////////////////////
@@ -311,7 +419,23 @@ namespace s3d
 
 	void CTexture_Metal::generateMips(const Texture::IDType handleID)
 	{
-		return m_textures[handleID]->generateMips(m_commandQueue);
+		auto* texture = m_textures[handleID];
+		if (texture->getDesc().type == TextureType::Render)
+		{
+			if (texture->getDesc().mipLevels <= 1)
+			{
+				return;
+			}
+			const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+			auto* commands = renderCommands(true);
+			texture->generateRenderMips(commands);
+			if (not m_pRenderer->getFrameContext().getCommandBuffer())
+			{
+				commands->commit();
+			}
+			return;
+		}
+		texture->generateMips(m_commandQueue);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -14,6 +14,8 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/Texture/TextureUtility.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 
 namespace s3d
 {
@@ -261,6 +263,41 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	RenderTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture::IDType CTexture_D3D11::createRender(const Size& size, const std::span<const Byte> data,
+		const TextureFormat& format, TextureDesc desc, const ColorF& color)
+	{
+		if (not IsValidRenderTexture(size, data, format))
+		{
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, m_context, size, data, format, desc, color);
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	void CTexture_D3D11::clearRT(const Texture::IDType handleID, const ColorF& color)
+	{
+		SIV3D_ENGINE(Renderer2D)->flush();
+		m_textures[handleID]->clearRT(m_context, color);
+	}
+
+	bool CTexture_D3D11::readRT(const Texture::IDType handleID, const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		SIV3D_ENGINE(Renderer2D)->flush();
+		return m_textures[handleID]->readRT(m_device, m_context, destination, mipLevel);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	release
 	//
 	////////////////////////////////////////////////////////////////
@@ -366,7 +403,12 @@ namespace s3d
 
 	void CTexture_D3D11::generateMips(const Texture::IDType handleID)
 	{
-		m_textures[handleID]->generateMipmaps(m_context);
+		auto* texture = m_textures[handleID];
+		if (texture->getDesc().type == TextureType::Render)
+		{
+			SIV3D_ENGINE(Renderer2D)->flush();
+		}
+		texture->generateMipmaps(m_context);
 	}
 
 	////////////////////////////////////////////////////////////////

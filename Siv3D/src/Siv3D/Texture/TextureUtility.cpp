@@ -72,6 +72,18 @@ namespace s3d
 		}
 	}
 
+	bool IsValidRenderTexture(const Size& size, const std::span<const Byte> data, const TextureFormat& format) noexcept
+	{
+		// D3D11 / macOS Metal の共通上限。列挙値を検証してから format の表を参照する。
+		if ((size.x <= 0) || (size.y <= 0) || (16384 < size.x) || (16384 < size.y)
+			|| not InRange(format.value(), TexturePixelFormat::R8_Unorm, TexturePixelFormat::R32G32B32A32_Float))
+		{
+			return false;
+		}
+		const size_t dataSize = (static_cast<size_t>(size.x) * size.y * format.pixelSize());
+		return (data.empty() || (data.size_bytes() == dataSize));
+	}
+
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format)
 	{
 		if ((size.x <= 0) || (size.y <= 0))

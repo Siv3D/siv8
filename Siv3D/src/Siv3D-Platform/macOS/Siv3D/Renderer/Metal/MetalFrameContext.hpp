@@ -48,6 +48,12 @@ namespace s3d
 		// 記録中のフレームに完了通知を登録し、送信する。すべての encoder を終了してから呼ぶ。
 		void submit();
 
+		// 記録済みの GPU 操作を送信して完了を待ち、同じフレームの記録を継続する。
+		// 全 encoder を終了してから呼ぶ。フレーム番号・取得枠・アップロード領域は進めない。
+		// getCommandBuffer() の借用はこの呼び出しでも終了する。
+		bool flushAndWait(MTL::CommandQueue* commandQueue);
+
+
 		// 未送信のフレームを破棄し、枠を返す。取得した枠がなければ何もしない。
 		// すべての encoder を終了してから呼ぶ。次の waitForFrame() は取り消した番号を返す。
 		void cancel() noexcept;

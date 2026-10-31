@@ -154,6 +154,9 @@
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_RenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -245,6 +248,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_WindowMacOS.cpp">

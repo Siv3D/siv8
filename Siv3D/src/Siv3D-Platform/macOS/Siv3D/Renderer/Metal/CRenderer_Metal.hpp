@@ -91,6 +91,8 @@ namespace s3d
 		[[nodiscard]]
 		const MetalFrameContext& getFrameContext() const noexcept;
 
+		bool finishTextureReadback();
+
 		[[nodiscard]]		
 		uint32 getSceneSampleCount() const noexcept override;
 

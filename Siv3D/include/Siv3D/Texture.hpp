@@ -1047,6 +1047,12 @@ namespace s3d
 
 		struct Render {};
 
+		[[nodiscard]]
+		Texture(Render, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		Texture(Render, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);
+
 		struct MSRender {};
 
 		[[nodiscard]]

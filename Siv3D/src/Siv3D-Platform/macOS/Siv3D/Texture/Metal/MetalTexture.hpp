@@ -25,6 +25,19 @@ namespace s3d
 		
 		struct Dynamic {};
 
+		struct Render {};
+
+		[[nodiscard]]
+		MetalTexture(Render, MTL::Device* device, MTL::CommandBuffer* commands, const Size& size,
+			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color);
+
+		void clearRT(MTL::CommandBuffer* commands, const ColorF& color);
+
+		void generateRenderMips(MTL::CommandBuffer* commands);
+
+		[[nodiscard]]
+		MTL::Buffer* encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands, uint32 mipLevel, uint32 bytesPerRow);
+
 		struct NoMipmap {};
 
 		struct GenerateMipmap {};
@@ -118,6 +131,8 @@ namespace s3d
 		MTL::Texture* getTexture() const noexcept;
 
 	private:
+
+		NS::SharedPtr<MTL::Buffer> m_readbackBuffer;
 
 		[[nodiscard]]
 		bool prepareUpload(bool wait);

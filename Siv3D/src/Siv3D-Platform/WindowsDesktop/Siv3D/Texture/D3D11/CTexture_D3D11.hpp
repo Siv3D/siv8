@@ -47,6 +47,13 @@ namespace s3d
 		[[nodiscard]]
 		Texture::IDType createDynamic(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
 
+		[[nodiscard]]
+		Texture::IDType createRender(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color) override;
+
+		void clearRT(Texture::IDType handleID, const ColorF& color) override;
+
+		bool readRT(Texture::IDType handleID, std::span<Byte> destination, uint32 mipLevel) override;
+
 		void release(Texture::IDType handleID) override;
 
 		[[nodiscard]]
