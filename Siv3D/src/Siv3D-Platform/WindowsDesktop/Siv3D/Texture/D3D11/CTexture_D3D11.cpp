@@ -284,6 +284,41 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
+	Texture::IDType CTexture_D3D11::createMSRender(const Size& size, const TextureFormat& format,
+		TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+	{
+		if (((sampleCount != 2) && (sampleCount != 4)) || not IsValidRenderTexture(size, {}, format))
+		{
+			LOG_FAIL("MSRenderTexture: Invalid size, format, or sample count");
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, m_context, size, std::span<const Byte>{}, format, desc, color, sampleCount);
+		if (not texture->isInitialized())
+		{
+			LOG_FAIL(fmt::format("MSRenderTexture: Unsupported settings or allocation failure (size = {}x{}, format = {}, samples = {}, mipmaps = {})",
+				size.x, size.y, format.name().toUTF8(), sampleCount, desc.hasMipmap));
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	void CTexture_D3D11::resolveMSRT(const Texture::IDType handleID)
+	{
+		auto* texture = m_textures[handleID];
+		if (texture->getDesc().type != TextureType::MSRender)
+		{
+			return;
+		}
+		texture->resolveMSRT(m_context);
+	}
+
+	uint32 CTexture_D3D11::getSampleCount(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getDesc().multiSampleCount;
+	}
+
 	void CTexture_D3D11::clearRT(const Texture::IDType handleID, const ColorF& color)
 	{
 		SIV3D_ENGINE(Renderer2D)->flush();
@@ -404,7 +439,7 @@ namespace s3d
 	void CTexture_D3D11::generateMips(const Texture::IDType handleID)
 	{
 		auto* texture = m_textures[handleID];
-		if (texture->getDesc().type == TextureType::Render)
+		if ((texture->getDesc().type == TextureType::Render) || (texture->getDesc().type == TextureType::MSRender))
 		{
 			SIV3D_ENGINE(Renderer2D)->flush();
 		}

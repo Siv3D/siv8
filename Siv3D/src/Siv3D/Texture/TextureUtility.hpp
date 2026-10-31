@@ -16,11 +16,33 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/ColorHSV.hpp>
 # include <Siv3D/TextureFormat.hpp>
+# include <Siv3D/Texture.hpp>
 
 namespace s3d
 {
 	[[nodiscard]]
 	bool IsValidRenderTexture(const Size& size, std::span<const Byte> data, const TextureFormat& format) noexcept;
+
+	[[nodiscard]]
+	bool ReadRenderTexture(const Texture& texture, std::span<Byte> destination, uint32 mipLevel);
+
+	template <class RenderTextureType, class Container>
+	bool ReadRenderTexturePixels(const RenderTextureType& texture, Container& image, const bool compatible, const uint32 mipLevel)
+	{
+		if (texture.isEmpty() || not compatible || (texture.mipLevels() <= mipLevel))
+		{
+			image.clear();
+			return false;
+		}
+		const Size size{ Max(1, (texture.width() >> mipLevel)), Max(1, (texture.height() >> mipLevel)) };
+		image.resize(size);
+		if (not texture.read(std::as_writable_bytes(std::span{ image }), mipLevel))
+		{
+			image.clear();
+			return false;
+		}
+		return true;
+	}
 
 	[[nodiscard]]
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format);

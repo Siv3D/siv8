@@ -17,8 +17,9 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
 - [Triangle and Quad GPU joins](gpu-joins.md): direct mesh eligibility, alpha
   coverage, compatibility, tests, and CPU benchmarks.
 
-- [RenderTexture resources and target scopes](render-texture.md): nested offscreen
-  drawing, color resources, native readback, mipmap generation, and operation ordering.
+- [RenderTexture and MSRenderTexture resources and target scopes](render-texture.md): nested offscreen
+  drawing, single-sample and MSAA color resources, explicit resolve, native readback,
+  mipmap generation, and operation ordering.
 
 ## Scene rendering
 

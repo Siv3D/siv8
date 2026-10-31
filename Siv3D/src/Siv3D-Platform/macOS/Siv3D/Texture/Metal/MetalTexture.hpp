@@ -29,9 +29,11 @@ namespace s3d
 
 		[[nodiscard]]
 		MetalTexture(Render, MTL::Device* device, MTL::CommandBuffer* commands, const Size& size,
-			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color);
+			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount = 1);
 
 		void clearRT(MTL::CommandBuffer* commands, const ColorF& color);
+
+		void resolveMSRT(MTL::CommandBuffer* commands);
 
 		void generateRenderMips(MTL::CommandBuffer* commands);
 
@@ -147,6 +149,8 @@ namespace s3d
 		bool m_initialized = false;
 
 		NS::SharedPtr<MTL::Texture> m_texture;
+
+		NS::SharedPtr<MTL::Texture> m_multiSampleTexture;
 		
 		NS::SharedPtr<MTL::Buffer> m_uploadBuffer;
 

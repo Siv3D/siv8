@@ -11,6 +11,8 @@
 
 # include "TextureUtility.hpp"
 # include <Siv3D/HalfFloat.hpp>
+# include <Siv3D/Texture/ITexture.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -82,6 +84,21 @@ namespace s3d
 		}
 		const size_t dataSize = (static_cast<size_t>(size.x) * size.y * format.pixelSize());
 		return (data.empty() || (data.size_bytes() == dataSize));
+	}
+
+	bool ReadRenderTexture(const Texture& texture, const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		if (texture.isEmpty() || (texture.mipLevels() <= mipLevel))
+		{
+			return false;
+		}
+		const Size levelSize{ Max(1, (texture.width() >> mipLevel)), Max(1, (texture.height() >> mipLevel)) };
+		const size_t bytesPerRow = (static_cast<size_t>(levelSize.x) * texture.format().pixelSize());
+		if (destination.size_bytes() != (bytesPerRow * levelSize.y))
+		{
+			return false;
+		}
+		return SIV3D_ENGINE(Texture)->readRT(texture.id(), destination, mipLevel);
 	}
 
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format)

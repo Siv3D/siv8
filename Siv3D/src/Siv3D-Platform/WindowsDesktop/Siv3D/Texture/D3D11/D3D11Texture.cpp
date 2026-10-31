@@ -68,16 +68,27 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	D3D11Texture::D3D11Texture(Render, ID3D11Device* device, ID3D11DeviceContext* context,
-		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color)
-		: m_desc{ desc, TextureType::Render, size,
-			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, 0, format, false }
+		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+		: m_desc{ desc, ((sampleCount == 1) ? TextureType::Render : TextureType::MSRender), size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), static_cast<uint8>(sampleCount), 0, format, false }
 	{
 		UINT support = 0;
 		const UINT required = (D3D11_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE
-			| D3D11_FORMAT_SUPPORT_RENDER_TARGET | ((1 < m_desc.mipLevels) ? D3D11_FORMAT_SUPPORT_MIP_AUTOGEN : 0u));
+			| D3D11_FORMAT_SUPPORT_RENDER_TARGET | ((1 < m_desc.mipLevels) ? D3D11_FORMAT_SUPPORT_MIP_AUTOGEN : 0u)
+			| ((1 < sampleCount) ? (D3D11_FORMAT_SUPPORT_MULTISAMPLE_RENDERTARGET | D3D11_FORMAT_SUPPORT_MULTISAMPLE_RESOLVE) : 0u));
 		if (FAILED(device->CheckFormatSupport(m_desc.DXGIFormat(), &support)) || ((support & required) != required))
 		{
 			return;
+		}
+		if (sampleCount > 1)
+		{
+			UINT qualityLevels = 0;
+			if (((sampleCount != 2) && (sampleCount != 4))
+				|| FAILED(device->CheckMultisampleQualityLevels(m_desc.DXGIFormat(), sampleCount, &qualityLevels))
+				|| (qualityLevels == 0))
+			{
+				return;
+			}
 		}
 		const auto textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(
 			(D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET), D3D11_USAGE_DEFAULT, 0, { 1, 0 },
@@ -93,7 +104,20 @@ namespace s3d
 			Error_ShaderResourceView(hr);
 			return;
 		}
-		if (FAILED(device->CreateRenderTargetView(m_texture.Get(), nullptr, &m_renderTargetView)))
+		if (sampleCount > 1)
+		{
+			auto multisampleDesc = textureDesc;
+			multisampleDesc.MipLevels = 1;
+			multisampleDesc.SampleDesc = { sampleCount, 0 };
+			multisampleDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+			multisampleDesc.MiscFlags = 0;
+			if (const HRESULT hr = device->CreateTexture2D(&multisampleDesc, nullptr, &m_multiSampleTexture); FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+		if (FAILED(device->CreateRenderTargetView((sampleCount > 1) ? m_multiSampleTexture.Get() : m_texture.Get(), nullptr, &m_renderTargetView)))
 		{
 			LOG_FAIL("RenderTexture: CreateRenderTargetView() failed");
 			return;
@@ -105,6 +129,10 @@ namespace s3d
 		else
 		{
 			clearRT(context, color);
+			if (sampleCount > 1)
+			{
+				resolveMSRT(context);
+			}
 		}
 		if (1 < m_desc.mipLevels)
 		{
@@ -115,7 +143,7 @@ namespace s3d
 
 	void D3D11Texture::clearRT(ID3D11DeviceContext* context, const ColorF& color)
 	{
-		if (m_desc.type != TextureType::Render)
+		if ((m_desc.type != TextureType::Render) && (m_desc.type != TextureType::MSRender))
 		{
 			return;
 		}
@@ -123,10 +151,18 @@ namespace s3d
 		context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor.getPointer());
 	}
 
+	void D3D11Texture::resolveMSRT(ID3D11DeviceContext* context)
+	{
+		if (m_desc.type == TextureType::MSRender)
+		{
+			context->ResolveSubresource(m_texture.Get(), 0, m_multiSampleTexture.Get(), 0, m_desc.DXGIFormat());
+		}
+	}
+
 	bool D3D11Texture::readRT(ID3D11Device* device, ID3D11DeviceContext* context,
 		const std::span<Byte> destination, const uint32 mipLevel)
 	{
-		if ((m_desc.type != TextureType::Render) || (m_desc.mipLevels <= mipLevel))
+		if (((m_desc.type != TextureType::Render) && (m_desc.type != TextureType::MSRender)) || (m_desc.mipLevels <= mipLevel))
 		{
 			return false;
 		}

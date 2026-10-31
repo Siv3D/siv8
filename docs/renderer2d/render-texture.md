@@ -1,10 +1,13 @@
-# RenderTexture resources and target scopes
+# RenderTexture and MSRenderTexture resources and target scopes
 
 [RenderTexture](../../Siv3D/include/Siv3D/RenderTexture.hpp) owns a single-sample
 color texture. It supports creation, GPU clears, mipmap generation, CPU readback,
 and the drawing operations inherited from `Texture`.
 [ScopedRenderTarget2D](../../Siv3D/include/Siv3D/ScopedRenderTarget2D.hpp) selects
-one color texture for 2D drawing. MRT, depth attachments, and multisample resources are tracked in
+one single-sample color texture for 2D drawing.
+[MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp) owns a multisample
+color texture and a separate single-sample resolve result. Its target binding,
+MRT, and depth attachments are tracked in
 [TODO](../../TODO.md#rendertexture--depthtexture).
 
 ## Creating and inspecting textures
@@ -41,6 +44,56 @@ or processing those values as linear colors.
 A readback waits for GPU work and can stall a real-time frame loop. Reuse the
 output Image/Grid when reading repeatedly. Backend staging storage is allocated
 on demand and reused. GPU-only operations do not perform CPU readback.
+
+## Multisample resources and explicit resolve
+
+`MSRenderTexture` derives directly from `Texture`. Its `Texture` operations,
+including regions and shader sampling, use the resolved image. Copies share both
+resources. The sample count is fixed at creation: 2x or 4x, with 4x as the default,
+independently of Scene's current settings. Unsupported settings produce an empty
+handle; the engine does not lower the sample count or change the requested format.
+The public header defines creation and readback failure behavior.
+
+Inside `Main()` after engine startup:
+
+```cpp
+MSRenderTexture texture{ Size{ 64, 32 }, Palette::Blue,
+    MSAASampleCount::X4MSAA, TextureFormat::R8G8B8A8_Unorm,
+    TextureDesc::Mipmap };
+
+if (texture)
+{
+    texture.clear(Palette::Red);
+    Image pixels;
+    texture.readAsImage(pixels); // Still blue: clear changes only the MSAA image.
+
+    texture.resolve();
+    texture.generateMips();
+    texture.readAsImage(pixels); // Red, including the newly generated mip levels.
+}
+```
+
+Creation initializes both images and allocated mip levels to the initial color
+(zero in every component when omitted). Thereafter, `clear()` changes only MSAA
+contents. `resolve()` updates only level 0 of the single-sample image and preserves
+the MSAA contents, allowing repeated resolves. Neither readback nor mip generation
+resolves implicitly. Mips belong only to the single-sample image.
+
+`resolve()` does **not** flush pending renderer commands or wait for GPU completion.
+When queued draws need to consume the previous resolved image, explicitly flush
+that renderer before resolving. Otherwise, the queued draws may consume the newly
+resolved image when they are eventually issued. Select the renderer and ordering
+at the call site; resolve does not choose an order between 2D and future 3D queues.
+The other resource operations retain the existing 2D flush behavior described
+below. This distinction also applies while a different RenderTexture is selected.
+
+On D3D11, creation checks the format's render, sample, resolve and requested mip
+capabilities, plus the requested multisample quality levels. Sampling always uses
+a Texture2D SRV of the single-sample image. On Metal, creation checks the sample
+count and the additional [32-bit MSAA resolve capability](https://developer.apple.com/documentation/metal/mtldevice/supports32bitmsaa)
+for 32-bit floating-point formats. A render pass with store-and-resolve preserves
+the multisample image while updating the resolved result. Both images use private
+GPU storage and remain alive through encoded command execution.
 
 ## Drawing into a texture
 
@@ -95,7 +148,7 @@ normal per-frame background and presentation.
 ## Ordering and backend responsibilities
 
 Clears and mip generation consume earlier queued 2D draws before changing an
-existing texture. This gives `draw(); clear(); draw();` an observable order even
+existing texture. Explicit MSRenderTexture resolve is the exception described above. This gives `draw(); clear(); draw();` an observable order even
 though normal draws are batched. Texture creation uploads new resources without
 flushing unrelated draws.
 
@@ -152,16 +205,24 @@ and frame continuation. [Metal scope tests](../../Test/Test_MetalScopedRenderTar
 inject encoder failure to verify entry rollback, exit restoration and exception
 unwinding.
 
+[Multisample resource tests](../../Test/Test_MSRenderTexture.cpp) check supported
+format/sample combinations, initialization, stale resolve results, independent
+mips, readback types and failures, handle lifetime, sampled native resources, and
+the visible difference between explicit Flush and resolve alone.
+[Metal multisample tests](../../Test/Test_MetalMSRenderTexture.cpp) inspect native
+allocation descriptors and inject unsupported capabilities, failure of either
+texture allocation, and resolve-encoder failure followed by retry.
+
 Run from the repository root using the host workflow:
 
 ```sh
-./macOS/run-tests.sh '--test-case=RenderTexture.*,ScopedRenderTarget2D.*'
+./macOS/run-tests.sh '--test-case=RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./macOS/run-tests.sh
 ./macOS/validate-projects.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=RenderTexture.*,ScopedRenderTarget2D.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 

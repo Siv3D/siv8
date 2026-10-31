@@ -254,6 +254,53 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
+	Texture::IDType CTexture_Metal::createMSRender(const Size& size, const TextureFormat& format,
+		TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+	{
+		if (((sampleCount != 2) && (sampleCount != 4)) || not IsValidRenderTexture(size, {}, format))
+		{
+			LOG_FAIL("MSRenderTexture: Invalid size, format, or sample count");
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(false);
+		auto texture = std::make_unique<MetalTexture>(MetalTexture::Render{}, m_device, commands, size, std::span<const Byte>{}, format, desc, color, sampleCount);
+		if (not m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			commands->commit();
+		}
+		if (not texture->isInitialized())
+		{
+			LOG_FAIL(fmt::format("MSRenderTexture: Unsupported settings or allocation failure (size = {}x{}, format = {}, samples = {}, mipmaps = {})",
+				size.x, size.y, format.name().toUTF8(), sampleCount, desc.hasMipmap));
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	void CTexture_Metal::resolveMSRT(const Texture::IDType handleID)
+	{
+		auto* texture = m_textures[handleID];
+		if (texture->getDesc().type != TextureType::MSRender)
+		{
+			return;
+		}
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(false);
+		texture->resolveMSRT(commands);
+		if (not m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			commands->commit();
+		}
+	}
+
+	uint32 CTexture_Metal::getSampleCount(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getDesc().multiSampleCount;
+	}
+
 	void CTexture_Metal::clearRT(const Texture::IDType handleID, const ColorF& color)
 	{
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
@@ -269,7 +316,7 @@ namespace s3d
 	{
 		auto* texture = m_textures[handleID];
 		const auto& desc = texture->getDesc();
-		if ((desc.type != TextureType::Render) || (desc.mipLevels <= mipLevel))
+		if (((desc.type != TextureType::Render) && (desc.type != TextureType::MSRender)) || (desc.mipLevels <= mipLevel))
 		{
 			return false;
 		}
@@ -420,7 +467,7 @@ namespace s3d
 	void CTexture_Metal::generateMips(const Texture::IDType handleID)
 	{
 		auto* texture = m_textures[handleID];
-		if (texture->getDesc().type == TextureType::Render)
+		if ((texture->getDesc().type == TextureType::Render) || (texture->getDesc().type == TextureType::MSRender))
 		{
 			if (texture->getDesc().mipLevels <= 1)
 			{

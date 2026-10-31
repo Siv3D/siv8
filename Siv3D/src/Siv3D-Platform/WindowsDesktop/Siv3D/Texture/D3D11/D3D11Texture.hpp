@@ -29,9 +29,11 @@ namespace s3d
 
 		[[nodiscard]]
 		D3D11Texture(Render, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size,
-			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color);
+			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount = 1);
 
 		void clearRT(ID3D11DeviceContext* context, const ColorF& color);
+
+		void resolveMSRT(ID3D11DeviceContext* context);
 
 		bool readRT(ID3D11Device* device, ID3D11DeviceContext* context, std::span<Byte> destination, uint32 mipLevel);
 

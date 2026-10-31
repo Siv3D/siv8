@@ -1541,6 +1541,7 @@
 // 動的テクスチャ | Dynamic texture
 # include <Siv3D/DynamicTexture.hpp>
 # include <Siv3D/RenderTexture.hpp>
+# include <Siv3D/MSRenderTexture.hpp>
 
 
 

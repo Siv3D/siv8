@@ -37,7 +37,9 @@ namespace s3d::Test
 			const auto original = reinterpret_cast<NewTexture>(m_original);
 			auto* count = &attempts;
 			auto* succeeded = &successes;
-			m_replacement = imp_implementationWithBlock(^id<MTLTexture>(id receiver, MTLTextureDescriptor* descriptor)
+			// Match the +1 ownership of newTextureWithDescriptor:, including successful
+			// allocations before a later failure leaves them without command-buffer retains.
+			m_replacement = imp_implementationWithBlock(^id<MTLTexture>(id receiver, MTLTextureDescriptor* descriptor) NS_RETURNS_RETAINED
 			{
 				if ((receiver == target) && (++(*count) == failOnAttempt))
 				{

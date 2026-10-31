@@ -23,9 +23,10 @@
 
 ## RenderTexture / DepthTexture
 
-- 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。
+- 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
 - MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
-- `MSRenderTexture` は MSAA 用と resolve 後の単一サンプル用の色テクスチャを 2 枚内包する方針とする。深度は別に持ち、継承関係、resolve のタイミング、各操作の対象は実装前に決める。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
+- Windows / D3D11 で `MSRenderTexture.*` とフルスイートを実行し、2x / 4x の生成、クリアと resolve 結果の分離、明示 Flush の描画順、ミップ生成と読み戻しを検証する。
+- `MSRenderTexture` を `ScopedRenderTarget2D` の描画先に対応させる。ネスト・復元、サンプル数を反映するパイプライン、MSAA 側と resolve 済み側を区別したフィードバック検証を追加する。`resolve()` は自動 Flush しない。[リソースと順序の設計](docs/renderer2d/render-texture.md#multisample-resources-and-explicit-resolve)を維持する。
 
 ## NinePatch / 9-slice
 

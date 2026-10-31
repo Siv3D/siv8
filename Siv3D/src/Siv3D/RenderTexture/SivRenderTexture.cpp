@@ -11,34 +11,14 @@
 
 # include <Siv3D/RenderTexture.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
+# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
-	namespace
-	{
-		static_assert(sizeof(std::pair<uint16, uint16>) == 4);
-		static_assert(sizeof(std::pair<HalfFloat, HalfFloat>) == 4);
-		static_assert(sizeof(std::array<HalfFloat, 4>) == 8);
-
-		template <class Container>
-		bool ReadPixels(const RenderTexture& texture, Container& image, const bool compatible, const uint32 mipLevel)
-		{
-			if (texture.isEmpty() || not compatible || (texture.mipLevels() <= mipLevel))
-			{
-				image.clear();
-				return false;
-			}
-			const Size size{ Max(1, (texture.width() >> mipLevel)), Max(1, (texture.height() >> mipLevel)) };
-			image.resize(size);
-			if (not texture.read(std::as_writable_bytes(std::span{ image }), mipLevel))
-			{
-				image.clear();
-				return false;
-			}
-			return true;
-		}
-	}
+	static_assert(sizeof(std::pair<uint16, uint16>) == 4);
+	static_assert(sizeof(std::pair<HalfFloat, HalfFloat>) == 4);
+	static_assert(sizeof(std::array<HalfFloat, 4>) == 8);
 
 	RenderTexture::RenderTexture(const Size& size, const TextureFormat& format, const TextureDesc desc)
 		: RenderTexture{ size, ColorF{ 0.0, 0.0 }, format, desc } {}
@@ -102,83 +82,73 @@ namespace s3d
 
 	bool RenderTexture::read(const std::span<Byte> destination, const uint32 mipLevel) const
 	{
-		if (isEmpty() || (mipLevels() <= mipLevel))
-		{
-			return false;
-		}
-		const Size levelSize{ Max(1, (width() >> mipLevel)), Max(1, (height() >> mipLevel)) };
-		const size_t bytesPerRow = (static_cast<size_t>(levelSize.x) * format().pixelSize());
-		if (destination.size_bytes() != (bytesPerRow * levelSize.y))
-		{
-			return false;
-		}
-		return SIV3D_ENGINE(Texture)->readRT(id(), destination, mipLevel);
+		return ReadRenderTexture(*this, destination, mipLevel);
 	}
 
 	bool RenderTexture::readAsImage(Image& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm)
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm)
 			|| (format() == TextureFormat::R8G8B8A8_Unorm_SRGB)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<uint8>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R8_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8_Unorm)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<uint16>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R8G8_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8_Unorm)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<HalfFloat>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<Color>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm) || (format() == TextureFormat::R8G8B8A8_Unorm_SRGB)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm) || (format() == TextureFormat::R8G8B8A8_Unorm_SRGB)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<std::pair<uint16, uint16>>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16G16_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Unorm)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<std::pair<HalfFloat, HalfFloat>>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16G16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<float>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<std::array<HalfFloat, 4>>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<Float2>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R32G32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32G32_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<Float4>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R32G32B32A32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32G32B32A32_Float)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<uint32>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16G16_Unorm) || (format() == TextureFormat::R16G16_Float) || (format() == TextureFormat::R10G10B10A2_Unorm) || (format() == TextureFormat::R11G11B10_UFloat)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Unorm) || (format() == TextureFormat::R16G16_Float) || (format() == TextureFormat::R10G10B10A2_Unorm) || (format() == TextureFormat::R11G11B10_UFloat)), mipLevel);
 	}
 
 	bool RenderTexture::read(Grid<uint64>& image, const uint32 mipLevel) const
 	{
-		return ReadPixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
 	}
 
 	RenderTexture RenderTexture::CreateR8_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)

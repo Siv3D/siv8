@@ -44,6 +44,14 @@ namespace s3d
 		[[nodiscard]]
 		virtual Texture::IDType createRender(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color) = 0;
 
+		[[nodiscard]]
+		virtual Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) = 0;
+
+		virtual void resolveMSRT(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual uint32 getSampleCount(Texture::IDType handleID) = 0;
+
 		virtual void clearRT(Texture::IDType handleID, const ColorF& color) = 0;
 
 		virtual bool readRT(Texture::IDType handleID, std::span<Byte> destination, uint32 mipLevel) = 0;

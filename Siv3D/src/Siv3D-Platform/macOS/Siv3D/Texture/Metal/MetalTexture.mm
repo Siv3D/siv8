@@ -28,10 +28,26 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	MetalTexture::MetalTexture(Render, MTL::Device* device, MTL::CommandBuffer* commands,
-		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color)
-		: m_desc{ desc, TextureType::Render, size,
-			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, format, false }
+		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+		: m_desc{ desc, ((sampleCount == 1) ? TextureType::Render : TextureType::MSRender), size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), static_cast<uint8>(sampleCount), format, false }
 	{
+		if (sampleCount > 1)
+		{
+			if (((sampleCount != 2) && (sampleCount != 4)) || not device->supportsTextureSampleCount(sampleCount))
+			{
+				return;
+			}
+			// Metal exposes the additional resolve capability separately from the sample count.
+			// https://developer.apple.com/documentation/metal/mtldevice/supports32bitmsaa
+			const bool float32 = ((format == TextureFormat::R32_Float)
+				|| (format == TextureFormat::R32G32_Float) || (format == TextureFormat::R32G32B32A32_Float));
+			if (float32 && (not device->supports32BitMSAA()
+				|| ((1 < m_desc.mipLevels) && not device->supports32BitFloatFiltering())))
+			{
+				return;
+			}
+		}
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 		auto descriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		descriptor->setTextureType(MTL::TextureType2D);
@@ -45,6 +61,18 @@ namespace s3d
 		if (not m_texture)
 		{
 			return;
+		}
+		if (sampleCount > 1)
+		{
+			descriptor->setTextureType(MTL::TextureType2DMultisample);
+			descriptor->setSampleCount(sampleCount);
+			descriptor->setMipmapLevelCount(1);
+			descriptor->setUsage(MTL::TextureUsageRenderTarget);
+			m_multiSampleTexture = NS::TransferPtr(device->newTexture(descriptor.get()));
+			if (not m_multiSampleTexture)
+			{
+				return;
+			}
 		}
 		if (not data.empty())
 		{
@@ -78,6 +106,10 @@ namespace s3d
 		else
 		{
 			clearRT(commands, color);
+			if (sampleCount > 1)
+			{
+				resolveMSRT(commands);
+			}
 			if (1 < m_desc.mipLevels)
 			{
 				generateRenderMips(commands);
@@ -88,13 +120,13 @@ namespace s3d
 
 	void MetalTexture::clearRT(MTL::CommandBuffer* commands, const ColorF& color)
 	{
-		if (m_desc.type != TextureType::Render)
+		if ((m_desc.type != TextureType::Render) && (m_desc.type != TextureType::MSRender))
 		{
 			return;
 		}
 		auto pass = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 		auto* attachment = pass->colorAttachments()->object(0);
-		attachment->setTexture(m_texture.get());
+		attachment->setTexture(m_desc.isMSAA() ? m_multiSampleTexture.get() : m_texture.get());
 		attachment->setLoadAction(MTL::LoadActionClear);
 		attachment->setStoreAction(MTL::StoreActionStore);
 		attachment->setClearColor(MTL::ClearColor{ color.r, color.g, color.b, color.a });
@@ -102,6 +134,26 @@ namespace s3d
 		if (not encoder)
 		{
 			throw InternalEngineError{ "RenderTexture::clear(): renderCommandEncoder() failed" };
+		}
+		encoder->endEncoding();
+	}
+
+	void MetalTexture::resolveMSRT(MTL::CommandBuffer* commands)
+	{
+		if (m_desc.type != TextureType::MSRender)
+		{
+			return;
+		}
+		auto pass = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+		auto* attachment = pass->colorAttachments()->object(0);
+		attachment->setTexture(m_multiSampleTexture.get());
+		attachment->setResolveTexture(m_texture.get());
+		attachment->setLoadAction(MTL::LoadActionLoad);
+		attachment->setStoreAction(MTL::StoreActionStoreAndMultisampleResolve);
+		auto* encoder = commands->renderCommandEncoder(pass.get());
+		if (not encoder)
+		{
+			throw InternalEngineError{ "MSRenderTexture::resolve(): renderCommandEncoder() failed" };
 		}
 		encoder->endEncoding();
 	}
