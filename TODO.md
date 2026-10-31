@@ -21,6 +21,12 @@
 - 四隅別角丸枠や Shape2D / Polygon 枠の LineStyle、楕円弧の矢印、LineString / 図形枠の JoinStyle は、自然な退化境界と半透明の見た目、描画の準備費用を比較する。
 - 形状生成や複合パスは、保存形状と既存の変換・点列生成で不足する具体的な用途を確認してから設計する。
 
+## NinePatch / 9-slice（RenderTexture 実装後）
+
+- RenderTexture の実装後に着手する。伸縮型 9-slice 自体に RenderTexture は必須ではないが、作業順序として後にまとめる。
+- v0.6.16 との互換性を前提にせず、[新クラスの設計候補](docs/geometry2d/proposals/drawing-extensions.md#ninepatch9-slice)から再開する。Texture / TextureRegion を使う値型、分割位置と表示時の枠倍率の分離、小さい描画先での連続した縮小を検討する。
+- 再開時に初期範囲とタイリングの採否・方式を決める。独立テクスチャへの切り出し、幾何分割、専用シェーダの準備費用・メモリ・フィルタリング品質を比較し、旧版の RenderTexture キャッシュをそのまま引き継ぐ前提にはしない。
+
 ## 2D 図形の Image 書き込み
 
 今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。
