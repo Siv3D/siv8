@@ -11,6 +11,7 @@
 # include "CircleArcArrow.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include <Siv3D/Image.hpp>
+# include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Resource.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
@@ -566,5 +567,47 @@ namespace s3d
 		}
 
 		return shadowTexture;
+	}
+
+	void ISiv3DRenderer2D::setRenderTarget(const Optional<RenderTexture>& renderTarget)
+	{
+		if (renderTarget && renderTarget->isEmpty())
+		{
+			throw Error{ "ScopedRenderTarget2D requires a non-empty RenderTexture (use none for Scene)" };
+		}
+		if (m_renderTarget == renderTarget)
+		{
+			return;
+		}
+		flush();
+		setRenderTargetState(renderTarget);
+	}
+
+	void ISiv3DRenderer2D::restoreRenderTarget(const Optional<RenderTexture>& renderTarget, const Optional<Rect>& viewport)
+	{
+		const ScopeExit restore{ [&]
+		{
+			setRenderTargetState(renderTarget);
+			setViewport(viewport);
+		} };
+		if (m_renderTarget != renderTarget)
+		{
+			flush();
+		}
+	}
+
+	void ISiv3DRenderer2D::setRenderTargetState(const Optional<RenderTexture>& renderTarget)
+	{
+		if (m_renderTarget != renderTarget)
+		{
+			m_renderTarget = renderTarget;
+			m_lastValidatedInput = Texture::IDType::Invalid();
+		}
+		setSceneScale(m_sceneScale);
+	}
+
+	void ISiv3DRenderer2D::ThrowRenderTargetFeedback()
+	{
+		throw Error{ "A RenderTexture cannot be sampled while it is the current 2D render target" };
 	}
 }

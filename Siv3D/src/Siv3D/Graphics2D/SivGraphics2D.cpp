@@ -256,20 +256,14 @@ namespace s3d
 
 		Size GetDrawingSize() noexcept
 		{
-			return Scene::Size();
+			const auto& target = SIV3D_ENGINE(Renderer2D)->getRenderTarget();
+			return target ? target->size() : Scene::Size();
 		}
 
 		Size GetRenderTargetSize() noexcept
 		{
-			// [Siv3D ToDo]
-			//if (const auto rt = SIV3D_ENGINE(Renderer2D)->getRenderTarget())
-			//{
-			//	return rt->size();
-			//}
-			//else
-			{
-				return Scene::RenderResolution();
-			}
+			const auto& target = SIV3D_ENGINE(Renderer2D)->getRenderTarget();
+			return target ? target->size() : Scene::RenderResolution();
 		}
 
 		////////////////////////////////////////////////////////////////

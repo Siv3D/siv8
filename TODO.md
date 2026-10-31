@@ -23,14 +23,13 @@
 
 ## RenderTexture / DepthTexture
 
-- 描画先切り替えを追加する。単一出力から複数の色 attachment に拡張できる内部表現、viewport・描画サイズ・Scene 解像度変換、読み書き競合、Metal のパイプラインキーを整える。[リソースの設計](docs/renderer2d/render-texture.md)を維持する。
+- Windows / D3D11 で `ScopedRenderTarget2D.*` とフルスイートを実行し、ネスト・復元、各色フォーマットの描画、Scene の MSAA・解像度変換、読み書き競合、スコープ内の読み戻し・ミップ生成を検証する。[描画先とリソースの設計](docs/renderer2d/render-texture.md)を維持する。
 - 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。
 - MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
 - `MSRenderTexture` は MSAA 用と resolve 後の単一サンプル用の色テクスチャを 2 枚内包する方針とする。深度は別に持ち、継承関係、resolve のタイミング、各操作の対象は実装前に決める。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
 
-## NinePatch / 9-slice（RenderTexture の描画先切り替え実装後）
+## NinePatch / 9-slice
 
-- RenderTexture の描画先切り替え実装後に着手する。伸縮型 9-slice 自体に RenderTexture は必須ではないが、作業順序として後にまとめる。
 - v0.6.16 との互換性を前提にせず、[新クラスの設計候補](docs/geometry2d/proposals/drawing-extensions.md#ninepatch9-slice)から再開する。Texture / TextureRegion を使う値型、分割位置と表示時の枠倍率の分離、小さい描画先での連続した縮小を検討する。
 - 再開時に初期範囲とタイリングの採否・方式を決める。独立テクスチャへの切り出し、幾何分割、専用シェーダの準備費用・メモリ・フィルタリング品質を比較し、旧版の RenderTexture キャッシュをそのまま引き継ぐ前提にはしない。
 
@@ -114,10 +113,6 @@
 | Windows / D3D11 | 全 6 設定 × API / Alt+Enter 往復・混在の目視網羅。特に Fixed / SceneSize と PixelArt の異種 DPI 移動、最大化・最小化復元。真上・真下の独立配置、全画面中の複数回モニター移動後の復帰 |
 | macOS / Metal | 異種 DPI 移動、最大化・最小化復元、全画面。実キーの Control+Command+F、メニューと緑ボタンの実クリック（緑ボタンは最大化） |
 | 両方 | OS 倍率変更、横長・縦長・シーンより小さいウィンドウへの連続リサイズ、右ドラッグ中の解像度方針切り替え |
-
-### 次の描画先実装との接続
-
-- RenderTexture の描画先切り替えを実装する際、シーン以外では解像度変換を無効化し、`Graphics2D::GetDrawingSize()` / `GetRenderTargetSize()` とカメラの既定サイズを描画先に合わせる。
 
 ## Renderer2D / Triangle・Quad の JoinStyle
 

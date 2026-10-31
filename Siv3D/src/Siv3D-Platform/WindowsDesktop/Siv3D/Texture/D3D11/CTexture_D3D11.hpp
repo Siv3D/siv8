@@ -87,6 +87,9 @@ namespace s3d
 		[[nodiscard]]
 		ID3D11ShaderResourceView** getSRVPtr(Texture::IDType handleID);
 
+		[[nodiscard]]
+		ID3D11RenderTargetView* getRTV(Texture::IDType handleID);
+
 	private:
 
 		CRenderer_D3D11* m_pRenderer = nullptr;

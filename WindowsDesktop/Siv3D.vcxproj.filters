@@ -862,6 +862,9 @@
     <Filter Include="src\Siv3D\ScopedViewport2D">
       <UniqueIdentifier>{b950ca6a-9cd6-4c7f-be49-5c5f94f8ff4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScopedRenderTarget2D">
+      <UniqueIdentifier>{ac761dc3-ed63-4df7-a60c-e3eb09f3ffac}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\ScopedQuadWarp2D">
       <UniqueIdentifier>{2EDE2464-8306-4738-BB8C-2E73699A6E87}</UniqueIdentifier>
     </Filter>
@@ -3937,6 +3940,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedViewport2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedRenderTarget2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedQuadWarp2D.hpp">
@@ -8437,6 +8443,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedViewport2D\SivScopedViewport2D.cpp">
       <Filter>src\Siv3D\ScopedViewport2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedRenderTarget2D\SivScopedRenderTarget2D.cpp">
+      <Filter>src\Siv3D\ScopedRenderTarget2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedQuadWarp2D\SivScopedQuadWarp2D.cpp">
       <Filter>src\Siv3D\ScopedQuadWarp2D</Filter>

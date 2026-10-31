@@ -82,6 +82,9 @@ namespace s3d
 		[[nodiscard]]
 		ID3D11ShaderResourceView** getSRVPtr();
 
+		[[nodiscard]]
+		ID3D11RenderTargetView* getRTV() const noexcept { return m_renderTargetView.Get(); }
+
 	private:
 
 		D3D11Texture2DDesc m_desc;

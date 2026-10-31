@@ -17,7 +17,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
-# include <Siv3D/Texture.hpp>
+# include <Siv3D/RenderTexture.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include "../Geometry2D/DashedPath.hpp"
@@ -683,6 +683,12 @@ namespace s3d
 
 		virtual void flush() = 0;
 
+		const Optional<RenderTexture>& getRenderTarget() const noexcept { return m_renderTarget; }
+
+		void setRenderTarget(const Optional<RenderTexture>& renderTarget);
+
+		void restoreRenderTarget(const Optional<RenderTexture>& renderTarget, const Optional<Rect>& viewport);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	getSceneScale, setSceneScale
@@ -857,6 +863,37 @@ namespace s3d
 
 	protected:
 
+		Optional<RenderTexture> m_renderTarget;
+
+		// Scene scale is retained while the active texture uses a 1:1 drawing scale.
+		Float2 m_sceneScale{ 1.0f, 1.0f };
+
+		// Change logical outputs here, including temporary Scene passes, to invalidate validation.
+		void setRenderTargetState(const Optional<RenderTexture>& renderTarget);
+
+		// Check before allocating geometry. Repeated inputs need no output comparison.
+		SIV3D_ALWAYS_INLINE
+		void checkRenderTargetFeedback(const Texture& texture)
+		{
+			if (not m_renderTarget)
+			{
+				return;
+			}
+			const auto inputID = texture.id();
+			if (inputID == m_lastValidatedInput)
+			{
+				return;
+			}
+			if (m_renderTarget->id() == inputID)
+			{
+				ThrowRenderTargetFeedback();
+			}
+			m_lastValidatedInput = inputID;
+		}
+
+		[[noreturn]]
+		static void ThrowRenderTargetFeedback();
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	CreateShadowTexture
@@ -867,6 +904,8 @@ namespace s3d
 		static std::unique_ptr<Texture> CreateShadowTexture();
 
 	private:
+
+		Texture::IDType m_lastValidatedInput = Texture::IDType::Invalid();
 
 		detail::DashedPath::Workspace m_dashedPath;
 

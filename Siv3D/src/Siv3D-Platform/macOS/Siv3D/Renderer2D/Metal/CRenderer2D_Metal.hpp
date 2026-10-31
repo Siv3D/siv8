@@ -540,7 +540,11 @@ namespace s3d
 
 		Float2 getSceneScale() const noexcept override { return m_commandManager.getSceneScale(); }
 
-		void setSceneScale(Float2 scale) override { m_commandManager.setSceneScale(scale); }
+		void setSceneScale(Float2 scale) override
+		{
+			m_sceneScale = scale;
+			m_commandManager.setSceneScale(m_renderTarget ? Float2{ 1.0f, 1.0f } : scale);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

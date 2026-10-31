@@ -988,6 +988,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -996,6 +997,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1010,6 +1012,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, uv, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1018,6 +1021,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, uv, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1032,6 +1036,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedCirclePie(const Texture& texture, const Float2& center, const float r, const float startAngle, const float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, uv, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1046,6 +1051,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, w, h, r, uvRect, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1054,6 +1060,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, w, h, r, uvRect, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1118,6 +1125,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addMesh2D(const Texture& texture, const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices, const Optional<Float2>& offset)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, indices, offset))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1164,6 +1172,16 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush(const bool finalScenePass)
 	{
+		// A scope may span System::Update(). Present still needs a completed Scene.
+		if (finalScenePass && m_renderTarget)
+		{
+			flush(false);
+			const auto target = m_renderTarget;
+			const ScopeExit restore{ [&] { setRenderTargetState(target); } };
+			setRenderTargetState(none);
+			flush(true);
+			return;
+		}
 		ScopeExit cleanUp = [this]()
 		{
 			// 成否にかかわらず、この実行のコマンドと対応するインデックス区間を消費する。
@@ -1189,19 +1207,23 @@ namespace s3d
 		m_commandManager.flush();
 
 		// 描画がなくても、そのシーンの最初のパスでは背景をクリアする。
-		if (m_scenePassStarted && not m_commandManager.hasDraws())
+		if ((m_renderTarget || m_scenePassStarted) && not m_commandManager.hasDraws())
 		{
 			return;
 		}
 		
-		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		const Size currentRenderTargetSize = m_renderTarget ? m_renderTarget->size() : m_pRenderer->getSceneBufferSize();
 		const Float2 sceneScale = m_commandManager.getSceneScale();
 
 		// Draw2D
 		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 		MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
 		
-		if (m_pRenderer->getSceneSampleCount() == 1)
+		if (m_renderTarget)
+		{
+			cd->setTexture(m_pTexture->getTexture(m_renderTarget->id()));
+		}
+		else if (m_pRenderer->getSceneSampleCount() == 1)
 		{
 			cd->setTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
 		}
@@ -1211,10 +1233,10 @@ namespace s3d
 			cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
 		}
 
-		cd->setLoadAction(m_scenePassStarted ? MTL::LoadActionLoad : MTL::LoadActionClear);
+		cd->setLoadAction((m_renderTarget || m_scenePassStarted) ? MTL::LoadActionLoad : MTL::LoadActionClear);
 		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().getFrameBackgroundColor();
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore
+		cd->setStoreAction((m_renderTarget || (m_pRenderer->getSceneSampleCount() == 1)) ? MTL::StoreActionStore
 			: (finalScenePass ? MTL::StoreActionMultisampleResolve : MTL::StoreActionStoreAndMultisampleResolve));
 		
 		LOG_COMMAND("----");
@@ -1227,7 +1249,7 @@ namespace s3d
 			{
 				throw InternalEngineError{ "MTL::CommandBuffer::renderCommandEncoder() failed" };
 			}
-			m_scenePassStarted = true;
+			if (not m_renderTarget) { m_scenePassStarted = true; }
 			// パイプライン生成などで例外が発生した場合もエンコードを終了する。
 			const ScopeExit endEncoding{ [renderCommandEncoder]() noexcept
 			{
@@ -1238,8 +1260,8 @@ namespace s3d
 			{
 				.vs = m_engineShader.vsShape,
 				.ps = m_engineShader.psShape,
-				.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
-				.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
+				.pixelFormat = static_cast<uint16>(cd->texture()->pixelFormat()),
+				.sampleCount = static_cast<uint16>(cd->texture()->sampleCount()),
 				.blendState = BlendState::Default2D,
 			};
 			

@@ -92,6 +92,7 @@
 		A5D4F65130A6000000000001 /* Mesh3DPlacement.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */; };
+		4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
 		AC39F10246D748B290BDF001 /* Weave.hpp in Headers */ = {isa = PBXBuildFile; fileRef = AC39F10246D748B290BDF002 /* Weave.hpp */; };
 		B26BDF0C4E985B554301C746 /* Mesh3DGenerators.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B0A9E90C38E2B9E965CA76FA /* Mesh3DGenerators.hpp */; };
@@ -1234,7 +1235,9 @@
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
 		F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */; };
+		43DB23E82C134CEB8BFE0036 /* ScopedRenderTarget2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1F45C499509B44CD94B870AB /* ScopedRenderTarget2D.hpp */; };
 		F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */; };
+		7EA11F6E01DE4FC5A0EE58D6 /* SivScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE6788E51A13496EBE62ACF9 /* SivScopedRenderTarget2D.cpp */; };
 		F9712A392C2572C60049CC26 /* ScopedColorAdd2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */; };
 		F9712A3A2C2572C60049CC26 /* ScopedColorMul2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */; };
 		F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */; };
@@ -3437,6 +3440,7 @@
 		F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */; };
 		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		8E7B8A80CDF64F0D9D0319EE /* Test_WindowFullscreen_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		09CB2E4082514F06BDDADF82 /* RectCornerGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3D79CB30272E4255B928E32E /* RectCornerGeometry.hpp */; };
@@ -3566,6 +3570,7 @@
 		A5D4F66130A6000000000002 /* Mesh3DLoftExamples.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DLoftExamples.hpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTexture.cpp; sourceTree = "<group>"; };
+		7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalShader.cpp; sourceTree = "<group>"; };
 		AC39F10246D748B290BDF002 /* Weave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Weave.hpp; sourceTree = "<group>"; };
 		AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CursorTransform.cpp; sourceTree = "<group>"; };
@@ -4773,7 +4778,9 @@
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
 		F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedViewport2D.hpp; sourceTree = "<group>"; };
+		1F45C499509B44CD94B870AB /* ScopedRenderTarget2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedRenderTarget2D.hpp; sourceTree = "<group>"; };
 		F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedViewport2D.cpp; sourceTree = "<group>"; };
+		AE6788E51A13496EBE62ACF9 /* SivScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedColorAdd2D.hpp; sourceTree = "<group>"; };
 		F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedColorMul2D.hpp; sourceTree = "<group>"; };
 		F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedColorAdd2D.cpp; sourceTree = "<group>"; };
@@ -7033,6 +7040,7 @@
 		983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTextureAllocationFailure.hpp; sourceTree = "<group>"; };
 		2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_SceneAllocationFailure.cpp; sourceTree = "<group>"; };
 		5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderTexture.cpp; sourceTree = "<group>"; };
+		8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper.hpp; sourceTree = "<group>"; };
 		7CDE7269E28444E49FA889E2 /* WindowFullscreenTestHelper_Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_Windows.hpp; sourceTree = "<group>"; };
 		0E2FBD7EBF3143538B3A9BD6 /* WindowFullscreenTestHelper_macOS.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_macOS.hpp; sourceTree = "<group>"; };
@@ -7364,6 +7372,7 @@
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
 				2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */,
+				7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
 				AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
@@ -7534,6 +7543,7 @@
 				BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */,
 				2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */,
 				5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */,
+				8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */,
 				983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */,
 				A5D4F61430A6000000000002 /* Mesh3DAssemblyExamples.hpp */,
 				10054A3EC0A44694AD05344E /* Siv3DTestFramework.hpp */,
@@ -8480,6 +8490,7 @@
 				F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */,
 				F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */,
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
+				1F45C499509B44CD94B870AB /* ScopedRenderTarget2D.hpp */,
 				46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
@@ -9316,6 +9327,7 @@
 				F9712A442C25991C0049CC26 /* ScopedRenderStates2D */,
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
+				E5C87E8E731C4E70B58F1276 /* ScopedRenderTarget2D */,
 				1BE1135F07680679E7EFCA57 /* ScopedQuadWarp2D */,
 				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
 				F99881A92F5587F800C8991D /* Serial */,
@@ -10962,6 +10974,14 @@
 				F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */,
 			);
 			path = ScopedViewport2D;
+			sourceTree = "<group>";
+		};
+		E5C87E8E731C4E70B58F1276 /* ScopedRenderTarget2D */ = {
+			isa = PBXGroup;
+			children = (
+				AE6788E51A13496EBE62ACF9 /* SivScopedRenderTarget2D.cpp */,
+			);
+			path = ScopedRenderTarget2D;
 			sourceTree = "<group>";
 		};
 		F9712A3C2C2572DF0049CC26 /* ScopedColorAdd2D */ = {
@@ -15549,6 +15569,7 @@
 				F933ACFA2E54A2BA005624D7 /* MSDFGlyph.hpp in Headers */,
 				F95122542CB8239800151291 /* ClosedLineString.hpp in Headers */,
 				F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */,
+				43DB23E82C134CEB8BFE0036 /* ScopedRenderTarget2D.hpp in Headers */,
 				37C087F1A38D0BB48EB7A454 /* ScopedQuadWarp2D.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F980C4AC2C0F6DFB00A86B68 /* PipelineStateDesc.hpp in Headers */,
@@ -17188,6 +17209,7 @@
 				EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */,
 				8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */,
 				04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */,
+				F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */,
 				ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */,
 				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,
 				B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */,
@@ -17363,6 +17385,7 @@
 				F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */,
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
 				C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */,
+				4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
 				422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
@@ -17452,6 +17475,7 @@
 				F980C49F2C04B6DB00A86B68 /* Renderer2DFactory.mm in Sources */,
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
 				F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */,
+				7EA11F6E01DE4FC5A0EE58D6 /* SivScopedRenderTarget2D.cpp in Sources */,
 				5D3C73CCA8DC9C9997D36362 /* SivScopedQuadWarp2D.cpp in Sources */,
 				F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */,
 				F95122532CB8239800151291 /* ClosedLineString.cpp in Sources */,

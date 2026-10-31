@@ -1002,6 +1002,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1010,6 +1011,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, colors))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1024,6 +1026,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, uv, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1032,6 +1035,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, uv, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1046,6 +1050,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedCirclePie(const Texture& texture, const Float2& center, const float r, const float startAngle, const float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, uv, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1060,6 +1065,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, uvRect, color, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1068,6 +1074,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, uvRect, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1132,6 +1139,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addMesh2D(const Texture& texture, const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices, const Optional<Float2>& offset)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, indices, offset))
 		{
 			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
@@ -1175,6 +1183,11 @@ namespace s3d
 	{
 		ScopeExit cleanUp = [this]()
 		{
+			// End the native pass before clear/readback/mip generation or a new target.
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, Graphics::TextureSlotCount> empty{};
+			m_context->VSSetShaderResources(0, Graphics::TextureSlotCount, empty.data());
+			m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, empty.data());
 			m_vertexBufferManager2D.reset();
 			m_commandManager.reset();
 			// 次の実行でもカスタムシェーダを適用する。論理設定は変更しない。
@@ -1211,14 +1224,26 @@ namespace s3d
 		m_context->VSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, vsBuffers.data());
 		m_context->PSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, psBuffers.data());
 
-		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		const Size currentRenderTargetSize = m_renderTarget ? m_renderTarget->size() : m_pRenderer->getSceneBufferSize();
 		const Float2 sceneScale = m_commandManager.getSceneScale();
 		{
 			const D3D11_VIEWPORT viewport = MakeViewport(Point{ 0, 0 }, currentRenderTargetSize);
 			m_context->RSSetViewports(1, &viewport);
 		}
 
-		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
+		// A previous renderer may have left a shader view of this output bound.
+		const std::array<ID3D11ShaderResourceView*, Graphics::TextureSlotCount> emptyTextures{};
+		m_context->VSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
+		m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
+		if (m_renderTarget)
+		{
+			ID3D11RenderTargetView* target = m_pTexture->getRTV(m_renderTarget->id());
+			m_context->OMSetRenderTargets(1, &target, nullptr);
+		}
+		else
+		{
+			m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
+		}
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 
 		LOG_COMMAND("----");
