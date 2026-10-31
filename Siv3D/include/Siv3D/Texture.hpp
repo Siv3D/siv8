@@ -559,6 +559,29 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawCover
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor texture_draw_cover
+		/// @brief 縦横比を保って矩形全体を覆うように拡大縮小し、中央を残して描画します。
+		/// @param rect 描画先の矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return rect。描画しない場合は rect.pos を左上とする幅・高さ 0 の矩形
+		/// @remark はみ出す部分は切り落とします。rect は draw() と同じ変換前の座標系で指定し、切り抜き後の矩形に描画時の座標変換が適用されます。
+		/// @remark 描画元の幅または高さが 0、または rect の幅または高さが 0 以下の場合は描画しません。
+		RectF drawCover(const RectF& rect, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 縦横比を保って矩形全体を覆うように拡大縮小し、指定した基準位置を残して描画します。
+		/// @param rect 描画先の矩形
+		/// @param anchor 切り抜き後の画像で残す基準位置。TopCenter は上端中央、Center は中央、BottomRight は右下を揃えます。
+		/// @param diffuse 描画時に乗算する色
+		/// @return rect。描画しない場合は rect.pos を左上とする幅・高さ 0 の矩形
+		/// @see @ref texture_draw_cover "座標系と空の領域の扱い"
+		RectF drawCover(const RectF& rect, Anchor anchor, const ColorF& diffuse = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawClipped
 		//
 		////////////////////////////////////////////////////////////////

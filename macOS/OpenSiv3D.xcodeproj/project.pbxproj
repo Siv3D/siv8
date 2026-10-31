@@ -111,6 +111,7 @@
 		AD63742CA134471B986CCA01 /* Test_Renderer2DSuperEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */; };
 		CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */; };
 		81D90EE60697402B9622ED46 /* Test_TextureClipping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */; };
+		3121ACF1D8934017B88C4F43 /* Test_TextureCover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */; };
 		F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */; };
 		04A84050C9B241449E42C40D /* Test_Renderer2DTexturedRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */; };
 		E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */; };
@@ -3106,6 +3107,7 @@
 		F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */; };
 		F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */; };
 		135E8897E5F7441D819D2797 /* TextureClipping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6187551EFA664002A66C4C48 /* TextureClipping.hpp */; };
+		DE6F9AB046BE42888BACA305 /* TextureCover.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EFF66C946385440E9F562118 /* TextureCover.hpp */; };
 		F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */; };
 		F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */; };
 		F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */; };
@@ -3577,6 +3579,7 @@
 		AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DSuperEllipse.cpp; sourceTree = "<group>"; };
 		CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DArcTessellation.cpp; sourceTree = "<group>"; };
 		CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureClipping.cpp; sourceTree = "<group>"; };
+		E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureCover.cpp; sourceTree = "<group>"; };
 		F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTexturedCircle.cpp; sourceTree = "<group>"; };
 		FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTexturedRoundRect.cpp; sourceTree = "<group>"; };
 		E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleArc.cpp; sourceTree = "<group>"; };
@@ -6684,6 +6687,7 @@
 		F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderGroup.hpp; sourceTree = "<group>"; };
 		F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DynamicTexture.hpp; sourceTree = "<group>"; };
 		6187551EFA664002A66C4C48 /* TextureClipping.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureClipping.hpp; sourceTree = "<group>"; };
+		EFF66C946385440E9F562118 /* TextureCover.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureCover.hpp; sourceTree = "<group>"; };
 		F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureUtility.hpp; sourceTree = "<group>"; };
 		F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtility.cpp; sourceTree = "<group>"; };
 		F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDynamicTexture.cpp; sourceTree = "<group>"; };
@@ -7454,6 +7458,7 @@
 				AD63742CA134471B986CCA02 /* Test_Renderer2DSuperEllipse.cpp */,
 				CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */,
 				CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */,
+				E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */,
 				F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */,
 				FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */,
 				E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */,
@@ -9592,6 +9597,7 @@
 				F90DA0562D1A91D90003E1E8 /* ITexture.hpp */,
 				F90DA0572D1A91D90003E1E8 /* SivTexture.cpp */,
 				6187551EFA664002A66C4C48 /* TextureClipping.hpp */,
+				EFF66C946385440E9F562118 /* TextureCover.hpp */,
 				F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */,
 				F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */,
 			);
@@ -15636,6 +15642,7 @@
 				F9E7946D2C19B6F2002615BA /* MinMax.ipp in Headers */,
 				F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */,
 				135E8897E5F7441D819D2797 /* TextureClipping.hpp in Headers */,
+				DE6F9AB046BE42888BACA305 /* TextureCover.hpp in Headers */,
 				F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
 				F986FA6D2BCFB53B006A4C0F /* sfnt.h in Headers */,
@@ -17184,6 +17191,7 @@
 				AD63742CA134471B986CCA01 /* Test_Renderer2DSuperEllipse.cpp in Sources */,
 				CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */,
 				81D90EE60697402B9622ED46 /* Test_TextureClipping.cpp in Sources */,
+				3121ACF1D8934017B88C4F43 /* Test_TextureCover.cpp in Sources */,
 				F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */,
 				04A84050C9B241449E42C40D /* Test_Renderer2DTexturedRoundRect.cpp in Sources */,
 				E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */,

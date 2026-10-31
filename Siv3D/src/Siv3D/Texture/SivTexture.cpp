@@ -23,6 +23,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "TextureUtility.hpp"
 # include "TextureClipping.hpp"
+# include "TextureCover.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS)
 #	include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
@@ -512,6 +513,23 @@ namespace s3d
 	{
 		const Vec2 topLeft = pos.movedBy(size() * -0.5);
 		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawCover
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawCover(const RectF& rect, const ColorF& diffuse) const
+	{
+		return drawCover(rect, Anchor::Center, diffuse);
+	}
+
+	RectF Texture::drawCover(const RectF& rect, const Anchor anchor, const ColorF& diffuse) const
+	{
+		const Size baseSize = size();
+		return detail::DrawTextureCover(*this, baseSize.x, baseSize.y, FloatRect{ 0, 0, 1, 1 }, rect, anchor, diffuse);
 	}
 
 	////////////////////////////////////////////////////////////////

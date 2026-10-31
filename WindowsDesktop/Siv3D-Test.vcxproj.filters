@@ -340,6 +340,9 @@
     <ClCompile Include="..\Test\Test_TextureClipping.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureCover.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp">
       <Filter>Test</Filter>
     </ClCompile>

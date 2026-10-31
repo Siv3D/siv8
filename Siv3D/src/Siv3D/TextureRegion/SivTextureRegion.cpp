@@ -14,6 +14,7 @@
 # include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/TextureClipping.hpp>
+# include <Siv3D/Texture/TextureCover.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -338,6 +339,22 @@ namespace s3d
 	RectF TextureRegion::drawAt(const Vec2& pos, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
 	{
 		return draw((pos.x - size.x * 0.5), (pos.y - size.y * 0.5), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawCover
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF TextureRegion::drawCover(const RectF& rect, const ColorF& diffuse) const
+	{
+		return drawCover(rect, Anchor::Center, diffuse);
+	}
+
+	RectF TextureRegion::drawCover(const RectF& rect, const Anchor anchor, const ColorF& diffuse) const
+	{
+		return detail::DrawTextureCover(texture, size.x, size.y, uvRect, rect, anchor, diffuse);
 	}
 
 	////////////////////////////////////////////////////////////////

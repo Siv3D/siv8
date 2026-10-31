@@ -23,6 +23,35 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
   fullscreen presentation, scene sizing, resolution scaling, background timing,
   and validation.
 
+## Covering a rectangle with a texture
+
+`Texture::drawCover()` and `TextureRegion::drawCover()` preserve the source's
+aspect ratio while filling a destination rectangle and cropping the excess.
+The default keeps the center; an `Anchor` chooses which image edge to retain:
+
+```cpp
+const RectF card{ 40, 40, 240, 160 };
+texture.drawCover(card);
+texture.drawCover(card, Anchor::TopCenter, ColorF{ 1.0, 0.75 });
+texture(32, 16, 128, 96).mirrored().drawCover(card, Anchor::MiddleRight);
+```
+
+Use `fitted()` to show the entire image inside a size, or `drawCover()` to fill
+the entire rectangle. A TextureRegion uses its current drawing size for the
+aspect ratio, so a prior nonuniform resize is preserved. Anchors refer to the
+visible image after any UV or signed-size reflection. The
+[public contract](../../Siv3D/include/Siv3D/Texture.hpp) defines empty destinations
+and source sizes. Drawing transforms apply to the destination and image together.
+
+The shared CPU helper crops one UV axis and submits one ordinary textured quad.
+It does not create an intermediate TextureRegion or change scissor, viewport,
+or sampler state. Existing vertex generation and upload paths are unchanged.
+[Test_TextureCover.cpp](../../Test/Test_TextureCover.cpp) compares GPU captures
+with independently selected source regions, covering all overloads and anchors,
+both crop axes, equal aspect ratios, up/downscaling, partial and reflected UVs,
+resized and signed source sizes, empty regions, tint and texture alpha,
+transforms, scene render resolution, and existing drawing state.
+
 ## Clipping textures in drawing coordinates
 
 `Texture::drawClipped()` and `TextureRegion::drawClipped()` restrict one image to
