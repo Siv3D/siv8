@@ -20,8 +20,8 @@ namespace
 		Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 		ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-		ScopedColorMul2D colorMul{ Palette::White };
-		ScopedColorAdd2D colorAdd{ 0.0 };
+		ScopedColorMul2D colorMul{ Palette::White, ScopedColorMul2D::Target::Set };
+		ScopedColorAdd2D colorAdd{ 0.0, ScopedColorAdd2D::Target::Set };
 		ScopedRenderStates2D states{ BlendState::Default2D };
 		ScopedViewport2D viewport{ none };
 		ScopedScissorRect2D scissor{ none };

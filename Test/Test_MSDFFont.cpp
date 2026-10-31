@@ -37,8 +37,8 @@ namespace
 		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 		const ScopedViewport2D viewport{ none };
 		const ScopedScissorRect2D scissor{ none };
-		const ScopedColorMul2D mul{ ColorF{ 0.8, 0.6, 0.9, 0.75 } };
-		const ScopedColorAdd2D add{ ColorF{ 0.1, -0.05, 0.15 } };
+		const ScopedColorMul2D mul{ ColorF{ 0.8, 0.6, 0.9, 0.75 }, ScopedColorMul2D::Target::Set };
+		const ScopedColorAdd2D add{ ColorF{ 0.1, -0.05, 0.15 }, ScopedColorAdd2D::Target::Set };
 		const ScopedRenderStates2D states{ BlendState::Default2D, RasterizerState::Default2D, SamplerState::ClampLinear };
 		REQUIRE(System::Update());
 		draw();

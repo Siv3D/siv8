@@ -159,6 +159,7 @@
     <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
     <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
+    <ClCompile Include="..\Test\Test_ScopedColor2D.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
     <ClCompile Include="..\Test\Test_SceneHighResolution.cpp" />
     <ClCompile Include="..\Test\Test_SceneConfig.cpp" />

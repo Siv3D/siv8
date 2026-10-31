@@ -23,8 +23,8 @@ namespace
 		Scene::SetBackground(Palette::Black);
 		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-		const ScopedColorMul2D mul{ Palette::White };
-		const ScopedColorAdd2D add{ 0.0 };
+		const ScopedColorMul2D mul{ Palette::White, ScopedColorMul2D::Target::Set };
+		const ScopedColorAdd2D add{ 0.0, ScopedColorAdd2D::Target::Set };
 		REQUIRE(System::Update());
 		draw();
 		ScreenCapture::RequestCurrentFrame();

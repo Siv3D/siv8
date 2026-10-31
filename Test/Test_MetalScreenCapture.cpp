@@ -28,8 +28,8 @@ namespace s3d
 			const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 			const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 			const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-			const ScopedColorMul2D colorMul{ Palette::White };
-			const ScopedColorAdd2D colorAdd{ 0.0 };
+			const ScopedColorMul2D colorMul{ Palette::White, ScopedColorMul2D::Target::Set };
+			const ScopedColorAdd2D colorAdd{ 0.0, ScopedColorAdd2D::Target::Set };
 			const ScopedViewport2D viewport{ none };
 			const ScopedScissorRect2D scissor{ none };
 			const ScopedRenderStates2D states{ BlendState::Opaque, RasterizerState::Default2D };

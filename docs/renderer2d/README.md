@@ -11,6 +11,9 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
 - [Scoped projective drawing](quad-warp.md): transform scopes, homography generation,
   custom VS layout, and migration from dedicated texture warping.
 
+- [Scoped color multiplication and addition](color-scopes.md): independent Push
+  accumulation, explicit Set, PMA behavior, and migration from v0.6.
+
 - [Triangle and Quad GPU joins](gpu-joins.md): direct mesh eligibility, alpha
   coverage, compatibility, tests, and CPU benchmarks.
 

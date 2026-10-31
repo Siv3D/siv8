@@ -24,8 +24,8 @@ namespace
 		Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 		ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-		ScopedColorMul2D mul{ Palette::White };
-		ScopedColorAdd2D add{ 0.0 };
+		ScopedColorMul2D mul{ Palette::White, ScopedColorMul2D::Target::Set };
+		ScopedColorAdd2D add{ 0.0, ScopedColorAdd2D::Target::Set };
 # if SIV3D_PLATFORM(MACOS)
 		pthread_override_t qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
 # endif

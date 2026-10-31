@@ -44,8 +44,8 @@ namespace
 		ColorF background = Scene::GetBackground();
 		Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-		ScopedColorMul2D mul{ Palette::White };
-		ScopedColorAdd2D add{ 0.0 };
+		ScopedColorMul2D mul{ Palette::White, ScopedColorMul2D::Target::Set };
+		ScopedColorAdd2D add{ 0.0, ScopedColorAdd2D::Target::Set };
 		ScopedRenderStates2D blend{ BlendState::Default2D };
 
 		std::array<std::array<uint32, Graphics::ConstantBufferSlotCount>, 2> previous{};
