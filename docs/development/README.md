@@ -356,12 +356,19 @@ For a Debug failure, use `Debug` consistently for the rebuild and runner.
 source or build settings have changed. These manual MSBuild commands do not acquire
 the runner's lock; never run them concurrently with another build or test session.
 
-If a `C1001` diagnostic identifies `HostX86/x64/CL.exe`, try the matching clean
+If a `C1001` diagnostic identifies the compiler under `HostX86/x64/`
+(`CL.exe` or `c2.dll` during code generation), try the matching clean
 rebuild above with `/p:PreferredToolArchitecture=x64` to select the 64-bit host
 compiler. Keep the same target, toolset, configuration, and optimization settings.
 Preserve both build logs and run the full suite after a successful rebuild.
 Changing the host compiler and regenerating build artifacts together does not
 isolate which change avoided the failure.
+
+Use `-SkipBuild` for subsequent runner invocations while the sources and build
+settings remain unchanged. The runner does not forward `PreferredToolArchitecture`;
+omitting `-SkipBuild` can switch back to the default host compiler and rebuild
+the application. After a source change, build explicitly with the same host
+compiler choice before using `-SkipBuild` again.
 
 If MSBuild itself exits with an access violation before producing compiler
 diagnostics, preserve its log and the Windows Application error events separately

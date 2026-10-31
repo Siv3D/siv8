@@ -23,7 +23,6 @@
 
 ## RenderTexture / DepthTexture
 
-- Windows / D3D11 で `RenderTexture.*` とフルスイートを実行し、各フォーマットの生成・クリア・ミップ生成・読み戻し、sRGB、同一フレーム内の順序を検証する。macOS でのプロジェクト登録確認とは区別する。
 - 描画先切り替えを追加する。単一出力から複数の色 attachment に拡張できる内部表現、viewport・描画サイズ・Scene 解像度変換、読み書き競合、Metal のパイプラインキーを整える。[リソースの設計](docs/renderer2d/render-texture.md)を維持する。
 - 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。
 - MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
@@ -125,10 +124,6 @@
 - Windows / D3D11 で [手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。
 - 凹形状・自己交差・内側輪郭の消失は Boost の topology 処理に残す。内外幅指定では領域の intersection / difference / union も含む。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
 - 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
-
-## Renderer2D / MSDF の乗算カラー
-
-- Windows で更新済み HLSL を `CEngineShader_D3D11::init` の起動時コンパイルに通し、`WindowsDesktop/App/engine/shader/d3d11/` の `msdffont_outline.ps`、`msdffont_shadow.ps`、`msdffont_outline_shadow.ps` を再生成する。対応するエントリポイントは `PS_MSDFFont_Outline`、`PS_MSDFFont_Shadow`、`PS_MSDFFont_OutlineShadow`。`MSDFFont*` と `ScopedColor2D.*` の描画・状態テストおよび Windows 全テストを実行する。仕様と検証内容は [MSDF フォント描画](docs/renderer2d/msdf-font.md) を参照。
 
 ## Renderer2D / 組み込みシェーダ最適化
 
