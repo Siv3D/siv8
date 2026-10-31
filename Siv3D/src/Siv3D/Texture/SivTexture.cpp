@@ -22,6 +22,7 @@
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "TextureUtility.hpp"
+# include "TextureClipping.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS)
 #	include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
@@ -511,6 +512,41 @@ namespace s3d
 	{
 		const Vec2 topLeft = pos.movedBy(size() * -0.5);
 		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawClipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawClipped(const double x, const double y, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		return detail::DrawTextureClipped(*this, x, y, size.x, size.y, FloatRect{ 0, 0, 1, 1 }, clipRect, diffuse);
+	}
+
+	RectF Texture::drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		return drawClipped(pos.x, pos.y, clipRect, diffuse);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawAtClipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawAtClipped(const double x, const double y, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		return detail::DrawTextureClipped(*this, (x - size.x * 0.5), (y - size.y * 0.5),
+			size.x, size.y, FloatRect{ 0, 0, 1, 1 }, clipRect, diffuse);
+	}
+
+	RectF Texture::drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		return drawAtClipped(pos.x, pos.y, clipRect, diffuse);
 	}
 
 	////////////////////////////////////////////////////////////////

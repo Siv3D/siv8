@@ -340,9 +340,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//RectF drawClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置に部分テクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @remark 負の描画サイズは draw() と同じ向きで描画します。
+		/// @param x 部分テクスチャの描画起点の X 座標
+		/// @param y 部分テクスチャの描画起点の Y 座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
-		//RectF drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置に部分テクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param pos 部分テクスチャの描画起点の座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -350,9 +364,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//RectF drawAtClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置を中心に部分テクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param x 部分テクスチャの中心を配置する X 座標
+		/// @param y 部分テクスチャの中心を配置する Y 座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawAtClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
-		//RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置を中心に部分テクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param pos 部分テクスチャの中心を配置する座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

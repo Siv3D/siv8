@@ -20,6 +20,36 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
   fullscreen presentation, scene sizing, resolution scaling, background timing,
   and validation.
 
+## Clipping textures in drawing coordinates
+
+`Texture::drawClipped()` and `TextureRegion::drawClipped()` restrict one image to
+a rectangle in the same coordinates as its drawing position. `drawAtClipped()`
+places the center of the original image before clipping. For example, an image
+can slide through a fixed opening:
+
+```cpp
+const RectF opening{ 100, 80, 240, 160 };
+texture.resized(320, 240).drawAtClipped(Vec2{ 220, 160 }, opening);
+```
+
+Local, camera, and projective transforms apply to the clipped geometry together.
+Scene render resolution and presentation scaling therefore need no conversion of
+`opening` into render-target pixels. A rotated drawing coordinate system also
+rotates the opening; it does not keep a screen-aligned clip rectangle. Use
+`ScopedScissorRect2D` when a clip in render-target pixels is desired instead.
+
+The [public contract](../../Siv3D/include/Siv3D/Texture.hpp) defines the returned
+region and empty cases. Cropped, resized, mirrored, and flipped texture regions
+retain their UV mapping. The shared CPU helper computes the clipped rectangle
+and UVs and submits one ordinary textured quad, without changing renderer state
+or creating another texture handle.
+
+[Test_TextureClipping.cpp](../../Test/Test_TextureClipping.cpp) compares GPU
+captures against scissored ordinary draws at matching pixel coordinates and
+independently cropped textures under drawing transforms. It covers all public
+overloads, boundaries, zero and signed drawing sizes, UV flips, tint and texture
+alpha, fractional clipping, scene render resolution, and existing scissor state.
+
 ## Textured circles
 
 [TexturedCircle](../../Siv3D/include/Siv3D/TexturedCircle.hpp) supports center-to-edge,
