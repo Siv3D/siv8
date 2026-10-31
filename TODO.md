@@ -23,7 +23,6 @@
 
 ## RenderTexture / DepthTexture
 
-- Windows / D3D11 で `ScopedRenderTarget2D.*` とフルスイートを実行し、ネスト・復元、各色フォーマットの描画、Scene の MSAA・解像度変換、読み書き競合、スコープ内の読み戻し・ミップ生成を検証する。[描画先とリソースの設計](docs/renderer2d/render-texture.md)を維持する。
 - 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。
 - MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
 - `MSRenderTexture` は MSAA 用と resolve 後の単一サンプル用の色テクスチャを 2 枚内包する方針とする。深度は別に持ち、継承関係、resolve のタイミング、各操作の対象は実装前に決める。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
