@@ -10,8 +10,10 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include "../Siv3D/src/Siv3D/Engine/Siv3DEngine.hpp"
 # include "../Siv3D/src/Siv3D/EngineShader/IEngineShader.hpp"
+# include "../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
@@ -112,6 +114,140 @@ TEST_CASE("MSDFFont.atlas_dimensions")
 				}
 				CHECK(differences == 0);
 				CHECK(visiblePixels > 100);
+			}
+		}
+	}
+}
+
+TEST_CASE("MSDFFont.scoped_color_mul_styles")
+{
+	// Style PMA colors and the straight scoped multiplier retain separate shader constants.
+	static_assert(sizeof(PSConstants2D) == 80);
+	static_assert(offsetof(PSConstants2D, patternBackgroundColorMul) == 0);
+	static_assert(offsetof(PSConstants2D, sdfOuterColorPMA) == 48);
+	static_assert(offsetof(PSConstants2D, sdfShadowColorPMA) == 64);
+	using Mul = ScopedColorMul2D;
+	using Add = ScopedColorAdd2D;
+	const Font font{ FontMethod::MSDF, 48, 8 };
+	REQUIRE(font);
+	const SceneConfig oldConfig = Scene::GetConfig();
+	const ScopeExit restoreScene{ [&] { Scene::Configure(oldConfig); } };
+	Scene::Configure(SceneConfig::Fixed({ 720, 440 }, SceneResolution::SceneSize));
+	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
+	const ColorF textColor{ 0.75, 0.5, 0.25, 0.625 };
+	const ColorF outerColor{ 0.75, 0.5, 1.0, 0.5 };
+	const auto style = [](const int32 variant, const ColorF& tint)
+	{
+		const ColorF outline = (ColorF{ 0.75, 0.25, 0.5, 0.75 } * tint);
+		const ColorF shadow = (ColorF{ 0.25, 0.75, 1.0, 0.5 } * tint);
+		switch (variant)
+		{
+		case 0: return TextStyle::Outline(0.2, outline);
+		case 1: return TextStyle::Shadow(Vec2{ 4, 3 }, shadow);
+		default: return TextStyle::OutlineShadow(0.2, outline, Vec2{ 4, 3 }, shadow);
+		}
+	};
+	const auto draw = [&](const int32 column, const int32 row, const int32 variant, const ColorF& tint)
+	{
+		// The reference bakes tint into straight colors before TextStyle creates PMA.
+		font(U"A").draw(style(variant, tint), Vec2{ 20 + column * 85, 20 + row * 100 }, textColor * tint);
+	};
+	const auto capture = [&](auto render, const Float3& add)
+	{
+		return CaptureMSDFDraw([&]
+		{
+			const Mul resetMul{ 1.0, Mul::Target::Set };
+			const Add resetAdd{ add, Add::Target::Set };
+			render();
+		});
+	};
+	const std::array effective{
+		ColorF{ 1.0 }, outerColor, outerColor * ColorF{ 1.0, 0.5 }, outerColor * ColorF{ 1.0, 0.0 },
+		outerColor * ColorF{ 1.0, 0.5 }, ColorF{ 1.0 }, outerColor, ColorF{ 1.0 } };
+	for (const Float3 add : { Float3{ 0, 0, 0 }, Float3{ 0.125f, -0.0625f, 0.25f } })
+	{
+		INFO("ColorAdd = " << add);
+		const Image reference = capture([&]
+		{
+			for (int32 row = 0; row < 3; ++row)
+			{
+				for (int32 column = 0; column < 8; ++column)
+				{
+					draw(column, row, row, effective[column]);
+				}
+			}
+			for (int32 column = 0; column < 8; ++column)
+			{
+				draw(column, 3, (column % 3), outerColor);
+			}
+		}, add);
+		REQUIRE(reference.size() == Size{ 720, 440 });
+		for (int32 row = 0; row < 3; ++row)
+		{
+			int32 visible = 0;
+			int32 transparentDifferences = 0;
+			for (int32 y = (20 + row * 100); y < (110 + row * 100); ++y)
+			{
+				for (int32 x = 10; x < 90; ++x)
+				{
+					visible += (reference[y][x] != reference[0][0]);
+					transparentDifferences += (reference[y][x + 3 * 85] != reference[0][0]);
+				}
+			}
+			CHECK(visible > 100);
+			CHECK(transparentDifferences == 0);
+		}
+		for (const bool flush : { false, true })
+		{
+			INFO("Flush = " << flush);
+			const Image actual = capture([&]
+			{
+				for (int32 row = 0; row < 3; ++row)
+				{
+					// Reuse one style while changing only ColorMul, including restoring from zero.
+					draw(0, row, row, ColorF{ 1.0 });
+					{
+						const Mul outer{ outerColor };
+						draw(1, row, row, ColorF{ 1.0 });
+						{
+							const Mul inner{ 1.0, 0.5 };
+							draw(2, row, row, ColorF{ 1.0 });
+							{
+								const Mul invisible{ 1.0, 0.0 };
+								draw(3, row, row, ColorF{ 1.0 });
+								if (flush) Graphics2D::Flush();
+							}
+							draw(4, row, row, ColorF{ 1.0 });
+							{
+								const Mul replace{ 1.0, Mul::Target::Set };
+								draw(5, row, row, ColorF{ 1.0 });
+							}
+						}
+						if (flush) Graphics2D::Flush();
+						draw(6, row, row, ColorF{ 1.0 });
+					}
+					draw(7, row, row, ColorF{ 1.0 });
+				}
+				// Change only the style while the same non-neutral ColorMul remains active.
+				const Mul outer{ outerColor };
+				for (int32 column = 0; column < 8; ++column)
+				{
+					draw(column, 3, (column % 3), ColorF{ 1.0 });
+				}
+			}, add);
+			CHECK_THAT(actual, s3d::ImageDrawingTest::ImageEquals(reference, 1));
+			REQUIRE(actual.size() == reference.size());
+			for (int32 row = 0; row < 3; ++row)
+			{
+				int32 transparentDifferences = 0;
+				for (int32 y = (20 + row * 100); y < (110 + row * 100); ++y)
+				{
+					for (int32 x = (10 + 3 * 85); x < (90 + 3 * 85); ++x)
+					{
+						transparentDifferences += (actual[y][x] != actual[0][0]);
+					}
+				}
+				CHECK(transparentDifferences == 0);
 			}
 		}
 	}

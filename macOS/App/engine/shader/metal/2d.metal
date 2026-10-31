@@ -611,6 +611,10 @@ float4 PS_MSDFFont_Outline( PSInput input [[stage_in]],
 							texture2d<float> texture0 [[texture(0)]],
 							sampler sampler0 [[sampler(0)]])
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(c0->g_patternBackgroundColorMul);
+	const float4 outlineColorPMA = (c0->g_sdfOutlineColorPMA * colorMulPMA);
+
 	const float textThreshold = c0->g_sdfParam.x;
 	const float outlineThreshold = c0->g_sdfParam.y;
 
@@ -620,7 +624,7 @@ float4 PS_MSDFFont_Outline( PSInput input [[stage_in]],
 	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
 	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
 
-	float4 colorPMA = mix(c0->g_sdfOutlineColorPMA, input.colorPMA, textAlpha);
+	float4 colorPMA = mix(outlineColorPMA, input.colorPMA, textAlpha);
 	colorPMA *= outlineAlpha;
 	
 	return s3d_applyColorAdd(colorPMA, c0->g_colorAdd);
@@ -632,6 +636,10 @@ float4 PS_MSDFFont_Shadow(	PSInput input [[stage_in]],
 							texture2d<float> texture0 [[texture(0)]],
 							sampler sampler0 [[sampler(0)]])
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(c0->g_patternBackgroundColorMul);
+	const float4 shadowColorPMA = (c0->g_sdfShadowColorPMA * colorMulPMA);
+
 	const float2 shadowOffsetTexels = c0->g_sdfParam.zw;
 
 	const MSDFState state = MSDF_Init(texture0, input.uv);
@@ -643,7 +651,7 @@ float4 PS_MSDFFont_Shadow(	PSInput input [[stage_in]],
 
 	const float shadowOnlyAlpha = (shadowAlpha * (1.0 - textAlpha));
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	const float4 shadowPMA = (c0->g_sdfShadowColorPMA * shadowOnlyAlpha);
+	const float4 shadowPMA = (shadowColorPMA * shadowOnlyAlpha);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
 	return s3d_applyColorAdd(finalPMA, c0->g_colorAdd);
@@ -655,6 +663,11 @@ float4 PS_MSDFFont_OutlineShadow(	PSInput input [[stage_in]],
 									texture2d<float> texture0 [[texture(0)]],
 									sampler sampler0 [[sampler(0)]])
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(c0->g_patternBackgroundColorMul);
+	const float4 outlineColorPMA = (c0->g_sdfOutlineColorPMA * colorMulPMA);
+	const float4 shadowColorPMA = (c0->g_sdfShadowColorPMA * colorMulPMA);
+
 	const float textThreshold = c0->g_sdfParam.x;
 	const float outlineThreshold = c0->g_sdfParam.y;
 	const float2 shadowOffsetTexels = c0->g_sdfParam.zw;
@@ -671,10 +684,10 @@ float4 PS_MSDFFont_OutlineShadow(	PSInput input [[stage_in]],
 	const float4 textPMA = (input.colorPMA * textAlpha);
 
 	const float outlineCoverage = saturate(outlineAlpha - textAlpha);
-	const float4 outlinePMA = (c0->g_sdfOutlineColorPMA * outlineCoverage);
+	const float4 outlinePMA = (outlineColorPMA * outlineCoverage);
 
 	const float shadowCoverage = saturate(shadowAlpha * (1.0 - outlineAlpha));
-	const float4 shadowPMA = (c0->g_sdfShadowColorPMA * shadowCoverage);
+	const float4 shadowPMA = (shadowColorPMA * shadowCoverage);
 
 	const float4 finalPMA = (textPMA + outlinePMA + shadowPMA);
 	return s3d_applyColorAdd(finalPMA, c0->g_colorAdd);

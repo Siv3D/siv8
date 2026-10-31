@@ -112,6 +112,10 @@
 - 凹形状・自己交差・内側輪郭の消失は Boost の topology 処理に残す。内外幅指定では領域の intersection / difference / union も含む。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
 - 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
 
+## Renderer2D / MSDF の乗算カラー
+
+- Windows で更新済み HLSL を `CEngineShader_D3D11::init` の起動時コンパイルに通し、`WindowsDesktop/App/engine/shader/d3d11/` の `msdffont_outline.ps`、`msdffont_shadow.ps`、`msdffont_outline_shadow.ps` を再生成する。対応するエントリポイントは `PS_MSDFFont_Outline`、`PS_MSDFFont_Shadow`、`PS_MSDFFont_OutlineShadow`。`MSDFFont*` と `ScopedColor2D.*` の描画・状態テストおよび Windows 全テストを実行する。仕様と検証内容は [MSDF フォント描画](docs/renderer2d/msdf-font.md) を参照。
+
 ## Renderer2D / 組み込みシェーダ最適化
 
 - WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。

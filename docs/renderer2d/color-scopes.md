@@ -72,8 +72,10 @@ drawn fragment's alpha.
 An alpha multiplier applies to individual draws. It is not the opacity of a
 flattened group: overlapping translucent draws can remain visible through one
 another. Custom shaders must consume the effective color constants themselves.
-MSDF outline and shadow colors currently follow separate shader paths from the
-text fill's ColorMul; changing scope accumulation does not change that coverage.
+MSDF outline and shadow colors also receive ColorMul, so a scoped alpha fade
+affects the text fill and its decorations together. See
+[MSDF color composition](msdf-font.md#scoped-color-multiplication) for style colors
+and shader-side multiplication.
 
 ## Migration from v0.6
 
