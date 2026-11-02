@@ -154,6 +154,9 @@
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_AssetHandleManager.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_RenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>

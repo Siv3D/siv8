@@ -91,6 +91,7 @@
 		A5D4F64130A6000000000001 /* Test_Mesh3DAssemblyClone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F64130A6000000000002 /* Test_Mesh3DAssemblyClone.cpp */; };
 		A5D4F65130A6000000000001 /* Mesh3DPlacement.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
+		C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */; };
 		4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
@@ -3584,6 +3585,7 @@
 		A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DPlacement.hpp; sourceTree = "<group>"; };
 		A5D4F66130A6000000000002 /* Mesh3DLoftExamples.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DLoftExamples.hpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
+		ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AssetHandleManager.cpp; sourceTree = "<group>"; };
 		2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTexture.cpp; sourceTree = "<group>"; };
 		7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalShader.cpp; sourceTree = "<group>"; };
@@ -7395,6 +7397,7 @@
 				F97E6DB82D7B3B9A0066E408 /* Test_Grid.cpp */,
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
+				ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */,
 				2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */,
 				7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
@@ -17443,6 +17446,7 @@
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
 				F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */,
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
+				C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */,
 				C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */,
 				4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,

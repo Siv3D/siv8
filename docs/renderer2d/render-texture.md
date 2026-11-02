@@ -52,10 +52,16 @@ if (texture.read(pixels))
 }
 ```
 
-Grid constructors and named factories mirror `DynamicTexture`. Packed formats
-such as `R10G10B10A2_Unorm` use named factories or the size/span/format constructor.
+Grid initialization and named factories use the same format mappings as
+`DynamicTexture`. RenderTexture additionally accepts `Grid<uint16>` directly
+as `R8G8_Unorm`; DynamicTexture uses `CreateR8G8_Unorm()` for that input. Packed
+formats such as `R10G10B10A2_Unorm` use named factories or the size/span/format
+constructor.
 The span contains tightly packed rows; backend transfer alignment is internal.
 The public header specifies the corresponding readback types and failure rules.
+Integer Grid reads accept their listed formats, not every format with the same
+pixel size. Use `read(std::span<Byte>)` for format-independent raw bytes.
+RenderTexture and MSRenderTexture share the typed-read compatibility mapping.
 Reading a selected mip level also allows inspection of generated content.
 
 An explicit format controls sRGB metadata. Clear colors are linear, while image
@@ -449,7 +455,10 @@ failure/retry.
 [Multisample resource tests](../../Test/Test_MSRenderTexture.cpp) check supported
 format/sample combinations, initialization, stale resolve results, independent
 mips, readback types and failures, handle lifetime, sampled native resources, and
-the visible difference between explicit Flush and resolve alone. Target tests
+the visible difference between explicit Flush and resolve alone. A typed-read
+compatibility matrix checks the same accepted and rejected Image/Grid types for
+RenderTexture and 2x/4x MSRenderTexture, comparing accepted reads to raw bytes.
+Target tests
 cover 2x/4x edge coverage, sRGB/HDR drawing, mixed single/multisample scopes,
 viewport and handle restoration, sampling the active MS target's resolved image,
 and continuation across readback and frame boundaries without implicit resolve.

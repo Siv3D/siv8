@@ -66,68 +66,67 @@ namespace s3d
 
 	bool MSRenderTexture::readAsImage(Image& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm)
-			|| (format() == TextureFormat::R8G8B8A8_Unorm_SRGB)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<uint8>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<uint16>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<HalfFloat>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<Color>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R8G8B8A8_Unorm) || (format() == TextureFormat::R8G8B8A8_Unorm_SRGB)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<std::pair<uint16, uint16>>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Unorm)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<std::pair<HalfFloat, HalfFloat>>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<float>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<std::array<HalfFloat, 4>>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<Float2>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32G32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<Float4>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R32G32B32A32_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<uint32>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16_Unorm) || (format() == TextureFormat::R16G16_Float) || (format() == TextureFormat::R10G10B10A2_Unorm) || (format() == TextureFormat::R11G11B10_UFloat)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 	bool MSRenderTexture::read(Grid<uint64>& image, const uint32 mipLevel) const
 	{
-		return ReadRenderTexturePixels(*this, image, ((format() == TextureFormat::R16G16B16A16_Float)), mipLevel);
+		return ReadRenderTexturePixels(*this, image, mipLevel);
 	}
 
 }

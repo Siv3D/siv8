@@ -35,6 +35,7 @@ TEST_CASE("RenderTexture.creation_round_trips")
 		const Grid<uint8> r8{ size, 173 };
 		CheckRoundTrip(r8, RenderTexture{ r8 });
 		const Grid<uint16> rg8{ size, 0x9B23 };
+		CheckRoundTrip(rg8, RenderTexture{ rg8 });
 		CheckRoundTrip(rg8, RenderTexture::CreateR8G8_Unorm(rg8));
 		const Grid<HalfFloat> r16{ size, HalfFloat{ -3.5f } };
 		CheckRoundTrip(r16, RenderTexture{ r16 });

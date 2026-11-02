@@ -206,6 +206,65 @@ Output PS() { Output o; o.a = float4(1, 1, 1, 1); o.b = o.a; return o; }
 		}
 	}
 
+	TEST_CASE("MSRenderTexture.typed_read_compatibility_matches_render_texture")
+	{
+		const auto checkTypes = []<class Target>(const Target& texture)
+		{
+			const TextureFormat format = texture.format();
+			const auto expectedBytes = ReadBytes(texture);
+			const auto check = [&]<class Container>(const bool compatible)
+			{
+				Container pixels;
+				pixels.resize(Size{ 2, 2 });
+				const bool success = [&]
+				{
+					if constexpr (std::is_same_v<Container, Image>) { return texture.readAsImage(pixels); }
+					else { return texture.read(pixels); }
+				}();
+				REQUIRE(success == compatible);
+				if (compatible)
+				{
+					CHECK(pixels.size() == texture.size());
+					const auto bytes = std::as_bytes(std::span{ pixels });
+					CHECK(std::equal(bytes.begin(), bytes.end(), expectedBytes.begin(), expectedBytes.end()));
+				}
+				else { CHECK(pixels.isEmpty()); }
+			};
+			// Preserve the documented mapping, including same-size rejected formats.
+			check.template operator()<Grid<uint8>>(format == TextureFormat::R8_Unorm);
+			check.template operator()<Grid<uint16>>(format == TextureFormat::R8G8_Unorm);
+			check.template operator()<Grid<HalfFloat>>(format == TextureFormat::R16_Float);
+			const bool rgba8 = ((format == TextureFormat::R8G8B8A8_Unorm) || (format == TextureFormat::R8G8B8A8_Unorm_SRGB));
+			check.template operator()<Image>(rgba8);
+			check.template operator()<Grid<Color>>(rgba8);
+			check.template operator()<Grid<std::pair<uint16, uint16>>>(format == TextureFormat::R16G16_Unorm);
+			check.template operator()<Grid<std::pair<HalfFloat, HalfFloat>>>(format == TextureFormat::R16G16_Float);
+			check.template operator()<Grid<float>>(format == TextureFormat::R32_Float);
+			check.template operator()<Grid<std::array<HalfFloat, 4>>>(format == TextureFormat::R16G16B16A16_Float);
+			check.template operator()<Grid<Float2>>(format == TextureFormat::R32G32_Float);
+			check.template operator()<Grid<Float4>>(format == TextureFormat::R32G32B32A32_Float);
+			check.template operator()<Grid<uint32>>((format == TextureFormat::R16G16_Unorm) || (format == TextureFormat::R16G16_Float)
+				|| (format == TextureFormat::R10G10B10A2_Unorm) || (format == TextureFormat::R11G11B10_UFloat));
+			check.template operator()<Grid<uint64>>(format == TextureFormat::R16G16B16A16_Float);
+		};
+		for (uint8 i = FromEnum(TexturePixelFormat::R8_Unorm); i <= FromEnum(TexturePixelFormat::R32G32B32A32_Float); ++i)
+		{
+			const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+			CAPTURE(format);
+			const RenderTexture rt{ Size{ 3, 1 }, ColorF{ 0.25, 0.5, 0.75, 1.0 }, format };
+			REQUIRE(rt);
+			checkTypes(rt);
+			for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+			{
+				CAPTURE(samples);
+				const MSRenderTexture ms{ rt.size(), ColorF{ 0.25, 0.5, 0.75, 1.0 }, samples, format };
+				if (not Supports(format, samples, false)) { CHECK_FALSE(ms); continue; }
+				REQUIRE(ms);
+				checkTypes(ms);
+			}
+		}
+	}
+
 	TEST_CASE("MSRenderTexture.initial_color_typed_reads_and_srgb")
 	{
 		const MSRenderTexture defaultSamples{ Size{ 1, 1 } };
