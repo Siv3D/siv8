@@ -302,6 +302,17 @@ exercises. If the warning originates in an engine implementation, keep its test
 coverage and handle the implementation separately from test-only cleanup. Avoid
 blanket warning suppression or edits to vendored Catch2 sources.
 
+For engine warning cleanup, first rebuild the solution so diagnostics include
+every engine translation unit. Retain the existing warning levels and separate
+vendored diagnostics by their instantiation traces, not just the header named
+in the first diagnostic. Then rebuild and run the full suite in both Release
+and Debug; their macros and optimization can expose different warnings.
+Use `[[maybe_unused]]` for parameters used only by some template or platform
+branches, and omit names of intentionally unused implementation parameters.
+For possibly uninitialized locals, check every assignment and use before
+choosing explicit initialization or simpler control flow; do not introduce
+fallback geometry or exceptional-input checks just to silence a diagnostic.
+
 ### Windows incremental build failures
 
 Distinguish compiler/linker failures from runtime failures. Treat MSVC `C1001`

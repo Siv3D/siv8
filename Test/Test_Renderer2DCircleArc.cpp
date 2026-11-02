@@ -11,8 +11,13 @@
 
 # include "Siv3DTest.hpp"
 # include "../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder.hpp"
+# include "../Siv3D/src/Siv3D/Renderer2D/IRenderer2D.hpp"
+# include "../Siv3D/src/Siv3D/Engine/Siv3DEngine.hpp"
 # include <ThirdParty/nanobench/nanobench.h>
 # include <array>
+# include <atomic>
+# include <chrono>
+# include <iostream>
 
 namespace
 {
@@ -240,6 +245,75 @@ TEST_CASE("Renderer2D.benchmark_circle_arc_vertices", "[.benchmark]")
 						ankerl::nanobench::doNotOptimizeAway(indices.data());
 					});
 				}
+}
+
+TEST_CASE("Renderer2D.arc_caps_upload_benchmark", "[.benchmark]")
+{
+	const bool vsync = Graphics::IsVSyncEnabled();
+	const ScopeExit restoreVSync{ [=] { Graphics::SetVSyncEnabled(vsync); } };
+	Graphics::SetVSyncEnabled(false);
+	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+	auto* renderer = SIV3D_ENGINE(Renderer2D);
+	Array<Vertex2D> vertices(1024);
+	Array<Vertex2D::IndexType> indices(4096);
+	const BufferCreatorFunc allocate = [&](const uint16 v, const uint32 i)
+	{
+		if ((vertices.size() < v) || (indices.size() < i)) return Vertex2DBufferPointer{};
+		return Vertex2DBufferPointer{ vertices.data(), indices.data(), 0 };
+	};
+	constexpr size_t Batch = 64;
+	const Float2 center{ -1000, -1000 };
+	const Float4 red{ 1, 0, 0, 0.5f }, blue{ 0, 0, 1, 0.5f };
+	for (const Float2 axes : { Float2{ 60, 60 }, Float2{ 120, 60 }, Float2{ 120, 12 } })
+	for (const float sweep : { 0.0f, 0.03f, 4.5f })
+	for (const auto coloring : { ColorFillDirection::InOut, ColorFillDirection::LeftRight })
+	{
+		Array<double> times[2];
+		uint32 expectedIndices = 0;
+		REQUIRE(System::Update());
+		const float scale = renderer->getRasterScaling();
+		for (int32 round = -4; round < 21; ++round)
+		for (int32 slot = 0; slot < 2; ++slot)
+		{
+			const int32 method = ((round + 4 + slot) % 2);
+			uint32 indexCount = 0;
+			const auto begin = std::chrono::steady_clock::now();
+			for (size_t i = 0; i < Batch; ++i)
+			{
+				if (method == 0)
+				{
+					indexCount += Vertex2DBuilder::BuildEllipseArc(allocate, LineCap::Round, LineCap::Square,
+						center, axes.x, axes.y, 0.37f, sweep, 3, 5, coloring, red, blue, scale);
+					std::atomic_signal_fence(std::memory_order_seq_cst);
+				}
+				else
+				{
+					renderer->addEllipseArc(LineCap::Round, LineCap::Square,
+						center, axes.x, axes.y, 0.37f, sweep, 3, 5, red, blue, coloring);
+				}
+			}
+			const double ns = (std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count() / Batch);
+			if (round >= 0) times[method].push_back(ns);
+			REQUIRE(System::Update());
+			if (method == 0)
+			{
+				REQUIRE(indexCount > 0);
+				expectedIndices = indexCount;
+			}
+			else
+			{
+				CHECK((Profiler::GetFrameMetrics().triangleCount * 3) == expectedIndices);
+			}
+		}
+		for (size_t method = 0; method < 2; ++method)
+		{
+			times[method].sort();
+			std::cout << "arc-caps axes=" << axes.x << ',' << axes.y << " sweep=" << sweep
+				<< " coloring=" << static_cast<int32>(coloring) << (method ? " backend" : " heap")
+				<< " ns/call=" << times[method][10] << " p10=" << times[method][2] << " p90=" << times[method][18] << '\n';
+		}
+	}
 }
 
 TEST_CASE("Renderer2D.circle_arc_independent_caps")

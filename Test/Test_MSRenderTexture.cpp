@@ -173,7 +173,7 @@ Output PS() { Output o; o.a = float4(1, 1, 1, 1); o.b = o.a; return o; }
 					CHECK(texture.format() == format);
 					CHECK(texture.isSRGB() == format.isSRGB());
 					CHECK_FALSE(texture.hasDepth());
-					CHECK(texture.mipLevels() == (mips ? 3 : 1));
+					CHECK(texture.mipLevels() == (mips ? 3u : 1u));
 					const RenderTexture white{ Size{ 7, 5 }, ColorF{ 1.0, 1.0 }, format, desc };
 					for (uint32 level = 0; level < texture.mipLevels(); ++level)
 					{

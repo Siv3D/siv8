@@ -17,7 +17,7 @@ namespace s3d
 {
 	namespace TextToSpeech
 	{
-		void Speak(const StringView text)
+		void Speak([[maybe_unused]] const StringView text)
 		{
 			//SIV3D_ENGINE(TextToSpeech)->speak(text);
 		}

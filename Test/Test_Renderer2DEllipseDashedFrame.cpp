@@ -42,7 +42,7 @@ namespace
 		const auto indices = Vertex2DBuilder::BuildEllipseDashedFrame(allocate, { 0, 0 }, axes.x, axes.y,
 			widths.x, widths.y, offset, ratio, count, Float4{ 1, 0, 0, 1 }, Float4{ 0, 0, 1, 1 }, scale);
 		REQUIRE(indices == mesh.indices.size());
-		CHECK(allocations == (indices ? 1 : 0));
+		CHECK(allocations == (indices ? 1u : 0u));
 		for (const auto index : mesh.indices)
 		{
 			REQUIRE(index >= IndexOffset);

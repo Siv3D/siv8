@@ -281,9 +281,9 @@ namespace s3d::detail::BezierTessellation
 				const double needed = Max(1.0, std::ceil(rate * (end - begin)));
 				if (work.pieces.size() < work.pieceCount + needed)
 				{
-					const double needed = Max(1.0, std::ceil(WangCount(curve, tolerance)));
-					const auto n = static_cast<uint32>(Min(needed, static_cast<double>(maxSegments)));
-					work.limited = maxSegments < needed;
+					const double uniformSegments = Max(1.0, std::ceil(WangCount(curve, tolerance)));
+					const auto n = static_cast<uint32>(Min(uniformSegments, static_cast<double>(maxSegments)));
+					work.limited = maxSegments < uniformSegments;
 					ReserveAdditional(out, n + startCount);
 					PushUnique(out, source.p[0]);
 					Uniform(out, source, n);

@@ -124,7 +124,7 @@ namespace s3d
 			data.sectionDistances.resize(data.sectionCount);
 			data.contourU.resize(data.contourVertexCount + 1);
 			Array<Float2> local(data.contourVertexCount);
-			LoftFrame previous;
+			LoftFrame previous{};
 			for (size_t i = 0; i < data.sectionCount; ++i)
 			{
 				if (sections[i].points.size() != data.contourVertexCount)

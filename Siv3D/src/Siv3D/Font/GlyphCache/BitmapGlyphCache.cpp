@@ -220,7 +220,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::processVertical(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
+	RectF BitmapGlyphCache::processVertical(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, resolvedGlyphs, true, readingDirection))
 		{
@@ -323,7 +323,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> BitmapGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const bool isColorGlyph, const ReadingDirection readingDirection)
+	std::pair<double, double> BitmapGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{

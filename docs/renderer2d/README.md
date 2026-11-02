@@ -418,6 +418,23 @@ Also compare Release performance in ordinary CPU memory and the actual backend's
 upload memory; a heap-array benchmark alone is insufficient. Inspect generated
 code when destination access is uncertain.
 
+The opt-in `Renderer2D.arc_caps_upload_benchmark` in
+[Test_Renderer2DCircleArc.cpp](../../Test/Test_Renderer2DCircleArc.cpp) compares
+independently capped circle and ellipse arcs in reusable CPU arrays and the
+active backend's submission path. It covers zero, short, and ordinary sweeps,
+radial and along-path gradients, and thin ellipses. The backend measurement
+includes command registration; presentation and count checks are outside both
+timed regions. Compare saved before/after Release builds with other builds and
+benchmarks stopped. On Windows:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -Configuration Release -TestArguments '--test-case=Renderer2D.arc_caps_upload_benchmark'
+```
+
+Retain the runner's console/XML reports under
+`WindowsDesktop/Intermediate/TestReports/`; medians and p10/p90 are diagnostic
+measurements, not correctness thresholds.
+
 `CopyIndicesWithOffset` reads each source index, adds the base offset, and writes
 once to the destination. It never reads the upload destination. The same helper
 serves raw indexed polygons, transformed polygons, and Mesh2D. TriangleIndex

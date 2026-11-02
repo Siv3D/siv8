@@ -33,7 +33,7 @@ namespace
 		};
 		const auto count = build(allocate);
 		REQUIRE(count == mesh.indices.size());
-		CHECK(requests == (count ? 1 : 0));
+		CHECK(requests == (count ? 1u : 0u));
 		for (const auto index : mesh.indices)
 		{
 			REQUIRE(37 <= index);

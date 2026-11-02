@@ -302,7 +302,7 @@ namespace s3d
 				const float ya = (cs.y * a);
 				const float yb = (Circular ? ya : (cs.y * b));
 
-				const auto writeVertex = [&](Vertex2DWriteReference vertex, const float x, const float y, const float ux, const float uy, const Float4& color)
+				const auto writeVertex = [&](Vertex2DWriteReference vertex, [[maybe_unused]] const float x, [[maybe_unused]] const float y, [[maybe_unused]] const float ux, [[maybe_unused]] const float uy, const Float4& color)
 				{
 					if constexpr (Rotated)
 					{
@@ -2710,7 +2710,7 @@ namespace s3d
 			const auto firstIndices = ArcCapIndexCount(firstCap, capQuality), lastIndices = ArcCapIndexCount(lastCap, capQuality);
 			const auto bodyVertices = ((angle != 0.0f) ? quality * 2 : 0);
 			const auto bodyIndices = ((quality - 1) * 6);
-			const Vertex2D::IndexType indexCount = (firstIndices + bodyIndices + lastIndices);
+			const auto indexCount = static_cast<Vertex2D::IndexType>(firstIndices + bodyIndices + lastIndices);
 			if (indexCount == 0) return 0;
 			const auto buffer = bufferCreator(static_cast<uint16>(firstVertices + bodyVertices + lastVertices), indexCount);
 			if (not buffer.pVertex) return 0;
@@ -2737,7 +2737,7 @@ namespace s3d
 				auto vertices = (buffer.pVertex + firstVertices);
 				auto indices = (buffer.pIndex + firstIndices);
 				WriteArcStripPositions(vertices, center.x, center.y, rInner, (rInner + thickness), start, (Abs(angle) / (quality - 1)), quality);
-				if (along) WriteArcStripAlongColors(vertices, quality, bodyFirst, ((bodyLast - bodyFirst) / (quality - 1)));
+				if (along) WriteArcStripAlongColors(vertices, quality, bodyFirst, ((bodyLast - bodyFirst) / static_cast<float>(quality - 1)));
 				else WriteArcStripRadialColors(vertices, quality, color0, color1);
 				WriteOpenStripIndices(indices, static_cast<Vertex2D::IndexType>(buffer.indexOffset + firstVertices), quality);
 			}
@@ -3365,27 +3365,37 @@ namespace s3d
 			const auto firstIndices = ArcCapIndexCount(firstCap, capQuality), lastIndices = ArcCapIndexCount(lastCap, capQuality);
 			const auto bodyVertices = ((pointCount > 1) ? pointCount * 2 : 0);
 			const auto bodyIndices = ((pointCount - 1) * 6);
-			const Vertex2D::IndexType indexCount = (firstIndices + bodyIndices + lastIndices);
+			const auto indexCount = static_cast<Vertex2D::IndexType>(firstIndices + bodyIndices + lastIndices);
 			const auto buffer = bufferCreator(static_cast<uint16>(firstVertices + bodyVertices + lastVertices), indexCount);
 			if (not buffer.pVertex) return 0;
 			auto vertices = (buffer.pVertex + firstVertices);
-			Float2 firstNormal, lastNormal, firstCenter, lastCenter, previous;
+			// MakeEllipseArcParameters always supplies the start point, even for a zero sweep.
+			const auto [firstSin, firstCos] = FastMath::SinCos(parameters[0]);
+			const Float2 firstNormal = CalculateEllipseNormal(a, b, firstSin, -firstCos);
+			const Float2 firstBase{ center.x + a * firstSin, center.y - b * firstCos };
+			const Float2 firstCenter = (firstBase + firstNormal * middleOffset);
+			Float2 lastNormal = firstNormal, lastCenter = firstCenter;
+			if (bodyVertices)
+			{
+				vertices[0].set(firstBase - firstNormal * innerThickness, color0);
+				vertices[1].set(firstBase + firstNormal * outerThickness, color1);
+			}
 			std::array<float, (MaxCircleSegments + 1)> lengths;
+			lengths[0] = 0.0f;
 			float bodyLength = 0.0f;
-			for (uint16 i = 0; i < pointCount; ++i)
+			for (uint16 i = 1; i < pointCount; ++i)
 			{
 				const auto [s, c] = FastMath::SinCos(parameters[i]);
 				const Float2 normal = CalculateEllipseNormal(a, b, s, -c);
 				const Float2 base{ center.x + a * s, center.y - b * c };
 				const Float2 middle = (base + normal * middleOffset);
-				if (i == 0) { firstNormal = normal; firstCenter = middle; }
-				if (i == (pointCount - 1)) { lastNormal = normal; lastCenter = middle; }
 				if (along)
 				{
-					if (i) bodyLength += middle.distanceFrom(previous);
+					bodyLength += middle.distanceFrom(lastCenter);
 					lengths[i] = bodyLength;
-					previous = middle;
 				}
+				lastNormal = normal;
+				lastCenter = middle;
 				if (bodyVertices)
 				{
 					vertices[i * 2].set(base - normal * innerThickness, color0);

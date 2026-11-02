@@ -162,7 +162,7 @@ namespace s3d::detail
 	UnitPolynomialRoots<Count - 1> BernsteinRoots(const std::array<double, Count>& values) noexcept
 	{
 		constexpr size_t Degree = (Count - 1);
-		constexpr double ParameterTolerance = 2.0e-15;
+		constexpr double BernsteinParameterTolerance = 2.0e-15;
 		UnitPolynomialRoots<Degree> roots;
 		size_t variations = 0;
 		int32 previousSign = 0;
@@ -247,7 +247,7 @@ namespace s3d::detail
 							fhi = f;
 						}
 						const double next = (t - f / EvaluateBernstein(derivative, t));
-						if ((Abs(next - t) <= ParameterTolerance) && (lower <= next) && (next <= upper))
+						if ((Abs(next - t) <= BernsteinParameterTolerance) && (lower <= next) && (next <= upper))
 						{
 							t = next;
 							break;
@@ -256,7 +256,7 @@ namespace s3d::detail
 							? next : ((lo + hi) * 0.5));
 						previousStep = Abs(candidate - t);
 						t = candidate;
-						if (previousStep <= ParameterTolerance)
+						if (previousStep <= BernsteinParameterTolerance)
 						{
 							break;
 						}

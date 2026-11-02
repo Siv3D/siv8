@@ -43,7 +43,7 @@ TEST_CASE("RenderTexture.creation_round_trips")
 		rgba8[size.y - 1][size.x - 1] = Color{ 219, 121, 27, 11 };
 		CheckRoundTrip(rgba8, RenderTexture{ rgba8 });
 		CheckRoundTrip(rgba8, RenderTexture::CreateR8G8B8A8_Unorm_SRGB(rgba8));
-		const Grid<std::pair<uint16, uint16>> rg16{ size, { 17321, 61234 } };
+		const Grid<std::pair<uint16, uint16>> rg16{ size, { uint16{ 17321 }, uint16{ 61234 } } };
 		CheckRoundTrip(rg16, RenderTexture{ rg16 });
 		const Grid<std::pair<HalfFloat, HalfFloat>> rg16f{ size, { HalfFloat{ 1.5f }, HalfFloat{ -2.25f } } };
 		CheckRoundTrip(rg16f, RenderTexture{ rg16f });

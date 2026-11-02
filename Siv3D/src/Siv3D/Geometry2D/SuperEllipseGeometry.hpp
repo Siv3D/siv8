@@ -710,7 +710,7 @@ namespace s3d::detail
 			return false;
 		}
 		const SuperEllipseProfile p{ a.axes, a.n }, q{ b.axes, b.n };
-		const auto TestHeight = [&](const double x, const double ha, const double hb) noexcept
+		const auto TestHeight = [&]([[maybe_unused]] const double x, const double ha, const double hb) noexcept
 		{
 			const bool hit = (IncludeBoundary ? (delta.y <= (ha + hb)) : (delta.y < (ha + hb)));
 			if constexpr (FindPoint)
@@ -774,7 +774,7 @@ namespace s3d::detail
 			std::swap(an, bn);
 		}
 		const SuperEllipseProfile p{ aa, an }, q{ bb, bn };
-		const auto TestHeight = [&](const double x, const double ha, const double hb) noexcept
+		const auto TestHeight = [&]([[maybe_unused]] const double x, const double ha, const double hb) noexcept
 		{
 			const bool hit = (IncludeBoundary ? (delta.y <= (ha + hb)) : (delta.y < (ha + hb)));
 			if constexpr (FindPoint)
@@ -1010,7 +1010,7 @@ namespace s3d::detail
 		const MixedSuperEllipseTerm f{ (delta.x / b.a), (a.a / b.a), (1.0 / a.n), b.n };
 		const MixedSuperEllipseTerm g{ (delta.y / b.b), (a.b / b.b), (1.0 / a.n), b.n };
 		auto Value = [&](const double t) noexcept { return (f.value(t) + g.value(1.0 - t)); };
-		const auto Hit = [&](const double v, const double t) noexcept
+		const auto Hit = [&](const double v, [[maybe_unused]] const double t) noexcept
 		{
 			const bool hit = (IncludeBoundary ? (v <= 1.0) : (v < 1.0));
 			if constexpr (FindPoint)

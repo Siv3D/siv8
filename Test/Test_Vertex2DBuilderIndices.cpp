@@ -490,7 +490,7 @@ TEST_CASE("Vertex2DBuilder.indices_rounded_bounds_and_closure")
 	for (const auto shape : { RoundedShape::CirclePie, RoundedShape::EllipsePie, RoundedShape::ArcFlat })
 	{
 		const auto mesh = Capture([&](const BufferCreatorFunc& allocate) { return BuildRoundedShape(allocate, shape, 1, 0.001f); }, true);
-		CHECK(mesh.count == ((shape == RoundedShape::ArcFlat) ? 6 : 3));
+		CHECK(mesh.count == ((shape == RoundedShape::ArcFlat) ? 6u : 3u));
 	}
 	for (const auto shape : { RoundedShape::CirclePie, RoundedShape::EllipsePie, RoundedShape::CircleSegment, RoundedShape::ArcFlat })
 	{
