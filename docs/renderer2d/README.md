@@ -21,7 +21,8 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
   coverage, compatibility, tests, and CPU benchmarks.
 
 - [RenderTexture and MSRenderTexture resources and target scopes](render-texture.md): nested offscreen
-  drawing, single-sample and MSAA color resources, explicit resolve, native readback,
+  drawing, shared ColorRenderTarget handles, single-sample and MSAA color resources,
+  explicit resolve, native readback,
   mipmap generation, and operation ordering.
 
 ## Scene rendering

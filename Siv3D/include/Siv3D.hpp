@@ -1543,6 +1543,9 @@
 # include <Siv3D/RenderTexture.hpp>
 # include <Siv3D/MSRenderTexture.hpp>
 
+// 色描画先の共有ハンドル | Shared color render target
+# include <Siv3D/ColorRenderTarget.hpp>
+
 
 
 ////////////////////////////////////////////////////////////////

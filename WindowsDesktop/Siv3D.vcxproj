@@ -190,6 +190,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RenderTexture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MSRenderTexture.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorRenderTarget.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureFormat.ipp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RenderTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSRenderTexture.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorRenderTarget.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ExternalPowerStatus.hpp" />
@@ -1763,6 +1765,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RenderTexture\SivRenderTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSRenderTexture\SivMSRenderTexture.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorRenderTarget\SivColorRenderTarget.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectFactory.cpp" />

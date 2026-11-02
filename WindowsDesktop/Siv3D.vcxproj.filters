@@ -1057,6 +1057,9 @@
     <Filter Include="src\Siv3D\MSRenderTexture">
       <UniqueIdentifier>{5b37a337-bcbd-458e-90fd-55f9a8dede4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ColorRenderTarget">
+      <UniqueIdentifier>{62e0b561-e5d1-4c01-a0dd-3d6980d38f99}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\ThirdParty\bc7enc_rdo">
       <UniqueIdentifier>{292bb396-1b44-4e78-9523-e4f585729366}</UniqueIdentifier>
     </Filter>
@@ -4425,6 +4428,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MSRenderTexture.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorRenderTarget.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4495,6 +4501,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MSRenderTexture.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorRenderTarget.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureClipping.hpp">
@@ -8662,6 +8671,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MSRenderTexture\SivMSRenderTexture.cpp">
       <Filter>src\Siv3D\MSRenderTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorRenderTarget\SivColorRenderTarget.cpp">
+      <Filter>src\Siv3D\ColorRenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp">
       <Filter>src\Siv3D\Texture</Filter>

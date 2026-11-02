@@ -8,8 +8,6 @@
 # include <algorithm>
 # include <cmath>
 # include "IRenderer2D.hpp"
-# include <Siv3D/Engine/Siv3DEngine.hpp>
-# include <Siv3D/Texture/ITexture.hpp>
 # include "CircleArcArrow.hpp"
 # include "SuperEllipseTessellation.hpp"
 # include <Siv3D/Image.hpp>
@@ -571,11 +569,11 @@ namespace s3d
 		return shadowTexture;
 	}
 
-	void ISiv3DRenderer2D::setRenderTarget(const Optional<Texture>& renderTarget)
+	void ISiv3DRenderer2D::setRenderTarget(const Optional<ColorRenderTarget>& renderTarget)
 	{
 		if (renderTarget && renderTarget->isEmpty())
 		{
-			throw Error{ "ScopedRenderTarget2D requires a non-empty RenderTexture or MSRenderTexture (use none for Scene)" };
+			throw Error{ "ScopedRenderTarget2D requires a non-empty ColorRenderTarget (use none for Scene)" };
 		}
 		if (m_renderTarget == renderTarget)
 		{
@@ -585,7 +583,7 @@ namespace s3d
 		setRenderTargetState(renderTarget);
 	}
 
-	void ISiv3DRenderer2D::restoreRenderTarget(const Optional<Texture>& renderTarget, const Optional<Rect>& viewport)
+	void ISiv3DRenderer2D::restoreRenderTarget(const Optional<ColorRenderTarget>& renderTarget, const Optional<Rect>& viewport)
 	{
 		const ScopeExit restore{ [&]
 		{
@@ -598,12 +596,12 @@ namespace s3d
 		}
 	}
 
-	void ISiv3DRenderer2D::setRenderTargetState(const Optional<Texture>& renderTarget)
+	void ISiv3DRenderer2D::setRenderTargetState(const Optional<ColorRenderTarget>& renderTarget)
 	{
 		if (m_renderTarget != renderTarget)
 		{
 			m_renderTarget = renderTarget;
-			m_feedbackTargetID = ((renderTarget && (SIV3D_ENGINE(Texture)->getSampleCount(renderTarget->id()) == 1))
+			m_feedbackTargetID = ((renderTarget && (renderTarget->getMSAASampleCount() == MSAASampleCount::NoMSAA))
 				? renderTarget->id() : Texture::IDType::Invalid());
 			m_lastValidatedInput = Texture::IDType::Invalid();
 		}

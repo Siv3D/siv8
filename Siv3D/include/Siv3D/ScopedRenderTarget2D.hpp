@@ -8,8 +8,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include "RenderTexture.hpp"
-# include "MSRenderTexture.hpp"
+# include "ColorRenderTarget.hpp"
 # include "Optional.hpp"
 # include "Rect.hpp"
 
@@ -30,22 +29,12 @@ namespace s3d
 		ScopedRenderTarget2D() = default;
 
 		/// @brief 描画先を変更します。
-		/// @param renderTarget 描画先。none は Scene を指定します。
-		/// @throws Error 空の RenderTexture を指定した場合。描画状態は変更しません。
+		/// @param renderTarget 描画先。RenderTexture / MSRenderTexture も指定できます。none は Scene を指定します。
+		/// @throws Error 空の ColorRenderTarget（空の RenderTexture / MSRenderTexture を含む）を指定した場合。描画状態は変更しません。
 		/// @remark 描画先が変わる場合は未処理の描画を発行します。GPU の処理完了は待ちません。
+		/// @remark MSAA なら MSAA 側へ描画します。スコープ内で resolve する場合、先に Graphics2D::Flush() で描画を発行してください。
 		[[nodiscard]]
-		explicit ScopedRenderTarget2D(const Optional<RenderTexture>& renderTarget);
-
-		/// @brief MSAA 側を描画先にします。切り替えと復元の規則は RenderTexture の場合と共通です。
-		/// @param renderTarget 描画先。none は Scene を指定します。
-		/// @throws Error 空の MSRenderTexture を指定した場合。描画状態は変更しません。
-		/// @remark スコープ終了時も自動 resolve しません。スコープ内で resolve する場合、先に Graphics2D::Flush() で描画を発行してください。
-		[[nodiscard]]
-		explicit ScopedRenderTarget2D(const Optional<MSRenderTexture>& renderTarget);
-
-		/// @brief 一時的に Scene を描画先にします。
-		[[nodiscard]]
-		explicit ScopedRenderTarget2D(None_t);
+		explicit ScopedRenderTarget2D(const Optional<ColorRenderTarget>& renderTarget);
 
 		/// @brief 状態を復元する責任を移動します。移動元の破棄では復元しません。
 		/// @param other 移動元
@@ -61,11 +50,7 @@ namespace s3d
 
 	private:
 
-		struct TargetTag {};
-
-		ScopedRenderTarget2D(const Optional<Texture>& renderTarget, TargetTag);
-
-		Optional<Optional<Texture>> m_oldRenderTarget;
+		Optional<Optional<ColorRenderTarget>> m_oldRenderTarget;
 
 		Optional<Rect> m_oldViewport;
 	};

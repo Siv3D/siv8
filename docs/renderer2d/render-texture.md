@@ -8,6 +8,8 @@ one color texture for 2D drawing.
 [MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp) owns a multisample
 color texture and a separate single-sample resolve result. A target scope writes
 to its MSAA image; sampling uses the last explicitly resolved image.
+[ColorRenderTarget](../../Siv3D/include/Siv3D/ColorRenderTarget.hpp) shares either
+kind through one typed handle, with common clear, resolve, and mip operations.
 MRT and depth attachments are tracked in
 [TODO](../../TODO.md#rendertexture--depthtexture).
 
@@ -96,6 +98,43 @@ count and the additional [32-bit MSAA resolve capability](https://developer.appl
 for 32-bit floating-point formats. A render pass with store-and-resolve preserves
 the multisample image while updating the resolved result. Both images use private
 GPU storage and remain alive through encoded command execution.
+
+## Sharing color target code
+
+Use `ColorRenderTarget` when a function accepts either RenderTexture or
+MSRenderTexture. Conversion is implicit and retains the original resources;
+copying a target does not allocate a GPU image or copy pixels. An ordinary
+Texture cannot be used to construct it.
+
+For example, define this helper outside `Main()`:
+
+```cpp
+void DrawInto(const ColorRenderTarget& target)
+{
+    const ScopedRenderTarget2D scoped{ target };
+    target.clear(ColorF{ 0.0, 0.0 });
+    Circle{ 100, 100, 40 }.draw(Palette::Orange);
+    Graphics2D::Flush();
+    target.resolve();
+}
+```
+
+`DrawInto(rt)` and `DrawInto(msrt)` use the same helper. Flush occurs before
+resolve even if the caller already has this target selected, in which case
+entering/leaving the nested scope need not flush. Resolve is a no-op for
+single-sample and empty targets; it never submits pending draws or generates
+mips. Clear and mip generation retain the original texture's operation ordering.
+
+`getTexture()` returns a shared sampling handle by value. For MSAA it refers to
+the last resolve result. Obtaining it does not Flush or resolve, and the returned
+handle remains valid after the ColorRenderTarget is released. Use the original
+RenderTexture or MSRenderTexture for typed CPU readback. Copies, moves, assignment
+and swap retain resource identity; equality compares the referenced resource.
+
+The scope accepts `Optional<ColorRenderTarget>`. Direct RenderTexture,
+MSRenderTexture and ColorRenderTarget arguments, their Optional forms, and `none`
+remain usable. An absent Optional selects Scene. An engaged Optional containing
+an empty target is an error, just like a directly supplied empty target.
 
 ## Drawing into a texture
 
@@ -222,6 +261,11 @@ around clears and readbacks. [Metal tests](../../Test/Test_MetalRenderTexture.cp
 cover allocation failure/retry and frame-slot preservation when a continuation
 command buffer cannot be allocated.
 
+[Common-target tests](../../Test/Test_ColorRenderTarget.cpp) cover accepted and
+rejected conversions, handle sharing and lifetime, copy/move/swap, common resource
+operations, non-MS resolve without Flush, explicit MSAA resolve ordering, and
+legacy scope argument forms with nested restoration and feedback checks.
+
 [Target-scope tests](../../Test/Test_ScopedRenderTarget2D.cpp) check nested pixel
 results, viewport/state restoration, all color formats, feedback rejection,
 readback and mip generation inside a scope, Scene MSAA and resolution scaling,
@@ -243,13 +287,13 @@ texture allocation, and resolve-encoder failure followed by retry.
 Run from the repository root using the host workflow:
 
 ```sh
-./macOS/run-tests.sh '--test-case=RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
+./macOS/run-tests.sh '--test-case=ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./macOS/run-tests.sh
 ./macOS/validate-projects.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 

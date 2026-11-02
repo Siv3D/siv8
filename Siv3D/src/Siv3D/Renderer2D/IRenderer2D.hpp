@@ -17,7 +17,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
-# include <Siv3D/Texture.hpp>
+# include <Siv3D/ColorRenderTarget.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include "../Geometry2D/DashedPath.hpp"
@@ -683,11 +683,11 @@ namespace s3d
 
 		virtual void flush() = 0;
 
-		const Optional<Texture>& getRenderTarget() const noexcept { return m_renderTarget; }
+		const Optional<ColorRenderTarget>& getRenderTarget() const noexcept { return m_renderTarget; }
 
-		void setRenderTarget(const Optional<Texture>& renderTarget);
+		void setRenderTarget(const Optional<ColorRenderTarget>& renderTarget);
 
-		void restoreRenderTarget(const Optional<Texture>& renderTarget, const Optional<Rect>& viewport);
+		void restoreRenderTarget(const Optional<ColorRenderTarget>& renderTarget, const Optional<Rect>& viewport);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -863,8 +863,7 @@ namespace s3d
 
 	protected:
 
-		// Holds either a RenderTexture or MSRenderTexture handle; never an ordinary Texture.
-		Optional<Texture> m_renderTarget;
+		Optional<ColorRenderTarget> m_renderTarget;
 
 		// Only single-sample outputs alias their sampled image. Scene/MSAA outputs do not.
 		Texture::IDType m_feedbackTargetID = Texture::IDType::Invalid();
@@ -873,7 +872,7 @@ namespace s3d
 		Float2 m_sceneScale{ 1.0f, 1.0f };
 
 		// Change logical outputs here, including temporary Scene passes, to invalidate validation.
-		void setRenderTargetState(const Optional<Texture>& renderTarget);
+		void setRenderTargetState(const Optional<ColorRenderTarget>& renderTarget);
 
 		// Check before allocating geometry. Repeated inputs need no output comparison.
 		SIV3D_ALWAYS_INLINE
