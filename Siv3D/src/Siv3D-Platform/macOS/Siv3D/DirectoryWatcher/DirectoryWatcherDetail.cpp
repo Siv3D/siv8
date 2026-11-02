@@ -44,10 +44,13 @@ namespace s3d
 		}
 		
 		FSEventStreamStop(m_eventStream);
-		FSEventStreamUnscheduleFromRunLoop(m_eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 		FSEventStreamInvalidate(m_eventStream);
+		// 新規通知を停止してから、this を参照する実行中のコールバックの終了を待つ。
+		dispatch_sync_f(m_eventQueue, nullptr, [](void*) {});
 		FSEventStreamRelease(m_eventStream);
 		m_eventStream = nullptr;
+		dispatch_release(m_eventQueue);
+		m_eventQueue = nullptr;
 		
 		LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Stopped watching `{}`", m_directory.toUTF8()));
 	}
@@ -100,8 +103,17 @@ namespace s3d
 			return false;
 		}
 		
-		FSEventStreamScheduleWithRunLoop(m_eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-		FSEventStreamStart(m_eventStream);
+		m_eventQueue = dispatch_queue_create("org.siv3d.DirectoryWatcher", DISPATCH_QUEUE_SERIAL);
+		FSEventStreamSetDispatchQueue(m_eventStream, m_eventQueue);
+		if (not FSEventStreamStart(m_eventStream))
+		{
+			FSEventStreamInvalidate(m_eventStream);
+			FSEventStreamRelease(m_eventStream);
+			m_eventStream = nullptr;
+			dispatch_release(m_eventQueue);
+			m_eventQueue = nullptr;
+			return false;
+		}
 		
 		if (m_extensionFilter)
 		{

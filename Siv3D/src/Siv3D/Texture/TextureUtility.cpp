@@ -181,6 +181,17 @@ namespace s3d
 				Fill(pBytes, bufferSizeBytes, color.toR32G32B32A32_Float());
 				break;
 			}
+		case TexturePixelFormat::Unknown:
+		case TexturePixelFormat::BC1_RGBA_Unorm:
+		case TexturePixelFormat::BC1_RGBA_Unorm_SRGB:
+		case TexturePixelFormat::BC3_RGBA_Unorm:
+		case TexturePixelFormat::BC3_RGBA_Unorm_SRGB:
+		case TexturePixelFormat::BC4_R_Unorm:
+		case TexturePixelFormat::BC5_RG_Unorm:
+		case TexturePixelFormat::BC7_RGBA_Unorm:
+		case TexturePixelFormat::BC7_RGBA_Unorm_SRGB:
+			// 単色のピクセル書き込みに対応しない形式
+			break;
 		}
 
 		return bytes;
@@ -251,6 +262,17 @@ namespace s3d
 				Fill(pDst, bufferSizeBytes, color.toR32G32B32A32_Float());
 				break;
 			}
+			case TexturePixelFormat::Unknown:
+			case TexturePixelFormat::BC1_RGBA_Unorm:
+			case TexturePixelFormat::BC1_RGBA_Unorm_SRGB:
+			case TexturePixelFormat::BC3_RGBA_Unorm:
+			case TexturePixelFormat::BC3_RGBA_Unorm_SRGB:
+			case TexturePixelFormat::BC4_R_Unorm:
+			case TexturePixelFormat::BC5_RG_Unorm:
+			case TexturePixelFormat::BC7_RGBA_Unorm:
+			case TexturePixelFormat::BC7_RGBA_Unorm_SRGB:
+				// 単色のピクセル書き込みに対応しない形式
+				break;
 		}
 	}
 

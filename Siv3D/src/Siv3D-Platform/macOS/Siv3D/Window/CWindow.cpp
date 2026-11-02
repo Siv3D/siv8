@@ -514,7 +514,7 @@ namespace s3d
 
 	void CWindow::OnMove(GLFWwindow* glfwWindow, const int flag, const int)
 	{
-		const bool move = (flag == 1);
+		[[maybe_unused]] const bool move = (flag == 1);
 		LOG_DEBUG(fmt::format("CWindow::OnMove({})", move));
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
@@ -559,7 +559,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::OnScalingChange(GLFWwindow*, const float sx, const float sy)
+	void CWindow::OnScalingChange(GLFWwindow*, [[maybe_unused]] const float sx, [[maybe_unused]] const float sy)
 	{
 		LOG_DEBUG(fmt::format("CWindow::OnScalingChange({}, {})", sx, sy));
 	}

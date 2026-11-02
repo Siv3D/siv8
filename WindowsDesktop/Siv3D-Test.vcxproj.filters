@@ -151,6 +151,9 @@
     <ClCompile Include="..\Test\Test_ImageDraw.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_DirectoryWatcher.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>

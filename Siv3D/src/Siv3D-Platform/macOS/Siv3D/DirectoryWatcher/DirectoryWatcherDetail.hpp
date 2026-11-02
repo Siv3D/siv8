@@ -9,10 +9,12 @@
 //
 //-----------------------------------------------
 
+# include <atomic>
 # include <mutex>
 # include <Siv3D/DirectoryWatcher.hpp>
 # include <Siv3D/ExtensionFilter/ExtensionFilter.hpp>
 # include <CoreServices/CoreServices.h>
+# include <dispatch/dispatch.h>
 
 namespace s3d
 {
@@ -94,6 +96,8 @@ namespace s3d
 		ExtensionFilter m_extensionFilter;
 
 		FSEventStreamRef m_eventStream = nullptr;
+
+		dispatch_queue_t m_eventQueue = nullptr;
 		
 		std::atomic<bool> m_abort = false;
 

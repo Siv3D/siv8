@@ -64,7 +64,7 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		static InputState* GetInputState(const InputDeviceType device, const uint8, const uint8 code)
+		static InputState* GetInputState(const InputDeviceType device, const uint8 playerIndex, const uint8 code)
 		{
 			switch (device)
 			{

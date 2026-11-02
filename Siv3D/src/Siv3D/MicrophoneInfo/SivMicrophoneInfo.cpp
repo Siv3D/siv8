@@ -50,6 +50,9 @@ namespace s3d
 					case ma_backend_coreaudio:
 						info.id = Unicode::FromUTF8(src.id.coreaudio);
 						break;
+					default:
+						// ID の文字列化に対応しないバックエンドでは空のままにする。
+						break;
 					}
 
 					info.isDefault = src.isDefault;

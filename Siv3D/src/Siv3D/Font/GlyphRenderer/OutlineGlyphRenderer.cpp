@@ -134,7 +134,7 @@ namespace s3d
 
 			OutlineData userData;
 
-			if (const FT_Error error = ::FT_Outline_Decompose(&face->glyph->outline, &outlineFuncs, &userData))
+			if (::FT_Outline_Decompose(&face->glyph->outline, &outlineFuncs, &userData) != 0)
 			{
 				return{};
 			}

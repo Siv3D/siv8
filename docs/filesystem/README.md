@@ -13,6 +13,18 @@
 
 未完了の作業は [TODO.md](../../TODO.md) で管理します。
 
+## ディレクトリ監視の実装と検証
+
+macOS の `DirectoryWatcher` は監視ごとの serial dispatch queue で FSEvents を
+受け取り、作成元スレッドの RunLoop に依存しません。終了時は stream を停止・無効化
+してから queue 上のコールバックを待ち、監視状態を解放します。コールバックから
+ユーザーの処理を直接呼ばず、変更一覧は mutex を介して受け渡します。
+
+[Test_DirectoryWatcher.cpp](../../Test/Test_DirectoryWatcher.cpp) は、未開始・無効なパス、
+macOS での作成・変更・削除通知、拡張子フィルター、通知を伴う監視の反復終了を検査します。
+macOS の通知検査は `System::Update()` や RunLoop を回さずに実行します。
+ファイル通知は OS によってまとめられるため、通知の件数・到着順序を固定しません。
+
 ## スクリーンショットの保存先
 
 スクリーンショットの公開契約は

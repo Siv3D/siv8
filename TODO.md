@@ -87,6 +87,10 @@
 
 - テストアプリをクリーンビルドした Debug 全テストが `TOML.Load.invalid` で CRT アサート（`isctype.cpp:36`、`c >= -1 && c <= 255`）に停止する。どの入力・文字分類呼び出しが原因か、エンジンと依存ライブラリを含めて切り分ける。Release 全テストは通過する。警告整理とは別件として保留し、不正入力の拒否を検証するテストやバイト単位の fixture を弱めない。
 
+## `Siv3D/include/Siv3D/Network.hpp` / macOS の到達性
+
+- `HasInternetConnectivity()` は同期問い合わせの動作を維持するため、非推奨の `SCNetworkReachability` の2呼び出しに限って警告を抑制している。[Apple の移行方針](https://developer.apple.com/documentation/systemconfiguration/scnetworkreachability-g7d)に沿って `NWPathMonitor` へ移行する際は、監視の開始・終了、初回通知前の戻り値、更新の同期、IPv4 / IPv6 と VPN の扱いを決める。呼び出しごとの監視生成や通知待ちをフレームループへ持ち込まない。接続成否は実際の通信結果で判断する既存契約を維持する。
+
 ## `Siv3D/include/Siv3D/Keyboard.hpp` / macOS の入力
 
 - JIS / US の記号キーの対応を配列に合わせる。現在の変換表には `;`、`:`、`=`、`^`、`@`、括弧などの不整合があり、`0xDE` は未割り当て。`0xDC` の backslash / yen の統合も、JIS の `]` と yen の区別までは解決しない。物理配列と入力ソースのどちらで判定するか、切り替え・複数キーボードをどう扱うかを先に決める。既存 Input コードの意味と保存済みキー設定との互換性を維持する。

@@ -1337,6 +1337,9 @@ namespace s3d
 			{
 				switch (command.type)
 				{
+				case MetalRenderer2DCommandType::SIZE_:
+					// コマンド数を表す番兵値は実行しない。
+					break;
 				case MetalRenderer2DCommandType::Null:
 					{
 						LOG_COMMAND("Null");

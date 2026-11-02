@@ -73,7 +73,7 @@ namespace s3d
 		const RenderTexture single{ Size{ 8, 8 }, Palette::Black };
 		const ScopedRenderTarget2D outer{ single };
 		const ScopedViewport2D viewport{ Rect{ 1, 2, 4, 5 } };
-		for (const ColorRenderTarget target : { ColorRenderTarget{}, ColorRenderTarget{ RenderTexture{} }, ColorRenderTarget{ MSRenderTexture{} } })
+		for (const ColorRenderTarget& target : { ColorRenderTarget{}, ColorRenderTarget{ RenderTexture{} }, ColorRenderTarget{ MSRenderTexture{} } })
 		{
 			CHECK(target.isEmpty());
 			CHECK_FALSE(target);

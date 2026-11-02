@@ -275,6 +275,31 @@ when the script supplies `SIV3D_IMAGE_ALLOCATION_TEST`; the engine and its norma
 test application contain no allocation override. These checks supplement the full
 engine suite and do not verify the Windows allocator or MemorySanitizer behavior.
 
+### Clang warnings on macOS
+
+Audit both Debug and Release with the existing warning settings. For a complete
+rebuild, clean with a temporary product directory, then run the normal runner
+without that override:
+
+```sh
+xcodebuild -quiet -project macOS/OpenSiv3D.xcodeproj -scheme Siv3D-Test \
+    -configuration Release -destination "platform=macOS,arch=$(uname -m)" \
+    CONFIGURATION_BUILD_DIR=/tmp/siv8-warning-clean CODE_SIGNING_ALLOWED=NO clean
+CONFIGURATION=Release ./macOS/run-tests.sh > /tmp/siv8-warnings-release.log 2>&1
+```
+
+Repeat with `Debug`. The temporary product path keeps `clean` away from tracked
+resources in `macOS/App/`; do not mark that directory as build-system-deletable.
+The build and test log remains at the explicit `/tmp/` path for inspection.
+Classify diagnostics by source ownership and instantiation traces: the embedded
+AGG headers under `Font/GlyphRenderer/agg/` are also vendored code.
+
+For `-Wdangling` on a `FunctionRef`, keep the callable itself alive for every use
+of the reference. A named `auto` lambda can be passed to functions taking a
+`FunctionRef`; assigning a temporary lambda directly to a stored `FunctionRef`
+does not extend the lambda's lifetime. For `-Wswitch`, explicitly handle enum
+sentinels and intentionally unsupported values while preserving existing behavior.
+
 ### MSVC warnings in tests
 
 For warning cleanup, compare clean test-application builds in Release and Debug
@@ -309,6 +334,8 @@ in the first diagnostic. Then rebuild and run the full suite in both Release
 and Debug; their macros and optimization can expose different warnings.
 Use `[[maybe_unused]]` for parameters used only by some template or platform
 branches, and omit names of intentionally unused implementation parameters.
+Keep parameter names and unused warnings for planned engine functionality;
+do not silence these by adding `[[maybe_unused]]` or omitting their names.
 For possibly uninitialized locals, check every assignment and use before
 choosing explicit initialization or simpler control flow; do not introduce
 fallback geometry or exceptional-input checks just to silence a diagnostic.

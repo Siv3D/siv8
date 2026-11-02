@@ -42,10 +42,14 @@ namespace s3d
 			zeroAddress.sin_len = sizeof(zeroAddress);
 			zeroAddress.sin_family = AF_INET;
 
+			// 同期問い合わせの既存動作を維持する。NWPathMonitor への移行は TODO.md を参照。
+			# pragma clang diagnostic push
+			# pragma clang diagnostic ignored "-Wdeprecated-declarations"
 			SCNetworkReachabilityRef reachability =
 				::SCNetworkReachabilityCreateWithAddress(
 					kCFAllocatorDefault,
 					reinterpret_cast<const sockaddr*>(&zeroAddress));
+			# pragma clang diagnostic pop
 
 			if (!reachability)
 			{
@@ -53,7 +57,10 @@ namespace s3d
 			}
 
 			SCNetworkReachabilityFlags flags = 0;
+			# pragma clang diagnostic push
+			# pragma clang diagnostic ignored "-Wdeprecated-declarations"
 			const bool didRetrieveFlags = (::SCNetworkReachabilityGetFlags(reachability, &flags) != FALSE);
+			# pragma clang diagnostic pop
 
 			::CFRelease(reachability);
 

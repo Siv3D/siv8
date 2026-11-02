@@ -257,7 +257,7 @@ TEST_CASE("Renderer2D.arc_caps_upload_benchmark", "[.benchmark]")
 	auto* renderer = SIV3D_ENGINE(Renderer2D);
 	Array<Vertex2D> vertices(1024);
 	Array<Vertex2D::IndexType> indices(4096);
-	const BufferCreatorFunc allocate = [&](const uint16 v, const uint32 i)
+	const auto allocate = [&](const uint16 v, const uint32 i)
 	{
 		if ((vertices.size() < v) || (indices.size() < i)) return Vertex2DBufferPointer{};
 		return Vertex2DBufferPointer{ vertices.data(), indices.data(), 0 };
