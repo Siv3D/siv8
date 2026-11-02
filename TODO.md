@@ -23,10 +23,6 @@
 
 ## RenderTexture / DepthTexture
 
-### 残る検証
-
-- MSAA MRT の Windows / D3D11 実行を確認する。[検証手順](docs/renderer2d/render-texture.md#validation)に従い、2x / 4x・最大 8 出力、ネストと復元、個別の明示 resolve、sRGB / HDR、フレーム境界を含む対象テストと通常フルスイートの結果を確認する。単一サンプル MRT までの検証とは区別する。
-
 ### 具体的な用途が必要になった時点で再開する拡張
 
 - 3D 描画の深度テスト・共有・参照の要件と合わせて、独立した `DepthTexture` を設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。

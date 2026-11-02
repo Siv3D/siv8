@@ -364,6 +364,13 @@ Preserve both build logs and run the full suite after a successful rebuild.
 Changing the host compiler and regenerating build artifacts together does not
 isolate which change avoided the failure.
 
+The 64-bit host is a workaround, not a guarantee: `C1001` can also occur under
+`HostX64/x64/`, including during PCH compilation. Before rebuilding, preserve the
+failed PCH, compiler command line and build state along with the build log and
+any matching Windows Application events or WER report. A diagnostic source
+location alone does not establish a source defect, and success on an otherwise
+identical rebuild does not identify the root cause.
+
 Use `-SkipBuild` for subsequent runner invocations while the sources and build
 settings remain unchanged. The runner does not forward `PreferredToolArchitecture`;
 omitting `-SkipBuild` can switch back to the default host compiler and rebuild
