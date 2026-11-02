@@ -10,8 +10,27 @@ color texture and a separate single-sample resolve result. A target scope writes
 to its MSAA image; sampling uses the last explicitly resolved image.
 [ColorRenderTarget](../../Siv3D/include/Siv3D/ColorRenderTarget.hpp) shares either
 kind through one typed handle, with common clear, resolve, and mip operations.
-Independent output blending and depth attachments are tracked in
-[TODO](../../TODO.md#rendertexture--depthtexture).
+
+## Scope of the 2D color-target implementation
+
+The current implementation covers offscreen composition, ping-pong image
+processing, HDR intermediates, and single-sample or MSAA passes with multiple
+color outputs. These uses can be developed with the existing color resources
+and target scopes. Depth resources are a separate extension, to be designed
+with the rendering passes that need depth testing, sharing, and sampling.
+
+RenderTexture and MSRenderTexture both derive from Texture; ColorRenderTarget
+provides their common target operations without making either resource inherit
+the other's semantics. The distinction between the drawing image and the sampled
+image remains explicit. The renderer and scopes share one ordered target state,
+so single-output and MRT passes use the same restoration and feedback rules.
+
+Future work is tracked in [TODO](../../TODO.md#rendertexture--depthtexture).
+Revisit independent output blending when a pass needs different blend settings
+per output. Revisit depth bindings with 3D rendering requirements, including
+queue ordering for resource operations. Keep color-resource ownership separate
+from depth ownership; the current 2D-only Flush policy of clear, mip generation,
+and readback does not define how future 2D and 3D queues should be coordinated.
 
 ## Creating and inspecting textures
 
@@ -324,11 +343,31 @@ ordered set and viewport, including after readback or a frame boundary.
 
 ## Ordering and backend responsibilities
 
-Clears and mip generation consume earlier queued 2D draws before changing an
-existing texture. Explicit MSRenderTexture resolve is the exception described
-above. This gives `draw(); clear(); draw();` an observable order even though
-normal draws are batched. Texture creation uploads new resources without
-flushing unrelated draws.
+For a pass that needs a sampled MSAA result and its lower mip levels, use
+`draw -> Graphics2D::Flush() -> resolve -> generateMips -> sample/read`.
+Resolve each required MRT output after the shared Flush. If lower mip levels
+are not used, omit mip generation. Readback is optional and waits for the GPU;
+sampling the result in a later GPU pass does not require readback.
+
+The operation effects below summarize the public contracts in
+[RenderTexture](../../Siv3D/include/Siv3D/RenderTexture.hpp) and
+[MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp). They describe
+valid operations on non-empty resources; mip generation requires allocated
+lower levels. ColorRenderTarget delegates to the same operations.
+
+| Operation | RenderTexture image | MSRenderTexture images | Issues queued 2D draws | Waits for GPU completion |
+|---|---|---|---|---|
+| `clear()` | Changes level 0 | Changes only the MSAA image | Yes | No |
+| `ColorRenderTarget::resolve()` | No-op | Updates resolved level 0 from the MSAA image | No | No |
+| `generateMips()` | Regenerates lower levels from level 0 | Regenerates lower levels from resolved level 0 | Yes | No |
+| `read()` / `readAsImage()` on the original resource | Reads the requested level | Reads the requested resolved level | Yes | Yes |
+| Switch or restore a different target set | Preserves contents | Preserves both images; no resolve | Yes | No |
+
+The Flush performed by `read()` or `generateMips()` does not resolve an MSAA
+image. Calling either after a resolve that preceded queued drawing still uses
+that earlier resolve result. Clear gives `draw(); clear(); draw();` an
+observable order even though normal draws are batched. Texture creation uploads
+new resources without flushing unrelated draws.
 
 Changing targets flushes the preceding draw batch without waiting for the GPU.
 Re-entering the same target can retain the batch. Native resource ownership is
@@ -370,11 +409,6 @@ Copies use the native row
 pitch and return tightly packed CPU pixels. Output views are unbound at the end
 of each execution, and VS/PS input views are cleared around target binding, so
 subsequent sampling, clear, mip generation and readback do not inherit conflicts.
-
-Color textures do not own depth resources. Future depth bindings should extend
-the target representation without giving color resources ownership of depth
-textures. Independent output blend settings and depth attachments remain
-separate extensions.
 
 ## Validation
 
@@ -430,7 +464,7 @@ texture allocation, and resolve-encoder failure followed by retry.
 Run from the repository root using the host workflow:
 
 ```sh
-./macOS/run-tests.sh '--test-case=MRT.*,ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
+./macOS/run-tests.sh '--test-case=MRT.*,ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*,MetalRenderPipelineState.*'
 ./macOS/run-tests.sh
 ./macOS/validate-projects.sh
 ```
@@ -443,3 +477,17 @@ Run from the repository root using the host workflow:
 Platform execution is separate from project registration validation. Follow the
 [development guide](../development/README.md#build-and-test) for build settings,
 logs, and platform-specific diagnostics.
+
+For validation on another machine, record the backend, build configuration,
+executed selection, complete XML results, and actual format/sample support.
+Successful creation on a capable GPU does not exercise rejection for an
+unsupported capability; Metal failure injection and D3D11 device execution are
+separate evidence. The regular suite also excludes opt-in UI and benchmark
+cases. Re-run the [texture-update benchmark](dynamic-texture.md) when changing
+upload or synchronization behavior, rather than treating correctness results
+as a performance comparison.
+
+When using the 64-bit compiler-host workaround on Windows, follow the
+[incremental-build diagnosis guide](../development/README.md#windows-incremental-build-failures)
+for an explicit build and subsequent `-SkipBuild` runs. A previous successful
+binary must match the current sources and build settings.

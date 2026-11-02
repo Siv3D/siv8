@@ -121,18 +121,18 @@ namespace s3d
 		/// @brief ミップレベル 0 を指定した色でクリアします。
 		/// @param color 線形の色。sRGB 形式では RGB が sRGB にエンコードされ、アルファは変換されません。
 		/// @return *this
-		/// @remark 空なら何もしません。既に要求した描画との順序を保ち、GPU 完了は待ちません。
+		/// @remark 空なら何もしません。保留中の 2D 描画を発行します。GPU 完了は待ちません。
 		const RenderTexture& clear(const ColorF& color) const;
 
 		/// @brief ミップレベル 0 から残りのミップマップを再生成します。
-		/// @remark 空またはミップレベルが 1 つの場合は何もしません。GPU 完了は待ちません。
+		/// @remark 空またはミップレベルが 1 つの場合は何もしません。保留中の 2D 描画を発行します。GPU 完了は待ちません。
 		void generateMips() const;
 
 		/// @brief 指定したミップレベルを生バイト列に読み戻します。
 		/// @param destination パディングのない行を格納する出力先。対象レベルの幅 × 高さ × pixelSize() バイトが必要です。
 		/// @param mipLevel ミップレベル（0 が元のサイズ）
 		/// @return 成功なら true。空、不正なレベル・出力サイズ、GPU 転送失敗では出力を変更せず false
-		/// @remark GPU 転送の完了を待ちます。フォーマット変換や sRGB のデコードは行いません。
+		/// @remark 保留中の 2D 描画を発行し、GPU 転送の完了を待ちます。フォーマット変換や sRGB のデコードは行いません。
 		bool read(std::span<Byte> destination, uint32 mipLevel = 0) const;
 
 		/// @brief RGBA8（sRGB を含む）を Image に読み戻します。
