@@ -19,6 +19,7 @@ namespace s3d
 	/// @brief 深度を持たない、MSAA 用と resolve 後の色テクスチャを内包するレンダーテクスチャ
 	/// @remark Texture としての描画・参照は最後の resolve 結果を使います。コピーは 2 枚をまとめて共有します。
 	/// @remark 生成時は両側とミップを初期色で初期化します。clear() は MSAA 側だけを更新します。
+	/// @remark ScopedRenderTarget2D に指定すると MSAA 側へ描画します。描画先の切り替えやスコープ終了では自動 resolve しません。
 	/// @remark 各辺 1～16384 ピクセル、2x / 4x MSAA に対応します。不正な指定、GPU が非対応のフォーマット・サンプル数・ミップ設定、GPU リソースの確保失敗では空になります。設定の自動変更は行いません。
 	/// @remark 明示した format が sRGB の有無を決定します。初期色と clear() は RenderTexture::clear() と同じ色空間の規則を使います。
 	/// @remark GPU コマンドの記録を開始できない場合は InternalEngineError を送出します。

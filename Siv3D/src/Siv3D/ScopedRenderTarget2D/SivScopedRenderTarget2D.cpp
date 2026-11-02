@@ -17,6 +17,15 @@
 namespace s3d
 {
 	ScopedRenderTarget2D::ScopedRenderTarget2D(const Optional<RenderTexture>& renderTarget)
+		: ScopedRenderTarget2D{ Optional<Texture>{ renderTarget }, TargetTag{} } {}
+
+	ScopedRenderTarget2D::ScopedRenderTarget2D(const Optional<MSRenderTexture>& renderTarget)
+		: ScopedRenderTarget2D{ Optional<Texture>{ renderTarget }, TargetTag{} } {}
+
+	ScopedRenderTarget2D::ScopedRenderTarget2D(None_t)
+		: ScopedRenderTarget2D{ Optional<Texture>{}, TargetTag{} } {}
+
+	ScopedRenderTarget2D::ScopedRenderTarget2D(const Optional<Texture>& renderTarget, TargetTag)
 		: m_oldRenderTarget{ std::in_place, SIV3D_ENGINE(Renderer2D)->getRenderTarget() }
 		, m_oldViewport{ SIV3D_ENGINE(Renderer2D)->getViewport() }
 	{

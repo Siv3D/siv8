@@ -115,5 +115,47 @@ namespace s3d
 		REQUIRE(b.readAsImage(image));
 		CHECK(image == Image{ 4, 4, Palette::Black });
 	}
+	TEST_CASE("ScopedRenderTarget2D.Metal.encoder_failure_restores_multisample_target")
+	{
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const ScopedRenderTarget2D scene{ none };
+		const ScopedViewport2D viewport{ none };
+		const ScopedScissorRect2D scissor{ none };
+		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+		const MSRenderTexture ms{ Size{ 8, 8 }, Palette::Blue };
+		const RenderTexture single{ Size{ 4, 4 }, Palette::Black };
+		const ScopedRenderTarget2D outer{ ms };
+		const ScopedViewport2D outerViewport{ Rect{ 0, 0, 8, 8 } };
+		Rect{ 8, 8 }.draw(Palette::Red);
+		{
+			EncoderFailure failure{ *renderer };
+			CHECK_THROWS_AS(ScopedRenderTarget2D{ single }, InternalEngineError);
+			CHECK(failure.attempts == 1);
+			CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == ms.id());
+			CHECK(Graphics2D::GetViewport() == Rect{ 0, 0, 8, 8 });
+		}
+		{
+			EncoderFailure failure{ *renderer };
+			CHECK_THROWS_AS(([&]
+			{
+				const ScopedRenderTarget2D nested{ single };
+				ms.draw();
+			}()), InternalEngineError);
+			CHECK(failure.attempts == 1);
+			CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == ms.id());
+			CHECK(Graphics2D::GetViewport() == Rect{ 0, 0, 8, 8 });
+		}
+		CHECK_NOTHROW(ms.draw()); // Its resolved input is still safe after failure restoration.
+		Rect{ 8, 8 }.draw(Palette::Green);
+		Graphics2D::Flush();
+		ms.resolve();
+		Image pixels;
+		REQUIRE(ms.readAsImage(pixels));
+		CHECK(pixels == Image{ 8, 8, Palette::Green });
+		REQUIRE(single.readAsImage(pixels));
+		CHECK(pixels == Image{ 4, 4, Palette::Black });
+	}
+
 }
 # endif

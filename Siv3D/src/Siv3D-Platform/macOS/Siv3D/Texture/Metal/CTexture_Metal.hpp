@@ -91,6 +91,9 @@ namespace s3d
 		[[nodiscard]]
 		MTL::Texture* getTexture(Texture::IDType handleID);
 
+		[[nodiscard]]
+		MTL::Texture* getRenderTargetTexture(Texture::IDType handleID);
+
 	private:
 
 		[[nodiscard]]

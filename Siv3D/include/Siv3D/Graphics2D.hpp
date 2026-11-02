@@ -226,7 +226,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 描画座標で表した、現在の描画先の幅と高さを返します。
-		/// @return Scene では Scene::Size()、RenderTexture ではそのピクセル寸法
+		/// @return Scene では Scene::Size()、RenderTexture / MSRenderTexture ではそのピクセル寸法
 		/// @remark Local / Camera / QuadWarp の変換やビューポート設定は含みません。
 		[[nodiscard]]
 		Size GetDrawingSize() noexcept;

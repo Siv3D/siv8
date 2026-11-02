@@ -17,7 +17,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
-# include <Siv3D/RenderTexture.hpp>
+# include <Siv3D/Texture.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include "../Geometry2D/DashedPath.hpp"
@@ -683,11 +683,11 @@ namespace s3d
 
 		virtual void flush() = 0;
 
-		const Optional<RenderTexture>& getRenderTarget() const noexcept { return m_renderTarget; }
+		const Optional<Texture>& getRenderTarget() const noexcept { return m_renderTarget; }
 
-		void setRenderTarget(const Optional<RenderTexture>& renderTarget);
+		void setRenderTarget(const Optional<Texture>& renderTarget);
 
-		void restoreRenderTarget(const Optional<RenderTexture>& renderTarget, const Optional<Rect>& viewport);
+		void restoreRenderTarget(const Optional<Texture>& renderTarget, const Optional<Rect>& viewport);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -863,19 +863,23 @@ namespace s3d
 
 	protected:
 
-		Optional<RenderTexture> m_renderTarget;
+		// Holds either a RenderTexture or MSRenderTexture handle; never an ordinary Texture.
+		Optional<Texture> m_renderTarget;
+
+		// Only single-sample outputs alias their sampled image. Scene/MSAA outputs do not.
+		Texture::IDType m_feedbackTargetID = Texture::IDType::Invalid();
 
 		// Scene scale is retained while the active texture uses a 1:1 drawing scale.
 		Float2 m_sceneScale{ 1.0f, 1.0f };
 
 		// Change logical outputs here, including temporary Scene passes, to invalidate validation.
-		void setRenderTargetState(const Optional<RenderTexture>& renderTarget);
+		void setRenderTargetState(const Optional<Texture>& renderTarget);
 
 		// Check before allocating geometry. Repeated inputs need no output comparison.
 		SIV3D_ALWAYS_INLINE
 		void checkRenderTargetFeedback(const Texture& texture)
 		{
-			if (not m_renderTarget)
+			if (m_feedbackTargetID == Texture::IDType::Invalid())
 			{
 				return;
 			}
@@ -884,7 +888,7 @@ namespace s3d
 			{
 				return;
 			}
-			if (m_renderTarget->id() == inputID)
+			if (m_feedbackTargetID == inputID)
 			{
 				ThrowRenderTargetFeedback();
 			}

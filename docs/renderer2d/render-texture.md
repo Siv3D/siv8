@@ -4,10 +4,11 @@
 color texture. It supports creation, GPU clears, mipmap generation, CPU readback,
 and the drawing operations inherited from `Texture`.
 [ScopedRenderTarget2D](../../Siv3D/include/Siv3D/ScopedRenderTarget2D.hpp) selects
-one single-sample color texture for 2D drawing.
+one color texture for 2D drawing.
 [MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp) owns a multisample
-color texture and a separate single-sample resolve result. Its target binding,
-MRT, and depth attachments are tracked in
+color texture and a separate single-sample resolve result. A target scope writes
+to its MSAA image; sampling uses the last explicitly resolved image.
+MRT and depth attachments are tracked in
 [TODO](../../TODO.md#rendertexture--depthtexture).
 
 ## Creating and inspecting textures
@@ -80,12 +81,13 @@ the MSAA contents, allowing repeated resolves. Neither readback nor mip generati
 resolves implicitly. Mips belong only to the single-sample image.
 
 `resolve()` does **not** flush pending renderer commands or wait for GPU completion.
-When queued draws need to consume the previous resolved image, explicitly flush
-that renderer before resolving. Otherwise, the queued draws may consume the newly
-resolved image when they are eventually issued. Select the renderer and ordering
-at the call site; resolve does not choose an order between 2D and future 3D queues.
+To include queued draws into the MSAA image, explicitly flush that renderer
+before resolving. The same rule applies when queued draws need to consume the
+previous resolved image: without Flush, they may consume the newly resolved image
+when eventually issued. Select the renderer and ordering at the call site;
+resolve does not choose an order between 2D and future 3D queues.
 The other resource operations retain the existing 2D flush behavior described
-below. This distinction also applies while a different RenderTexture is selected.
+below. This distinction also applies while another texture is selected.
 
 On D3D11, creation checks the format's render, sample, resolve and requested mip
 capabilities, plus the requested multisample quality levels. Sampling always uses
@@ -98,12 +100,16 @@ GPU storage and remain alive through encoded command execution.
 ## Drawing into a texture
 
 A target scope preserves the texture's pixels and starts with a full-target
-viewport. Nest scopes to draw intermediate images, then use them in the outer
-target. Inside `Main()`:
+viewport. Both `RenderTexture` and `MSRenderTexture` can be selected. Nest scopes
+to draw intermediate images, then use them in the outer target. Inside `Main()`:
 
 ```cpp
-RenderTexture canvas{ Size{ 320, 180 } };
+MSRenderTexture canvas{ Size{ 320, 180 } }; // 4x MSAA
 RenderTexture stamp{ Size{ 64, 64 } };
+if (not canvas || not stamp)
+{
+    return;
+}
 
 while (System::Update())
 {
@@ -117,51 +123,66 @@ while (System::Update())
         }
         stamp.drawAt(160, 90);
     }
+    canvas.resolve();
     canvas.draw(40, 40);
 }
 ```
 
 `ScopedRenderTarget2D{ none }` temporarily selects Scene; the default constructor
-leaves the current state alone. An empty `RenderTexture` is an error. The scope
-holds a shared handle, so releasing or replacing the caller's handle does not
-change the selected resource. Moving the scope transfers its restoration duty.
+leaves the current state alone. An empty `RenderTexture` or `MSRenderTexture` is
+an error. The scope holds a shared handle, so releasing or replacing the caller's
+handle does not change the selected resource. Moving the scope transfers its
+restoration duty.
 
 `Graphics2D::GetDrawingSize()` and `Graphics2D::GetRenderTargetSize()` return the
-texture's pixel dimensions inside a target scope. Camera defaults use that drawing size. Scene's display-resolution scaling
-is disabled for textures, including curve subdivision, but Local, Camera and
+texture's pixel dimensions inside a target scope. Camera defaults use that
+drawing size. Scene's display-resolution scaling is disabled for textures,
+including curve subdivision, but Local, Camera and
 QuadWarp transforms still apply. Scissor rectangles, colors, blend states,
 shaders, and constant buffers carry across target changes. The prior viewport
 and target are restored at scope exit; other states use their own scope objects.
 
-To read from a texture while drawing another image, select a different output
-first. Drawing the active output as an input, including through a copied handle
-or `TextureRegion`, throws `Error` before queuing that draw. This also applies
-when using a custom shader with a textured draw. Use two textures for feedback
-or iterative image processing.
+Sampling the active single-sample `RenderTexture`, including through a copied
+handle or `TextureRegion`, throws `Error` before queuing that draw. This also
+applies when using a custom shader with a textured draw. Use two RenderTextures
+for iterative image processing. An active `MSRenderTexture` can sample its own
+resolve result because the input and output are separate native images. That
+input stays unchanged until the next explicit `resolve()`.
 
-Clear, readback, mip generation, and `Graphics2D::Flush()` may be used inside a
-scope and preserve its target. Drawing and clearing change mip level 0; call
-`generateMips()` after those changes when lower levels are needed. A scope can
-span a frame boundary: its target remains selected, while Scene still gets its
+Leaving a scope for a different target submits its draws but does not resolve.
+The example resolves after restoring Scene. To resolve while the texture is
+still selected, call `Graphics2D::Flush(); canvas.resolve();` in that order.
+Re-entering the same target does not itself require a Flush, so an inner scope
+for the same texture is not a substitute for this explicit call.
+
+Clear, resolve, readback, mip generation, and `Graphics2D::Flush()` may be used
+inside a scope and preserve its target. For RenderTexture, drawing and clearing
+change mip level 0. For MSRenderTexture, resolve updates level 0. Call
+`generateMips()` afterward when lower levels are needed. A scope can span a
+frame boundary: its target remains selected, while Scene still gets its
 normal per-frame background and presentation.
 
 ## Ordering and backend responsibilities
 
 Clears and mip generation consume earlier queued 2D draws before changing an
-existing texture. Explicit MSRenderTexture resolve is the exception described above. This gives `draw(); clear(); draw();` an observable order even
-though normal draws are batched. Texture creation uploads new resources without
+existing texture. Explicit MSRenderTexture resolve is the exception described
+above. This gives `draw(); clear(); draw();` an observable order even though
+normal draws are batched. Texture creation uploads new resources without
 flushing unrelated draws.
 
 Changing targets flushes the preceding draw batch without waiting for the GPU.
 Re-entering the same target can retain the batch. Native resource ownership is
 retained through command execution; texture contents are loaded on each pass.
 Feedback validation runs before geometry allocation, independently of texture
-binding and draw submission. It remembers the last successfully validated input
-ID for the current output. Repeated inputs skip output comparisons, while failed
-validation leaves the cache unchanged. Every logical output change invalidates
+binding and draw submission. On each target change, it records the ID whose
+sampled image aliases the output; Scene and MSRenderTexture have no such ID.
+It remembers the last successfully validated input ID for that output. Repeated
+inputs skip output comparisons, while failed validation leaves the cache
+unchanged. Every logical output change invalidates
 it, including scope restoration and Metal's temporary Scene pass at frame end.
-Ordinary flushes and re-entering the same output preserve it. Scene draws retain
-the early return without an input-ID lookup.
+Ordinary flushes and re-entering the same output preserve it. Scene and
+MSRenderTexture draws return early without an input-ID lookup. Sample count is
+queried only on target changes, not for each textured draw.
 
 Scopes restore logical target/viewport state even if draw encoding fails. A
 normal scope exit propagates that failure; an exit during exception unwinding
@@ -174,13 +195,16 @@ command buffer. This retains the acquired frame slot, frame number, scene pass
 state, and vertex/index allocation cursors. The synchronous segment completes
 before the slot can be reused, including when the remaining frame is canceled.
 The continuation buffer is allocated before submitting the current segment.
-RenderTexture passes always load/store their single-sample color attachment;
-the pipeline uses that attachment's pixel format and sample count. Scene's
+Texture target passes always load/store their color attachment. For
+MSRenderTexture, this is the MSAA image with all samples retained and no resolve
+attachment. The pipeline uses the attachment's pixel format and sample count. Scene's
 initial clear and MSAA store/resolve policy are tracked independently.
 
 D3D11 uses default-usage shader-readable render-target resources and a staging
 texture for readback. Format support, including automatic mip generation when
-requested, is checked before resource allocation. Copies use the native row
+requested, is checked before resource allocation. For MSRenderTexture, the RTV
+selects the MSAA image and the SRV selects the single-sample resolve result.
+Copies use the native row
 pitch and return tightly packed CPU pixels. Output views are unbound at the end
 of each execution, and VS/PS input views are cleared around target binding, so
 subsequent sampling, clear, mip generation and readback do not inherit conflicts.
@@ -208,7 +232,10 @@ unwinding.
 [Multisample resource tests](../../Test/Test_MSRenderTexture.cpp) check supported
 format/sample combinations, initialization, stale resolve results, independent
 mips, readback types and failures, handle lifetime, sampled native resources, and
-the visible difference between explicit Flush and resolve alone.
+the visible difference between explicit Flush and resolve alone. Target tests
+cover 2x/4x edge coverage, sRGB/HDR drawing, mixed single/multisample scopes,
+viewport and handle restoration, sampling the active MS target's resolved image,
+and continuation across readback and frame boundaries without implicit resolve.
 [Metal multisample tests](../../Test/Test_MetalMSRenderTexture.cpp) inspect native
 allocation descriptors and inject unsupported capabilities, failure of either
 texture allocation, and resolve-encoder failure followed by retry.

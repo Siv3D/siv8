@@ -492,4 +492,9 @@ namespace s3d
 	{
 		return m_textures[handleID]->getTexture();
 	}
+
+	MTL::Texture* CTexture_Metal::getRenderTargetTexture(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getRenderTargetTexture();
+	}
 }

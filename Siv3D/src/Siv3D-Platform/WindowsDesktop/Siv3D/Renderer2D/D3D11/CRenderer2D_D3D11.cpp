@@ -1237,6 +1237,7 @@ namespace s3d
 		m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
 		if (m_renderTarget)
 		{
+			// The RTV selects the MSAA image for MSRenderTexture; its SRV selects the resolve result.
 			ID3D11RenderTargetView* target = m_pTexture->getRTV(m_renderTarget->id());
 			m_context->OMSetRenderTargets(1, &target, nullptr);
 		}

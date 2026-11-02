@@ -866,4 +866,9 @@ namespace s3d
 	{
 		return m_texture.get();
 	}
+
+	MTL::Texture* MetalTexture::getRenderTargetTexture() const noexcept
+	{
+		return m_multiSampleTexture ? m_multiSampleTexture.get() : m_texture.get();
+	}
 }

@@ -7,6 +7,7 @@
 
 # include "Siv3DTest.hpp"
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # if SIV3D_PLATFORM(WINDOWS)
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
@@ -19,7 +20,11 @@ namespace s3d
 {
 	static_assert(std::is_base_of_v<Texture, MSRenderTexture>);
 	static_assert(not std::is_base_of_v<RenderTexture, MSRenderTexture>);
-	static_assert(not std::is_constructible_v<ScopedRenderTarget2D, MSRenderTexture>);
+	static_assert(std::is_constructible_v<ScopedRenderTarget2D, MSRenderTexture>);
+	static_assert(std::is_constructible_v<ScopedRenderTarget2D, Optional<MSRenderTexture>>);
+	static_assert(std::is_constructible_v<ScopedRenderTarget2D, None_t>);
+	static_assert(not std::is_constructible_v<ScopedRenderTarget2D, Texture>);
+	static_assert(not std::is_constructible_v<ScopedRenderTarget2D, Optional<Texture>>);
 
 	namespace
 	{
@@ -68,6 +73,9 @@ namespace s3d
 
 		struct DrawState
 		{
+			const ScopedRenderTarget2D scene{ none };
+			const ScopedViewport2D viewport{ none };
+			const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
 			const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
 			const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 			const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
@@ -284,5 +292,313 @@ namespace s3d
 		CHECK(native->sampleCount() == 1);
 		CHECK(native->textureType() == MTL::TextureType2D);
 	# endif
+	}
+
+	TEST_CASE("MSRenderTexture.target_formats_samples_and_explicit_resolve")
+	{
+		const DrawState state;
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			for (uint8 i = FromEnum(TexturePixelFormat::R8_Unorm); i <= FromEnum(TexturePixelFormat::R32G32B32A32_Float); ++i)
+			{
+				const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+				CAPTURE(samples, format);
+				const MSRenderTexture texture{ Size{ 13, 7 }, samples, format };
+				if (not Supports(format, samples, false)) { CHECK_FALSE(texture); continue; }
+				REQUIRE(texture);
+				{
+					const ScopedRenderTarget2D target{ texture };
+					CHECK(Graphics2D::GetDrawingSize() == texture.size());
+					CHECK(Graphics2D::GetRenderTargetSize() == texture.size());
+					Rect{ texture.size() }.draw(Palette::White);
+				}
+				CHECK(ReadBytes(texture).all([](Byte b) { return b == Byte{ 0 }; }));
+				texture.resolve();
+				const RenderTexture reference{ texture.size(), Palette::White, format };
+				CHECK(ReadBytes(texture) == ReadBytes(reference));
+			}
+		}
+	}
+
+	TEST_CASE("MSRenderTexture.target_coverage_and_native_attachments")
+	{
+		const DrawState state;
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			CAPTURE(samples);
+			const MSRenderTexture texture{ Size{ 16, 16 }, Palette::Black, samples };
+			if (not Supports(TextureFormat::R8G8B8A8_Unorm, samples, false)) { CHECK_FALSE(texture); continue; }
+			REQUIRE(texture);
+			{
+				const ScopedRenderTarget2D target{ texture };
+				Triangle{ Vec2{ 1.2, 1.1 }, Vec2{ 14.6, 2.3 }, Vec2{ 2.7, 14.5 } }.draw(Palette::White);
+			}
+			texture.resolve();
+			Image pixels;
+			REQUIRE(texture.readAsImage(pixels));
+			CHECK(std::any_of(pixels.begin(), pixels.end(), [](Color c)
+			{
+				return (0 < c.r) && (c.r < 255) && (c.r == c.g) && (c.r == c.b);
+			}));
+			CHECK(pixels[15][15] == Palette::Black);
+			CHECK(pixels[4][4] == Palette::White);
+		# if SIV3D_PLATFORM(WINDOWS)
+			auto* manager = static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
+			D3D11_RENDER_TARGET_VIEW_DESC view{};
+			manager->getRTV(texture.id())->GetDesc(&view);
+			CHECK(view.ViewDimension == D3D11_RTV_DIMENSION_TEXTURE2DMS);
+			ComPtr<ID3D11Resource> resource;
+			manager->getRTV(texture.id())->GetResource(&resource);
+			ComPtr<ID3D11Texture2D> attachment;
+			REQUIRE(SUCCEEDED(resource.As(&attachment)));
+			D3D11_TEXTURE2D_DESC desc{};
+			attachment->GetDesc(&desc);
+			CHECK(desc.SampleDesc.Count == FromEnum(samples));
+			CHECK(attachment.Get() != manager->getTexture(texture.id()));
+		# else
+			auto* manager = static_cast<CTexture_Metal*>(SIV3D_ENGINE(Texture));
+			auto* attachment = manager->getRenderTargetTexture(texture.id());
+			CHECK(attachment->sampleCount() == FromEnum(samples));
+			CHECK(attachment != manager->getTexture(texture.id()));
+		# endif
+		}
+	}
+
+	TEST_CASE("MSRenderTexture.target_pending_draws_readback_and_mips")
+	{
+		const DrawState state;
+		for (const bool explicitFlush : { false, true })
+		{
+			CAPTURE(explicitFlush);
+			const MSRenderTexture texture{ Size{ 8, 8 }, Palette::Blue, TextureFormat::R8G8B8A8_Unorm, TextureDesc::Mipmap };
+			Image pixels;
+			{
+				const ScopedRenderTarget2D target{ texture };
+				Rect{ 8, 8 }.draw(Palette::Red);
+				if (explicitFlush) { Graphics2D::Flush(); }
+				texture.resolve();
+				// Reading flushes the pending draw, but never resolves it retroactively.
+				REQUIRE(texture.readAsImage(pixels));
+				CHECK(pixels == Image{ 8, 8, explicitFlush ? Palette::Red : Palette::Blue });
+				texture.resolve(); // The draw has now been flushed by readback.
+				REQUIRE(texture.readAsImage(pixels));
+				CHECK(pixels == Image{ 8, 8, Palette::Red });
+				REQUIRE(texture.readAsImage(pixels, 1));
+				CHECK(pixels == Image{ 4, 4, Palette::Blue });
+				texture.generateMips();
+				REQUIRE(texture.readAsImage(pixels, 1));
+				CHECK(pixels == Image{ 4, 4, Palette::Red });
+				// A clear affects MSAA only, and later passes load those samples.
+				texture.clear(Palette::Green);
+				REQUIRE(texture.readAsImage(pixels));
+				CHECK(pixels == Image{ 8, 8, Palette::Red });
+				Rect{ 4, 8 }.draw(Palette::Yellow);
+				Graphics2D::Flush();
+				texture.resolve();
+				REQUIRE(texture.readAsImage(pixels));
+				CHECK(pixels[4][2] == Palette::Yellow);
+				CHECK(pixels[4][6] == Palette::Green);
+				Rect{ 0, 0, 2, 2 }.draw(Palette::White);
+			}
+			// Scope exit flushes, but leaves the previously resolved image intact.
+			REQUIRE(texture.readAsImage(pixels));
+			CHECK(pixels[1][1] == Palette::Yellow);
+			texture.resolve();
+			REQUIRE(texture.readAsImage(pixels));
+			CHECK(pixels[1][1] == Palette::White);
+			CHECK(pixels[4][6] == Palette::Green);
+		}
+	}
+
+	TEST_CASE("MSRenderTexture.target_nesting_move_empty_and_retention")
+	{
+		const DrawState state;
+		MSRenderTexture a{ Size{ 16, 8 }, Palette::Black, MSAASampleCount::X4MSAA };
+		const auto retained = a;
+		const MSRenderTexture b{ Size{ 8, 8 }, Palette::Blue, MSAASampleCount::X2MSAA };
+		const RenderTexture single{ Size{ 8, 8 }, Palette::Black };
+		const ScopedViewport2D originalViewport{ Rect{ 2, 3, 10, 4 } };
+		{
+			ScopedRenderTarget2D first{ Optional<MSRenderTexture>{ a } };
+			a.release();
+			Rect{ 16, 8 }.draw(Palette::White);
+			const ScopedViewport2D viewport{ Rect{ 1, 2, 12, 5 } };
+			CHECK_THROWS_AS(ScopedRenderTarget2D{ MSRenderTexture{} }, Error);
+			CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == retained.id());
+			CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 12, 5 });
+			{
+				const ScopedRenderTarget2D second{ b };
+				CHECK_FALSE(Graphics2D::GetViewport());
+				Rect{ 8, 8 }.draw(Palette::Red);
+				{
+					const ScopedRenderTarget2D third{ single };
+					b.draw(); // B still exposes its initial resolved image.
+				}
+				{
+					const ScopedRenderTarget2D scene{ Optional<MSRenderTexture>{} };
+					CHECK_FALSE(SIV3D_ENGINE(Renderer2D)->getRenderTarget());
+				}
+				CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == b.id());
+			}
+			CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == retained.id());
+			CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 12, 5 });
+			{
+				const ScopedRenderTarget2D same{ retained };
+				CHECK_FALSE(Graphics2D::GetViewport());
+			}
+			CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 12, 5 });
+			{ const ScopedRenderTarget2D moved{ std::move(first) }; }
+			CHECK_FALSE(SIV3D_ENGINE(Renderer2D)->getRenderTarget());
+			CHECK(Graphics2D::GetViewport() == Rect{ 2, 3, 10, 4 });
+		}
+		Image pixels;
+		REQUIRE(single.readAsImage(pixels));
+		CHECK(pixels == Image{ 8, 8, Palette::Blue });
+		retained.resolve();
+		REQUIRE(retained.readAsImage(pixels));
+		CHECK(pixels == Image{ 16, 8, Palette::White });
+		b.resolve();
+		REQUIRE(b.readAsImage(pixels));
+		CHECK(pixels == Image{ 8, 8, Palette::Red });
+	}
+
+	TEST_CASE("MSRenderTexture.target_can_sample_resolved_image_and_restores_feedback_checks")
+	{
+		const DrawState state;
+		const MSRenderTexture ms{ Size{ 8, 4 }, Palette::Blue };
+		const RenderTexture single{ Size{ 8, 4 }, Palette::Red };
+		const Texture alias = ms;
+		{
+			const ScopedRenderTarget2D outer{ single };
+			ms.draw(); // Validate MS as an input to a single-sample target.
+			{
+				const ScopedRenderTarget2D inner{ ms };
+				ms.clear(Palette::Green);
+				CHECK_NOTHROW(alias(0, 0, 4, 4).draw());
+				Graphics2D::Flush();
+				ms.resolve();
+				CHECK_NOTHROW(alias(0, 0, 4, 4).draw(4, 0));
+				CHECK_NOTHROW(single.draw(-8, 0)); // Must not poison validation after restore.
+			}
+			CHECK_THROWS_AS(single.draw(), Error);
+			CHECK_NOTHROW(ms.draw());
+		}
+		ms.resolve();
+		Image pixels;
+		REQUIRE(ms.readAsImage(pixels));
+		CHECK(pixels == Image{ 8, 4, Palette::Blue });
+		CHECK_THROWS_AS(([&]
+		{
+			const ScopedRenderTarget2D outer{ ms };
+			const ScopedRenderTarget2D inner{ single };
+			single.draw();
+		}()), Error);
+	}
+
+
+	TEST_CASE("MSRenderTexture.target_srgb_and_hdr")
+	{
+		const DrawState state;
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			for (const TextureFormat format : { TextureFormat::R8G8B8A8_Unorm_SRGB, TextureFormat::R16G16B16A16_Float })
+			{
+				CAPTURE(samples, format);
+				if (not Supports(format, samples, false)) { continue; }
+				const MSRenderTexture ms{ Size{ 8, 4 }, samples, format };
+				const RenderTexture single{ ms.size(), format };
+				const ColorF color = (format.isSRGB() ? ColorF{ 0.125, 0.25, 0.5, 1.0 } : ColorF{ 2.0, 0.5, 4.0, 1.0 });
+				{
+					const ScopedRenderTarget2D outer{ ms };
+					Rect{ ms.size() }.draw(color);
+					const ScopedRenderTarget2D inner{ single };
+					Rect{ single.size() }.draw(color);
+				}
+				ms.resolve();
+				if (format.isSRGB())
+				{
+					Image actual, expected;
+					REQUIRE(ms.readAsImage(actual));
+					REQUIRE(single.readAsImage(expected));
+					for (size_t i = 0; i < actual.pixelCount(); ++i)
+					{
+						CHECK(Abs(int32(actual.data()[i].r) - expected.data()[i].r) <= 1);
+						CHECK(Abs(int32(actual.data()[i].g) - expected.data()[i].g) <= 1);
+						CHECK(Abs(int32(actual.data()[i].b) - expected.data()[i].b) <= 1);
+						CHECK(actual.data()[i].a == 255);
+					}
+					CHECK(actual[0][0].r > 80); // Stored sRGB, rather than the linear value 32.
+				}
+				else
+				{
+					Grid<std::array<HalfFloat, 4>> actual;
+					REQUIRE(ms.read(actual));
+					for (const auto& pixel : actual)
+					{
+						CHECK(float(pixel[0]) == 2.0f);
+						CHECK(float(pixel[1]) == 0.5f);
+						CHECK(float(pixel[2]) == 4.0f);
+						CHECK(float(pixel[3]) == 1.0f);
+					}
+				}
+			}
+		}
+	}
+
+	TEST_CASE("MSRenderTexture.target_scene_samples_and_frame_continuation")
+	{
+		const DrawState state;
+		const auto config = Scene::GetConfig();
+		const auto sceneSamples = Scene::GetMSAASampleCount();
+		const auto background = Scene::GetBackground();
+		const ScopeExit restore{ [&]
+		{
+			Scene::SetBackground(background);
+			Scene::SetMSAASampleCount(sceneSamples);
+			Scene::Configure(config);
+		} };
+		Scene::Configure(SceneConfig::Fixed({ 40, 20 }, SceneResolution::Display));
+		Scene::SetBackground(Palette::Black);
+		for (const auto sceneCount : { MSAASampleCount::NoMSAA, MSAASampleCount::X4MSAA })
+		{
+			Scene::SetMSAASampleCount(sceneCount);
+			for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+			{
+				CAPTURE(sceneCount, samples);
+				if (not Supports(TextureFormat::R8G8B8A8_Unorm, samples, false)) { continue; }
+				REQUIRE(System::Update());
+				const MSRenderTexture texture{ Size{ 16, 8 }, Palette::Black, samples };
+				Image pixels;
+				{
+					const ScopedRenderTarget2D target{ texture };
+					Rect{ 8, 8 }.draw(Palette::Red);
+					ScreenCapture::RequestCurrentFrame();
+					REQUIRE(System::Update());
+					CHECK(SIV3D_ENGINE(Renderer2D)->getRenderTarget()->id() == texture.id());
+					CHECK(SIV3D_ENGINE(Renderer2D)->getSceneScale() == Float2{ 1, 1 });
+					CHECK(SIV3D_ENGINE(Renderer2D)->getRasterScaling() == 1.0f);
+					CHECK(Graphics2D::GetDrawingSize() == texture.size());
+					CHECK(Graphics2D::GetRenderTargetSize() == texture.size());
+					REQUIRE(ScreenCapture::HasNewFrame());
+					const auto& blank = ScreenCapture::GetFrame();
+					CHECK(blank[blank.height() / 2][blank.width() / 2] == Palette::Black);
+					REQUIRE(texture.readAsImage(pixels));
+					CHECK(pixels == Image{ 16, 8, Palette::Black }); // Frame completion did not resolve.
+					texture.resolve();
+					Rect{ 8, 0, 8, 8 }.draw(Palette::Green);
+				}
+				REQUIRE(texture.readAsImage(pixels));
+				CHECK(pixels[4][4] == Palette::Red);
+				CHECK(pixels[4][12] == Palette::Black); // Scope exit did not resolve either.
+				texture.resolve();
+				texture.draw(16, 0);
+				ScreenCapture::RequestCurrentFrame();
+				REQUIRE(System::Update());
+				REQUIRE(ScreenCapture::HasNewFrame());
+				const auto& captured = ScreenCapture::GetFrame();
+				CHECK(captured[4 * captured.height() / 20][20 * captured.width() / 40] == Palette::Red);
+				CHECK(captured[4 * captured.height() / 20][28 * captured.width() / 40] == Palette::Green);
+			}
+		}
 	}
 }

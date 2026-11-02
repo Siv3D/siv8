@@ -132,6 +132,9 @@ namespace s3d
 		[[nodiscard]]
 		MTL::Texture* getTexture() const noexcept;
 
+		[[nodiscard]]
+		MTL::Texture* getRenderTargetTexture() const noexcept;
+
 	private:
 
 		NS::SharedPtr<MTL::Buffer> m_readbackBuffer;

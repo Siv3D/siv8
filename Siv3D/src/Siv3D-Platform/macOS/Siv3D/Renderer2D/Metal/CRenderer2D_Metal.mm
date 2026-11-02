@@ -1221,7 +1221,8 @@ namespace s3d
 		
 		if (m_renderTarget)
 		{
-			cd->setTexture(m_pTexture->getTexture(m_renderTarget->id()));
+			// Store the color attachment, including all MSAA samples; resolve is explicit.
+			cd->setTexture(m_pTexture->getRenderTargetTexture(m_renderTarget->id()));
 		}
 		else if (m_pRenderer->getSceneSampleCount() == 1)
 		{
