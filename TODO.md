@@ -24,7 +24,8 @@
 ## RenderTexture / DepthTexture
 
 - 深度は独立した `DepthTexture` として設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
-- MRT は色の配列と任意の深度 1 枚を組み合わせる。シェーダ出力、各色出力のフォーマット・ブレンド、サイズ・サンプル数の適合性を検証する。
+- MRT を同一サンプル数の MSRenderTexture 群と任意の深度 1 枚に拡張する。resolve は明示呼び出し・自動 Flush なしを維持し、色・深度のサイズとサンプル数の適合性を検証する。
+- MRT の出力別ブレンド指定を設計する。alpha-to-coverage などパス全体の設定と、各出力のブレンド・書き込みマスクを分離する。
 
 ## NinePatch / 9-slice
 

@@ -1224,7 +1224,7 @@ namespace s3d
 		m_context->VSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, vsBuffers.data());
 		m_context->PSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, psBuffers.data());
 
-		const Size currentRenderTargetSize = m_renderTarget ? m_renderTarget->size() : m_pRenderer->getSceneBufferSize();
+		const Size currentRenderTargetSize = m_renderTargets ? m_renderTargets.size() : m_pRenderer->getSceneBufferSize();
 		const Float2 sceneScale = m_commandManager.getSceneScale();
 		{
 			const D3D11_VIEWPORT viewport = MakeViewport(Point{ 0, 0 }, currentRenderTargetSize);
@@ -1235,11 +1235,15 @@ namespace s3d
 		const std::array<ID3D11ShaderResourceView*, Graphics::TextureSlotCount> emptyTextures{};
 		m_context->VSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
 		m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
-		if (m_renderTarget)
+		if (m_renderTargets)
 		{
 			// The RTV selects the MSAA image for MSRenderTexture; its SRV selects the resolve result.
-			ID3D11RenderTargetView* target = m_pTexture->getRTV(m_renderTarget->id());
-			m_context->OMSetRenderTargets(1, &target, nullptr);
+			std::array<ID3D11RenderTargetView*, detail::RenderTargetState::MaxCount> targets{};
+			for (uint32 i = 0; i < m_renderTargets.count; ++i)
+			{
+				targets[i] = m_pTexture->getRTV(m_renderTargets.colors[i]->id());
+			}
+			m_context->OMSetRenderTargets(m_renderTargets.count, targets.data(), nullptr);
 		}
 		else
 		{
@@ -1251,6 +1255,9 @@ namespace s3d
 
 		CommandState commandState;
 		commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
+		BlendState currentBlend = BlendState::Default2D;
+		uint8 colorWriteMask = 1;
+		const uint32 colorCount = m_renderTargets ? m_renderTargets.count : 1;
 
 		for (const auto& command : m_commandManager.getCommands())
 		{
@@ -1372,8 +1379,8 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::BlendState:
 				{
-					const auto& blendState = m_commandManager.getBlendState(command.index);
-					m_pRenderer->getBlendState().set(blendState);
+					currentBlend = m_commandManager.getBlendState(command.index);
+					m_pRenderer->getBlendState().set(currentBlend, Float4{ 0, 0, 0, 0 }, colorWriteMask);
 					LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 					break;
 				}
@@ -1491,6 +1498,11 @@ namespace s3d
 					else
 					{
 						m_pShader->setPS(psID);
+						if (colorCount > 1)
+						{
+							colorWriteMask = m_engineShader.isStandardPS(psID) ? uint8{ 1 } : static_cast<uint8>((1u << colorCount) - 1);
+							m_pRenderer->getBlendState().set(currentBlend, Float4{ 0, 0, 0, 0 }, colorWriteMask);
+						}
 						LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
 					}
 

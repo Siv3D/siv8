@@ -11,6 +11,9 @@
 # include "ColorRenderTarget.hpp"
 # include "Optional.hpp"
 # include "Rect.hpp"
+# include "detail/RenderTargetState.hpp"
+# include <initializer_list>
+# include <span>
 
 namespace s3d
 {
@@ -36,6 +39,20 @@ namespace s3d
 		[[nodiscard]]
 		explicit ScopedRenderTarget2D(const Optional<ColorRenderTarget>& renderTarget);
 
+		/// @brief 指定順に色出力 0 から割り当てて、複数の描画先を選択します。
+		/// @param renderTargets 1～8 枚の描画先。各ハンドルを共有保持します。
+		/// @throws Error 空配列、9 枚以上、空ハンドル、重複リソース、サイズ不一致、または複数指定に MSAA が含まれる場合。描画状態は変更せず、保留描画も発行しません。
+		/// @remark フォーマットは混在できます。GPU が対応する組み合わせを指定してください。1 枚なら単一指定と同じ規則です。
+		/// @remark 標準ピクセルシェーダは色出力 0 だけを更新します。カスタムピクセルシェーダは、指定した全出力へ値を返す必要があります。ブレンド状態は全出力に共通です。
+		/// @remark 切り替え・復元・viewport・明示操作の規則は単一指定と共通です。
+		[[nodiscard]]
+		explicit ScopedRenderTarget2D(std::span<const ColorRenderTarget> renderTargets);
+
+		/// @brief リストで複数の描画先を選択します。
+		/// @param renderTargets 描画先。規則は span による指定と共通です。
+		[[nodiscard]]
+		explicit ScopedRenderTarget2D(std::initializer_list<ColorRenderTarget> renderTargets);
+
 		/// @brief 状態を復元する責任を移動します。移動元の破棄では復元しません。
 		/// @param other 移動元
 		[[nodiscard]]
@@ -50,7 +67,7 @@ namespace s3d
 
 	private:
 
-		Optional<Optional<ColorRenderTarget>> m_oldRenderTarget;
+		Optional<detail::RenderTargetState> m_oldRenderTargets;
 
 		Optional<Rect> m_oldViewport;
 	};

@@ -1173,12 +1173,12 @@ namespace s3d
 	void CRenderer2D_Metal::flush(const bool finalScenePass)
 	{
 		// A scope may span System::Update(). Present still needs a completed Scene.
-		if (finalScenePass && m_renderTarget)
+		if (finalScenePass && m_renderTargets)
 		{
 			flush(false);
-			const auto target = m_renderTarget;
+			const auto target = m_renderTargets;
 			const ScopeExit restore{ [&] { setRenderTargetState(target); } };
-			setRenderTargetState(none);
+			setRenderTargetState({});
 			flush(true);
 			return;
 		}
@@ -1207,22 +1207,28 @@ namespace s3d
 		m_commandManager.flush();
 
 		// 描画がなくても、そのシーンの最初のパスでは背景をクリアする。
-		if ((m_renderTarget || m_scenePassStarted) && not m_commandManager.hasDraws())
+		if ((m_renderTargets || m_scenePassStarted) && not m_commandManager.hasDraws())
 		{
 			return;
 		}
 		
-		const Size currentRenderTargetSize = m_renderTarget ? m_renderTarget->size() : m_pRenderer->getSceneBufferSize();
+		const Size currentRenderTargetSize = m_renderTargets ? m_renderTargets.size() : m_pRenderer->getSceneBufferSize();
 		const Float2 sceneScale = m_commandManager.getSceneScale();
 
 		// Draw2D
 		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 		MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
 		
-		if (m_renderTarget)
+		if (m_renderTargets)
 		{
 			// Store the color attachment, including all MSAA samples; resolve is explicit.
-			cd->setTexture(m_pTexture->getRenderTargetTexture(m_renderTarget->id()));
+			for (uint32 i = 0; i < m_renderTargets.count; ++i)
+			{
+				auto* attachment = offscreenRenderPassDescriptor->colorAttachments()->object(i);
+				attachment->setTexture(m_pTexture->getRenderTargetTexture(m_renderTargets.colors[i]->id()));
+				attachment->setLoadAction(MTL::LoadActionLoad);
+				attachment->setStoreAction(MTL::StoreActionStore);
+			}
 		}
 		else if (m_pRenderer->getSceneSampleCount() == 1)
 		{
@@ -1234,10 +1240,10 @@ namespace s3d
 			cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
 		}
 
-		cd->setLoadAction((m_renderTarget || m_scenePassStarted) ? MTL::LoadActionLoad : MTL::LoadActionClear);
+		cd->setLoadAction((m_renderTargets || m_scenePassStarted) ? MTL::LoadActionLoad : MTL::LoadActionClear);
 		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().getFrameBackgroundColor();
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-		cd->setStoreAction((m_renderTarget || (m_pRenderer->getSceneSampleCount() == 1)) ? MTL::StoreActionStore
+		cd->setStoreAction((m_renderTargets || (m_pRenderer->getSceneSampleCount() == 1)) ? MTL::StoreActionStore
 			: (finalScenePass ? MTL::StoreActionMultisampleResolve : MTL::StoreActionStoreAndMultisampleResolve));
 		
 		LOG_COMMAND("----");
@@ -1250,7 +1256,7 @@ namespace s3d
 			{
 				throw InternalEngineError{ "MTL::CommandBuffer::renderCommandEncoder() failed" };
 			}
-			if (not m_renderTarget) { m_scenePassStarted = true; }
+			if (not m_renderTargets) { m_scenePassStarted = true; }
 			// パイプライン生成などで例外が発生した場合もエンコードを終了する。
 			const ScopeExit endEncoding{ [renderCommandEncoder]() noexcept
 			{
@@ -1261,12 +1267,18 @@ namespace s3d
 			{
 				.vs = m_engineShader.vsShape,
 				.ps = m_engineShader.psShape,
-				.pixelFormat = static_cast<uint16>(cd->texture()->pixelFormat()),
+				.pixelFormats = { static_cast<uint16>(cd->texture()->pixelFormat()) },
 				.sampleCount = static_cast<uint16>(cd->texture()->sampleCount()),
+				.colorCount = static_cast<uint8>(m_renderTargets ? m_renderTargets.count : 1),
 				.blendState = BlendState::Default2D,
 			};
 			
-			// pixelFormat と sampleCount はこの encoder 内で固定。最初の Draw では必ず設定する。
+			for (uint32 i = 1; i < pipelineStateDesc.colorCount; ++i)
+			{
+				pipelineStateDesc.pixelFormats[i] = static_cast<uint16>(offscreenRenderPassDescriptor->colorAttachments()->object(i)->texture()->pixelFormat());
+			}
+
+			// Attachment formats and sample count are fixed for this encoder.
 			bool pipelineDirty = true;
 
 			m_pRenderer->getSamplerState().resetStates();
@@ -1500,6 +1512,8 @@ namespace s3d
 						else
 						{
 							pipelineStateDesc.ps = psID;
+							pipelineStateDesc.colorWriteMask = ((pipelineStateDesc.colorCount == 1) || m_engineShader.isStandardPS(psID))
+								? uint8{ 1 } : static_cast<uint8>((1u << pipelineStateDesc.colorCount) - 1);
 							pipelineDirty = true;
 							LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
 						}

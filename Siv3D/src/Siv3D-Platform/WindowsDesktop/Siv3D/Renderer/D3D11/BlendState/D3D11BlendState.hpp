@@ -24,11 +24,11 @@ namespace s3d
 
 		void init(const D3D11Device& device);
 
-		void set(const BlendState& state, const Float4& blendColor = Float4{ 0, 0, 0, 0 });
+		void set(const BlendState& state, const Float4& blendColor = Float4{ 0, 0, 0, 0 }, uint8 colorWriteMask = 0xFF);
 	
 	private:
 
-		using StateTable = HashMap<BlendState, ComPtr<ID3D11BlendState>>;
+		using StateTable = HashMap<uint64, ComPtr<ID3D11BlendState>>;
 
 		ID3D11Device* m_device = nullptr;
 
@@ -38,6 +38,8 @@ namespace s3d
 
 		std::pair<BlendState, Float4> m_currentState{ BlendState::Invalid(), Float4{ 0, 0, 0, 0} };
 
-		StateTable::iterator create(const BlendState& state);
+		uint8 m_currentColorWriteMask = 0xFF;
+
+		StateTable::iterator create(const BlendState& state, uint8 colorWriteMask);
 	};
 }

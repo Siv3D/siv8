@@ -4,13 +4,13 @@
 color texture. It supports creation, GPU clears, mipmap generation, CPU readback,
 and the drawing operations inherited from `Texture`.
 [ScopedRenderTarget2D](../../Siv3D/include/Siv3D/ScopedRenderTarget2D.hpp) selects
-one color texture for 2D drawing.
+one color texture, or up to eight single-sample color textures, for 2D drawing.
 [MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp) owns a multisample
 color texture and a separate single-sample resolve result. A target scope writes
 to its MSAA image; sampling uses the last explicitly resolved image.
 [ColorRenderTarget](../../Siv3D/include/Siv3D/ColorRenderTarget.hpp) shares either
 kind through one typed handle, with common clear, resolve, and mip operations.
-MRT and depth attachments are tracked in
+Multisample MRT, independent output blending, and depth attachments are tracked in
 [TODO](../../TODO.md#rendertexture--depthtexture).
 
 ## Creating and inspecting textures
@@ -201,6 +201,75 @@ change mip level 0. For MSRenderTexture, resolve updates level 0. Call
 frame boundary: its target remains selected, while Scene still gets its
 normal per-frame background and presentation.
 
+## Multiple color outputs
+
+Use an array of `ColorRenderTarget` handles for a reusable set, or a braced list
+for a local pass. The order selects shader output slots. The scope copies the
+handles, so a temporary array is safe. Size, sample count, empty handles, and
+resource duplication are checked before flushing or changing the current state.
+The public header owns the complete selection contract. An explicit empty span
+or list is an error; `none` selects Scene and the default constructor is inert.
+
+All outputs use the current blend state. Standard shaders, including engine font
+shaders, only update slot 0 and preserve the remaining attachments. A custom
+pixel shader must return a value for every selected output on every path that
+produces a fragment. Use `SV_TargetN` in HLSL and `[[color(N)]]` in MSL. Output
+completeness is a shader-author contract; the engine does not analyze every
+shader execution path. For material data, use `BlendState::Opaque`.
+
+For example, inside `Main()`:
+
+```cpp
+const RenderTexture color{ Size{ 320, 180 }, Palette::Black };
+const RenderTexture normal{ color.size(), ColorF{ 0.0, 0.0 },
+    TextureFormat::R16G16B16A16_Float };
+const std::array<ColorRenderTarget, 2> targets{ color, normal };
+const PixelShader ps = HLSL::FromSource(UR"(
+    struct Output { float4 color : SV_Target0; float4 normal : SV_Target1; };
+    Output PS()
+    {
+        Output o;
+        o.color = float4(1, 0.5, 0, 1);
+        o.normal = float4(0.5, 0.5, 1, 1);
+        return o;
+    })", U"PS") | MSL::FromSource(UR"(
+    #include <metal_stdlib>
+    using namespace metal;
+    struct Output { float4 color [[color(0)]]; float4 normal [[color(1)]]; };
+    fragment Output PS()
+    {
+        Output o;
+        o.color = float4(1, 0.5, 0, 1);
+        o.normal = float4(0.5, 0.5, 1, 1);
+        return o;
+    })", U"PS");
+if (not color || not normal || not ps)
+{
+    return;
+}
+{
+    const ScopedRenderTarget2D target{ targets }; // Also: { color, normal }
+    const ScopedCustomShader2D shader{ ps };
+    const ScopedRenderStates2D blend{ BlendState::Opaque };
+    Circle{ 160, 90, 60 }.draw();
+}
+color.draw();
+normal.draw(320, 0);
+```
+
+Both textures have the same size, while their formats and bits per pixel differ.
+GPU format and attachment-capacity limits still apply; a resource being usable
+alone does not promise that every MRT combination is supported. Native pipeline
+creation failures are reported, without silently dropping outputs or changing
+formats. Different resolutions require separate passes.
+
+MRT scopes nest with Scene, single RenderTexture, and single MSRenderTexture
+scopes. The complete ordered set and viewport are restored. Reordering the same
+handles changes the binding; selecting the same ordered set can keep pending
+draws batched. Each operation on an individual texture retains its existing
+clear/read/mip/resolve behavior and leaves the entire set selected. Input
+feedback is rejected for any active single-sample output, including aliases.
+
 ## Ordering and backend responsibilities
 
 Clears and mip generation consume earlier queued 2D draws before changing an
@@ -213,9 +282,10 @@ Changing targets flushes the preceding draw batch without waiting for the GPU.
 Re-entering the same target can retain the batch. Native resource ownership is
 retained through command execution; texture contents are loaded on each pass.
 Feedback validation runs before geometry allocation, independently of texture
-binding and draw submission. On each target change, it records the ID whose
-sampled image aliases the output; Scene and MSRenderTexture have no such ID.
-It remembers the last successfully validated input ID for that output. Repeated
+binding and draw submission. On each target change, it records the IDs whose
+sampled images alias active outputs; Scene and MSRenderTexture have no such IDs.
+The fixed-capacity state retains only active texture handles without allocating
+a container. It remembers the last successfully validated input ID for that set. Repeated
 inputs skip output comparisons, while failed validation leaves the cache
 unchanged. Every logical output change invalidates
 it, including scope restoration and Metal's temporary Scene pass at frame end.
@@ -234,9 +304,10 @@ command buffer. This retains the acquired frame slot, frame number, scene pass
 state, and vertex/index allocation cursors. The synchronous segment completes
 before the slot can be reused, including when the remaining frame is canceled.
 The continuation buffer is allocated before submitting the current segment.
-Texture target passes always load/store their color attachment. For
+Texture target passes always load/store all their color attachments. For
 MSRenderTexture, this is the MSAA image with all samples retained and no resolve
-attachment. The pipeline uses the attachment's pixel format and sample count. Scene's
+attachment. The pipeline cache includes the ordered color formats, attachment
+count, sample count, common blend state, and output write mask. Scene's
 initial clear and MSAA store/resolve policy are tracked independently.
 
 D3D11 uses default-usage shader-readable render-target resources and a staging
@@ -248,11 +319,19 @@ pitch and return tightly packed CPU pixels. Output views are unbound at the end
 of each execution, and VS/PS input views are cleared around target binding, so
 subsequent sampling, clear, mip generation and readback do not inherit conflicts.
 
-Color textures do not own depth resources. Future depth and multiple-color
-bindings should extend the target representation without giving color resources
-ownership of depth textures.
+Color textures do not own depth resources. Future depth bindings should extend
+the target representation without giving color resources ownership of depth
+textures. Independent output blend settings and multisample MRT remain separate
+extensions; single-target MSAA selection retains its existing behavior.
 
 ## Validation
+
+[MRT tests](../../Test/Test_MRT.cpp) cover array/list selection, one through eight
+outputs, standard/custom shader transitions, mixed formats and layout ordering,
+sRGB/HDR values, common blending and channel masks, viewport clipping, invalid
+sets, feedback for multiple outputs,
+nested restoration, resource lifetime, read/mip/clear operations, and frame
+continuation under both Scene sample counts.
 
 [Shared tests](../../Test/Test_RenderTexture.cpp) exercise all current
 non-compressed color formats, odd row widths, native-value round trips, sRGB and
@@ -270,8 +349,11 @@ legacy scope argument forms with nested restoration and feedback checks.
 results, viewport/state restoration, all color formats, feedback rejection,
 readback and mip generation inside a scope, Scene MSAA and resolution scaling,
 and frame continuation. [Metal scope tests](../../Test/Test_MetalScopedRenderTarget2D.cpp)
-inject encoder failure to verify entry rollback, exit restoration and exception
-unwinding.
+inject encoder failure to verify entry rollback, whole-set restoration, rejected
+MRT sets without Flush, and exception unwinding.
+[Metal pipeline tests](../../Test/Test_MetalRenderPipelineState.cpp) verify cache
+separation by attachment order, count, and write mask, plus native creation
+failure/retry.
 
 [Multisample resource tests](../../Test/Test_MSRenderTexture.cpp) check supported
 format/sample combinations, initialization, stale resolve results, independent
@@ -287,13 +369,13 @@ texture allocation, and resolve-encoder failure followed by retry.
 Run from the repository root using the host workflow:
 
 ```sh
-./macOS/run-tests.sh '--test-case=ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
+./macOS/run-tests.sh '--test-case=MRT.*,ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./macOS/run-tests.sh
 ./macOS/validate-projects.sh
 ```
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=MRT.*,ColorRenderTarget.*,RenderTexture.*,MSRenderTexture.*,ScopedRenderTarget2D.*'
 ./WindowsDesktop/run-tests.ps1
 ```
 

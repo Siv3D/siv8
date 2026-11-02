@@ -57,6 +57,52 @@ namespace s3d
 		};
 	}
 
+	TEST_CASE("MRT.Metal.encoder_failure_restores_entire_set")
+	{
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const ScopedRenderTarget2D scene{ none };
+		const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
+		const RenderTexture a{ Size{ 8, 8 }, Palette::Black }, b{ a.size(), Palette::Black };
+		const RenderTexture c{ a.size(), Palette::Black }, d{ a.size(), Palette::Black };
+		const std::array<ColorRenderTarget, 2> targets{ a, b };
+		const ScopedRenderTarget2D outer{ targets };
+		const ScopedViewport2D viewport{ Rect{ 1, 2, 4, 4 } };
+		Rect{ 8, 8 }.draw();
+		{
+			EncoderFailure failure{ *renderer };
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, a }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, ColorRenderTarget{} }), Error);
+			{ const ScopedRenderTarget2D same{ targets }; }
+			CHECK(failure.attempts == 0); // Invalid sets and identical sets do not flush.
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ c, d }), InternalEngineError);
+			CHECK(failure.attempts == 1);
+		}
+		for (const bool unwind : { false, true })
+		{
+			EncoderFailure failure{ *renderer };
+			bool caught = false;
+			try
+			{
+				const ScopedRenderTarget2D inner{ c, d };
+				b.draw(); // Cache a valid input before restoring the outer MRT.
+				if (unwind) { throw Error{ "original MRT scope failure" }; }
+			}
+			catch (const Error& error)
+			{
+				caught = true;
+				if (unwind) { CHECK(error.messageUTF8() == "original MRT scope failure"); }
+			}
+			CHECK(caught);
+			CHECK(failure.attempts == 1);
+			const auto& actual = SIV3D_ENGINE(Renderer2D)->getRenderTargets();
+			REQUIRE(actual.count == 2);
+			CHECK(actual.colors[0]->id() == a.id());
+			CHECK(actual.colors[1]->id() == b.id());
+			CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 4, 4 });
+			CHECK_THROWS_AS(b.draw(), Error);
+		}
+	}
+
 	TEST_CASE("ScopedRenderTarget2D.Metal.encoder_failure_restores_target")
 	{
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));

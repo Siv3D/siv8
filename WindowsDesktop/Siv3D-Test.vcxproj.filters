@@ -199,6 +199,9 @@
     <ClCompile Include="..\Test\Test_ColorRenderTarget.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MRT.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>

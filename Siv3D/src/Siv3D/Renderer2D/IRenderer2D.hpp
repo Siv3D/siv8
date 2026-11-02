@@ -17,7 +17,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
-# include <Siv3D/ColorRenderTarget.hpp>
+# include <Siv3D/detail/RenderTargetState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include "../Geometry2D/DashedPath.hpp"
@@ -683,11 +683,15 @@ namespace s3d
 
 		virtual void flush() = 0;
 
-		const Optional<ColorRenderTarget>& getRenderTarget() const noexcept { return m_renderTarget; }
+		const Optional<ColorRenderTarget>& getRenderTarget() const noexcept { return m_renderTargets.colors[0]; }
+
+		const detail::RenderTargetState& getRenderTargets() const noexcept { return m_renderTargets; }
 
 		void setRenderTarget(const Optional<ColorRenderTarget>& renderTarget);
 
-		void restoreRenderTarget(const Optional<ColorRenderTarget>& renderTarget, const Optional<Rect>& viewport);
+		void setRenderTargets(std::span<const ColorRenderTarget> renderTargets);
+
+		void restoreRenderTargets(const detail::RenderTargetState& renderTargets, const Optional<Rect>& viewport);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -863,22 +867,24 @@ namespace s3d
 
 	protected:
 
-		Optional<ColorRenderTarget> m_renderTarget;
+		detail::RenderTargetState m_renderTargets;
 
 		// Only single-sample outputs alias their sampled image. Scene/MSAA outputs do not.
-		Texture::IDType m_feedbackTargetID = Texture::IDType::Invalid();
+		std::array<Texture::IDType, detail::RenderTargetState::MaxCount> m_feedbackTargetIDs{};
+
+		uint32 m_feedbackTargetCount = 0;
 
 		// Scene scale is retained while the active texture uses a 1:1 drawing scale.
 		Float2 m_sceneScale{ 1.0f, 1.0f };
 
 		// Change logical outputs here, including temporary Scene passes, to invalidate validation.
-		void setRenderTargetState(const Optional<ColorRenderTarget>& renderTarget);
+		void setRenderTargetState(const detail::RenderTargetState& renderTargets);
 
 		// Check before allocating geometry. Repeated inputs need no output comparison.
 		SIV3D_ALWAYS_INLINE
 		void checkRenderTargetFeedback(const Texture& texture)
 		{
-			if (m_feedbackTargetID == Texture::IDType::Invalid())
+			if (m_feedbackTargetCount == 0)
 			{
 				return;
 			}
@@ -887,9 +893,12 @@ namespace s3d
 			{
 				return;
 			}
-			if (m_feedbackTargetID == inputID)
+			for (uint32 i = 0; i < m_feedbackTargetCount; ++i)
 			{
-				ThrowRenderTargetFeedback();
+				if (m_feedbackTargetIDs[i] == inputID)
+				{
+					ThrowRenderTargetFeedback();
+				}
 			}
 			m_lastValidatedInput = inputID;
 		}

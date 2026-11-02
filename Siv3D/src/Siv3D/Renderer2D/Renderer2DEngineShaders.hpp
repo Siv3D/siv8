@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <algorithm>
 # include <Siv3D/Pattern/PatternType.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 
@@ -59,6 +61,10 @@ namespace s3d
 
 		void init(const ISiv3DEngineShader& engineShader)
 		{
+			for (size_t i = 0; i < standardPS.size(); ++i)
+			{
+				standardPS[i] = engineShader.getPS(static_cast<EnginePS>(i)).id();
+			}
 			vsShape = engineShader.getVS(EngineVS::Shape2D).id();
 			vsPattern = engineShader.getVS(EngineVS::Pattern2D).id();
 			psShape = engineShader.getPS(EnginePS::Shape2D).id();
@@ -80,6 +86,15 @@ namespace s3d
 			psPatternWeave = engineShader.getPS(EnginePS::PatternWeave).id();
 			psPatternTruchet = engineShader.getPS(EnginePS::PatternTruchet).id();
 		}
+
+		// Includes font shaders, which are submitted through custom-shader scopes.
+		[[nodiscard]]
+		bool isStandardPS(const PixelShader::IDType id) const noexcept
+		{
+			return (std::find(standardPS.begin(), standardPS.end(), id) != standardPS.end());
+		}
+
+		std::array<PixelShader::IDType, (static_cast<size_t>(EnginePS::PatternTruchet) + 1)> standardPS{};
 
 		[[nodiscard]]
 		PixelShader::IDType getPatternShader(const PatternType pattern) const noexcept

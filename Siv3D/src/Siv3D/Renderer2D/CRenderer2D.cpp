@@ -571,38 +571,76 @@ namespace s3d
 
 	void ISiv3DRenderer2D::setRenderTarget(const Optional<ColorRenderTarget>& renderTarget)
 	{
-		if (renderTarget && renderTarget->isEmpty())
+		if (renderTarget)
 		{
-			throw Error{ "ScopedRenderTarget2D requires a non-empty ColorRenderTarget (use none for Scene)" };
+			setRenderTargets(std::span{ &*renderTarget, 1 });
 		}
-		if (m_renderTarget == renderTarget)
+		else if (m_renderTargets)
 		{
-			return;
+			flush();
+			setRenderTargetState({});
 		}
-		flush();
-		setRenderTargetState(renderTarget);
 	}
 
-	void ISiv3DRenderer2D::restoreRenderTarget(const Optional<ColorRenderTarget>& renderTarget, const Optional<Rect>& viewport)
+	void ISiv3DRenderer2D::setRenderTargets(const std::span<const ColorRenderTarget> renderTargets)
+	{
+		if (renderTargets.empty() || (detail::RenderTargetState::MaxCount < renderTargets.size()))
+		{
+			throw Error{ "ScopedRenderTarget2D requires 1 to 8 color targets (use none for Scene)" };
+		}
+		detail::RenderTargetState next;
+		for (const auto& target : renderTargets)
+		{
+			if (not target)
+			{
+				throw Error{ "ScopedRenderTarget2D requires non-empty color targets" };
+			}
+			if ((renderTargets.size() > 1) && (target.getMSAASampleCount() != MSAASampleCount::NoMSAA))
+			{
+				throw Error{ "Multiple 2D render targets must be single-sample textures" };
+			}
+			if (next.count && (next.size() != target.size()))
+			{
+				throw Error{ "Multiple 2D render targets must have the same size" };
+			}
+			for (uint32 i = 0; i < next.count; ++i)
+			{
+				if (next.colors[i]->id() == target.id())
+				{
+					throw Error{ "A color target cannot occupy multiple 2D output slots" };
+				}
+			}
+			next.colors[next.count++].emplace(target);
+		}
+		if (m_renderTargets == next) { return; }
+		flush();
+		setRenderTargetState(next);
+	}
+
+	void ISiv3DRenderer2D::restoreRenderTargets(const detail::RenderTargetState& renderTargets, const Optional<Rect>& viewport)
 	{
 		const ScopeExit restore{ [&]
 		{
-			setRenderTargetState(renderTarget);
+			setRenderTargetState(renderTargets);
 			setViewport(viewport);
 		} };
-		if (m_renderTarget != renderTarget)
-		{
-			flush();
-		}
+		if (m_renderTargets != renderTargets) { flush(); }
 	}
 
-	void ISiv3DRenderer2D::setRenderTargetState(const Optional<ColorRenderTarget>& renderTarget)
+	void ISiv3DRenderer2D::setRenderTargetState(const detail::RenderTargetState& renderTargets)
 	{
-		if (m_renderTarget != renderTarget)
+		if (m_renderTargets != renderTargets)
 		{
-			m_renderTarget = renderTarget;
-			m_feedbackTargetID = ((renderTarget && (renderTarget->getMSAASampleCount() == MSAASampleCount::NoMSAA))
-				? renderTarget->id() : Texture::IDType::Invalid());
+			m_renderTargets = renderTargets;
+			m_feedbackTargetCount = 0;
+			for (uint32 i = 0; i < renderTargets.count; ++i)
+			{
+				const auto& target = *renderTargets.colors[i];
+				if (target.getMSAASampleCount() == MSAASampleCount::NoMSAA)
+				{
+					m_feedbackTargetIDs[m_feedbackTargetCount++] = target.id();
+				}
+			}
 			m_lastValidatedInput = Texture::IDType::Invalid();
 		}
 		setSceneScale(m_sceneScale);

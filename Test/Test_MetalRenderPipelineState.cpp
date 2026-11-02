@@ -57,7 +57,7 @@ namespace s3d
 			{
 				.vs = SIV3D_ENGINE(EngineShader)->getVS(scene ? EngineVS::Shape2D : EngineVS::FullScreenTriangle).id(),
 				.ps = SIV3D_ENGINE(EngineShader)->getPS(scene ? EnginePS::Shape2D : EnginePS::FullScreenTriangle).id(),
-				.pixelFormat = static_cast<uint16>(scene ? MTL::PixelFormatRGBA8Unorm : MTL::PixelFormatBGRA8Unorm),
+				.pixelFormats = { static_cast<uint16>(scene ? MTL::PixelFormatRGBA8Unorm : MTL::PixelFormatBGRA8Unorm) },
 				.sampleCount = static_cast<uint16>(scene ? 4 : 1),
 				.blendState = BlendState::Opaque,
 			};
@@ -91,6 +91,41 @@ namespace s3d
 		}
 	}
 
+	TEST_CASE("MetalRenderPipelineState.mrt_layout_and_write_mask_cache")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		__attribute__((objc_precise_lifetime)) Siv3DTestPipelineDevice* device = MakeDevice();
+		MetalRenderPipelineState cache;
+		cache.init((__bridge MTL::Device*)device, static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader)));
+		const PixelShader ps = PixelShader::MSL(std::string{ R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Output { float4 a [[color(0)]]; float4 b [[color(1)]]; };
+fragment Output PS() { return Output{ float4(1, 0, 0, 1), float4(0, 1, 0, 1) }; }
+)" }, U"PS");
+		REQUIRE(ps);
+		auto desc = MakeDesc(false);
+		desc.ps = ps.id();
+		desc.colorCount = 2;
+		desc.colorWriteMask = 3;
+		desc.pixelFormats[0] = uint16(MTL::PixelFormatRGBA8Unorm);
+		desc.pixelFormats[1] = uint16(MTL::PixelFormatRGBA16Float);
+		const auto initial = desc;
+		const auto* first = cache.get(desc);
+		REQUIRE(first);
+		desc.colorWriteMask = 1;
+		CHECK(cache.get(desc) != first);
+		desc.colorWriteMask = 3;
+		std::swap(desc.pixelFormats[0], desc.pixelFormats[1]);
+		CHECK(cache.get(desc) != first);
+		desc.colorCount = 3;
+		desc.pixelFormats[2] = uint16(MTL::PixelFormatR8Unorm);
+		REQUIRE(cache.get(desc));
+		CHECK(device.creationCount == 4);
+		CHECK(cache.get(initial) == first);
+		CHECK(device.creationCount == 4);
+	}
+
 	TEST_CASE("MetalRenderPipelineState.failure_retry_and_cache")
 	{
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
@@ -120,7 +155,7 @@ namespace s3d
 					CHECK(message.contains("newRenderPipelineState"));
 					CHECK(message.contains(fmt::format("vs = {}", desc.vs.value())));
 					CHECK(message.contains(fmt::format("ps = {}", desc.ps.value())));
-					CHECK(message.contains(fmt::format("pixelFormat = {}", desc.pixelFormat)));
+					CHECK(message.contains(fmt::format("pixelFormat = {}", desc.pixelFormats[0])));
 					CHECK(message.contains("sampleCount = 1"));
 					CHECK(message.contains(withError ? "Injected pipeline creation failure" : "No Metal error details"));
 				}

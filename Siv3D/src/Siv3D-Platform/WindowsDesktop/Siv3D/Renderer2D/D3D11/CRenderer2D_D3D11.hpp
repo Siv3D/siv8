@@ -537,7 +537,7 @@ namespace s3d
 		void setSceneScale(Float2 scale) override
 		{
 			m_sceneScale = scale;
-			m_commandManager.setSceneScale(m_renderTarget ? Float2{ 1.0f, 1.0f } : scale);
+			m_commandManager.setSceneScale(m_renderTargets ? Float2{ 1.0f, 1.0f } : scale);
 		}
 
 		////////////////////////////////////////////////////////////////

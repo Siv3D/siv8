@@ -141,7 +141,7 @@ namespace s3d
 			{
 				.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle).id(),
 				.ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle).id(),
-				.pixelFormat = static_cast<uint16>((MTL::PixelFormat)m_metalLayer.pixelFormat),
+				.pixelFormats = { static_cast<uint16>((MTL::PixelFormat)m_metalLayer.pixelFormat) },
 				.sampleCount = 1,
 				.blendState = BlendState::Opaque,
 			};
