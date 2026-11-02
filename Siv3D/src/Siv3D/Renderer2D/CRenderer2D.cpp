@@ -589,16 +589,19 @@ namespace s3d
 			throw Error{ "ScopedRenderTarget2D requires 1 to 8 color targets (use none for Scene)" };
 		}
 		detail::RenderTargetState next;
+		MSAASampleCount sampleCount = MSAASampleCount::NoMSAA;
 		for (const auto& target : renderTargets)
 		{
 			if (not target)
 			{
 				throw Error{ "ScopedRenderTarget2D requires non-empty color targets" };
 			}
-			if ((renderTargets.size() > 1) && (target.getMSAASampleCount() != MSAASampleCount::NoMSAA))
+			const auto targetSampleCount = target.getMSAASampleCount();
+			if (next.count && (targetSampleCount != sampleCount))
 			{
-				throw Error{ "Multiple 2D render targets must be single-sample textures" };
+				throw Error{ "Multiple 2D render targets must have the same sample count" };
 			}
+			sampleCount = targetSampleCount;
 			if (next.count && (next.size() != target.size()))
 			{
 				throw Error{ "Multiple 2D render targets must have the same size" };

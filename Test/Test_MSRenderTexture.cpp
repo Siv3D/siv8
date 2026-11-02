@@ -86,6 +86,70 @@ namespace s3d
 		};
 	}
 
+	TEST_CASE("MSRenderTexture.mrt_formats_and_native_attachments")
+	{
+		const DrawState state;
+	# if SIV3D_PLATFORM(MACOS)
+		const PixelShader ps = PixelShader::MSL(std::string{ R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Output { float4 a [[color(0)]]; float4 b [[color(1)]]; };
+fragment Output PS() { return Output{ float4(1), float4(1) }; }
+)" }, U"PS");
+	# else
+		const PixelShader ps = PixelShader::HLSL(std::string{ R"(
+struct Output { float4 a : SV_Target0; float4 b : SV_Target1; };
+Output PS() { Output o; o.a = float4(1, 1, 1, 1); o.b = o.a; return o; }
+)" }, U"PS");
+	# endif
+		REQUIRE(ps);
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			const MSRenderTexture first{ Size{ 7, 5 }, Palette::Black, samples };
+			REQUIRE(first);
+			for (uint8 i = FromEnum(TexturePixelFormat::R8_Unorm); i <= FromEnum(TexturePixelFormat::R32G32B32A32_Float); ++i)
+			{
+				const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+				CAPTURE(samples, format);
+				const MSRenderTexture second{ first.size(), ColorF{ 0, 0 }, samples, format };
+				if (not Supports(format, samples, false)) { CHECK_FALSE(second); continue; }
+				REQUIRE(second);
+				const RenderTexture white{ first.size(), Palette::White, format };
+				{
+					const ScopedRenderTarget2D target{ first, second };
+					const ScopedCustomShader2D shader{ ps };
+					Rect{ first.size() }.draw();
+				}
+				first.resolve(); second.resolve();
+				CHECK(ReadBytes(second) == ReadBytes(white));
+				for (const auto& texture : { first, second })
+				{
+				# if SIV3D_PLATFORM(WINDOWS)
+					auto* manager = static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
+					D3D11_RENDER_TARGET_VIEW_DESC view{};
+					manager->getRTV(texture.id())->GetDesc(&view);
+					CHECK(view.ViewDimension == D3D11_RTV_DIMENSION_TEXTURE2DMS);
+					ComPtr<ID3D11Resource> resource;
+					manager->getRTV(texture.id())->GetResource(&resource);
+					ComPtr<ID3D11Texture2D> attachment;
+					REQUIRE(SUCCEEDED(resource.As(&attachment)));
+					D3D11_TEXTURE2D_DESC desc{};
+					attachment->GetDesc(&desc);
+					CHECK(desc.SampleDesc.Count == FromEnum(samples));
+					CHECK(desc.SampleDesc.Quality == 0);
+					CHECK(attachment.Get() != manager->getTexture(texture.id()));
+				# else
+					auto* manager = static_cast<CTexture_Metal*>(SIV3D_ENGINE(Texture));
+					auto* attachment = manager->getRenderTargetTexture(texture.id());
+					CHECK(attachment->textureType() == MTL::TextureType2DMultisample);
+					CHECK(attachment->sampleCount() == FromEnum(samples));
+					CHECK(attachment != manager->getTexture(texture.id()));
+				# endif
+				}
+			}
+		}
+	}
+
 	TEST_CASE("MSRenderTexture.formats_samples_clear_resolve_and_mips")
 	{
 		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })

@@ -71,7 +71,8 @@ namespace s3d
 			return Shader(std::span{ colors.data(), count });
 		}
 
-		Image Read(const RenderTexture& target, const uint32 mipLevel = 0)
+		template <class Target>
+		Image Read(const Target& target, const uint32 mipLevel = 0)
 		{
 			Image result;
 			REQUIRE(target.readAsImage(result, mipLevel));
@@ -286,7 +287,7 @@ namespace s3d
 		const DrawState state;
 		const RenderTexture a{ Size{ 8, 8 }, Palette::Black }, b{ a.size(), Palette::Black }, c{ a.size(), Palette::Black };
 		const RenderTexture wrongSize{ Size{ 4, 8 } };
-		const MSRenderTexture ms{ a.size() }, otherMS{ a.size() };
+		const MSRenderTexture ms{ a.size(), MSAASampleCount::X2MSAA }, otherMS{ a.size(), MSAASampleCount::X4MSAA };
 		REQUIRE(ms);
 		REQUIRE(otherMS);
 		const std::array<ColorRenderTarget, 2> expected{ a, b };
@@ -381,6 +382,298 @@ namespace s3d
 			CHECK(finalA[0][0] == Palette::Red);
 			CHECK(Abs(int(finalA[0][6].g) - 128) <= 1);
 			CHECK(Abs(int(finalB[0][6].g) - 191) <= 1);
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.outputs_and_independent_explicit_resolve")
+	{
+		const DrawState state;
+		for (const size_t count : { size_t{ 2 }, size_t{ 8 } })
+		{
+			const PixelShader ps = Shader(count);
+			REQUIRE(ps);
+			for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+			{
+				CAPTURE(count, samples);
+				Array<MSRenderTexture> textures;
+				Array<ColorRenderTarget> targets;
+				for (size_t i = 0; i < count; ++i)
+				{
+					textures.emplace_back(Size{ 8, 4 }, Palette::Magenta, samples);
+					REQUIRE(textures.back());
+					targets.emplace_back(textures.back());
+				}
+				{
+					const ScopedRenderTarget2D scope{ targets };
+					{ const ScopedCustomShader2D shader{ ps }; Rect{ 8, 4 }.draw(); }
+					{ const ScopedRenderTarget2D same{ std::span{ targets } }; }
+					for (const auto& target : targets) { target.resolve(); }
+					// Neither entering the identical set nor resolving submits queued draws.
+					// Readback submits them, but must not update any resolve result.
+					for (const auto& texture : textures) { CHECK(Read(texture) == Image{ texture.size(), Palette::Magenta }); }
+					Graphics2D::Flush();
+					targets[0].resolve();
+					CHECK(Read(textures[0]) == Image{ Size{ 8, 4 }, Colors[0] });
+					for (size_t i = 1; i < count; ++i) { CHECK(Read(textures[i]) == Image{ Size{ 8, 4 }, Palette::Magenta }); }
+					for (const auto& target : targets) { target.resolve(); }
+					for (size_t i = 0; i < count; ++i) { CHECK(Read(textures[i]) == Image{ Size{ 8, 4 }, Colors[i] }); }
+					// A standard shader writes only output zero, including in an MSAA pass.
+					Rect{ 4, 4 }.draw(Palette::Cyan);
+					Graphics2D::Flush();
+					for (const auto& target : targets) { target.resolve(); }
+					const Image first = Read(textures[0]);
+					CHECK(first[2][1] == Palette::Cyan);
+					CHECK(first[2][6] == Colors[0]);
+					for (size_t i = 1; i < count; ++i) { CHECK(Read(textures[i]) == Image{ Size{ 8, 4 }, Colors[i] }); }
+					Rect{ 4, 4 }.draw(Palette::Blue);
+				}
+				const Image beforeResolve = Read(textures[0]);
+				CHECK(beforeResolve[2][1] == Palette::Cyan); // Scope exit does not resolve.
+				textures[0].resolve();
+				const Image afterResolve = Read(textures[0]);
+				CHECK(afterResolve[2][1] == Palette::Blue);
+				CHECK(afterResolve[2][6] == Colors[0]);
+			}
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.coverage_and_sample_count_changes")
+	{
+		const DrawState state;
+		const PixelShader ps = Shader(2);
+		REQUIRE(ps);
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA, MSAASampleCount::X2MSAA })
+		{
+			const MSRenderTexture a{ Size{ 16, 16 }, Palette::Black, samples }, b{ a.size(), Palette::Black, samples };
+			REQUIRE(a); REQUIRE(b);
+			{
+				const ScopedRenderTarget2D scope{ { a, b } };
+				const ScopedCustomShader2D shader{ ps };
+				Triangle{ Vec2{ 1.2, 1.1 }, Vec2{ 14.6, 2.3 }, Vec2{ 2.7, 14.5 } }.draw();
+			}
+			a.resolve(); b.resolve();
+			const Image imageA = Read(a), imageB = Read(b);
+			CHECK(imageA[4][4] == Palette::Red);
+			CHECK(imageB[4][4] == Palette::Lime);
+			CHECK(imageA[15][15] == Palette::Black);
+			CHECK(imageB[15][15] == Palette::Black);
+			size_t intermediate = 0;
+			for (size_t i = 0; i < imageA.pixelCount(); ++i)
+			{
+				const auto ca = imageA.data()[i], cb = imageB.data()[i];
+				CHECK(ca.r == cb.g);
+				if ((0 < ca.r) && (ca.r < 255)) { ++intermediate; }
+			}
+			CHECK(intermediate > 0);
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.nesting_reorder_move_and_temporary_lifetime")
+	{
+		const DrawState state;
+		const PixelShader ps = Shader(2);
+		REQUIRE(ps);
+		const MSRenderTexture a{ Size{ 8, 8 }, Palette::Black, MSAASampleCount::X2MSAA }, b{ a.size(), Palette::Black, MSAASampleCount::X2MSAA };
+		const MSRenderTexture c{ Size{ 4, 4 }, Palette::Black, MSAASampleCount::X4MSAA }, d{ c.size(), Palette::Black, MSAASampleCount::X4MSAA };
+		const RenderTexture single{ c.size(), Palette::Black }, other{ c.size(), Palette::Black };
+		REQUIRE(a); REQUIRE(b); REQUIRE(c); REQUIRE(d);
+		const std::array<ColorRenderTarget, 2> targets{ a, b };
+		const ScopedViewport2D sceneViewport{ Rect{ 1, 2, 3, 4 } };
+		{
+			ScopedRenderTarget2D original{ targets };
+			const ScopedRenderTarget2D moved{ std::move(original) };
+			{ const ScopedCustomShader2D shader{ ps }; Rect{ a.size() }.draw(); }
+			{
+				const ScopedViewport2D viewport{ Rect{ 2, 1, 4, 5 } };
+				{
+					const ScopedRenderTarget2D inner{ c, d };
+					{ const ScopedCustomShader2D shader{ ps }; Rect{ c.size() }.draw(); }
+					{
+						const ScopedRenderTarget2D nested{ single, other };
+						const ScopedCustomShader2D shader{ ps }; Rect{ single.size() }.draw();
+					}
+					{ const ScopedRenderTarget2D one{ single }; Rect{ 1, 4 }.draw(Palette::Blue); }
+					{ const ScopedRenderTarget2D one{ c }; Rect{ 1, 4 }.draw(Palette::Blue); }
+					{ const ScopedRenderTarget2D scene{ none }; CHECK_FALSE(SIV3D_ENGINE(Renderer2D)->getRenderTargets()); }
+				}
+				CheckTargets(targets);
+				CHECK(Graphics2D::GetViewport() == Rect{ 2, 1, 4, 5 });
+				CHECK(Graphics2D::GetRenderTargetSize() == a.size());
+				{
+					const ScopedRenderTarget2D reordered{ b, a };
+					CHECK_FALSE(Graphics2D::GetViewport());
+					const ScopedCustomShader2D shader{ ps }; Rect{ 4, 8 }.draw();
+				}
+				CheckTargets(targets);
+				CHECK(Graphics2D::GetViewport() == Rect{ 2, 1, 4, 5 });
+			}
+		}
+		CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 3, 4 });
+		for (const auto& texture : { a, b, c, d }) { CHECK(Read(texture) == Image{ texture.size(), Palette::Black }); texture.resolve(); }
+		const Image imageA = Read(a), imageB = Read(b), imageC = Read(c);
+		CHECK(imageA[4][2] == Palette::Lime);
+		CHECK(imageA[4][6] == Palette::Red);
+		CHECK(imageB[4][2] == Palette::Red);
+		CHECK(imageB[4][6] == Palette::Lime);
+		CHECK(imageC[2][0] == Palette::Blue);
+		CHECK(imageC[2][2] == Palette::Red);
+		CHECK(Read(d) == Image{ d.size(), Palette::Lime });
+		{
+			const ScopedRenderTarget2D temporary{ MSRenderTexture{ Size{ 8, 8 } }, MSRenderTexture{ Size{ 8, 8 } } };
+			{ const ScopedRenderTarget2D nested{ single }; }
+			{ const ScopedCustomShader2D shader{ ps }; Rect{ 8, 8 }.draw(); }
+			Graphics2D::Flush();
+			const auto saved = SIV3D_ENGINE(Renderer2D)->getRenderTargets();
+			for (uint32 i = 0; i < saved.count; ++i) { saved.colors[i]->resolve(); }
+			const RenderTexture copy{ Size{ 16, 8 } };
+			{ const ScopedRenderTarget2D output{ copy }; saved.colors[0]->getTexture().draw(); saved.colors[1]->getTexture().draw(8, 0); }
+			const Image image = Read(copy);
+			CHECK(image[4][4] == Palette::Red);
+			CHECK(image[4][12] == Palette::Lime);
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.read_clear_mips_and_frame_continuation")
+	{
+		const DrawState state;
+		const auto oldSamples = Scene::GetMSAASampleCount();
+		const ScopeExit restore{ [&] { Scene::SetMSAASampleCount(oldSamples); } };
+		const PixelShader ps = Shader(2);
+		REQUIRE(ps);
+		for (const auto sceneSamples : { MSAASampleCount::NoMSAA, MSAASampleCount::X4MSAA })
+		{
+			Scene::SetMSAASampleCount(sceneSamples);
+			REQUIRE(System::Update());
+			for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+			{
+				const MSRenderTexture a{ Size{ 8, 8 }, Palette::Black, samples, TextureFormat::R8G8B8A8_Unorm, TextureDesc::Mipmap };
+				const MSRenderTexture b{ a.size(), Palette::Black, samples };
+				REQUIRE(a); REQUIRE(b);
+				const std::array<ColorRenderTarget, 2> targets{ a, b };
+				const ScopedRenderTarget2D scope{ targets };
+				{ const ScopedCustomShader2D shader{ ps }; Rect{ a.size() }.draw(); }
+				Graphics2D::Flush();
+				a.resolve(); b.resolve();
+				CHECK(Read(a, 1) == Image{ Size{ 4, 4 }, Palette::Black });
+				a.clear(Palette::Blue);
+				a.generateMips(); // Uses the preceding red resolve result, not the blue MSAA image.
+				CHECK(Read(a) == Image{ a.size(), Palette::Red });
+				CHECK(Read(a, 1) == Image{ Size{ 4, 4 }, Palette::Red });
+				CHECK(Read(b) == Image{ b.size(), Palette::Lime });
+				a.resolve();
+				CHECK(Read(a) == Image{ a.size(), Palette::Blue });
+				for (int frame = 0; frame < 2; ++frame)
+				{
+					{ const ScopedCustomShader2D shader{ ps }; Rect{ 4, 0, 4, 8 }.draw(); }
+					REQUIRE(System::Update());
+					CheckTargets(targets);
+					CHECK(SIV3D_ENGINE(Renderer2D)->getSceneScale() == Float2{ 1, 1 });
+					const Image stale = Read(a);
+					CHECK(stale[4][6] == (frame ? Palette::Red : Palette::Blue));
+					a.resolve(); b.resolve();
+					const Image image = Read(a);
+					CHECK(image[4][2] == (frame ? Palette::White : Palette::Blue));
+					CHECK(image[4][6] == Palette::Red);
+					CHECK(Read(b) == Image{ b.size(), Palette::Lime });
+					Rect{ 4, 8 }.draw(Palette::White);
+				}
+				Graphics2D::Flush();
+				a.resolve(); a.generateMips();
+				const Image mip = Read(a, 1);
+				CHECK(mip[0][0] == Palette::White);
+				CHECK(mip[0][3] == Palette::Red);
+			}
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.resolved_inputs_and_feedback_restoration")
+	{
+		const DrawState state;
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			const RenderTexture single{ Size{ 8, 4 }, Palette::Black }, other{ single.size(), Palette::Black };
+			const MSRenderTexture a{ single.size(), Palette::Red, samples }, b{ single.size(), Palette::Blue, samples };
+			REQUIRE(a); REQUIRE(b);
+			const ScopedRenderTarget2D outer{ single, other };
+			{
+				const ScopedRenderTarget2D scope{ a, b };
+				b.clear(Palette::Lime);
+				CHECK_NOTHROW(ColorRenderTarget{ b }.getTexture().draw());
+				Graphics2D::Flush();
+				a.resolve(); b.resolve();
+				CHECK(Read(a) == Image{ a.size(), Palette::Blue });
+				CHECK(Read(b) == Image{ b.size(), Palette::Lime });
+				b.clear(Palette::Yellow);
+				b.draw(); // Queued sampling must observe the following resolve without an implicit Flush.
+				b.resolve();
+				Graphics2D::Flush();
+				a.resolve();
+				CHECK(Read(a) == Image{ a.size(), Palette::Yellow });
+				CHECK_NOTHROW(a.draw());
+				CHECK_NOTHROW(other.draw(-8, 0)); // Successful input must not remain cached after restore.
+			}
+			CHECK_THROWS_AS(single.draw(), Error);
+			CHECK_THROWS_AS(other.draw(), Error);
+			CHECK_NOTHROW(a.draw());
+		}
+	}
+
+	TEST_CASE("MRT.MSAA.srgb_hdr_and_common_blend")
+	{
+		const DrawState state;
+		const Float4 linear{ 0.25f, 0.5f, 0.75f, 1 }, high{ 2, 4, 8, 1 };
+		const PixelShader opaque = Shader(std::array{ linear, high });
+		const PixelShader translucent = Shader(std::array{ Float4{ 0.25f, 0.25f, 0.25f, 0.5f }, Float4{ 0.25f, 0.25f, 0.25f, 0.5f } });
+		REQUIRE(opaque); REQUIRE(translucent);
+		for (const auto samples : { MSAASampleCount::X2MSAA, MSAASampleCount::X4MSAA })
+		{
+			const MSRenderTexture srgb{ Size{ 7, 5 }, samples, TextureFormat::R8G8B8A8_Unorm_SRGB };
+			const MSRenderTexture hdr{ srgb.size(), samples, TextureFormat::R16G16B16A16_Float };
+			REQUIRE(srgb); REQUIRE(hdr);
+			const ScopedRenderTarget2D targets{ srgb, hdr };
+			{
+				const ScopedCustomShader2D shader{ opaque };
+				Rect{ srgb.size() }.draw();
+			}
+			Graphics2D::Flush();
+			srgb.resolve(); hdr.resolve();
+			const Color expected = ColorF{ linear }.linearToSRGB().toColor();
+			for (const auto pixel : Read(srgb))
+			{
+				CHECK(Abs(int(pixel.r) - expected.r) <= 1);
+				CHECK(Abs(int(pixel.g) - expected.g) <= 1);
+				CHECK(Abs(int(pixel.b) - expected.b) <= 1);
+			}
+			Grid<std::array<HalfFloat, 4>> pixels;
+			REQUIRE(hdr.read(pixels));
+			for (const auto pixel : pixels)
+			{
+				CHECK(float(pixel[0]) == high.x);
+				CHECK(float(pixel[1]) == high.y);
+				CHECK(float(pixel[2]) == high.z);
+			}
+			{
+				const ScopedRenderStates2D blend{ BlendState::Default2D };
+				const ScopedCustomShader2D shader{ translucent };
+				Rect{ srgb.size() }.draw();
+			}
+			Graphics2D::Flush();
+			srgb.resolve(); hdr.resolve();
+			const Color blended = ColorF{ 0.375, 0.5, 0.625, 1 }.linearToSRGB().toColor();
+			for (const auto pixel : Read(srgb))
+			{
+				CHECK(Abs(int(pixel.r) - blended.r) <= 2);
+				CHECK(Abs(int(pixel.g) - blended.g) <= 2);
+				CHECK(Abs(int(pixel.b) - blended.b) <= 2);
+			}
+			REQUIRE(hdr.read(pixels));
+			for (const auto pixel : pixels)
+			{
+				CHECK(float(pixel[0]) == 1.25f);
+				CHECK(float(pixel[1]) == 2.25f);
+				CHECK(float(pixel[2]) == 4.25f);
+				CHECK(float(pixel[3]) == 1.0f);
+			}
 		}
 	}
 }

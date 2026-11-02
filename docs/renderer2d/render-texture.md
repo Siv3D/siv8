@@ -4,13 +4,13 @@
 color texture. It supports creation, GPU clears, mipmap generation, CPU readback,
 and the drawing operations inherited from `Texture`.
 [ScopedRenderTarget2D](../../Siv3D/include/Siv3D/ScopedRenderTarget2D.hpp) selects
-one color texture, or up to eight single-sample color textures, for 2D drawing.
+up to eight color textures with a common size and sample count for 2D drawing.
 [MSRenderTexture](../../Siv3D/include/Siv3D/MSRenderTexture.hpp) owns a multisample
 color texture and a separate single-sample resolve result. A target scope writes
 to its MSAA image; sampling uses the last explicitly resolved image.
 [ColorRenderTarget](../../Siv3D/include/Siv3D/ColorRenderTarget.hpp) shares either
 kind through one typed handle, with common clear, resolve, and mip operations.
-Multisample MRT, independent output blending, and depth attachments are tracked in
+Independent output blending and depth attachments are tracked in
 [TODO](../../TODO.md#rendertexture--depthtexture).
 
 ## Creating and inspecting textures
@@ -257,7 +257,8 @@ color.draw();
 normal.draw(320, 0);
 ```
 
-Both textures have the same size, while their formats and bits per pixel differ.
+Both textures have the same size and sample count, while their formats and bits
+per pixel differ.
 GPU format and attachment-capacity limits still apply; a resource being usable
 alone does not promise that every MRT combination is supported. Native pipeline
 creation failures are reported, without silently dropping outputs or changing
@@ -269,6 +270,57 @@ handles changes the binding; selecting the same ordered set can keep pending
 draws batched. Each operation on an individual texture retains its existing
 clear/read/mip/resolve behavior and leaves the entire set selected. Input
 feedback is rejected for any active single-sample output, including aliases.
+
+## Multisample MRT
+
+An MRT set can contain single-sample RenderTextures, 2x MSRenderTextures, or 4x
+MSRenderTextures. Every selected image must have the same sample count. Mixing
+single-sample and MSAA images, or 2x and 4x images, is rejected before Flush or
+state changes. Scene's sample count is independent. Each MSRenderTexture keeps
+its own single-sample resolve result; those results are not drawing attachments.
+
+The MRT shader above can also draw to multisample targets. With `ps` from that
+example, inside `Main()`:
+
+```cpp
+const MSRenderTexture colorMS{ Size{ 320, 180 }, Palette::Black,
+    MSAASampleCount::X4MSAA };
+const MSRenderTexture normalMS{ colorMS.size(), ColorF{ 0.0, 0.0 },
+    MSAASampleCount::X4MSAA, TextureFormat::R16G16B16A16_Float };
+if (not colorMS || not normalMS || not ps)
+{
+    return;
+}
+const std::array<ColorRenderTarget, 2> targetsMS{ colorMS, normalMS };
+{
+    const ScopedRenderTarget2D target{ targetsMS };
+    const ScopedCustomShader2D shader{ ps };
+    const ScopedRenderStates2D blend{ BlendState::Opaque };
+    Circle{ 160, 90, 60 }.draw();
+    Graphics2D::Flush();
+    for (const auto& output : targetsMS)
+    {
+        output.resolve();
+    }
+}
+colorMS.draw();
+normalMS.draw(320, 0);
+```
+
+Resolve remains explicit for each output and does not Flush, wait for GPU
+completion, or generate mipmaps. Resolve only the outputs needed by subsequent
+work. Entering/leaving a scope, reordering outputs, readback, and frame boundaries
+do not resolve any output. Re-entering the same ordered set may retain queued
+draws, so it cannot replace the explicit Flush in this example.
+
+A multisample set can sample any of its resolved images while drawing. Those
+images remain unchanged until explicitly resolved. For queued sampling to see the
+old image, Flush before resolving; without Flush, queued draws can see the new
+resolve result. Clear changes only the selected resource's MSAA image, and mip
+generation uses that resource's last resolve result. Both retain their existing
+2D Flush behavior and preserve the entire active MRT set. Switching between
+single-sample MRT, 2x MRT, 4x MRT, a single target, and Scene restores the complete
+ordered set and viewport, including after readback or a frame boundary.
 
 ## Ordering and backend responsibilities
 
@@ -321,8 +373,8 @@ subsequent sampling, clear, mip generation and readback do not inherit conflicts
 
 Color textures do not own depth resources. Future depth bindings should extend
 the target representation without giving color resources ownership of depth
-textures. Independent output blend settings and multisample MRT remain separate
-extensions; single-target MSAA selection retains its existing behavior.
+textures. Independent output blend settings and depth attachments remain
+separate extensions.
 
 ## Validation
 
@@ -331,7 +383,11 @@ outputs, standard/custom shader transitions, mixed formats and layout ordering,
 sRGB/HDR values, common blending and channel masks, viewport clipping, invalid
 sets, feedback for multiple outputs,
 nested restoration, resource lifetime, read/mip/clear operations, and frame
-continuation under both Scene sample counts.
+continuation under both Scene sample counts. MSAA cases cover 2x/4x sets through
+eight outputs, partially covered edge pixels, simultaneous sRGB/HDR output and
+common blending, independent explicit resolve,
+resolved-image sampling, mixed single/multisample nesting, mip contents, and
+continued drawing across multiple frame and readback boundaries.
 
 [Shared tests](../../Test/Test_RenderTexture.cpp) exercise all current
 non-compressed color formats, odd row widths, native-value round trips, sRGB and
@@ -350,9 +406,10 @@ results, viewport/state restoration, all color formats, feedback rejection,
 readback and mip generation inside a scope, Scene MSAA and resolution scaling,
 and frame continuation. [Metal scope tests](../../Test/Test_MetalScopedRenderTarget2D.cpp)
 inject encoder failure to verify entry rollback, whole-set restoration, rejected
-MRT sets without Flush, and exception unwinding.
+MRT sets without Flush (including mixed sample counts), and exception unwinding
+for single-sample and multisample sets.
 [Metal pipeline tests](../../Test/Test_MetalRenderPipelineState.cpp) verify cache
-separation by attachment order, count, and write mask, plus native creation
+separation by attachment order, count, sample count, and write mask, plus native creation
 failure/retry.
 
 [Multisample resource tests](../../Test/Test_MSRenderTexture.cpp) check supported
@@ -362,6 +419,10 @@ the visible difference between explicit Flush and resolve alone. Target tests
 cover 2x/4x edge coverage, sRGB/HDR drawing, mixed single/multisample scopes,
 viewport and handle restoration, sampling the active MS target's resolved image,
 and continuation across readback and frame boundaries without implicit resolve.
+MRT cases pair each supported color format with an RGBA8 attachment at 2x/4x,
+check resolved bytes, and inspect both native drawing images separately from
+their resolve results. Unsupported resource combinations follow the native
+capability checks used by the standalone MSRenderTexture tests.
 [Metal multisample tests](../../Test/Test_MetalMSRenderTexture.cpp) inspect native
 allocation descriptors and inject unsupported capabilities, failure of either
 texture allocation, and resolve-encoder failure followed by retry.

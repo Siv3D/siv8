@@ -122,8 +122,14 @@ fragment Output PS() { return Output{ float4(1, 0, 0, 1), float4(0, 1, 0, 1) }; 
 		desc.pixelFormats[2] = uint16(MTL::PixelFormatR8Unorm);
 		REQUIRE(cache.get(desc));
 		CHECK(device.creationCount == 4);
+		for (const uint16 samples : { uint16{ 2 }, uint16{ 4 } })
+		{
+			desc.sampleCount = samples;
+			REQUIRE(cache.get(desc));
+		}
+		CHECK(device.creationCount == 6);
 		CHECK(cache.get(initial) == first);
-		CHECK(device.creationCount == 4);
+		CHECK(device.creationCount == 6);
 	}
 
 	TEST_CASE("MetalRenderPipelineState.failure_retry_and_cache")

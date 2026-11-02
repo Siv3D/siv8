@@ -57,6 +57,61 @@ namespace s3d
 		};
 	}
 
+	TEST_CASE("MRT.Metal.MSAA_invalid_and_failed_switch_preserve_entire_set")
+	{
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const ScopedRenderTarget2D scene{ none };
+		const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
+		const MSRenderTexture a{ Size{ 8, 8 }, MSAASampleCount::X2MSAA }, b{ a.size(), MSAASampleCount::X2MSAA };
+		const MSRenderTexture c{ a.size(), MSAASampleCount::X4MSAA }, d{ a.size(), MSAASampleCount::X4MSAA };
+		const RenderTexture single{ a.size() };
+		REQUIRE(a); REQUIRE(b); REQUIRE(c); REQUIRE(d);
+		const std::array<ColorRenderTarget, 2> targets{ a, b };
+		const ScopedRenderTarget2D outer{ targets };
+		const ScopedViewport2D viewport{ Rect{ 1, 2, 4, 4 } };
+		Rect{ 8, 8 }.draw();
+		{
+			EncoderFailure failure{ *renderer };
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, c }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ c, a }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, single }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ single, a }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, a }), Error);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ a, MSRenderTexture{} }), Error);
+			{ const ScopedRenderTarget2D same{ targets }; }
+			CHECK(failure.attempts == 0);
+			CHECK_THROWS_AS((ScopedRenderTarget2D{ c, d }), InternalEngineError);
+			CHECK(failure.attempts == 1);
+		}
+		for (const bool unwind : { false, true })
+		{
+			EncoderFailure failure{ *renderer };
+			bool caught = false;
+			try
+			{
+				const ScopedRenderTarget2D inner{ c, d };
+				Rect{ 8, 8 }.draw();
+				if (unwind) { throw Error{ "original MSAA MRT failure" }; }
+			}
+			catch (const Error& error)
+			{
+				caught = true;
+				if (unwind) { CHECK(error.messageUTF8() == "original MSAA MRT failure"); }
+			}
+			CHECK(caught);
+			CHECK(failure.attempts == 1);
+			const auto& actual = SIV3D_ENGINE(Renderer2D)->getRenderTargets();
+			REQUIRE(actual.count == 2);
+			CHECK(actual.colors[0]->id() == a.id());
+			CHECK(actual.colors[1]->id() == b.id());
+			CHECK(actual.colors[0]->getMSAASampleCount() == MSAASampleCount::X2MSAA);
+			CHECK(Graphics2D::GetViewport() == Rect{ 1, 2, 4, 4 });
+		}
+		CHECK_NOTHROW(Graphics2D::Flush());
+		CHECK_NOTHROW(a.resolve());
+		CHECK_NOTHROW(b.resolve());
+	}
+
 	TEST_CASE("MRT.Metal.encoder_failure_restores_entire_set")
 	{
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
