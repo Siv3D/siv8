@@ -41,12 +41,17 @@ namespace s3d
 		void beginFrame(MTL::CommandQueue* commandQueue);
 
 		// 記録中のコマンドバッファを借用する。記録中でなければ nullptr。
-		// 借用は submit() / cancel() まで。送信は Context に任せること。
+		// 借用は送信・読み戻し・取消で終了する。送信は Context に任せること。
 		[[nodiscard]]
 		MTL::CommandBuffer* getCommandBuffer() const noexcept;
 
 		// 記録中のフレームに完了通知を登録し、送信する。すべての encoder を終了してから呼ぶ。
 		void submit();
+
+		// 現在の記録を待機せず送信し、同じフレームを next で継続する。
+		// next は同じ queue に確保済みの未使用バッファ。全 encoder を終了してから呼ぶ。
+		// フレーム枠・番号・アップロード領域は進めない。現在のバッファの借用は終了する。
+		void submitAndContinue(NS::SharedPtr<MTL::CommandBuffer> next);
 
 		// 記録済みの GPU 操作を送信して完了を待ち、同じフレームの記録を継続する。
 		// 全 encoder を終了してから呼ぶ。フレーム番号・取得枠・アップロード領域は進めない。
@@ -54,7 +59,8 @@ namespace s3d
 		bool flushAndWait(MTL::CommandQueue* commandQueue);
 
 
-		// 未送信のフレームを破棄し、枠を返す。取得した枠がなければ何もしない。
+		// 未送信部分を破棄し、途中送信した部分の完了を待って枠を返す。
+		// 取得した枠がなければ何もしない。
 		// すべての encoder を終了してから呼ぶ。次の waitForFrame() は取り消した番号を返す。
 		void cancel() noexcept;
 
@@ -76,6 +82,8 @@ namespace s3d
 
 	private:
 
+		void commit(bool releaseFrameSlot);
+
 		struct CompletionState;
 
 		std::shared_ptr<CompletionState> m_completionState;
@@ -83,6 +91,9 @@ namespace s3d
 		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
 
 		NS::SharedPtr<MTL::CommandBuffer> m_lastSubmittedCommandBuffer;
+
+		// 現在のフレームで最後に途中送信したバッファ。取消時の早すぎる再利用を防ぐ。
+		NS::SharedPtr<MTL::CommandBuffer> m_lastPartialCommandBuffer;
 
 		// 番号は送信時に進める。取り消した番号は次回も再利用する。
 		size_t m_frameIndex = 1;

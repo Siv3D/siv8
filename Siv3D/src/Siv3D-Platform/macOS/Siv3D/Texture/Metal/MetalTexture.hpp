@@ -19,6 +19,8 @@ namespace s3d
 {
 	struct BCnData;
 
+	class MetalFrameContext;
+
 	class MetalTexture
 	{
 	public:
@@ -34,8 +36,6 @@ namespace s3d
 		void clearRT(MTL::CommandBuffer* commands, const ColorF& color);
 
 		void resolveMSRT(MTL::CommandBuffer* commands);
-
-		void generateRenderMips(MTL::CommandBuffer* commands);
 
 		[[nodiscard]]
 		MTL::Buffer* encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands, uint32 mipLevel, uint32 bytesPerRow);
@@ -107,13 +107,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, bool wait);
 
-		bool fill(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
-		bool fillRegion(MTL::CommandQueue* commandQueue, const ColorF& color, const Rect& rect);
+		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect);
 
-		bool fillRegion(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
+		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -121,7 +121,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void generateMips(MTL::CommandQueue* commandQueue);
+		void generateMips(MTL::CommandBuffer* commands);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -142,7 +142,7 @@ namespace s3d
 		[[nodiscard]]
 		bool isValidRegion(const Rect& rect) const noexcept;
 
-		bool uploadRegion(MTL::CommandQueue* commandQueue, uint32 bytesPerRow, const Rect& rect);
+		bool uploadRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, uint32 bytesPerRow, const Rect& rect);
 
 		MetalTexture2DDesc m_desc;
 

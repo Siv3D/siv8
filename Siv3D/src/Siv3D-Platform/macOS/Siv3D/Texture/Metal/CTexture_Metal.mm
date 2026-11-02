@@ -434,12 +434,12 @@ namespace s3d
 
 	bool CTexture_Metal::fill(const Texture::IDType handleID, const ColorF& color, const bool wait)
 	{
-		return m_textures[handleID]->fill(m_commandQueue, color, wait);
+		return m_textures[handleID]->fill(m_commandQueue, m_pRenderer->getFrameContext(), color, wait);
 	}
 
 	bool CTexture_Metal::fill(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const bool wait)
 	{
-		return m_textures[handleID]->fill(m_commandQueue, src, srcBytesPerRow, wait);
+		return m_textures[handleID]->fill(m_commandQueue, m_pRenderer->getFrameContext(), src, srcBytesPerRow, wait);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -450,12 +450,12 @@ namespace s3d
 
 	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
 	{
-		return m_textures[handleID]->fillRegion(m_commandQueue, color, rect);
+		return m_textures[handleID]->fillRegion(m_commandQueue, m_pRenderer->getFrameContext(), color, rect);
 	}
 
 	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
 	{
-		return m_textures[handleID]->fillRegion(m_commandQueue, src, srcBytesPerRow, rect, wait);
+		return m_textures[handleID]->fillRegion(m_commandQueue, m_pRenderer->getFrameContext(), src, srcBytesPerRow, rect, wait);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -467,22 +467,19 @@ namespace s3d
 	void CTexture_Metal::generateMips(const Texture::IDType handleID)
 	{
 		auto* texture = m_textures[handleID];
-		if ((texture->getDesc().type == TextureType::Render) || (texture->getDesc().type == TextureType::MSRender))
+		if (texture->getDesc().mipLevels <= 1)
 		{
-			if (texture->getDesc().mipLevels <= 1)
-			{
-				return;
-			}
-			const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-			auto* commands = renderCommands(true);
-			texture->generateRenderMips(commands);
-			if (not m_pRenderer->getFrameContext().getCommandBuffer())
-			{
-				commands->commit();
-			}
 			return;
 		}
-		texture->generateMips(m_commandQueue);
+		const bool flushDraws = ((texture->getDesc().type == TextureType::Render)
+			|| (texture->getDesc().type == TextureType::MSRender));
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* commands = renderCommands(flushDraws);
+		texture->generateMips(commands);
+		if (not m_pRenderer->getFrameContext().getCommandBuffer())
+		{
+			commands->commit();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

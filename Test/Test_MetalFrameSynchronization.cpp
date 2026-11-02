@@ -394,6 +394,52 @@ namespace s3d
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
 		CHECK(context.waitForFrame() == 2);
 	}
+	TEST_CASE("MetalFrameSynchronization.partial_submission_keeps_slot_until_cancel_finishes")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		auto* queue = renderer->getCommandQueue();
+		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
+		REQUIRE(event);
+		MetalFrameContext context;
+		std::future<void> cancelling;
+		const ScopeExit unblock{ [&] { event->setSignaledValue(1); } };
+		const size_t index = context.waitForFrame();
+		context.beginFrame(queue);
+		const auto submitted = NS::RetainPtr(context.getCommandBuffer());
+		submitted->encodeWait(event.get(), 1);
+		context.submitAndContinue(NS::RetainPtr(queue->commandBuffer()));
+		const auto discarded = NS::RetainPtr(context.getCommandBuffer());
+		CHECK(discarded.get() != submitted.get());
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == (FrameSlots - 1));
+		std::promise<void> started;
+		auto start = started.get_future();
+		cancelling = std::async(std::launch::async, [&]
+		{
+			@autoreleasepool { started.set_value(); context.cancel(); }
+		});
+		REQUIRE(start.wait_for(std::chrono::seconds{ 5 }) == std::future_status::ready);
+		CHECK(cancelling.wait_for(std::chrono::milliseconds{ 50 }) == std::future_status::timeout);
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == (FrameSlots - 1));
+		event->setSignaledValue(1);
+		REQUIRE(cancelling.wait_for(std::chrono::seconds{ 5 }) == std::future_status::ready);
+		cancelling.get();
+		CHECK(submitted->status() == MTL::CommandBufferStatusCompleted);
+		CHECK(discarded->status() == MTL::CommandBufferStatusNotEnqueued);
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		CHECK(context.waitForFrame() == index);
+		context.beginFrame(queue);
+		context.submitAndContinue(NS::RetainPtr(queue->commandBuffer()));
+		context.submitAndContinue(NS::RetainPtr(queue->commandBuffer()));
+		REQUIRE(context.flushAndWait(queue));
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == (FrameSlots - 1));
+		context.submit();
+		REQUIRE(context.waitForLastSubmittedFrame());
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		CHECK(context.waitForFrame() == ((index + 1) % FrameSlots));
+		context.cancel();
+	}
+
 }
 
 # endif

@@ -91,6 +91,9 @@ namespace s3d
 		[[nodiscard]]
 		const MetalFrameContext& getFrameContext() const noexcept;
 
+		[[nodiscard]]
+		MetalFrameContext& getFrameContext() noexcept;
+
 		bool finishTextureReadback();
 
 		[[nodiscard]]		

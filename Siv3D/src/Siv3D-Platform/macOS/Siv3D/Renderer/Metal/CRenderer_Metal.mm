@@ -419,6 +419,11 @@ namespace s3d
 		return m_frameContext;
 	}
 
+	MetalFrameContext& CRenderer_Metal::getFrameContext() noexcept
+	{
+		return m_frameContext;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	getSceneSampleCount

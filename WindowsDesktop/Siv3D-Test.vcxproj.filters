@@ -262,6 +262,9 @@
     <ClCompile Include="..\Test\Test_MetalMSRenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalDynamicTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalScopedRenderTarget2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>

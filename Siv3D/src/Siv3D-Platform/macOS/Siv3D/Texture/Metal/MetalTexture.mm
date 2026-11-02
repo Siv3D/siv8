@@ -10,8 +10,8 @@
 //-----------------------------------------------
 
 # include "MetalTexture.hpp"
-# include <Siv3D/Anchor.hpp>
-# include <Siv3D/Rect.hpp>
+# include <Siv3D/Renderer/Metal/MetalFrameContext.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/BCnData.hpp>
@@ -112,7 +112,7 @@ namespace s3d
 			}
 			if (1 < m_desc.mipLevels)
 			{
-				generateRenderMips(commands);
+				generateMips(commands);
 			}
 		}
 		m_initialized = true;
@@ -158,12 +158,12 @@ namespace s3d
 		encoder->endEncoding();
 	}
 
-	void MetalTexture::generateRenderMips(MTL::CommandBuffer* commands)
+	void MetalTexture::generateMips(MTL::CommandBuffer* commands)
 	{
 		auto* encoder = commands->blitCommandEncoder();
 		if (not encoder)
 		{
-			throw InternalEngineError{ "RenderTexture::generateMips(): blitCommandEncoder() failed" };
+			throw InternalEngineError{ "Texture::generateMips(): blitCommandEncoder() failed" };
 		}
 		encoder->generateMipmaps(m_texture.get());
 		encoder->endEncoding();
@@ -644,7 +644,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, const bool wait)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
 		{
@@ -667,23 +667,10 @@ namespace s3d
 
 		FillWithColor(ptr, totalBytes, color, m_desc.format);
 
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
-			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
-
-		return true;
+		return uploadRegion(commandQueue, frame, bytesPerRow, Rect{ m_desc.size });
 	}
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, const bool wait)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const std::span<const Byte> data, const uint32 srcBytesPerRow, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
 		{
@@ -705,23 +692,10 @@ namespace s3d
 		
 		FillWithImage(ptr, m_desc.size, bytesPerRow, data, srcBytesPerRow);
 
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
-			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
-
-		return true;
+		return uploadRegion(commandQueue, frame, bytesPerRow, Rect{ m_desc.size });
 	}
 
-	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, const ColorF& color, const Rect& rect)
+	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect)
 	{
 		if ((not isValidRegion(rect))
 			|| (not prepareUpload(true)))
@@ -740,10 +714,10 @@ namespace s3d
 
 		FillWithColor(ptr, totalBytes, color, m_desc.format);
 
-		return uploadRegion(commandQueue, bytesPerRow, rect);
+		return uploadRegion(commandQueue, frame, bytesPerRow, rect);
 	}
 
-	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, const std::span<const Byte> data,
+	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const std::span<const Byte> data,
 		const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
 	{
 		if ((not isValidRegion(rect))
@@ -779,7 +753,7 @@ namespace s3d
 			pSrcRow += srcBytesPerRow;
 		}
 
-		return uploadRegion(commandQueue, bytesPerRow, rect);
+		return uploadRegion(commandQueue, frame, bytesPerRow, rect);
 	}
 
 	bool MetalTexture::prepareUpload(const bool wait)
@@ -828,15 +802,21 @@ namespace s3d
 			&& (rect.y <= (m_desc.size.y - rect.h)));
 	}
 
-	bool MetalTexture::uploadRegion(MTL::CommandQueue* commandQueue, const uint32 bytesPerRow, const Rect& rect)
+	bool MetalTexture::uploadRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const uint32 bytesPerRow, const Rect& rect)
 	{
 		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-
-		if (not commandBuffer)
+		// Reserve the continuation before recording a copy, so allocation failure
+		// leaves the frame and upload tracking unchanged.
+		auto next = NS::RetainPtr(commandQueue->commandBuffer());
+		if (not next)
 		{
 			return false;
+		}
+		MTL::CommandBuffer* commandBuffer = frame.getCommandBuffer();
+		if (not commandBuffer)
+		{
+			commandBuffer = next.get();
 		}
 
 		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
@@ -863,35 +843,17 @@ namespace s3d
 		blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, origin);
 		blitCommandEncoder->endEncoding();
 
-		commandBuffer->commit();
 		m_uploadCommandBuffer = NS::RetainPtr(commandBuffer);
+		if (frame.getCommandBuffer())
+		{
+			frame.submitAndContinue(std::move(next));
+		}
+		else
+		{
+			commandBuffer->commit();
+		}
 
 		return true;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	generateMips
-	//
-	////////////////////////////////////////////////////////////////
-
-	void MetalTexture::generateMips(MTL::CommandQueue* commandQueue)
-	{
-		if (m_desc.mipLevels <= 1)
-		{
-			return;
-		}
-
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			blitCommandEncoder->generateMipmaps(m_texture.get());
-			blitCommandEncoder->endEncoding();
-		}
-
-		commandBuffer->commit();
 	}
 
 	////////////////////////////////////////////////////////////////

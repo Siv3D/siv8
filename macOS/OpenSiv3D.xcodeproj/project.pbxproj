@@ -3445,6 +3445,7 @@
 		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F13D5A57DB81429DBA7E6460 /* Test_MetalMSRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		01770B7B97EA447C8EEA368C /* Test_MetalDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5779699F5E4C98B4F26848 /* Test_WindowFullscreen_Windows.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		8E7B8A80CDF64F0D9D0319EE /* Test_WindowFullscreen_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B247FEC7F47148C0D1BEE /* Test_WindowFullscreen_macOS.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -7050,6 +7051,7 @@
 		2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_SceneAllocationFailure.cpp; sourceTree = "<group>"; };
 		5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderTexture.cpp; sourceTree = "<group>"; };
 		152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalMSRenderTexture.cpp; sourceTree = "<group>"; };
+		D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalDynamicTexture.cpp; sourceTree = "<group>"; };
 		8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper.hpp; sourceTree = "<group>"; };
 		7CDE7269E28444E49FA889E2 /* WindowFullscreenTestHelper_Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowFullscreenTestHelper_Windows.hpp; sourceTree = "<group>"; };
@@ -7555,6 +7557,7 @@
 				2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */,
 				5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */,
 				152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */,
+				D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */,
 				8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */,
 				983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */,
 				A5D4F61430A6000000000002 /* Mesh3DAssemblyExamples.hpp */,
@@ -17235,6 +17238,7 @@
 				8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */,
 				04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */,
 				F13D5A57DB81429DBA7E6460 /* Test_MetalMSRenderTexture.cpp in Sources */,
+				01770B7B97EA447C8EEA368C /* Test_MetalDynamicTexture.cpp in Sources */,
 				F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */,
 				ADB35F6511EE4BCCAA931321 /* Test_WindowStateSync.cpp in Sources */,
 				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,

@@ -5,6 +5,9 @@ on macOS. [ShaderGroup](../../Siv3D/include/Siv3D/ShaderGroup.hpp) selects HLSL 
 MSL at compile time. Windows applications can select the Direct3D 11 driver with
 `SIV3D_SET(EngineOption::D3D11Driver::...)`.
 
+- [Dynamic texture updates](dynamic-texture.md): explicit Flush ordering,
+  upload storage reuse, and the per-frame update benchmark.
+
 - [Vertex-ID triangles](draw-triangles.md): custom vertex shader generation,
   command integration, examples, and validation on D3D11 and Metal.
 

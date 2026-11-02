@@ -325,6 +325,48 @@ namespace s3d
 			CHECK(CaptureReportedErrors(context).empty());
 		}
 	}
+	TEST_CASE("MetalFrameErrors.partial_submission_reports_without_releasing_slot")
+	{
+		MetalFrameContext context;
+		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
+		(void)context.waitForFrame();
+		context.beginFrame((__bridge MTL::CommandQueue*)queue);
+		auto* partial = (__bridge Siv3DTestFrameCommandBuffer*)context.getCommandBuffer();
+		context.submitAndContinue(NS::RetainPtr(((__bridge MTL::CommandQueue*)queue)->commandBuffer()));
+		CHECK(CaptureCompletionLog(partial, MTLCommandBufferStatusError).empty());
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == (MetalFrameContext::MaxInflightFrames - 1));
+		const auto output = CaptureReportedErrors(context);
+		CHECK(output.contains("first submission = 1"));
+		CHECK(output.contains("failures = 1"));
+		auto* final = (__bridge Siv3DTestFrameCommandBuffer*)context.getCommandBuffer();
+		context.submit();
+		CHECK(CaptureCompletionLog(final, MTLCommandBufferStatusCompleted).empty());
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
+		CHECK(CaptureReportedErrors(context).empty());
+	}
+
+	TEST_CASE("MetalFrameErrors.drain_joins_late_partial_completion")
+	{
+		MetalFrameContext context;
+		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
+		(void)context.waitForFrame();
+		context.beginFrame((__bridge MTL::CommandQueue*)queue);
+		auto* partial = (__bridge Siv3DTestFrameCommandBuffer*)context.getCommandBuffer();
+		context.submitAndContinue(NS::RetainPtr(((__bridge MTL::CommandQueue*)queue)->commandBuffer()));
+		auto* final = (__bridge Siv3DTestFrameCommandBuffer*)context.getCommandBuffer();
+		context.submit();
+		CHECK(CaptureCompletionLog(final, MTLCommandBufferStatusCompleted).empty());
+		// No assertions while the asynchronous helper owns std::clog.
+		auto draining = std::async(std::launch::async, [&] { return CaptureDrainedErrors(context); });
+		const auto readiness = draining.wait_for(std::chrono::milliseconds{ 50 });
+		[partial completeWithStatus:MTLCommandBufferStatusError error:nil];
+		const auto output = draining.get();
+		CHECK(readiness == std::future_status::timeout);
+		CHECK(output.contains("first submission = 1"));
+		CHECK(output.contains("failures = 1"));
+		CHECK(CaptureReportedErrors(context).empty());
+	}
+
 }
 
 # endif

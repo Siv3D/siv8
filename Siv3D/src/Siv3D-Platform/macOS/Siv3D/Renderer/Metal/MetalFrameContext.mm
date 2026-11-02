@@ -32,6 +32,9 @@ namespace s3d
 
 		dispatch_semaphore_t semaphore = dispatch_semaphore_create(MaxInflightFrames);
 
+		// Frame completion alone does not join callbacks from intermediate buffers.
+		dispatch_group_t partialCompletions = dispatch_group_create();
+
 		std::atomic<bool> hasError = false;
 
 		std::mutex errorMutex;
@@ -41,6 +44,7 @@ namespace s3d
 		~CompletionState()
 		{
 			dispatch_release(semaphore);
+			dispatch_release(partialCompletions);
 		}
 	};
 
@@ -83,14 +87,43 @@ namespace s3d
 	{
 		assert(m_frameAcquired);
 		assert(m_commandBuffer);
+		commit(true);
+		m_lastSubmittedCommandBuffer = std::move(m_commandBuffer);
+		m_lastPartialCommandBuffer.reset();
+		m_frameAcquired = false;
+		m_frameIndex = ((m_frameIndex + 1) % MaxInflightFrames);
+	}
+
+	void MetalFrameContext::submitAndContinue(NS::SharedPtr<MTL::CommandBuffer> next)
+	{
+		assert(m_frameAcquired && m_commandBuffer && next);
+		assert(next.get() != m_commandBuffer.get());
+		commit(false);
+		m_lastPartialCommandBuffer = std::move(m_commandBuffer);
+		m_commandBuffer = std::move(next);
+	}
+
+	void MetalFrameContext::commit(const bool releaseFrameSlot)
+	{
 		// Context が先に破棄されても、同期オブジェクトとエラー記録先を保持する。
 		const auto completionState = m_completionState;
 		const uint64 submissionID = ++m_submissionCount;
+		if (not releaseFrameSlot)
+		{
+			dispatch_group_enter(completionState->partialCompletions);
+		}
 		m_commandBuffer->addCompletedHandler(^(MTL::CommandBuffer* completed)
 		{
 			const ScopeExit releaseSlot{ [&]
 			{
-				dispatch_semaphore_signal(completionState->semaphore);
+				if (releaseFrameSlot)
+				{
+					dispatch_semaphore_signal(completionState->semaphore);
+				}
+				else
+				{
+					dispatch_group_leave(completionState->partialCompletions);
+				}
 			} };
 			if (completed->status() == MTL::CommandBufferStatusError)
 			{
@@ -106,9 +139,6 @@ namespace s3d
 			}
 		});
 		m_commandBuffer->commit();
-		m_lastSubmittedCommandBuffer = std::move(m_commandBuffer);
-		m_frameAcquired = false;
-		m_frameIndex = ((m_frameIndex + 1) % MaxInflightFrames);
 	}
 
 	bool MetalFrameContext::flushAndWait(MTL::CommandQueue* commandQueue)
@@ -123,6 +153,8 @@ namespace s3d
 		}
 		m_commandBuffer->commit();
 		m_commandBuffer->waitUntilCompleted();
+		// 同じ queue の先行する途中送信も完了済み。
+		m_lastPartialCommandBuffer.reset();
 		const bool succeeded = (m_commandBuffer->status() == MTL::CommandBufferStatusCompleted);
 		if (not succeeded)
 		{
@@ -140,6 +172,11 @@ namespace s3d
 		}
 
 		m_commandBuffer.reset();
+		if (m_lastPartialCommandBuffer)
+		{
+			m_lastPartialCommandBuffer->waitUntilCompleted();
+			m_lastPartialCommandBuffer.reset();
+		}
 		m_frameAcquired = false;
 		dispatch_semaphore_signal(m_completionState->semaphore);
 	}
@@ -169,6 +206,7 @@ namespace s3d
 		{
 			dispatch_semaphore_signal(m_completionState->semaphore);
 		}
+		dispatch_group_wait(m_completionState->partialCompletions, DISPATCH_TIME_FOREVER);
 		m_lastSubmittedCommandBuffer.reset();
 	}
 

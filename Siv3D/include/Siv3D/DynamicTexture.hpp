@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -28,6 +28,8 @@ namespace s3d
 	/// @remark `fill()` と `fillRegion()` は、前回の更新処理がビジー状態の場合、更新可能になるまで待機します。
 	/// @remark `fillIfNotBusy()` と `fillRegionIfNotBusy()` は既存の動的テクスチャの更新待ちを行わず、更新処理がビジー状態の場合は false を返します。
 	/// @remark ミップマップを持つ場合、更新後に必要に応じて `generateMips()` を呼び出してください。
+	/// @remark 更新とミップ生成は保留中の描画を自動 Flush しません。以前の内容を使う 2D 描画は、更新前に `Graphics2D::Flush()` で発行してください。
+	/// @remark 更新は発行済みの描画より後に適用されます。更新の成功は GPU 処理の完了を意味しません。
 	class DynamicTexture : public Texture
 	{
 	public:
