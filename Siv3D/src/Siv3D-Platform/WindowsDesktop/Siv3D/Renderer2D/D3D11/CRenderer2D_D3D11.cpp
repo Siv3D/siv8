@@ -437,6 +437,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircleTrimmedArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleTrimmedArc(const Float2& center, const float rInner, const float rOuter, const double startAngle, const double angle, const double trim, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleTrimmedArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, rOuter, startAngle, angle, trim, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addCircleSegment
 	//
 	////////////////////////////////////////////////////////////////

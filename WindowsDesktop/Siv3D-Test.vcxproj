@@ -155,6 +155,7 @@
     <ClCompile Include="..\Test\Test_BezierDraw.cpp" />
     <ClCompile Include="..\Test\Test_BezierArrow.cpp" />
     <ClCompile Include="..\Test\Test_CircleArcArrow.cpp" />
+    <ClCompile Include="..\Test\Test_CircleTrimmedArc.cpp" />
     <ClCompile Include="..\Test\Test_PathArrow.cpp" />
     <ClCompile Include="..\Test\Test_DoubleHeadedArrow.cpp" />
     <ClCompile Include="..\Test\Test_CircularShapes.cpp" />

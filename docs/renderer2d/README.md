@@ -207,6 +207,50 @@ public overloads, transforms and scene render resolution. The
 [Circle arc tests](../../Test/Test_Renderer2DCircleArc.cpp) also compare equal-cap
 overloads against their original rendering paths.
 
+## Trimmed circle arcs
+
+`Circle::drawTrimmedArc()` moves each straight side of an arc inward, perpendicular
+to that side, while keeping its inner and outer circles. This gives radial menus
+parallel separators instead of gaps that widen toward the outer edge:
+
+```cpp
+const Circle menu{ 240, 180, 160 };
+for (int32 i = 0; i < 6; ++i)
+{
+    menu.drawTrimmedArc(i * 60_deg, 60_deg, 96, 0, 6, HSV{ i * 60.0 });
+}
+```
+
+The example leaves 12 drawing-coordinate units between adjacent items. Use the
+original sector angles; the `trim` argument measures each side's displacement,
+not an angle or the distance along an arc. Drawing transforms scale the result
+together with the circle. The [Circle header](../../Siv3D/include/Siv3D/Circle.hpp)
+owns the boundary contract, including untrimmed full turns.
+
+The trim is measured from the original boundary rays, not from lines extended
+through the opposite side of the circle. A nearly full turn therefore keeps
+one opening at its endpoints. When the inner circle is small, the straight
+sides meet at a tip in sectors of at most half a turn; wider sectors join them
+with an arc of radius `trim` around the center. This keeps the boundary
+continuous as the sweep and trim change. An exact full turn closes the opening
+by omitting trim, as specified in the public contract.
+
+The shared builder divides the sector at its bisector and measures distance
+from the nearer boundary ray. It samples exact line/circle junctions and uses
+the existing circle subdivision budget, with at most 512 vertices. Geometry goes
+directly into one reservation through the write-only upload cursors; it needs
+no Polygon Boolean operation or temporary heap storage. Existing arc builders
+are unchanged. Zero trim and full turns reuse ordinary arc or pie emission.
+
+[CircleTrimmedArc tests](../../Test/Test_CircleTrimmedArc.cpp) check constant side
+offsets, signed sweeps, collapsed inner arcs, wide sectors, allocation failure,
+buffer bounds, full turns, half-transparent analytic coverage across sweep and
+trim transitions, transforms and
+scene render resolution. The [manual gallery](../../Test/Manual/CircleTrimmedArc.md)
+compares angular and parallel separators and exercises the animated boundaries.
+The upload diagnostic below includes trimmed and untrimmed arcs at ordinary
+and maximum detail in RAM and both Metal cache modes.
+
 ## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):
@@ -399,7 +443,7 @@ ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
 measures representative copy kernels and the actual shared Polygon, Mesh2D,
 textured round-rectangle, circle/ellipse arc, hollow rectangle shadow, and closed
 line-string builders (smooth and sharp contours at several point counts),
-single- and double-headed arrows, styled arcs and rounded frames, round dots, crescents, teardrops, cached lens fills and frames, and rounded balloon fills and frames,
+single- and double-headed arrows, trimmed and styled arcs, rounded frames, round dots, crescents, teardrops, cached lens fills and frames, and rounded balloon fills and frames,
 with preallocated reusable buffers, no renderer initialization, no GPU commands,
 and no presentation. Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:

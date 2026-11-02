@@ -1176,6 +1176,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawTrimmedArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawTrimmedArc(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const double trim, const ColorF& color) const
+	{
+		if ((innerThickness + outerThickness) <= 0.0) return *this;
+
+		const double radius = Abs(r);
+		SIV3D_ENGINE(Renderer2D)->addCircleTrimmedArc(center,
+			static_cast<float>(Max((radius - innerThickness), 0.0)), static_cast<float>(radius + outerThickness),
+			startAngle, angle, trim, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawCrescent
 	//
 	////////////////////////////////////////////////////////////////

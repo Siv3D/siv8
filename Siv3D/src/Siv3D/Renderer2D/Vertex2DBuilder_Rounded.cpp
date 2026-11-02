@@ -2750,6 +2750,117 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildCircleTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleTrimmedArc(const BufferCreatorFunc& bufferCreator, const Float2& center,
+			const float rInner, const float rOuter, const double startAngle, const double angle, const double trim, const Float4& color, const float scale)
+		{
+			const double sweep = Abs(angle);
+			if ((sweep == 0.0) || (rOuter <= rInner)) return 0;
+
+			if ((trim <= 0.0) || (Math::TwoPi <= sweep))
+			{
+				const float clampedAngle = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+				if (rInner == 0.0f)
+				{
+					return BuildCirclePie(bufferCreator, center, rOuter, static_cast<float>(startAngle), clampedAngle, color, color, scale);
+				}
+				return BuildCircleArc(bufferCreator, LineCap::Flat, center, rInner, static_cast<float>(startAngle), clampedAngle,
+					(rOuter - rInner), ColorFillDirection::InOut, color, color, scale);
+			}
+
+			if (rOuter <= trim) return 0;
+
+			// Trim the boundary rays, not their extensions across the opposite arc.
+			// Up to a right angle the distance to a ray is r * sin(t); beyond it the
+			// nearest point is the center. The latter joins wide sectors with radius trim.
+			const double halfSweep = (sweep * 0.5);
+			const double begin = std::asin(trim / rOuter);
+			const double end = halfSweep;
+			if (end <= begin) return 0;
+
+			// Insert the exact line/circle junction. When trim reaches the inner
+			// radius, a tangent arc replaces that inner boundary continuously.
+			const double innerBegin = ((trim < rInner) ? std::asin(trim / rInner) : Math::HalfPi);
+			const double innerRadius = Max(static_cast<double>(rInner), trim);
+			const std::array<double, 3> stops{ begin, Min(innerBegin, end), end };
+			std::array<Vertex2D::IndexType, 2> intervals{};
+			Vertex2D::IndexType pointCount = 1;
+			for (size_t i = 0; i < intervals.size(); ++i)
+			{
+				if (stops[i] < stops[i + 1])
+				{
+					intervals[i] = (CalculateCircleArcQuality((rOuter * scale), static_cast<float>(stops[i + 1] - stops[i])) - 1);
+					pointCount += intervals[i];
+				}
+			}
+			const Vertex2D::IndexType vertexCount = (pointCount * 4);
+			const Vertex2D::IndexType halfIndexCount = ((pointCount - 1) * 6 - 3);
+			const Vertex2D::IndexType indexCount = (halfIndexCount * 2);
+			auto [vertices, indices, indexOffset] = bufferCreator(vertexCount, indexCount);
+			if (not vertices) return 0;
+
+			const double midpoint = (startAngle + angle * 0.5);
+			const Vec2 radial{ std::sin(midpoint), -std::cos(midpoint) };
+			const Vec2 tangent{ -radial.y, radial.x };
+			const double halfSin = std::sin(halfSweep), halfCos = std::cos(halfSweep);
+			const auto emit = [&](const Vertex2D::IndexType i, const double t, const bool straightSide)
+			{
+				const double s = std::sin(t), c = std::cos(t);
+				const bool middle = (t == halfSweep);
+				const double sinOffset = (middle ? 0.0 : (halfSin * c - halfCos * s));
+				const double cosOffset = (middle ? 1.0 : (halfCos * c + halfSin * s));
+				const double lowerRadius = ((i == 0) ? rOuter
+					: (straightSide ? Min(static_cast<double>(rOuter), (trim / s)) : innerRadius));
+				const Vec2 along = (radial * cosOffset), across = (tangent * sinOffset);
+				const Vec2 lowerAlong = (Vec2{ center } + along * lowerRadius), lowerAcross = (across * lowerRadius);
+				const Vec2 upperAlong = (Vec2{ center } + along * rOuter), upperAcross = (across * rOuter);
+				const auto first = (vertices + i * 2);
+				const auto second = (vertices + (pointCount * 2 + (pointCount - 1 - i) * 2));
+				first[0].set(Float2{ lowerAlong - lowerAcross }, color);
+				first[1].set(Float2{ upperAlong - upperAcross }, color);
+				second[0].set(Float2{ lowerAlong + lowerAcross }, color);
+				second[1].set(Float2{ upperAlong + upperAcross }, color);
+			};
+			emit(0, begin, true);
+			Vertex2D::IndexType next = 1;
+			for (size_t span = 0; span < intervals.size(); ++span)
+			{
+				for (Vertex2D::IndexType j = 1; j <= intervals[span]; ++j)
+				{
+					const double t = ((j == intervals[span]) ? stops[span + 1]
+						: (stops[span] + (stops[span + 1] - stops[span]) * j / intervals[span]));
+					emit(next++, t, (span == 0));
+				}
+			}
+
+			for (uint16 half = 0; half < 2; ++half)
+			{
+				for (Vertex2D::IndexType i = 0; i < (pointCount - 1); ++i)
+				{
+					const Vertex2D::IndexType base = (indexOffset + half * pointCount * 2 + i * 2);
+					// Omit triangles at collapsed outer-circle intersections.
+					if ((i != 0) || (half == 1))
+					{
+						*indices++ = base;
+						*indices++ = (base + 1);
+						*indices++ = (base + 2);
+					}
+					if ((i != pointCount - 2) || (half == 0))
+					{
+						*indices++ = (base + 2);
+						*indices++ = (base + 1);
+						*indices++ = (base + 3);
+					}
+				}
+			}
+			return indexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildCircleSegment
 		//
 		////////////////////////////////////////////////////////////////

@@ -275,6 +275,24 @@ int main()
 					: Vertex2DBuilder::BuildTexturedRoundRect(allocate, rect, 200, 120, 30, uv, color, 1);
 			});
 		}
+		struct TrimmedArcCase { const char* name; float inner, outer, scale; double sweep, trim; };
+		for (const auto& c : { TrimmedArcCase{ "menu", 64, 160, 1, Math::Pi / 3, 6 },
+			TrimmedArcCase{ "pie", 0, 160, 1, Math::Pi / 3, 6 },
+			TrimmedArcCase{ "reflex", 64, 160, 1, 4.7, 6 },
+			TrimmedArcCase{ "near_full", 64, 160, 1, 6.2, 6 },
+			TrimmedArcCase{ "maximum", 64, 160, 512, 4.7, 6 } })
+		{
+			MeasureBuilder(device, (std::string("TrimmedArc_") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleTrimmedArc(allocate, { 100, 100 }, c.inner, c.outer, 0.3, c.sweep, c.trim,
+					Float4{ 1, 1, 1, 0.5f }, c.scale);
+			});
+			MeasureBuilder(device, (std::string("UntrimmedArc_") + c.name).c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				return Vertex2DBuilder::BuildCircleTrimmedArc(allocate, { 100, 100 }, c.inner, c.outer, 0.3, c.sweep, 0,
+					Float4{ 1, 1, 1, 0.5f }, c.scale);
+			});
+		}
 		MeasureBuilder(device, "SquareCircleArc", [&](const BufferCreatorFunc& allocate)
 		{
 			return Vertex2DBuilder::BuildCircleArc(allocate, LineCap::Square, { 100, 100 }, 80, 0.3f, 2.0f, 12,

@@ -156,6 +156,7 @@
 		6064B044D57A48688C26F31A /* Test_BezierDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */; };
 		83F3023CE1984AA6A810340E /* Test_BezierArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */; };
 		AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */; };
+		FCF9FE3F49B04A15A346A5A5 /* Test_CircleTrimmedArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7EB632CA302408885D1EC66 /* Test_CircleTrimmedArc.cpp */; };
 		0B4FAB28DF5B421EBCCEA926 /* Test_PathArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */; };
 		9D6B29FD8EC740BAA28DDC39 /* Test_DoubleHeadedArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */; };
 		A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */; };
@@ -3646,6 +3647,7 @@
 		DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierDraw.cpp; sourceTree = "<group>"; };
 		B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BezierArrow.cpp; sourceTree = "<group>"; };
 		C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircleArcArrow.cpp; sourceTree = "<group>"; };
+		B7EB632CA302408885D1EC66 /* Test_CircleTrimmedArc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircleTrimmedArc.cpp; sourceTree = "<group>"; };
 		2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PathArrow.cpp; sourceTree = "<group>"; };
 		D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DoubleHeadedArrow.cpp; sourceTree = "<group>"; };
 		3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CircularShapes.cpp; sourceTree = "<group>"; };
@@ -7444,6 +7446,7 @@
 				DABADD7466FA48E78D13CE6A /* Test_BezierDraw.cpp */,
 				B3E77199927E43AB8837048E /* Test_BezierArrow.cpp */,
 				C76FED75A88D45FC88180EE3 /* Test_CircleArcArrow.cpp */,
+				B7EB632CA302408885D1EC66 /* Test_CircleTrimmedArc.cpp */,
 				2D8627FCD89F433EBB900EEE /* Test_PathArrow.cpp */,
 				D55EE7AE635D44E3932DAD81 /* Test_DoubleHeadedArrow.cpp */,
 				3B59B15BF1394B3292756AFE /* Test_CircularShapes.cpp */,
@@ -17415,6 +17418,7 @@
 				6064B044D57A48688C26F31A /* Test_BezierDraw.cpp in Sources */,
 				83F3023CE1984AA6A810340E /* Test_BezierArrow.cpp in Sources */,
 				AFF14F23C5D14956A0D5123D /* Test_CircleArcArrow.cpp in Sources */,
+				FCF9FE3F49B04A15A346A5A5 /* Test_CircleTrimmedArc.cpp in Sources */,
 				0B4FAB28DF5B421EBCCEA926 /* Test_PathArrow.cpp in Sources */,
 				9D6B29FD8EC740BAA28DDC39 /* Test_DoubleHeadedArrow.cpp in Sources */,
 				A165C3DCB3254566B0D028A1 /* Test_CircularShapes.cpp in Sources */,
