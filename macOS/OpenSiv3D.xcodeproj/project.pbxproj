@@ -980,7 +980,7 @@
 		F943AB462E2A2E4F001B4D43 /* utility.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB252E2A2E4F001B4D43 /* utility.h */; };
 		F943AB472E2A2E4F001B4D43 /* type_traits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB052E2A2E4F001B4D43 /* type_traits.h */; };
 		F943AB482E2A2E4F001B4D43 /* casts.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF52E2A2E4F001B4D43 /* casts.h */; };
-		F943AB492E2A2E4F001B4D43 /* identity.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF02E2A2E4F001B4D43 /* identity.h */; };
+		F943AB492E2A2E4F001B4D43 /* mocking_access.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF02E2A2E4F001B4D43 /* mocking_access.h */; };
 		F943AB4A2E2A2E4F001B4D43 /* gaussian_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1C2E2A2E4F001B4D43 /* gaussian_distribution.h */; };
 		F943AB4B2E2A2E4F001B4D43 /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF42E2A2E4F001B4D43 /* attributes.h */; };
 		F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB022E2A2E4F001B4D43 /* any_invocable.h */; };
@@ -4506,7 +4506,7 @@
 		F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypefaceUtility.hpp; sourceTree = "<group>"; };
 		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
 		F943AAEF2E2A2E4F001B4D43 /* endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
-		F943AAF02E2A2E4F001B4D43 /* identity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = identity.h; sourceTree = "<group>"; };
+		F943AAF02E2A2E4F001B4D43 /* mocking_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mocking_access.h; sourceTree = "<group>"; };
 		F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unaligned_access.h; sourceTree = "<group>"; };
 		F943AAF42E2A2E4F001B4D43 /* attributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
 		F943AAF52E2A2E4F001B4D43 /* casts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = casts.h; sourceTree = "<group>"; };
@@ -10359,7 +10359,6 @@
 			isa = PBXGroup;
 			children = (
 				F943AAEF2E2A2E4F001B4D43 /* endian.h */,
-				F943AAF02E2A2E4F001B4D43 /* identity.h */,
 				F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */,
 			);
 			path = internal;
@@ -10456,6 +10455,7 @@
 				F943AB1B2E2A2E4F001B4D43 /* exponential_distribution.h */,
 				F943AB1C2E2A2E4F001B4D43 /* gaussian_distribution.h */,
 				F943AB1D2E2A2E4F001B4D43 /* log_uniform_int_distribution.h */,
+				F943AAF02E2A2E4F001B4D43 /* mocking_access.h */,
 				F943AB1E2E2A2E4F001B4D43 /* poisson_distribution.h */,
 				F943AB1F2E2A2E4F001B4D43 /* uniform_int_distribution.h */,
 				F943AB202E2A2E4F001B4D43 /* uniform_real_distribution.h */,
@@ -15584,7 +15584,7 @@
 				F9DD96522F09661B0026DFA5 /* PercentEncode.hpp in Headers */,
 				F943AB472E2A2E4F001B4D43 /* type_traits.h in Headers */,
 				F943AB482E2A2E4F001B4D43 /* casts.h in Headers */,
-				F943AB492E2A2E4F001B4D43 /* identity.h in Headers */,
+				F943AB492E2A2E4F001B4D43 /* mocking_access.h in Headers */,
 				F943AB4A2E2A2E4F001B4D43 /* gaussian_distribution.h in Headers */,
 				F943AB4B2E2A2E4F001B4D43 /* attributes.h in Headers */,
 				F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */,

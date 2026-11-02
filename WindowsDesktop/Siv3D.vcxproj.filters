@@ -1506,6 +1506,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\absl\random\mocking_access.h">
+      <Filter>include\ThirdParty</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
       <Filter>include</Filter>
     </ClInclude>
