@@ -1054,6 +1054,9 @@
     <Filter Include="src\Siv3D\RenderTexture">
       <UniqueIdentifier>{0D8FC55A-D040-4D3B-8E07-96807E78B48E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\RenderTextureOps">
+      <UniqueIdentifier>{a28a7fc5-fcee-5a25-957e-2d0eb977a9a3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\MSRenderTexture">
       <UniqueIdentifier>{5b37a337-bcbd-458e-90fd-55f9a8dede4e}</UniqueIdentifier>
     </Filter>
@@ -4506,6 +4509,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RenderTexture.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RenderTextureOps.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MSRenderTexture.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4520,6 +4526,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp">
       <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\RenderTextureOps\TextureProcessing.hpp">
+      <Filter>src\Siv3D\RenderTextureOps</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BCnDecoder.hpp">
       <Filter>include\Siv3D\ImageFormat</Filter>
@@ -8674,6 +8683,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\RenderTexture\SivRenderTexture.cpp">
       <Filter>src\Siv3D\RenderTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RenderTextureOps\SivRenderTextureOps.cpp">
+      <Filter>src\Siv3D\RenderTextureOps</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MSRenderTexture\SivMSRenderTexture.cpp">
       <Filter>src\Siv3D\MSRenderTexture</Filter>

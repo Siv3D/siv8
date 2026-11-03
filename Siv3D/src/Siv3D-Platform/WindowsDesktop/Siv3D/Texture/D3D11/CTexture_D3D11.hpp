@@ -53,6 +53,8 @@ namespace s3d
 		[[nodiscard]]
 		Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) override;
 
+		void processRenderTextures(std::span<const detail::TextureProcessingPass> passes) override;
+
 		void resolveMSRT(Texture::IDType handleID) override;
 
 		[[nodiscard]]
@@ -100,6 +102,8 @@ namespace s3d
 
 	private:
 
+		ComPtr<ID3D11Buffer> m_processingConstants;
+
 		CRenderer_D3D11* m_pRenderer = nullptr;
 
 		// device のコピー
@@ -112,5 +116,7 @@ namespace s3d
 		AssetHandleManager<Texture::IDType, D3D11Texture> m_textures{ "Texture" };
 
 		std::array<bool, RenderTextureFormatCount> m_multiSampleSupportTable{};
+
+		std::array<bool, RenderTextureFormatCount> m_filteringSupport{};
 	};
 }

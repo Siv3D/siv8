@@ -15,6 +15,10 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		struct TextureProcessingPass;
+	}
 	class SIV3D_NOVTABLE ISiv3DTexture
 	{
 	public:
@@ -46,6 +50,8 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) = 0;
+
+		virtual void processRenderTextures(std::span<const detail::TextureProcessingPass> passes) = 0;
 
 		virtual void resolveMSRT(Texture::IDType handleID) = 0;
 

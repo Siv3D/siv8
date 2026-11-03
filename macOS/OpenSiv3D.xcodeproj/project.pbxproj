@@ -94,6 +94,7 @@
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */; };
+		9866E15B8ACCAAB46715EE65 /* Test_RenderTextureOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */; };
 		4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
 		AC39F10246D748B290BDF001 /* Weave.hpp in Headers */ = {isa = PBXBuildFile; fileRef = AC39F10246D748B290BDF002 /* Weave.hpp */; };
@@ -1498,6 +1499,7 @@
 		F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DBE2D7B3BEA0066E408 /* HashMap.hpp */; };
 		F9807D792BF1092600D9B590 /* 2d.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* 2d.metal */; };
 		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
+		BB65027A4B90B36821219767 /* texture_processing.metal in Sources */ = {isa = PBXBuildFile; fileRef = E1C0D250A862BA7928A61A6F /* texture_processing.metal */; };
 		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
 		F9807D802BF1229700D9B590 /* MetalInternalTexture2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */; };
 		F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D812BF6676100D9B590 /* AssetHandle.hpp */; };
@@ -3121,6 +3123,7 @@
 		F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */; };
 		F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */; };
 		62CDD03D73C8430B93C25E1C /* RenderTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6BF181CCAB1545EE86787899 /* RenderTexture.hpp */; };
+		FFAC07C6388D56696B688F1D /* RenderTextureOps.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 7748E34BBF67C8A96A7F3222 /* RenderTextureOps.hpp */; };
 		36498A5009C44998B6B0BE12 /* MSRenderTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EB8A45C297F149A093771D4E /* MSRenderTexture.hpp */; };
 		5C8B96A3927241F588D8E19E /* ColorRenderTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = E2D3C348EEB24D6CB8468CE2 /* ColorRenderTarget.hpp */; };
 		135E8897E5F7441D819D2797 /* TextureClipping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6187551EFA664002A66C4C48 /* TextureClipping.hpp */; };
@@ -3129,6 +3132,8 @@
 		F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */; };
 		F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */; };
 		73AC8946A3FD4939B964ADD8 /* SivRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FAC2151B3184E1889C6968A /* SivRenderTexture.cpp */; };
+		62080568B63567A772068E29 /* SivRenderTextureOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8E174AA1F2717B79785B281E /* SivRenderTextureOps.cpp */; };
+		827745B4FE97506EEFD6F7DD /* TextureProcessing.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FC917DDDE827453A3426D1DE /* TextureProcessing.hpp */; };
 		6506891B26B14C69BD2AE04B /* SivMSRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD2240FEB104F928E86AEF1 /* SivMSRenderTexture.cpp */; };
 		70078D1BBC5B461490B71E40 /* SivColorRenderTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DADF17DE005425AABD13457 /* SivColorRenderTarget.cpp */; };
 		F9B7D9F62D8C7269002ABACE /* BCnDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9F42D8C7269002ABACE /* BCnDecoder.hpp */; };
@@ -3453,6 +3458,7 @@
 		F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */; };
 		8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		F7489CE1CFDBEF7C17146D00 /* Test_MetalRenderTextureOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36E4FD6D7331B4D866572368 /* Test_MetalRenderTextureOps.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F13D5A57DB81429DBA7E6460 /* Test_MetalMSRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		01770B7B97EA447C8EEA368C /* Test_MetalDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -3590,6 +3596,7 @@
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AssetHandleManager.cpp; sourceTree = "<group>"; };
 		2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTexture.cpp; sourceTree = "<group>"; };
+		36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTextureOps.cpp; sourceTree = "<group>"; };
 		7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalShader.cpp; sourceTree = "<group>"; };
 		AC39F10246D748B290BDF002 /* Weave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Weave.hpp; sourceTree = "<group>"; };
@@ -5087,6 +5094,7 @@
 		F97E6DBE2D7B3BEA0066E408 /* HashMap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HashMap.hpp; sourceTree = "<group>"; };
 		F9807D762BF1092600D9B590 /* 2d.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = 2d.metal; sourceTree = "<group>"; };
 		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
+		E1C0D250A862BA7928A61A6F /* texture_processing.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = texture_processing.metal; sourceTree = "<group>"; };
 		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
 		F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalInternalTexture2D.mm; sourceTree = "<group>"; };
 		F9807D812BF6676100D9B590 /* AssetHandle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandle.hpp; sourceTree = "<group>"; };
@@ -6725,6 +6733,7 @@
 		F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderGroup.hpp; sourceTree = "<group>"; };
 		F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DynamicTexture.hpp; sourceTree = "<group>"; };
 		6BF181CCAB1545EE86787899 /* RenderTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RenderTexture.hpp; sourceTree = "<group>"; };
+		7748E34BBF67C8A96A7F3222 /* RenderTextureOps.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RenderTextureOps.hpp; sourceTree = "<group>"; };
 		EB8A45C297F149A093771D4E /* MSRenderTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSRenderTexture.hpp; sourceTree = "<group>"; };
 		E2D3C348EEB24D6CB8468CE2 /* ColorRenderTarget.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorRenderTarget.hpp; sourceTree = "<group>"; };
 		6187551EFA664002A66C4C48 /* TextureClipping.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureClipping.hpp; sourceTree = "<group>"; };
@@ -6733,6 +6742,8 @@
 		F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtility.cpp; sourceTree = "<group>"; };
 		F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDynamicTexture.cpp; sourceTree = "<group>"; };
 		3FAC2151B3184E1889C6968A /* SivRenderTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivRenderTexture.cpp; sourceTree = "<group>"; };
+		8E174AA1F2717B79785B281E /* SivRenderTextureOps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivRenderTextureOps.cpp; sourceTree = "<group>"; };
+		FC917DDDE827453A3426D1DE /* TextureProcessing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureProcessing.hpp; sourceTree = "<group>"; };
 		5DD2240FEB104F928E86AEF1 /* SivMSRenderTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSRenderTexture.cpp; sourceTree = "<group>"; };
 		4DADF17DE005425AABD13457 /* SivColorRenderTarget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivColorRenderTarget.cpp; sourceTree = "<group>"; };
 		F9B7D9F42D8C7269002ABACE /* BCnDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnDecoder.hpp; sourceTree = "<group>"; };
@@ -7068,6 +7079,7 @@
 		983C2D9C76BB48CE80C646EE /* MetalTextureAllocationFailure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTextureAllocationFailure.hpp; sourceTree = "<group>"; };
 		2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_SceneAllocationFailure.cpp; sourceTree = "<group>"; };
 		5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderTexture.cpp; sourceTree = "<group>"; };
+		36E4FD6D7331B4D866572368 /* Test_MetalRenderTextureOps.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderTextureOps.cpp; sourceTree = "<group>"; };
 		152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalMSRenderTexture.cpp; sourceTree = "<group>"; };
 		D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalDynamicTexture.cpp; sourceTree = "<group>"; };
 		8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
@@ -7404,6 +7416,7 @@
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
 				ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */,
 				2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */,
+				36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */,
 				7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
 				AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */,
@@ -7579,6 +7592,7 @@
 				BE7C5877A1844A0F8458C618 /* WindowFullscreenTestHelper.hpp */,
 				2124B731F8454B7E9A52D366 /* Test_SceneAllocationFailure.cpp */,
 				5ED6B7CC5E58440CA2C1903C /* Test_MetalRenderTexture.cpp */,
+				36E4FD6D7331B4D866572368 /* Test_MetalRenderTextureOps.cpp */,
 				152485F9551F4B47BE0799E3 /* Test_MetalMSRenderTexture.cpp */,
 				D43E7217BA1045B7A1BA5B12 /* Test_MetalDynamicTexture.cpp */,
 				8933C7E9AB5C4EB98098D4E6 /* Test_MetalScopedRenderTarget2D.cpp */,
@@ -8261,6 +8275,7 @@
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
 				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				6BF181CCAB1545EE86787899 /* RenderTexture.hpp */,
+				7748E34BBF67C8A96A7F3222 /* RenderTextureOps.hpp */,
 				EB8A45C297F149A093771D4E /* MSRenderTexture.hpp */,
 				E2D3C348EEB24D6CB8468CE2 /* ColorRenderTarget.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
@@ -9206,6 +9221,7 @@
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F9B7D9F22D8C722A002ABACE /* DynamicTexture */,
 				3F4FF86610F34B3BBB6AD875 /* RenderTexture */,
+				F31BD438F3EC186A56A27518 /* RenderTextureOps */,
 				28946E57451644B69B157F38 /* MSRenderTexture */,
 				2C933A33D656499290BFC265 /* ColorRenderTarget */,
 				F9DD963F2F0965C60026DFA5 /* Effect */,
@@ -11649,6 +11665,7 @@
 			isa = PBXGroup;
 			children = (
 				F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */,
+				E1C0D250A862BA7928A61A6F /* texture_processing.metal */,
 				F9807D762BF1092600D9B590 /* 2d.metal */,
 			);
 			path = metal;
@@ -14337,6 +14354,15 @@
 				3FAC2151B3184E1889C6968A /* SivRenderTexture.cpp */,
 			);
 			path = RenderTexture;
+			sourceTree = "<group>";
+		};
+		F31BD438F3EC186A56A27518 /* RenderTextureOps */ = {
+			isa = PBXGroup;
+			children = (
+				8E174AA1F2717B79785B281E /* SivRenderTextureOps.cpp */,
+				FC917DDDE827453A3426D1DE /* TextureProcessing.hpp */,
+			);
+			path = RenderTextureOps;
 			sourceTree = "<group>";
 		};
 		28946E57451644B69B157F38 /* MSRenderTexture */ = {
@@ -17063,6 +17089,8 @@
 				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
 				F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */,
 				62CDD03D73C8430B93C25E1C /* RenderTexture.hpp in Headers */,
+				827745B4FE97506EEFD6F7DD /* TextureProcessing.hpp in Headers */,
+				FFAC07C6388D56696B688F1D /* RenderTextureOps.hpp in Headers */,
 				36498A5009C44998B6B0BE12 /* MSRenderTexture.hpp in Headers */,
 				5C8B96A3927241F588D8E19E /* ColorRenderTarget.hpp in Headers */,
 				F9E794542C197418002615BA /* ArrayRandom.ipp in Headers */,
@@ -17275,6 +17303,7 @@
 				EC4F4FAA960D411DB128B8C0 /* Test_WindowFullscreen_Windows.cpp in Sources */,
 				8EFE96DEB5904B9D82B03441 /* Test_SceneAllocationFailure.cpp in Sources */,
 				04EA1F0ED1DC4C6988A301F6 /* Test_MetalRenderTexture.cpp in Sources */,
+				F7489CE1CFDBEF7C17146D00 /* Test_MetalRenderTextureOps.cpp in Sources */,
 				F13D5A57DB81429DBA7E6460 /* Test_MetalMSRenderTexture.cpp in Sources */,
 				01770B7B97EA447C8EEA368C /* Test_MetalDynamicTexture.cpp in Sources */,
 				F76BF4AF717F449B8711A756 /* Test_MetalScopedRenderTarget2D.cpp in Sources */,
@@ -17445,6 +17474,7 @@
 				F93BD7E8300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp in Sources */,
 				F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */,
 				F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */,
+				BB65027A4B90B36821219767 /* texture_processing.metal in Sources */,
 				D867307B93EA8DF1076ED2CC /* Test_TestFramework.cpp in Sources */,
 				1EC5D701BF62663543FECD6D /* catch_amalgamated.cpp in Sources */,
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
@@ -17456,6 +17486,7 @@
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
 				C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */,
 				C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */,
+				9866E15B8ACCAAB46715EE65 /* Test_RenderTextureOps.cpp in Sources */,
 				4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
 				422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */,
@@ -17650,6 +17681,7 @@
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
 				F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */,
 				73AC8946A3FD4939B964ADD8 /* SivRenderTexture.cpp in Sources */,
+				62080568B63567A772068E29 /* SivRenderTextureOps.cpp in Sources */,
 				6506891B26B14C69BD2AE04B /* SivMSRenderTexture.cpp in Sources */,
 				70078D1BBC5B461490B71E40 /* SivColorRenderTarget.cpp in Sources */,
 				F9797F492FA73DB200518D26 /* svgtextelement.cpp in Sources */,

@@ -215,6 +215,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DroppedText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RenderTexture.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RenderTextureOps.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSRenderTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorRenderTarget.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
@@ -1161,6 +1162,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureClipping.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureCover.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\RenderTextureOps\TextureProcessing.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
@@ -1766,6 +1768,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RenderTexture\SivRenderTexture.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\RenderTextureOps\SivRenderTextureOps.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSRenderTexture\SivMSRenderTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorRenderTarget\SivColorRenderTarget.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp" />

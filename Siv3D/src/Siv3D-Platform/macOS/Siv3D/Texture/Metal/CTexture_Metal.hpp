@@ -30,7 +30,7 @@ namespace s3d
 		~CTexture_Metal() override;
 
 		void init() override;
-		
+
 		[[nodiscard]]
 		Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) override;
 
@@ -51,6 +51,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) override;
+
+		void processRenderTextures(std::span<const detail::TextureProcessingPass> passes) override;
 
 		void resolveMSRT(Texture::IDType handleID) override;
 
@@ -105,6 +107,8 @@ namespace s3d
 		MTL::Device* m_device = nullptr;
 
 		MTL::CommandQueue* m_commandQueue = nullptr;
+
+		bool m_float32Filtering = false;
 
 		// Texture の管理
 		AssetHandleManager<Texture::IDType, MetalTexture> m_textures{ "Texture" };

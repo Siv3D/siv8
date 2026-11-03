@@ -180,12 +180,68 @@ namespace s3d
 			throw InternalEngineError{ "Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing.vs", ShaderStage::Vertex, U"VS_TextureProcessing"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_resample.ps", ShaderStage::Pixel, U"PS_ProcessingResample"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_resample_region.ps", ShaderStage::Pixel, U"PS_ProcessingResampleRegion"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_downsample.ps", ShaderStage::Pixel, U"PS_ProcessingDownsample"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_downsample_region.ps", ShaderStage::Pixel, U"PS_ProcessingDownsampleRegion"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_gaussian.ps", ShaderStage::Pixel, U"PS_ProcessingGaussian"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_gaussian_region.ps", ShaderStage::Pixel, U"PS_ProcessingGaussianRegion"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_dual_up.ps", ShaderStage::Pixel, U"PS_ProcessingDualUp"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_dual_up_region.ps", ShaderStage::Pixel, U"PS_ProcessingDualUpRegion"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_dual_blend.ps", ShaderStage::Pixel, U"PS_ProcessingDualBlend"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/texture_processing.hlsl", U"engine/shader/d3d11/texture_processing_dual_blend_region.ps", ShaderStage::Pixel, U"PS_ProcessingDualBlendRegion"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
 	# endif
 
 		{
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.vs" };
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d.vs" };
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d_pattern.vs" };
+			m_vertexShaders << HLSL{ U"engine/shader/d3d11/texture_processing.vs" };
 
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
@@ -219,6 +275,16 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_ripple.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_weave.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_truchet.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_resample.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_resample_region.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_downsample.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_downsample_region.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_gaussian.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_gaussian_region.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_dual_up.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_dual_up_region.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_dual_blend.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/texture_processing_dual_blend_region.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

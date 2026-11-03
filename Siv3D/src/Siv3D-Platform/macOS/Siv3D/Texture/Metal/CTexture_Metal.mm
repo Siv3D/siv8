@@ -17,6 +17,8 @@
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <cstring>
+# include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
+# include <Siv3D/ScopeExit.hpp>
 
 namespace s3d
 {
@@ -54,6 +56,7 @@ namespace s3d
 		m_pRenderer		= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		m_device		= m_pRenderer->getDevice();
 		m_commandQueue	= m_pRenderer->getCommandQueue();
+		m_float32Filtering = m_device->supports32BitFloatFiltering();
 
 		// null Texture を管理に登録
 		{
@@ -278,6 +281,119 @@ namespace s3d
 		}
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	processRenderTextures
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_Metal::processRenderTextures(const std::span<const detail::TextureProcessingPass> passes)
+	{
+		using Kernel = detail::TextureProcessingKernel;
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		std::array<detail::TextureProcessingBinding, detail::MaxProcessingPasses> bindings;
+		std::array<const MTL::RenderPipelineState*, detail::MaxProcessingPasses> pipelines{};
+		auto* shaders = SIV3D_ENGINE(EngineShader);
+		const auto validateFiltering = [this](const Texture::IDType id)
+		{
+			const auto format = getFormat(id);
+			if (not m_float32Filtering && ((format == TextureFormat::R32_Float)
+				|| (format == TextureFormat::R32G32_Float) || (format == TextureFormat::R32G32B32A32_Float)))
+			{
+				throw Error{ U"RenderTextureOps: this device cannot linearly filter 32-bit float textures" };
+			}
+		};
+		// Prepare every pipeline before the first destination write.
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			if (pass.kernel == Kernel::Copy)
+			{
+				continue;
+			}
+			if (pass.filter == TextureFilter::Linear)
+			{
+				validateFiltering(pass.source);
+				if (pass.secondary != Texture::IDType::Null())
+				{
+					validateFiltering(pass.secondary);
+				}
+			}
+			bindings[i] = detail::MakeTextureProcessingBinding(pass, getSize(pass.source),
+				(pass.secondary == Texture::IDType::Null()) ? Size{ 1, 1 } : getSize(pass.secondary));
+			PipelineStateDesc desc{
+				.vs = shaders->getVS(EngineVS::TextureProcessing).id(),
+				.ps = shaders->getPS(bindings[i].shader).id(),
+				.pixelFormats = { static_cast<uint16>(getTexture(pass.destination)->pixelFormat()) },
+				.blendState = BlendState::Opaque,
+			};
+			pipelines[i] = m_pRenderer->getRenderPipelineState().get(desc);
+		}
+		auto* commands = renderCommands(true);
+		const bool standalone = not m_pRenderer->getFrameContext().getCommandBuffer();
+		const ScopeExit commit{ [&]
+		{
+			if (standalone)
+			{
+				commands->commit();
+			}
+		} };
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			if (pass.kernel == Kernel::Copy)
+			{
+				auto* encoder = commands->blitCommandEncoder();
+				if (not encoder)
+				{
+					throw InternalEngineError{ "RenderTextureOps: blit encoder creation failed" };
+				}
+				const ScopeExit finish{ [encoder]
+				{
+					encoder->endEncoding();
+				} };
+				encoder->copyFromTexture(getTexture(pass.source), 0, 0,
+					MTL::Origin{ static_cast<NS::UInteger>(pass.sourceRect.x), static_cast<NS::UInteger>(pass.sourceRect.y), 0 },
+					MTL::Size{ static_cast<NS::UInteger>(pass.sourceRect.w), static_cast<NS::UInteger>(pass.sourceRect.h), 1 },
+					getTexture(pass.destination), 0, 0,
+					MTL::Origin{ static_cast<NS::UInteger>(pass.destinationRect.x), static_cast<NS::UInteger>(pass.destinationRect.y), 0 });
+				continue;
+			}
+			const auto descriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+			auto* attachment = descriptor->colorAttachments()->object(0);
+			attachment->setTexture(getTexture(pass.destination));
+			attachment->setLoadAction((pass.preserveDestination && (pass.destinationRect != Rect{ getSize(pass.destination) }))
+				? MTL::LoadActionLoad : MTL::LoadActionDontCare);
+			attachment->setStoreAction(MTL::StoreActionStore);
+			auto* encoder = commands->renderCommandEncoder(descriptor.get());
+			if (not encoder)
+			{
+				throw InternalEngineError{ "RenderTextureOps: render encoder creation failed" };
+			}
+			const ScopeExit finish{ [encoder]
+			{
+				encoder->endEncoding();
+			} };
+			encoder->setRenderPipelineState(pipelines[i]);
+			encoder->setViewport(MTL::Viewport{ static_cast<double>(pass.destinationRect.x), static_cast<double>(pass.destinationRect.y),
+				static_cast<double>(pass.destinationRect.w), static_cast<double>(pass.destinationRect.h), 0.0, 1.0 });
+			encoder->setScissorRect(MTL::ScissorRect{ static_cast<NS::UInteger>(pass.destinationRect.x), static_cast<NS::UInteger>(pass.destinationRect.y),
+				static_cast<NS::UInteger>(pass.destinationRect.w), static_cast<NS::UInteger>(pass.destinationRect.h) });
+			const auto& constants = bindings[i].constants;
+			encoder->setVertexBytes(&constants, sizeof(constants), 0);
+			encoder->setFragmentBytes(&constants, sizeof(constants), 0);
+			encoder->setFragmentTexture(getTexture(pass.source), 0);
+			if (pass.secondary != Texture::IDType::Null())
+			{
+				encoder->setFragmentTexture(getTexture(pass.secondary), 1);
+			}
+			auto& samplers = m_pRenderer->getSamplerState();
+			samplers.resetStates();
+			samplers.setPS(encoder, 0, (pass.filter == TextureFilter::Nearest) ? SamplerState::ClampNearest : SamplerState::ClampLinear);
+			encoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, NS::UInteger{ 3 });
+		}
 	}
 
 	void CTexture_Metal::resolveMSRT(const Texture::IDType handleID)

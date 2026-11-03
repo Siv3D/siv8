@@ -163,6 +163,9 @@
     <ClCompile Include="..\Test\Test_RenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_RenderTextureOps.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ScopedRenderTarget2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -269,6 +272,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTextureOps.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MetalMSRenderTexture.cpp">

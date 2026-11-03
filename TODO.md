@@ -23,6 +23,17 @@
 
 ## RenderTexture / DepthTexture
 
+### RT 画像処理の追加候補
+
+- [RenderTextureOps](docs/renderer2d/render-texture-ops.md) の D3D11 実装を Windows 実機でビルドし、共通テスト・ギャラリー・性能を確認する。macOS での検証を Windows の実測へ広げない。
+- [操作候補と重要度](docs/renderer2d/proposals/texture-processing.md#操作の候補と重要度)から、GaussianBlurH/V、輪郭・影・Bloom、custom Blit、mask 生成・複数画像合成を用途別に評価する。重要度 A の全件を採用する前提にはしない。
+- Compute は保留。具体的な用途で、書き込み属性・中間画像・最終コピーまで含む利益が導入と保守の複雑さに見合う場合に再検討する。
+
+### 個別描画用のエンジン提供シェーダ（RT 操作とは別途検討）
+
+- [提供形の検討](docs/renderer2d/proposals/texture-processing.md#効果の提供形)を基に、Grayscale / Saturation / ColorMatrix は `ScopedCustomShader2D` に渡せるテクスチャ描画用 PS を候補にする。定数型・slot、PMA と描画色の処理順序、対象となる描画を決める。図形・模様・MSDF 文字へ一つの PS が自動適用できる前提にはせず、通常描画すべてに効果処理の費用を加える設計から始めない。
+- RGBShift / 色収差 / Pixelate は region・単位、mask / Dissolve / Displacement / LUT は補助 texture の設定・復元を先に評価する。このシェーダ群と補助 texture API は RT 操作の初期実装の完了条件には含めない。
+
 ### 具体的な用途が必要になった時点で再開する拡張
 
 - 3D 描画の深度テスト・共有・参照の要件と合わせて、独立した `DepthTexture` を設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。

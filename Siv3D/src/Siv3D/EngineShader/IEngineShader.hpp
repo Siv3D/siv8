@@ -21,6 +21,7 @@ namespace s3d
 		FullScreenTriangle,
 		Shape2D,
 		Pattern2D,
+		TextureProcessing,
 	};
 
 	enum class EnginePS
@@ -50,6 +51,16 @@ namespace s3d
 		PatternRipple,
 		PatternWeave,
 		PatternTruchet,
+		ProcessingResample,
+		ProcessingResampleRegion,
+		ProcessingDownsample,
+		ProcessingDownsampleRegion,
+		ProcessingGaussian,
+		ProcessingGaussianRegion,
+		ProcessingDualUp,
+		ProcessingDualUpRegion,
+		ProcessingDualBlend,
+		ProcessingDualBlendRegion,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

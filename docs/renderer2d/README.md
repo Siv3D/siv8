@@ -25,6 +25,13 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
   explicit resolve, native readback,
   mipmap generation, and operation ordering.
 
+- [RenderTextureOps](render-texture-ops.md): native copy, resampling, downsampling,
+  Gaussian and Dual Kawase blur; explicit input/output regions, reusable Workspace,
+  backend design, tests, and performance measurements.
+- [Texture processing extensions and backend research](proposals/texture-processing.md):
+  deferred per-draw shaders, effect candidates, Compute/MPS comparisons, and the
+  standalone Metal diagnostic.
+
 ## Scene rendering
 
 - [Scene configuration and render resolution](scene-high-resolution.md): presets,

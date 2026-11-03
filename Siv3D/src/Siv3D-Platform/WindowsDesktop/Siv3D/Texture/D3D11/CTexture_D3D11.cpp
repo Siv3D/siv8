@@ -16,6 +16,9 @@
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
+# include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/ScopeExit.hpp>
 
 namespace s3d
 {
@@ -107,6 +110,13 @@ namespace s3d
 
 		// 4x MSAA サポート状況を取得
 		m_multiSampleSupportTable = CheckMultiSampleSupport(m_device);
+		for (size_t i = 1; i < m_filteringSupport.size(); ++i)
+		{
+			const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+			UINT support = 0;
+			m_filteringSupport[i] = SUCCEEDED(m_device->CheckFormatSupport(static_cast<DXGI_FORMAT>(format.DXGIFormat()), &support))
+				&& ((support & D3D11_FORMAT_SUPPORT_SHADER_SAMPLE) != 0);
+		}
 
 		// null Texture を管理に登録
 		{
@@ -302,6 +312,106 @@ namespace s3d
 		}
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	processRenderTextures
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_D3D11::processRenderTextures(const std::span<const detail::TextureProcessingPass> passes)
+	{
+		using Kernel = detail::TextureProcessingKernel;
+		std::array<detail::TextureProcessingBinding, detail::MaxProcessingPasses> bindings;
+		bool draws = false;
+		const auto validateFiltering = [this](const Texture::IDType id)
+		{
+			if (not m_filteringSupport[static_cast<size_t>(getFormat(id).value())])
+			{
+				throw Error{ U"RenderTextureOps: this device cannot linearly filter the texture format" };
+			}
+		};
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			if (pass.kernel == Kernel::Copy)
+			{
+				continue;
+			}
+			draws = true;
+			if (pass.filter == TextureFilter::Linear)
+			{
+				validateFiltering(pass.source);
+				if (pass.secondary != Texture::IDType::Null())
+				{
+					validateFiltering(pass.secondary);
+				}
+			}
+			bindings[i] = detail::MakeTextureProcessingBinding(pass, getSize(pass.source),
+				(pass.secondary == Texture::IDType::Null()) ? Size{ 1, 1 } : getSize(pass.secondary));
+		}
+		if (draws && not m_processingConstants)
+		{
+			D3D11_BUFFER_DESC desc{};
+			desc.ByteWidth = sizeof(detail::TextureProcessingConstants);
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			if (FAILED(m_device->CreateBuffer(&desc, nullptr, &m_processingConstants)))
+			{
+				throw InternalEngineError{ "RenderTextureOps: constant buffer creation failed" };
+			}
+		}
+		// flush() ends output and SRV bindings; logical Renderer2D settings stay untouched.
+		SIV3D_ENGINE(Renderer2D)->flush();
+		const ScopeExit unbind{ [&]
+		{
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, 2> empty{};
+			m_context->PSSetShaderResources(0, 2, empty.data());
+		} };
+		auto* shaders = SIV3D_ENGINE(EngineShader);
+		if (draws)
+		{
+			// Use the renderer's state caches so the following normal flush restores them correctly.
+			m_pRenderer->getBlendState().set(BlendState::Opaque, Float4{ 0, 0, 0, 0 }, 1);
+			m_pRenderer->getRasterizerState().set(RasterizerState::SolidCullNone, false);
+			m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+			m_context->IASetInputLayout(nullptr);
+			m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_context->VSSetConstantBuffers(0, 1, m_processingConstants.GetAddressOf());
+			m_context->PSSetConstantBuffers(0, 1, m_processingConstants.GetAddressOf());
+			SIV3D_ENGINE(Shader)->setVS(shaders->getVS(EngineVS::TextureProcessing).id());
+		}
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, 2> empty{};
+			m_context->PSSetShaderResources(0, 2, empty.data());
+			if (pass.kernel == Kernel::Copy)
+			{
+				const D3D11_BOX box{ static_cast<UINT>(pass.sourceRect.x), static_cast<UINT>(pass.sourceRect.y), 0,
+					static_cast<UINT>(pass.sourceRect.x + pass.sourceRect.w), static_cast<UINT>(pass.sourceRect.y + pass.sourceRect.h), 1 };
+				m_context->CopySubresourceRegion(getTexture(pass.destination), 0, pass.destinationRect.x, pass.destinationRect.y, 0,
+					getTexture(pass.source), 0, &box);
+				continue;
+			}
+			auto* target = getRTV(pass.destination);
+			m_context->OMSetRenderTargets(1, &target, nullptr);
+			const D3D11_VIEWPORT viewport{ static_cast<float>(pass.destinationRect.x), static_cast<float>(pass.destinationRect.y),
+				static_cast<float>(pass.destinationRect.w), static_cast<float>(pass.destinationRect.h), 0.0f, 1.0f };
+			m_context->RSSetViewports(1, &viewport);
+			m_context->UpdateSubresource(m_processingConstants.Get(), 0, nullptr, &bindings[i].constants, 0, 0);
+			SIV3D_ENGINE(Shader)->setPS(shaders->getPS(bindings[i].shader).id());
+			m_context->PSSetShaderResources(0, 1, getSRVPtr(pass.source));
+			if (pass.secondary != Texture::IDType::Null())
+			{
+				m_context->PSSetShaderResources(1, 1, getSRVPtr(pass.secondary));
+			}
+			m_pRenderer->getSamplerState().setPS(0, (pass.filter == TextureFilter::Nearest) ? SamplerState::ClampNearest : SamplerState::ClampLinear);
+			m_context->Draw(3, 0);
+		}
 	}
 
 	void CTexture_D3D11::resolveMSRT(const Texture::IDType handleID)
