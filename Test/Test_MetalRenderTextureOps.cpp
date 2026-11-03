@@ -17,6 +17,8 @@
 # include <Siv3D/Texture/ITexture.hpp>
 # include <chrono>
 # include <iostream>
+# include <pthread.h>
+# include <pthread/qos.h>
 
 namespace s3d
 {
@@ -214,6 +216,103 @@ namespace s3d
 				std::sort(gpu[mode].begin(), gpu[mode].end());
 				std::cout << size.x << 'x' << size.y << ' ' << labels[mode] << ": CPU " << cpu[mode][Batches / 2]
 					<< " us, GPU " << gpu[mode][Batches / 2] << " us\n";
+			}
+		}
+	}
+
+	TEST_CASE("RenderTextureOps.Metal.processing_cost_benchmark", "[.benchmark]")
+	{
+		const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+		REQUIRE(qos);
+		const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
+		REQUIRE(System::Update());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		auto& context = renderer->getFrameContext();
+		const ScopedLogSilencer silence;
+		std::cout << "Processing cost GPU: " << renderer->getDevice()->name()->utf8String() << '\n';
+		for (const Size size : { Size{ 64, 64 }, Size{ 1920, 1080 } })
+		{
+			Grid<Float4> pixels{ size };
+			for (int32 y = 0; y < size.y; ++y)
+			{
+				for (int32 x = 0; x < size.x; ++x)
+				{
+					pixels[y][x] = Float4{ ((x * 17 ^ y * 23) & 255) / 255.0f,
+						(x % 31) / 30.0f, (y % 29) / 28.0f, 1.0f };
+				}
+			}
+			const Texture pattern{ pixels };
+			for (const TextureFormat format : { TextureFormat::R8_Unorm, TextureFormat::R32_Float,
+				TextureFormat::R32G32_Float, TextureFormat::R16G16B16A16_Float })
+			{
+				const RenderTexture source{ size, format };
+				const RenderTexture destination{ size, format };
+				const RenderTexture reduced{ size / 2, format };
+				RenderTextureOps::Resample(pattern, source, TextureFilter::Nearest);
+				RenderTextureOps::Workspace gaussian;
+				RenderTextureOps::Workspace dual;
+				RenderTextureOps::Workspace downsample;
+				const auto invoke = [&](const size_t mode)
+				{
+					switch (mode)
+					{
+					case 0:
+						RenderTextureOps::GaussianBlur(source, destination, 8, gaussian);
+						break;
+					case 1:
+						RenderTextureOps::DualKawaseBlur(source, destination, 7, dual);
+						break;
+					case 2:
+						RenderTextureOps::Resample(source, destination);
+						break;
+					case 3:
+						RenderTextureOps::Downsample(source, reduced, downsample);
+						break;
+					case 4:
+						{
+							RenderTextureOps::Workspace fresh;
+							RenderTextureOps::Downsample(source, reduced, fresh);
+							break;
+						}
+					case 5:
+						RenderTextureOps::Copy(source, destination);
+						break;
+					}
+				};
+				constexpr size_t Modes = 6;
+				constexpr size_t Batches = 7;
+				constexpr int32 Repetitions = 20;
+				std::array<std::array<double, Batches>, Modes> cpu{};
+				std::array<std::array<double, Batches>, Modes> gpu{};
+				// Include only encoding in CPU time and completed GPU work in GPU time.
+				// Pipeline compilation, first scratch allocation, and waits stay outside both.
+				for (size_t batch = 0; batch < Batches; ++batch)
+				{
+					REQUIRE(System::Update());
+					for (size_t order = 0; order < Modes; ++order)
+					{
+						const size_t mode = ((order + batch) % Modes);
+						invoke(mode);
+						REQUIRE(context.flushAndWait(renderer->getCommandQueue()));
+						const auto command = NS::RetainPtr(context.getCommandBuffer());
+						const auto start = std::chrono::steady_clock::now();
+						for (int32 i = 0; i < Repetitions; ++i)
+						{
+							invoke(mode);
+						}
+						cpu[mode][batch] = std::chrono::duration<double, std::micro>(std::chrono::steady_clock::now() - start).count() / Repetitions;
+						REQUIRE(context.flushAndWait(renderer->getCommandQueue()));
+						gpu[mode][batch] = (command->GPUEndTime() - command->GPUStartTime()) * 1e6 / Repetitions;
+					}
+				}
+				constexpr const char* Labels[] = { "Gaussian 8", "Dual Kawase 7", "Resample", "Downsample reused", "Downsample fresh", "Copy" };
+				for (size_t mode = 0; mode < Modes; ++mode)
+				{
+					std::sort(cpu[mode].begin(), cpu[mode].end());
+					std::sort(gpu[mode].begin(), gpu[mode].end());
+					std::cout << format.name().toUTF8() << ' ' << size.x << 'x' << size.y << ' ' << Labels[mode]
+						<< ": CPU " << cpu[mode][Batches / 2] << " us, GPU " << gpu[mode][Batches / 2] << " us\n";
+				}
 			}
 		}
 	}

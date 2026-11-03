@@ -29,6 +29,8 @@ namespace s3d
 			Gaussian,
 			DualUp,
 			DualBlend,
+
+			Count,
 		};
 
 		inline constexpr size_t MaxProcessingPasses = 32;
@@ -50,7 +52,8 @@ namespace s3d
 			std::span<const Float4> samples;
 		};
 
-		// Shared layout with texture_processing.hlsl / texture_processing.metal.
+		// Shared VS/PS slot 0 layout with texture_processing.hlsl / texture_processing.metal.
+		// Gaussian coefficients use a separate PS slot 1; only the active samples are uploaded.
 		struct alignas(16) TextureProcessingConstants
 		{
 			Float4 sourceUV;
@@ -58,10 +61,9 @@ namespace s3d
 			Float4 secondaryUV;
 			Float4 secondaryBounds;
 			Float4 parameters; // step in normalized UV, transition blend, Gaussian sample count
-			std::array<Float4, MaxGaussianSamples> samples;
 		};
 
-		static_assert(sizeof(TextureProcessingConstants) == 864);
+		static_assert(sizeof(TextureProcessingConstants) == 80);
 
 		struct TextureProcessingBinding
 		{

@@ -193,6 +193,134 @@ TEST_CASE("RenderTextureOps.gaussian_matches_discrete_convolution")
 	}
 }
 
+TEST_CASE("RenderTextureOps.narrow_channels_and_format_changes")
+{
+	const Size size{ 19, 13 };
+	Grid<Float4> pixels{ size };
+	for (int32 y = 0; y < size.y; ++y)
+	{
+		for (int32 x = 0; x < size.x; ++x)
+		{
+			pixels[y][x] = Float4{ ((x * 7 + y * 13) % 19) * 0.125f - 0.5f,
+				((x * 3 + y * 11) % 17) * 0.0625f, 0.25f, 0.5f };
+		}
+	}
+	const Texture pattern{ pixels };
+	RenderTextureOps::Workspace work;
+	RenderTextureOps::Workspace referenceWork;
+	const std::array<std::pair<TextureFormat, TextureFormat>, 14> formats{{
+		{ TextureFormat::R8_Unorm, TextureFormat::R8_Unorm },
+		{ TextureFormat::R8G8_Unorm, TextureFormat::R8G8_Unorm },
+		{ TextureFormat::R16_Float, TextureFormat::R16_Float },
+		{ TextureFormat::R16G16_Float, TextureFormat::R16G16_Float },
+		{ TextureFormat::R32_Float, TextureFormat::R32_Float },
+		{ TextureFormat::R32G32_Float, TextureFormat::R32G32_Float },
+		{ TextureFormat::R8_Unorm, TextureFormat::R32_Float },
+		{ TextureFormat::R32_Float, TextureFormat::R8_Unorm },
+		{ TextureFormat::R8G8_Unorm, TextureFormat::R32G32_Float },
+		{ TextureFormat::R32G32_Float, TextureFormat::R8G8_Unorm },
+		{ TextureFormat::R8_Unorm, TextureFormat::R32G32_Float },
+		{ TextureFormat::R32G32_Float, TextureFormat::R32_Float },
+		{ TextureFormat::R32_Float, TextureFormat::R32G32B32A32_Float },
+		{ TextureFormat::R32G32B32A32_Float, TextureFormat::R32G32_Float },
+	}};
+	for (const auto& [sourceFormat, destinationFormat] : formats)
+	{
+		CAPTURE(sourceFormat.name().toUTF8(), destinationFormat.name().toUTF8());
+		const RenderTexture source{ size, sourceFormat };
+		RenderTextureOps::Resample(pattern, source, TextureFilter::Nearest);
+		for (int32 operation = 0; operation < 3; ++operation)
+		{
+			CAPTURE(operation);
+			const Size outputSize = (operation == 0) ? Size{ 5, 4 } : size;
+			const RenderTexture output{ outputSize, destinationFormat };
+			const RenderTexture reference{ outputSize, TextureFormat::R32G32B32A32_Float };
+			const auto process = [operation](const Texture& input, const RenderTexture& destination, RenderTextureOps::Workspace& workspace)
+			{
+				if (operation == 0)
+				{
+					RenderTextureOps::Downsample(input, destination, workspace);
+				}
+				else if (operation == 1)
+				{
+					RenderTextureOps::GaussianBlur(input, destination, 2.25, workspace);
+				}
+				else
+				{
+					RenderTextureOps::DualKawaseBlur(input, destination, 3.5, workspace);
+				}
+			};
+			process(source, output, work);
+			// Keep the same source format/sampler precision while forcing an RGBA32F intermediate.
+			process(source, reference, referenceWork);
+			const RenderTexture quantized{ outputSize, destinationFormat };
+			RenderTextureOps::Resample(reference, quantized, TextureFilter::Nearest);
+			const RenderTexture readable{ outputSize, TextureFormat::R32G32B32A32_Float };
+			Grid<Float4> actual;
+			Grid<Float4> expected;
+			RenderTextureOps::Resample(output, readable, TextureFilter::Nearest);
+			REQUIRE(readable.read(actual));
+			RenderTextureOps::Resample(quantized, readable, TextureFilter::Nearest);
+			REQUIRE(readable.read(expected));
+			const bool float32 = ((sourceFormat == TextureFormat::R32_Float)
+				|| (sourceFormat == TextureFormat::R32G32_Float) || (sourceFormat == TextureFormat::R32G32B32A32_Float)
+				|| (destinationFormat == TextureFormat::R32_Float) || (destinationFormat == TextureFormat::R32G32_Float)
+				|| (destinationFormat == TextureFormat::R32G32B32A32_Float));
+			// Half-float intermediate rounding may move an 8-bit output by one code value.
+			const double tolerance = float32 ? 0.00001 : (1.0 / 255.0 + 0.00001);
+			for (size_t i = 0; i < static_cast<size_t>(outputSize.x * outputSize.y); ++i)
+			{
+				for (size_t channel = 0; channel < 4; ++channel)
+				{
+					CHECK(std::abs(actual.data()[i].elem(channel) - expected.data()[i].elem(channel)) <= tolerance);
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("RenderTextureOps.single_pass_downsample_preserves_output_region")
+{
+	const auto pixels = MakePattern(Size{ 17, 13 });
+	const RenderTexture source{ pixels };
+	const Rect sourceRect{ 2, 1, 11, 9 };
+	const Rect destinationRect{ 3, 2, 6, 5 };
+	Grid<float> cropped{ sourceRect.size };
+	for (int32 y = 0; y < cropped.height(); ++y)
+	{
+		for (int32 x = 0; x < cropped.width(); ++x)
+		{
+			cropped[y][x] = pixels[y + sourceRect.y][x + sourceRect.x];
+		}
+	}
+	const RenderTexture tight{ cropped };
+	const RenderTexture reference{ destinationRect.size, TextureFormat::R32_Float };
+	const RenderTexture output{ Size{ 12, 10 }, ColorF{ -77, 0, 0, 1 }, TextureFormat::R32_Float };
+	RenderTextureOps::Workspace fresh;
+	RenderTextureOps::Workspace work;
+	RenderTextureOps::Downsample(tight, reference, fresh);
+	RenderTextureOps::Downsample(source(sourceRect), output, destinationRect, work);
+	Grid<float> expected;
+	Grid<float> actual;
+	REQUIRE(reference.read(expected));
+	REQUIRE(output.read(actual));
+	for (int32 y = 0; y < actual.height(); ++y)
+	{
+		for (int32 x = 0; x < actual.width(); ++x)
+		{
+			if ((destinationRect.x <= x) && (x < destinationRect.x + destinationRect.w)
+				&& (destinationRect.y <= y) && (y < destinationRect.y + destinationRect.h))
+			{
+				CHECK(std::abs(actual[y][x] - expected[y - destinationRect.y][x - destinationRect.x]) < 0.0003);
+			}
+			else
+			{
+				CHECK(actual[y][x] == -77);
+			}
+		}
+	}
+}
+
 TEST_CASE("RenderTextureOps.region_isolation_and_workspace_history")
 {
 	RenderTextureOps::Workspace reused;

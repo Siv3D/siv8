@@ -27,6 +27,19 @@ namespace s3d
 		TextureProcessingBinding MakeTextureProcessingBinding(const TextureProcessingPass& pass,
 			const Size sourceSize, const Size secondarySize)
 		{
+			using Kernel = TextureProcessingKernel;
+			static constexpr auto ShaderTable = []
+			{
+				std::array<std::array<EnginePS, 2>, static_cast<size_t>(Kernel::Count)> table{};
+				table[static_cast<size_t>(Kernel::Resample)] = { EnginePS::ProcessingResample, EnginePS::ProcessingResampleRegion };
+				table[static_cast<size_t>(Kernel::Downsample)] = { EnginePS::ProcessingDownsample, EnginePS::ProcessingDownsampleRegion };
+				table[static_cast<size_t>(Kernel::Gaussian)] = { EnginePS::ProcessingGaussian, EnginePS::ProcessingGaussianRegion };
+				table[static_cast<size_t>(Kernel::DualUp)] = { EnginePS::ProcessingDualUp, EnginePS::ProcessingDualUpRegion };
+				table[static_cast<size_t>(Kernel::DualBlend)] = { EnginePS::ProcessingDualBlend, EnginePS::ProcessingDualBlendRegion };
+				return table;
+			}();
+			assert((Kernel::Copy < pass.kernel) && (pass.kernel < Kernel::Count));
+
 			TextureProcessingBinding result{};
 			auto& constants = result.constants;
 			const auto setRegion = [](Float4& uv, Float4& bounds, const Rect& rect, const Size size)
@@ -45,11 +58,9 @@ namespace s3d
 			}
 			constants.parameters = Float4{ pass.step.x / sourceSize.x, pass.step.y / sourceSize.y,
 				pass.blend, static_cast<float>(pass.samples.size()) };
-			std::copy(pass.samples.begin(), pass.samples.end(), constants.samples.begin());
 			const bool bounded = (pass.sourceRect != Rect{ sourceSize })
 				|| (secondary && (pass.secondaryRect != Rect{ secondarySize }));
-			result.shader = static_cast<EnginePS>(static_cast<uint32>(EnginePS::ProcessingResample)
-				+ (static_cast<uint32>(pass.kernel) - 1) * 2 + static_cast<uint32>(bounded));
+			result.shader = ShaderTable[static_cast<size_t>(pass.kernel)][bounded];
 			return result;
 		}
 	}
@@ -154,8 +165,22 @@ namespace s3d
 
 			TextureFormat GetIntermediateFormat(const Texture& source, const RenderTexture& destination)
 			{
-				return ((IsFloat32(source.format()) || IsFloat32(destination.format()))
-					? TextureFormat::R32G32B32A32_Float : TextureFormat::R16G16B16A16_Float);
+				const TextureFormat sourceFormat = source.format();
+				const TextureFormat destinationFormat = destination.format();
+				const bool float32 = (IsFloat32(sourceFormat) || IsFloat32(destinationFormat));
+				const uint32 channels = sourceFormat.channelCount();
+				if (channels == destinationFormat.channelCount())
+				{
+					if (channels == 1)
+					{
+						return (float32 ? TextureFormat::R32_Float : TextureFormat::R16_Float);
+					}
+					if (channels == 2)
+					{
+						return (float32 ? TextureFormat::R32G32_Float : TextureFormat::R16G16_Float);
+					}
+				}
+				return (float32 ? TextureFormat::R32G32B32A32_Float : TextureFormat::R16G16B16A16_Float);
 			}
 
 			void EnsureRenderTexture(RenderTexture& texture, const Size required, const TextureFormat format)
@@ -473,9 +498,17 @@ namespace s3d
 				return;
 			}
 
+			Plan plan;
+			if ((sourceRect.w <= (2 * destinationRect.w)) && (sourceRect.h <= (2 * destinationRect.h))
+				&& (source.id() != destination.id()))
+			{
+				AddDownsample(plan, source, sourceRect, destination, destinationRect, true);
+				plan.submit();
+				return;
+			}
+
 			auto& state = detail::RenderTextureOpsAccess::Get(work);
 			const TextureFormat format = GetIntermediateFormat(source, destination);
-			Plan plan;
 			const Texture* current = &source;
 			Rect region = sourceRect;
 			size_t level = 0;

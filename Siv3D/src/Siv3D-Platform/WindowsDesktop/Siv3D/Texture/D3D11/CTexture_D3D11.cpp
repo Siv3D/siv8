@@ -325,6 +325,7 @@ namespace s3d
 		using Kernel = detail::TextureProcessingKernel;
 		std::array<detail::TextureProcessingBinding, detail::MaxProcessingPasses> bindings;
 		bool draws = false;
+		bool usesGaussian = false;
 		const auto validateFiltering = [this](const Texture::IDType id)
 		{
 			if (not m_filteringSupport[static_cast<size_t>(getFormat(id).value())])
@@ -340,6 +341,7 @@ namespace s3d
 				continue;
 			}
 			draws = true;
+			usesGaussian |= (pass.kernel == Kernel::Gaussian);
 			if (pass.filter == TextureFilter::Linear)
 			{
 				validateFiltering(pass.source);
@@ -351,16 +353,10 @@ namespace s3d
 			bindings[i] = detail::MakeTextureProcessingBinding(pass, getSize(pass.source),
 				(pass.secondary == Texture::IDType::Null()) ? Size{ 1, 1 } : getSize(pass.secondary));
 		}
-		if (draws && not m_processingConstants)
+		if ((draws && not m_processingConstants._internal_init())
+			|| (usesGaussian && not m_gaussianSamples._internal_init()))
 		{
-			D3D11_BUFFER_DESC desc{};
-			desc.ByteWidth = sizeof(detail::TextureProcessingConstants);
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			if (FAILED(m_device->CreateBuffer(&desc, nullptr, &m_processingConstants)))
-			{
-				throw InternalEngineError{ "RenderTextureOps: constant buffer creation failed" };
-			}
+			throw InternalEngineError{ "RenderTextureOps: constant buffer creation failed" };
 		}
 		// flush() ends output and SRV bindings; logical Renderer2D settings stay untouched.
 		SIV3D_ENGINE(Renderer2D)->flush();
@@ -379,8 +375,14 @@ namespace s3d
 			m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 			m_context->IASetInputLayout(nullptr);
 			m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			m_context->VSSetConstantBuffers(0, 1, m_processingConstants.GetAddressOf());
-			m_context->PSSetConstantBuffers(0, 1, m_processingConstants.GetAddressOf());
+			auto* constants = m_processingConstants.getBuffer();
+			m_context->VSSetConstantBuffers(0, 1, &constants);
+			m_context->PSSetConstantBuffers(0, 1, &constants);
+			if (usesGaussian)
+			{
+				auto* samples = m_gaussianSamples.getBuffer();
+				m_context->PSSetConstantBuffers(1, 1, &samples);
+			}
 			SIV3D_ENGINE(Shader)->setVS(shaders->getVS(EngineVS::TextureProcessing).id());
 		}
 		for (size_t i = 0; i < passes.size(); ++i)
@@ -402,7 +404,11 @@ namespace s3d
 			const D3D11_VIEWPORT viewport{ static_cast<float>(pass.destinationRect.x), static_cast<float>(pass.destinationRect.y),
 				static_cast<float>(pass.destinationRect.w), static_cast<float>(pass.destinationRect.h), 0.0f, 1.0f };
 			m_context->RSSetViewports(1, &viewport);
-			m_context->UpdateSubresource(m_processingConstants.Get(), 0, nullptr, &bindings[i].constants, 0, 0);
+			if (not m_processingConstants._internal_update(&bindings[i].constants, sizeof(bindings[i].constants))
+				|| ((pass.kernel == Kernel::Gaussian) && not m_gaussianSamples._internal_update(pass.samples.data(), pass.samples.size_bytes())))
+			{
+				throw InternalEngineError{ "RenderTextureOps: constant buffer update failed" };
+			}
 			SIV3D_ENGINE(Shader)->setPS(shaders->getPS(bindings[i].shader).id());
 			m_context->PSSetShaderResources(0, 1, getSRVPtr(pass.source));
 			if (pass.secondary != Texture::IDType::Null())

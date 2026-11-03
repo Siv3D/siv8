@@ -109,6 +109,9 @@ Gaussian chain does not alternate between incompatible temporary sizes.
 There is no global pool, historical size cache, eviction policy, or user-visible
 intermediate texture. Moving transfers ownership; a moved-from workspace can be
 used again. Release drops ownership without waiting for already recorded work.
+Downsample needs no workspace resources when different input/output textures
+allow a single pass (at most 2× reduction per axis). This path also leaves a
+fresh workspace uninitialized.
 
 Initial textures use the required dimensions. Existing capacity is reused when
 both dimensions and the format fit. Growth adds 25% slack along growing axes;
@@ -119,8 +122,12 @@ Kawase transition scratch can still allocate until their required capacities
 have been encountered. Use separate workspaces for independent pipelines with
 persistently incompatible formats; routine release between frames defeats reuse.
 
-Intermediate textures use RGBA16Float, or RGBA32Float when either endpoint is a
-32-bit float format. Values use PMA arithmetic with no straight/PMA conversion;
+Intermediate textures use 16-bit float, or 32-bit float when either endpoint is
+a 32-bit float format. When both endpoints have the same one or two channels,
+intermediates keep that channel count. All other combinations use RGBA, including
+conversions between different channel counts. This preserves missing-channel
+defaults while reducing scratch storage and bandwidth for masks and vector fields.
+Values use PMA arithmetic with no straight/PMA conversion;
 sRGB sampling and output encoding use the native texture format. Intermediate
 rounding means 16-bit UNORM endpoints do not imply 16-bit UNORM precision
 through a blur. Copy preserves saved texels exactly. The device must support
@@ -143,8 +150,15 @@ It does not change logical Renderer2D settings or wait for GPU completion.
   for each new encoder.
 - D3D11 uses CopySubresourceRegion or a vertex-ID fullscreen triangle. It unbinds
   outputs and shader resources between passes, and uses the renderer's native
-  state caches. The normal next flush replays logical shaders, constants,
+  state caches. Constants use the existing `ConstantBuffer_D3D11` implementation
+  with dynamic buffers and `WRITE_DISCARD`. The normal next flush replays logical shaders, constants,
   targets, viewport, and states.
+
+Common processing constants occupy 80 bytes at VS/PS slot 0. Gaussian
+coefficients are separate at PS slot 1; only active coefficients are uploaded.
+Other filters do not prepare or upload Gaussian data. Shader selection maps
+each kernel explicitly to its whole-input and bounded-input entries and does
+not depend on the order of `EnginePS` enumerators.
 
 Filters have whole-input and bounded-input shader entries. Selection depends on
 the physical input texture and active input region for each pass. A partial
@@ -161,7 +175,9 @@ explicitly prepared intermediate RTs in the benchmark.
 [Shared tests](../../Test/Test_RenderTextureOps.cpp) cover raw copy, independent
 CPU Gaussian convolution, ROI poison, capacity history, aliasing, odd/one-pixel
 sizes, strength transitions, sRGB/HDR, untouched mips, empty/error arguments,
-draw ordering, custom shaders/constants/MRT, and resolved MSAA inputs.
+draw ordering, custom shaders/constants/MRT, and resolved MSAA inputs. Narrow
+channel processing and format changes through a reused workspace are compared
+with an RGBA32Float reference, including missing-channel defaults.
 [Metal tests](../../Test/Test_MetalRenderTextureOps.cpp) inject allocation failure,
 verify reuse after warm-up, and measure the actual engine backend. Performance
 thresholds are not correctness assertions. The macOS full host suite and the
@@ -169,8 +185,9 @@ focused functionality tests with Metal API Validation enabled pass. Validation
 was disabled for the timing runs.
 
 ```sh
-./macOS/run-tests.sh '--test-case=RenderTextureOps.*' '~[.benchmark]'
+./macOS/run-tests.sh '--test-case=RenderTextureOps.*' '~[benchmark]'
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=RenderTextureOps.Metal.benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=RenderTextureOps.Metal.processing_cost_benchmark'
 ./macOS/run-tests.sh
 ```
 
@@ -184,29 +201,55 @@ extra 128 pixels on each axis. Repeated resident inputs emphasize steady-state
 reuse, not frame latency or upload cost. Dual Kawase radius 32 and Gaussian sigma
 8 are different visual strengths; those rows are not equal-quality comparisons.
 
+`processing_cost_benchmark` uses the same batch and repetition counts to measure
+Gaussian sigma 8, Dual Kawase radius 7, Resample, half-size Downsample with reused
+and fresh workspaces, and native Copy. It covers 64×64 and 1920×1080 images in
+R8, R32Float, RG32Float, and RGBA16Float. A scoped interactive QoS override reduces
+CPU scheduling noise; each batch advances the frame outside timing. Fresh-workspace
+Downsample includes workspace construction and destruction, but requires no
+intermediate GPU texture. Compare repeated runs on the same idle machine;
+CPU timing, especially for large images, can still vary independently of GPU time.
+
 ### Reference measurements
 
-On Apple M2, Release, 1920×1080 RGBA16Float, two independent runs gave the
-following ranges of per-run medians. CPU time is microseconds; GPU time is
-milliseconds. These are diagnostic samples, not performance guarantees.
+On Apple M2, Release, the processing-cost benchmark gave the following ranges
+of per-run medians over two runs. GPU times are milliseconds per operation on
+1920×1080 inputs. These are diagnostic samples, not performance guarantees.
 
-| Path | CPU µs | GPU ms |
+| Endpoint format | Gaussian sigma 8 | Dual Kawase radius 7 |
 | --- | ---: | ---: |
-| Explicit intermediate RTs, Gaussian sigma 8 | 10.6–11.0 | 1.758–1.778 |
-| Workspace, Gaussian sigma 8 | 11.1–14.0 | 1.755–1.778 |
-| Oversized intermediate, Gaussian sigma 8 | 12.0–13.4 | 1.768–1.791 |
-| Bounded source and intermediate, Gaussian sigma 8 | 11.0–11.2 | 1.785–1.812 |
-| Gaussian sigma 12 | 11.2–11.3 | 2.466–2.523 |
-| Dual Kawase radius 7 | 32.0–32.6 | 0.477–0.484 |
-| Downsample to 1/4, Gaussian sigma 3, resize back | 25.1–26.6 | 0.305–0.311 |
-| Dual Kawase radius 32 | 59.0–66.6 | 0.683–0.685 |
-| Native Copy | 2.6–2.7 | 0.198–0.207 |
+| R8 UNORM | 1.223–1.234 | 0.363–0.380 |
+| R32Float | 1.339–1.348 | 0.425–0.430 |
+| RG32Float | 2.435–2.437 | 0.793–0.794 |
+| RGBA16Float | 1.594 | 0.481–0.485 |
 
-The exact-size Workspace and explicit paths have comparable GPU cost. Both
-bounded passes added about 2% in these full-HD measurements. The 512×512 cases
-were more variable, so these results do not define a universal cutoff or clamp
-penalty. In particular, more passes can outweigh Dual Kawase's sampling savings
-on small images.
+Narrow intermediate formats matter most for larger float images. Small images
+can be dominated by per-pass overhead; reducing storage or constant bytes does
+not guarantee a shorter GPU time. Full-HD CPU encoding times varied substantially
+between runs, so they are unsuitable for attributing small changes in preparation
+cost. In 64×64 R8 cases, single-pass Downsample took 5.86–5.90 µs with a reused
+workspace and 5.92–5.99 µs with a fresh workspace, including its construction and
+destruction. The fresh-workspace path does not allocate intermediate handles.
+
+The separate path-comparison benchmark gave these GPU times for 1920×1080
+RGBA16Float. Both Gaussian variants use identical coefficients and shaders.
+
+| Path | GPU ms |
+| --- | ---: |
+| Explicit intermediate RTs, Gaussian sigma 8 | 1.592 |
+| Workspace, Gaussian sigma 8 | 1.594 |
+| Oversized intermediate, Gaussian sigma 8 | 1.590 |
+| Bounded source and intermediate, Gaussian sigma 8 | 1.605 |
+| Gaussian sigma 12 | 2.255 |
+| Dual Kawase radius 7 | 0.492 |
+| Downsample to 1/4, Gaussian sigma 3, resize back | 0.296 |
+| Dual Kawase radius 32 | 0.662 |
+| Native Copy | 0.204 |
+
+The exact-size Workspace and explicit paths have comparable GPU cost. Bounded
+sampling had a small cost in this full-HD case; the 512×512 measurements were
+more variable, so these results do not define a universal cutoff or clamp
+penalty. More passes can outweigh Dual Kawase's sampling savings on small images.
 
 For an isolated central point in a 513×513 float image, Kawase radii 3, 7, and 15
 had horizontal RMS widths of approximately 5.39, 10.98, and 21.88 pixels, with

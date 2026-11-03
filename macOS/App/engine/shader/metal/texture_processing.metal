@@ -21,7 +21,6 @@ struct ProcessingConstants
 	float4 secondaryUV;
 	float4 secondaryBounds;
 	float4 parameters;
-	float4 samples[49];
 };
 
 struct ProcessingVertex
@@ -72,14 +71,14 @@ inline float4 s3d_processingDownsample(texture2d<float> colorTexture, sampler te
 }
 
 inline float4 s3d_processingGaussian(texture2d<float> colorTexture, sampler textureSampler, const float2 uv,
-	constant ProcessingConstants& constants, const bool bounded)
+	constant ProcessingConstants& constants, constant float4* samples, const bool bounded)
 {
-	float4 result = s3d_processingSample(colorTexture, textureSampler, uv, constants, bounded) * constants.samples[0].x;
+	float4 result = s3d_processingSample(colorTexture, textureSampler, uv, constants, bounded) * samples[0].x;
 	for (uint i = 1; i < uint(constants.parameters.w); ++i)
 	{
-		const float2 offset = constants.parameters.xy * constants.samples[i].y;
+		const float2 offset = constants.parameters.xy * samples[i].y;
 		result += (s3d_processingSample(colorTexture, textureSampler, uv - offset, constants, bounded)
-			+ s3d_processingSample(colorTexture, textureSampler, uv + offset, constants, bounded)) * constants.samples[i].x;
+			+ s3d_processingSample(colorTexture, textureSampler, uv + offset, constants, bounded)) * samples[i].x;
 	}
 
 	return result;
@@ -134,17 +133,19 @@ float4 PS_ProcessingDownsampleRegion(ProcessingVertex in [[stage_in]],
 fragment
 float4 PS_ProcessingGaussian(ProcessingVertex in [[stage_in]],
 	constant ProcessingConstants& constants [[buffer(0)]],
+	constant float4* samples [[buffer(1)]],
 	texture2d<float> colorTexture [[texture(0)]], sampler textureSampler [[sampler(0)]])
 {
-	return s3d_processingGaussian(colorTexture, textureSampler, in.uv, constants, false);
+	return s3d_processingGaussian(colorTexture, textureSampler, in.uv, constants, samples, false);
 }
 
 fragment
 float4 PS_ProcessingGaussianRegion(ProcessingVertex in [[stage_in]],
 	constant ProcessingConstants& constants [[buffer(0)]],
+	constant float4* samples [[buffer(1)]],
 	texture2d<float> colorTexture [[texture(0)]], sampler textureSampler [[sampler(0)]])
 {
-	return s3d_processingGaussian(colorTexture, textureSampler, in.uv, constants, true);
+	return s3d_processingGaussian(colorTexture, textureSampler, in.uv, constants, samples, true);
 }
 
 fragment

@@ -384,6 +384,10 @@ namespace s3d
 			const auto& constants = bindings[i].constants;
 			encoder->setVertexBytes(&constants, sizeof(constants), 0);
 			encoder->setFragmentBytes(&constants, sizeof(constants), 0);
+			if (pass.kernel == Kernel::Gaussian)
+			{
+				encoder->setFragmentBytes(pass.samples.data(), pass.samples.size_bytes(), 1);
+			}
 			encoder->setFragmentTexture(getTexture(pass.source), 0);
 			if (pass.secondary != Texture::IDType::Null())
 			{

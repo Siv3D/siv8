@@ -18,12 +18,16 @@ struct ProcessingConstants
 	float4 secondaryUV;
 	float4 secondaryBounds;
 	float4 parameters;
-	float4 samples[49];
 };
 
 cbuffer TextureProcessingConstants : register(b0)
 {
 	ProcessingConstants g_processingConstants;
+}
+
+cbuffer TextureProcessingGaussianSamples : register(b1)
+{
+	float4 g_gaussianSamples[49];
 }
 
 Texture2D<float4> g_texture0 : register(t0);
@@ -75,12 +79,12 @@ inline float4 s3d_processingDownsample(const float2 uv, const bool bounded)
 
 inline float4 s3d_processingGaussian(const float2 uv, const bool bounded)
 {
-	float4 result = s3d_processingSample(uv, bounded) * g_processingConstants.samples[0].x;
+	float4 result = s3d_processingSample(uv, bounded) * g_gaussianSamples[0].x;
 	for (uint i = 1; i < uint(g_processingConstants.parameters.w); ++i)
 	{
-		const float2 offset = g_processingConstants.parameters.xy * g_processingConstants.samples[i].y;
+		const float2 offset = g_processingConstants.parameters.xy * g_gaussianSamples[i].y;
 		result += (s3d_processingSample(uv - offset, bounded)
-			+ s3d_processingSample(uv + offset, bounded)) * g_processingConstants.samples[i].x;
+			+ s3d_processingSample(uv + offset, bounded)) * g_gaussianSamples[i].x;
 	}
 
 	return result;
