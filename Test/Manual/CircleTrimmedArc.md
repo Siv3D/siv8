@@ -1,7 +1,8 @@
 # Trimmed circle arcs
 
 This gallery compares angle-based gaps with parallel separators on a textured
-background, then exercises a single trimmed sector. It writes no files.
+background, then compares a single trimmed sector drawn by the GPU and into an
+Image. It writes no files.
 
 ## Run
 
@@ -9,7 +10,8 @@ background, then exercises a single trimmed sector. It writes no files.
 2. Hold **Left/Right** to adjust trim, **Down/Up** for the inner radius, and
    **Q/E** for the sweep. **Z** sets zero sweep and **F** sets a full turn.
    Press **Space** to reverse the sweeps, **A** to animate the trim, and **H**
-   to switch render resolution.
+   to switch render resolution. **P** switches Image paint/overwrite and **B**
+   toggles Image antialiasing.
 3. Compare the upper menus, then inspect the lower sector near a disappearing
    inner arc, zero sweep, half a turn, and a full turn.
 
@@ -30,6 +32,9 @@ background, then exercises a single trimmed sector. It writes no files.
   Exactly one full turn ignores trim and draws the complete ring or disk.
 - A zero trim matches an ordinary flat arc; a zero sweep draws nothing.
 - Switching render resolution changes drawing detail, not the logical sizes.
+- The lower Image preview has the same shape as the GPU sector. Small edge
+  differences are expected from their different AA and curve representations.
+  Image parts compose once, including at the rounded inner join of a wide sector.
 
 ```cpp
 # include <Siv3D.hpp>
@@ -41,12 +46,21 @@ void Main()
     const Font font{ 18 };
     double trim = 6, innerRadius = 64, sweep = 240;
     bool reverse = false, animate = false, highResolution = false;
+    bool paint = true, aa = true;
+    Image backdrop{ 280, 280 };
+    for (int32 y = 0; y < backdrop.height(); ++y)
+        for (int32 x = 0; x < backdrop.width(); ++x)
+            backdrop[y][x] = ColorF{ (((x + 580) / 24 + (y + 430) / 24) % 2) ? 0.16 : 0.22 }.toColor();
+    Image image = backdrop;
+    DynamicTexture preview{ image };
     double time = 0;
 
     while (System::Update())
     {
         if (KeySpace.down()) reverse = !reverse;
         if (KeyA.down()) animate = !animate;
+        if (KeyP.down()) paint = !paint;
+        if (KeyB.down()) aa = !aa;
         if (KeyH.down())
         {
             highResolution = !highResolution;
@@ -80,12 +94,22 @@ void Main()
 
         Circle{ 240, 570, 130 }.drawTrimmedArc(0, sign * Math::ToRadians(sweep),
             130 - Min(innerRadius, 130.0), 0, amount, ColorF{ 0.3, 0.8, 1.0, 0.5 });
-        font(U"Single sector").draw(32, 400);
-        font(U"Left / Right: trim = {:.1f}"_fmt(trim)).draw(500, 440);
-        font(U"Down / Up: inner radius = {:.1f}"_fmt(innerRadius)).draw(500, 490);
-        font(U"Q / E: sweep = {:.1f} deg"_fmt(sweep)).draw(500, 540);
-        font(U"Z: zero sweep | F: full turn").draw(500, 590);
-        font(U"Space: reverse | A: animate | H: resolution").draw(32, 724);
+        image = backdrop;
+        const Circle imageCircle{ 140, 140, 130 };
+        const Color ink{ 77, 204, 255, 128 };
+        const auto antialiasing = aa ? EnableAntialiasing::Yes : EnableAntialiasing::No;
+        if (paint)
+            imageCircle.paintTrimmedArc(image, 0, sign * Math::ToRadians(sweep),
+                130 - Min(innerRadius, 130.0), 0, amount, ink, antialiasing);
+        else
+            imageCircle.overwriteTrimmedArc(image, 0, sign * Math::ToRadians(sweep),
+                130 - Min(innerRadius, 130.0), 0, amount, ink, antialiasing);
+        preview.fill(image);
+        preview.draw(580, 430);
+        font(U"GPU / sweep = {:.1f} deg"_fmt(sweep)).draw(32, 400);
+        font(U"Image: {} / AA {}"_fmt(paint ? U"paint" : U"overwrite", aa ? U"on" : U"off")).draw(512, 400);
+        font(U"Arrows: trim / inner radius | Q/E: sweep | Z: zero | F: full").draw(32, 708);
+        font(U"Space: reverse | A: animate | H: resolution | P: paint/overwrite | B: AA").draw(32, 734);
     }
 }
 ```

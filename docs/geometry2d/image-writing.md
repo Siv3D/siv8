@@ -124,7 +124,7 @@ implicit promises of this CPU path. Pending decisions belong in [TODO](../../TOD
 | --- | --- | --- |
 | Point, Vec2, Float2 | Pixel / centered square | No direct `.draw()` family |
 | Rect, RectF | Fill, centered and inner/outer frame, four-radius rounded fill/frame | Dashed frame, shadow, gradients, patterns; Rect image frame has integer and floating thickness forms |
-| Circle | Fill, frame, pie, arc with independent caps, segment (height / angles), crescent, teardrop, arc arrow / double-headed arc arrow | Dashed frame, shadow, gradients, patterns |
+| Circle | Fill, frame, pie, arc with independent caps, trimmed arc, segment (height / angles), crescent, teardrop, arc arrow / double-headed arc arrow | Dashed frame, shadow, gradients, patterns |
 | Ellipse | Fill, frame, pie, rotated fill/frame, arc with independent caps | Dashed frame, gradients, patterns; GPU pie uses absolute radii |
 | SuperEllipse | Fill, centered frame | Gradients, patterns |
 | Triangle, Quad | Fill, centered and inner/outer frames with JoinStyle | Vertex colors, patterns |
@@ -459,6 +459,34 @@ GPU comparisons have additional differences beyond AA. GPU Circle arcs retain th
 specified thickness when the inner radius passes the center, and overlapping
 GPU caps may composite repeatedly. Image writing uses the visible radial width
 and union coverage above. GPU Round arcs retain their caps at full sweeps.
+
+## Trimmed circle arcs
+
+`paintTrimmedArc()` / `overwriteTrimmedArc()` use the geometry of
+[`drawTrimmedArc()`](../renderer2d/README.md#trimmed-circle-arcs), with the
+destination Image first, `Color` after trim, and optional AA last:
+
+```cpp
+Circle{ 240, 180, 160 }.paintTrimmedArc(image, 0, 60_deg, 96, 0, 6, Color{ 80, 180, 240 });
+```
+
+The rasterizer clips analytic ring spans against the displaced sides. Sectors
+wider than half a turn split into two forward quadrants and a middle sector;
+the middle sector uses the larger of the inner radius and trim. This measures
+distance from the boundary rays without cutting their backward extensions.
+At most six intervals per sample row are merged before coverage and compositing,
+using the common span writer without constructing a Polygon. AA uses 4x4 samples;
+no-AA uses pixel centers. As with other sampled shape extensions, horizontal
+intervals are half-open, subject to floating-point boundary ties.
+
+Zero/negative trim and full turns reuse ordinary Image arc/frame rasterization
+after normalizing the visible radial band. Full disks therefore retain the
+integer fill behavior without AA. Renderer transforms do not affect Image
+coordinates. [Trimmed arc tests](../../Test/Test_CircleTrimmedArc.cpp) compare
+coverage with independent angular containment and ray-distance predicates,
+including reversal, clipping, and translucent/transparent compositing. The
+[shared gallery](../../Test/Manual/CircleTrimmedArc.md) compares GPU and Image
+output interactively.
 
 ## Circle segments
 

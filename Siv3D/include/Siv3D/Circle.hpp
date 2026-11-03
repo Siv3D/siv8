@@ -1028,6 +1028,46 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両側辺を内側へ平行移動して切り詰めた円弧を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 切り詰める前の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 切り詰める前の弧の角度（ラジアン）。負なら反時計回りです。
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param trim 各側辺を垂直方向へ移す距離。0 以下なら切り詰めません。
+		/// @param color 弧の色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 形状と入力条件は drawTrimmedArc() と共通です。
+		/// @return *this
+		/// @see ImagePixel::SourceOverWithCoverage()
+		const Circle& paintTrimmedArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, double trim, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両側辺を内側へ平行移動して切り詰めた円弧を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 切り詰める前の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 切り詰める前の弧の角度（ラジアン）。負なら反時計回りです。
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param trim 各側辺を垂直方向へ移す距離。0 以下なら切り詰めません。
+		/// @param color 弧の色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see paintTrimmedArc()
+		/// @see ImagePixel::OverwriteWithCoverage()
+		const Circle& overwriteTrimmedArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, double trim, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	paintSegment
 		//
 		////////////////////////////////////////////////////////////////

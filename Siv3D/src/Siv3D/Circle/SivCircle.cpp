@@ -554,6 +554,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintTrimmedArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintTrimmedArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const double trim, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleTrimmedArc(dst, *this, startAngle, angle, innerThickness, outerThickness, trim, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteTrimmedArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteTrimmedArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const double trim, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::CircleTrimmedArc(dst, *this, startAngle, angle, innerThickness, outerThickness, trim, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	paintSegment
 	//
 	////////////////////////////////////////////////////////////////

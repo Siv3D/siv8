@@ -15,6 +15,7 @@ namespace s3d::detail::ImageShape
 	void Crescent(Image&, const Circle&, double openingAngle, double width, Color, ImagePixel::BlendMode, EnableAntialiasing);
 	void Teardrop(Image&, const Circle&, const Vec2& tip, Color, ImagePixel::BlendMode, EnableAntialiasing);
 	void CircleArc(Image&, const Circle&, LineCap startCap, LineCap endCap, double startAngle, double angle, double inner, double outer, Color, ImagePixel::BlendMode, EnableAntialiasing, ImageDraw::DstAlpha = ImageDraw::DstAlpha::UseStored);
+	void CircleTrimmedArc(Image&, const Circle&, double startAngle, double angle, double innerThickness, double outerThickness, double trim, Color, ImagePixel::BlendMode, EnableAntialiasing);
 	void EllipseRotated(Image&, const Ellipse&, double rotation, Color, ImagePixel::BlendMode, EnableAntialiasing);
 	void EllipseFrameRotated(Image&, const Ellipse&, double rotation, double innerThickness, double outerThickness, Color, ImagePixel::BlendMode, EnableAntialiasing);
 	void EllipseArc(Image&, const Ellipse&, LineCap startCap, LineCap endCap, double startAngle, double angle, double inner, double outer, Color, ImagePixel::BlendMode, EnableAntialiasing);

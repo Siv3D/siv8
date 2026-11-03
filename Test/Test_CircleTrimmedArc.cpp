@@ -5,6 +5,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 # include "../Siv3D/src/Siv3D/Renderer2D/Vertex2DBuilder.hpp"
 # include <cmath>
 
@@ -100,6 +101,33 @@ namespace
 		REQUIRE(System::Update());
 		REQUIRE(ScreenCapture::HasNewFrame());
 		return ScreenCapture::GetFrame();
+	}
+
+	// Independent point oracle: angular containment and distance to the two rays.
+	// The rasterizer instead clips analytic horizontal ring spans to half-planes.
+	Image TrimmedArcMask(const Size size, const Circle& circle, const double start, const double sweep,
+		const double innerThickness, const double outerThickness, const double trim, const bool aa)
+	{
+		const double inner = Max(Abs(circle.r) - innerThickness, 0.0), outer = (Abs(circle.r) + outerThickness);
+		const double clockwiseStart = (start + (sweep < 0 ? sweep : 0));
+		const Vec2 first{ std::sin(start), -std::cos(start) };
+		const Vec2 last{ std::sin(start + sweep), -std::cos(start + sweep) };
+		return ImageDrawingTest::SampleMask(size, aa, [&](const Vec2 point)
+			{
+				const Vec2 p = (point - circle.center);
+				const double radius = p.length();
+				if ((radius < inner) || (outer < radius)) return false;
+				double angle = std::fmod(std::atan2(p.x, -p.y) - clockwiseStart, Math::TwoPi);
+				if (angle < 0) angle += Math::TwoPi;
+				return ((angle <= Abs(sweep)) && (trim <= RayDistance(p, first)) && (trim <= RayDistance(p, last)));
+			});
+	}
+
+	void WriteTrimmedArc(const Circle& circle, Image& image, const bool paint, const double start, const double sweep,
+		const double inner, const double outer, const double trim, const Color ink, const EnableAntialiasing aa)
+	{
+		if (paint) CHECK(&circle.paintTrimmedArc(image, start, sweep, inner, outer, trim, ink, aa) == &circle);
+		else CHECK(&circle.overwriteTrimmedArc(image, start, sweep, inner, outer, trim, ink, aa) == &circle);
 	}
 }
 
@@ -308,5 +336,118 @@ TEST_CASE("CircleTrimmedArc.transforms_and_render_resolution")
 		for (size_t i = 0; i < transformed.pixelCount(); ++i)
 			if (Abs(int32(transformed.data()[i].r) - explicitGeometry.data()[i].r) > 2) ++different;
 		CHECK(different <= 8);
+	}
+}
+
+TEST_CASE("CircleTrimmedArc.image_geometry")
+{
+	const Size size{ 69, 63 };
+	const Circle circle{ 34.37, 30.61, 25.2 };
+	for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	for (const double start : { 0.0, 0.43, 2.8 })
+	for (const double sweep : { 0.03, Math::Pi / 3, Math::Pi, Math::Pi + 0.001, 4.7, Math::TwoPi - 0.001 })
+	for (const double innerRadius : { 0.0, 3.2, 18.7 })
+	for (const double trim : { 0.15, 3.2, 8.4, 25.1 })
+	{
+		CAPTURE(aa, start, sweep, innerRadius, trim);
+		const Image expected = TrimmedArcMask(size, circle, start, sweep, circle.r - innerRadius, 0, trim,
+			(aa == EnableAntialiasing::Yes));
+		Image actual{ size, Color{ 0, 0 } }, reversed = actual;
+		circle.overwriteTrimmedArc(actual, start, sweep, circle.r - innerRadius, 0, trim, Palette::White, aa);
+		circle.overwriteTrimmedArc(reversed, start + sweep, -sweep, circle.r - innerRadius, 0, trim, Palette::White, aa);
+		CHECK_THAT(actual, ImageDrawingTest::ImageEquals(expected));
+		CHECK_THAT(reversed, ImageDrawingTest::ImageEquals(expected));
+	}
+}
+
+TEST_CASE("CircleTrimmedArc.image_compositing_and_clipping")
+{
+	const Size size{ 57, 49 };
+	const Point padding{ 40, 40 };
+	for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	for (const bool paint : { false, true })
+	for (const Color ink : { Color{ 73, 193, 121, 0 }, Color{ 73, 193, 121, 127 }, Color{ 73, 193, 121, 255 } })
+	for (const Vec2 center : { Vec2{ 27.37, 24.61 }, Vec2{ 1.37, 3.61 }, Vec2{ 55.37, 47.61 }, Vec2{ -100, -100 } })
+	for (const double sweep : { 1.2, -4.7, Math::TwoPi - 0.01 })
+	{
+		CAPTURE(aa, paint, ink, center, sweep);
+		const Circle circle{ center, 23.2 };
+		Image actual = ImageDrawingTest::Background(size), expected = actual;
+		const Image mask = TrimmedArcMask(size, circle, 0.31, sweep, 22, 3, 4, (aa == EnableAntialiasing::Yes));
+		ImageDrawingTest::CompositeMask(expected, mask, ink, paint);
+		WriteTrimmedArc(circle, actual, paint, 0.31, sweep, 22, 3, 4, ink, aa);
+		CHECK_THAT(actual, ImageDrawingTest::ImageEquals(expected, paint ? 1 : 0));
+
+		Image padded{ size + padding * 2, Color{ 0, 0 } };
+		// Use the same varied RGBA background at the translated destination.
+		const Image background = ImageDrawingTest::Background(size);
+		for (int32 y = 0; y < size.y; ++y)
+			for (int32 x = 0; x < size.x; ++x) padded[y + padding.y][x + padding.x] = background[y][x];
+		WriteTrimmedArc(circle.movedBy(padding), padded, paint, 0.31, sweep, 22, 3, 4, ink, aa);
+		Image cropped{ size };
+		for (int32 y = 0; y < size.y; ++y)
+			for (int32 x = 0; x < size.x; ++x) cropped[y][x] = padded[y + padding.y][x + padding.x];
+		CHECK_THAT(actual, ImageDrawingTest::ImageEquals(cropped));
+	}
+}
+
+TEST_CASE("CircleTrimmedArc.image_normalization_and_untrimmed")
+{
+	const Vec2 center{ 31.37, 29.61 };
+	const Color ink{ 87, 163, 210, 127 };
+	for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	for (const bool paint : { false, true })
+	for (const double sweep : { 1.3, -4.7, Math::TwoPi, -9.0 })
+	for (const double trim : { -3.0, 0.0, 4.0, 100.0 })
+	for (const Vec3 band : { Vec3{ 25, 20, 3 }, Vec3{ -25, 20, 3 }, Vec3{ 25, 40, 3 },
+		Vec3{ 25, -2, 5 }, Vec3{ 25, 15, -4 }, Vec3{ 0, 0, 25 } })
+	{
+		CAPTURE(aa, paint, sweep, trim, band);
+		const double inner = Max(Abs(band.x) - band.y, 0.0), outer = (Abs(band.x) + band.z);
+		const Circle circle{ center, band.x }, normalized{ center, outer };
+		Image actual = ImageDrawingTest::Background({ 65, 61 }), expected = actual;
+		WriteTrimmedArc(circle, actual, paint, 0.37, sweep, band.y, band.z, trim, ink, aa);
+		if ((trim <= 0) || (Math::TwoPi <= Abs(sweep)))
+		{
+			if (paint) normalized.paintArc(expected, 0.37, sweep, outer - inner, 0, ink, aa);
+			else normalized.overwriteArc(expected, 0.37, sweep, outer - inner, 0, ink, aa);
+		}
+		else
+		{
+			const Image mask = TrimmedArcMask(actual.size(), circle, 0.37, sweep, band.y, band.z, trim,
+				(aa == EnableAntialiasing::Yes));
+			ImageDrawingTest::CompositeMask(expected, mask, ink, paint);
+		}
+		CHECK_THAT(actual, ImageDrawingTest::ImageEquals(expected, paint ? 1 : 0));
+	}
+	for (const bool paint : { false, true })
+	{
+		const Circle circle{ center, 25 };
+		Image actual = ImageDrawingTest::Background({ 65, 61 }), expected = actual;
+		if (paint) circle.paintTrimmedArc(actual, 0.37, 4.7, 20, 0, 4, ink);
+		else circle.overwriteTrimmedArc(actual, 0.37, 4.7, 20, 0, 4, ink);
+		WriteTrimmedArc(circle, expected, paint, 0.37, 4.7, 20, 0, 4, ink, EnableAntialiasing::Yes);
+		CHECK(actual == expected);
+	}
+}
+
+TEST_CASE("CircleTrimmedArc.image_empty_boundaries")
+{
+	const Circle circle{ 30.37, 28.61, 24 };
+	const Image background = ImageDrawingTest::Background({ 65, 61 });
+	for (const auto aa : { EnableAntialiasing::No, EnableAntialiasing::Yes })
+	for (const bool paint : { false, true })
+	{
+		Image actual = background;
+		WriteTrimmedArc(circle, actual, paint, 0, 0, 20, 0, 4, Palette::White, aa);
+		WriteTrimmedArc(circle, actual, paint, 0, 1, 0, 0, 4, Palette::White, aa);
+		WriteTrimmedArc(circle, actual, paint, 0, 1, 4, -5, 4, Palette::White, aa);
+		WriteTrimmedArc(circle, actual, paint, 0, 1, 30, -25, 4, Palette::White, aa);
+		WriteTrimmedArc(circle, actual, paint, 0, 4.7, 20, 0, 24, Palette::White, aa);
+		WriteTrimmedArc(circle, actual, paint, 0, 1.2, 20, 0, 24 * std::sin(0.6), Palette::White, aa);
+		CHECK(actual == background);
+		Image empty;
+		WriteTrimmedArc(circle, empty, paint, 0, 4.7, 20, 0, 4, Palette::White, aa);
+		CHECK(empty.isEmpty());
 	}
 }

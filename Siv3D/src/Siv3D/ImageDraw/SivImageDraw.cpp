@@ -4430,6 +4430,25 @@ namespace s3d
 			return (left <= right);
 		}
 
+		// Offset half-plane for trimmed sides: normal.dot(p) >= offset.
+		[[nodiscard]]
+		bool ClipOffsetSectorSpan(double& left, double& right, const Vec2 normal, const double y, const double offset) noexcept
+		{
+			if (normal.x > 0.0)
+			{
+				left = Max(left, ((offset - normal.y * y) / normal.x));
+			}
+			else if (normal.x < 0.0)
+			{
+				right = Min(right, ((offset - normal.y * y) / normal.x));
+			}
+			else if ((normal.y * y) < offset)
+			{
+				return false;
+			}
+			return (left <= right);
+		}
+
 		// Intersect a horizontal interval with |axis.dot(p)| <= halfExtent.
 		[[nodiscard]]
 		bool ClipSlabSpan(double& left, double& right, const Vec2 axis, const double y, const double halfExtent) noexcept
@@ -5802,6 +5821,69 @@ namespace s3d
 				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
 			}
 		}
+		void CircleTrimmedArc(Image& image, const Circle& circle, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const double trim,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (angle == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return;
+			const double radius = Abs(circle.r);
+			const double inner = Max(radius - innerThickness, 0.0), outer = (radius + outerThickness);
+			if (outer <= inner) return;
+			if ((trim <= 0.0) || IsFullCircleSweep(angle))
+			{
+				// Normalize the visible band before using the ordinary Image arc/frame path.
+				CircleArc(image, Circle{ circle.center, outer }, LineCap::Flat, LineCap::Flat,
+					startAngle, angle, (outer - inner), 0.0, color, mode, aa);
+				return;
+			}
+			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+			const bool major = (Math::Pi < sector.sweep);
+			if ((outer <= trim) || (!major && (outer * std::sin(sector.sweep * 0.5) <= trim))) return;
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const double innerRadius = Max(inner, trim);
+			const double innerSq = (innerRadius * innerRadius), outerSq = (outer * outer);
+			BoundsD bounds;
+			IncludeCircleSectorOuterBounds(bounds, circle, sector, outer);
+			IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
+			IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
+			// Each of two ring spans intersects at most three convex angular regions.
+			DrawSampledSpans<6>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y), dySq = (dy * dy);
+					if (outerSq <= dySq) return;
+					const auto addTrimmed = [&](const double left, const double right)
+					{
+						double l = left, r = right;
+						if (!major)
+						{
+							if (ClipOffsetSectorSpan(l, r, startNormal, dy, trim)
+								&& ClipOffsetSectorSpan(l, r, endNormal, dy, trim)) add(circle.x + l, circle.x + r);
+							return;
+						}
+						// Beyond a boundary ray's forward quadrant its nearest point is the
+						// center. The middle region therefore joins the sides with radius trim.
+						if (ClipOffsetSectorSpan(l, r, startNormal, dy, trim)
+							&& ClipSectorSpan(l, r, sector.startDir, dy)) add(circle.x + l, circle.x + r);
+						l = left; r = right;
+						if (ClipOffsetSectorSpan(l, r, endNormal, dy, trim)
+							&& ClipSectorSpan(l, r, sector.endDir, dy)) add(circle.x + l, circle.x + r);
+						l = left; r = right;
+						if (ClipSectorSpan(l, r, -sector.startDir, dy)
+							&& ClipSectorSpan(l, r, -sector.endDir, dy)) add(circle.x + l, circle.x + r);
+					};
+					const double outerDx = std::sqrt(outerSq - dySq);
+					if (dySq < innerSq)
+					{
+						const double innerDx = std::sqrt(innerSq - dySq);
+						addTrimmed(-outerDx, -innerDx);
+						addTrimmed(innerDx, outerDx);
+					}
+					else addTrimmed(-outerDx, outerDx);
+				});
+		}
+
 		void EllipseRotated(Image& image, const Ellipse& ellipse, const double rotation,
 			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
 		{
