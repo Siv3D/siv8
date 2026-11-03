@@ -1163,9 +1163,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 CRenderer2D_Metal::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	uint32 CRenderer2D_Metal::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
-		return m_commandManager.beginConstantBufferScope(stage, slot, data, size);
+		return m_commandManager.beginConstantBufferScope(stage, slot, data, size, capacity);
 	}
 
 	void CRenderer2D_Metal::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
@@ -1317,19 +1317,19 @@ namespace s3d
 				if (m_vsConstants.isDirty())
 				{
 					m_vsConstants._update_if_dirty();
-					renderCommandEncoder->setVertexBytes(m_vsConstants.data(), m_vsConstants.size(), 1);
+					renderCommandEncoder->setVertexBytes(m_vsConstants.data(), m_vsConstants.activeSize(), 1);
 				}
 
 				if (m_psConstants.isDirty())
 				{
 					m_psConstants._update_if_dirty();
-					renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
+					renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.activeSize(), 0);
 				}
 
 				if (m_psEffectConstants.isDirty())
 				{
 					m_psEffectConstants._update_if_dirty();
-					renderCommandEncoder->setFragmentBytes(m_psEffectConstants.data(), m_psEffectConstants.size(), 1);
+					renderCommandEncoder->setFragmentBytes(m_psEffectConstants.data(), m_psEffectConstants.activeSize(), 1);
 				}
 			};
 			

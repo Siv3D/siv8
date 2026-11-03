@@ -132,6 +132,191 @@ TEST_CASE("ConstantBuffer.storage_and_dirty")
 	CHECK((reinterpret_cast<uintptr_t>(aligned._data()) % 32) == 0);
 }
 
+TEST_CASE("ConstantBuffer.active_size_storage_dirty_and_validation")
+{
+	using Payload = std::array<Float4, 3>;
+	const Payload values{ Float4{ 1, 2, 3, 4 }, Float4{ 5, 6, 7, 8 }, Float4{ 9, 10, 11, 12 } };
+	ConstantBuffer<Payload> cb{ values };
+	CHECK(cb.size() == 48);
+	CHECK(cb.activeSize() == cb.size());
+	const void* storage = cb._data();
+	for (const size_t size : { 48u, 16u, 32u, 48u })
+	{
+		cb.setActiveSize(size);
+		CHECK(cb.isDirty());
+		REQUIRE(cb._update_if_dirty());
+		CHECK_FALSE(cb.isDirty());
+		cb.setActiveSize(size);
+		CHECK_FALSE(cb.isDirty());
+		CHECK_FALSE(cb._update_if_dirty());
+		CHECK(cb.activeSize() == size);
+		CHECK(cb.size() == 48);
+		CHECK(cb._data() == storage);
+		CHECK(*std::as_const(cb) == values);
+	}
+	for (const bool dirty : { false, true })
+	{
+		cb.setDirty(dirty);
+		for (const size_t invalid : { size_t{ 0 }, size_t{ 1 }, size_t{ 15 }, size_t{ 17 }, size_t{ 33 }, size_t{ 64 }, std::numeric_limits<size_t>::max() })
+		{
+			CAPTURE(invalid, dirty);
+			CHECK_THROWS_AS(cb.setActiveSize(invalid), Error);
+			CHECK(cb.activeSize() == 48);
+			CHECK(cb.isDirty() == dirty);
+			CHECK(*std::as_const(cb) == values);
+		}
+	}
+	cb.setActiveSize(16);
+	cb = values;
+	CHECK(cb.activeSize() == 16);
+	REQUIRE(cb._update_if_dirty());
+	ConstantBuffer<Payload> moved{ std::move(cb) };
+	CHECK(moved.activeSize() == 16);
+	CHECK_FALSE(moved.isDirty());
+	CHECK(moved._data() == storage);
+	ConstantBuffer<Payload> assigned;
+	assigned = std::move(moved);
+	CHECK(assigned.activeSize() == 16);
+	CHECK_FALSE(assigned.isDirty());
+	CHECK(assigned._data() == storage);
+	assigned.setActiveSize(assigned.size());
+	REQUIRE(assigned._update_if_dirty());
+	CHECK(*std::as_const(assigned) == values);
+}
+
+TEST_CASE("ConstantBuffer.active_size_snapshot_capacity_and_reuse")
+{
+	ConstantBuffer<std::array<Float4, 49>> cb;
+	(*cb)[0] = Float4{ 1, 2, 3, 4 };
+	cb.setActiveSize(16);
+	ConstantBuffer2DCommands commands;
+	commands.push(ShaderStage::Pixel, 3, cb._data(), cb.activeSize(), cb.size());
+	commands.flush();
+	const uint32 previous = commands.save(ShaderStage::Pixel, 3);
+	cb.setActiveSize(208);
+	(*cb)[12] = Float4{ 5, 6, 7, 8 };
+	commands.push(ShaderStage::Pixel, 3, cb._data(), cb.activeSize(), cb.size());
+	commands.flush();
+	commands.restore(ShaderStage::Pixel, 3, previous);
+	commands.flush();
+	REQUIRE(commands.size() == 3);
+	CHECK(commands.get(0).size == 16);
+	CHECK(commands.get(1).size == 208);
+	CHECK(commands.get(2).size == 16);
+	for (uint32 i = 0; i < 3; ++i) { CHECK(commands.get(i).capacity == 784); }
+	Float4 last;
+	std::memcpy(&last, static_cast<const std::byte*>(commands.data(commands.get(1))) + 192, sizeof(last));
+	CHECK(last == Float4{ 5, 6, 7, 8 });
+	commands.reset();
+	CHECK(commands.get(0).size == 16);
+	CHECK(commands.get(0).capacity == 784);
+	// Reusing snapshot storage must replace its capacity metadata as well as its bytes.
+	for (int32 i = 0; i < 4; ++i)
+	{
+		commands.push(ShaderStage::Pixel, 3, &last, sizeof(last));
+		commands.flush();
+		commands.reset();
+		CHECK(commands.get(0).size == 16);
+		CHECK(commands.get(0).capacity == 16);
+	}
+}
+
+namespace
+{
+	std::pair<VertexShader, PixelShader> ActiveSizeShaders()
+	{
+# if SIV3D_PLATFORM(WINDOWS)
+		const std::string source = R"(
+cbuffer V : register(b2) { float4 v[4096]; }
+cbuffer P : register(b3) { float4 p[4096]; }
+struct Output { float4 position : SV_POSITION; float4 color : COLOR0; };
+Output VS(uint id : SV_VertexID)
+{
+    Output o;
+    o.position = float4(id == 2 ? 3.0 : -1.0, id == 1 ? 3.0 : -1.0, 0, 1);
+    o.color = v[uint(v[0].x)];
+    return o;
+}
+float4 PS(Output input) : SV_TARGET { return (input.color + p[uint(p[0].x)]) * 0.5; }
+)";
+		return { VertexShader::HLSL(source, U"VS"), PixelShader::HLSL(source, U"PS") };
+# else
+		const std::string source = R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Output { float4 position [[position]]; float4 color; };
+vertex Output VS(uint id [[vertex_id]], constant float4* v [[buffer(2)]])
+{
+    return { float4(id == 2 ? 3.0 : -1.0, id == 1 ? 3.0 : -1.0, 0, 1), v[uint(v[0].x)] };
+}
+fragment float4 PS(Output in [[stage_in]], constant float4* p [[buffer(3)]])
+{
+    return (in.color + p[uint(p[0].x)]) * 0.5;
+}
+)";
+		return { VertexShader::MSL(source, U"VS"), PixelShader::MSL(source, U"PS") };
+# endif
+	}
+}
+
+TEST_CASE("ConstantBuffer.active_size_scopes_restore_across_flush_and_frames")
+{
+	const ConstantBufferSceneScope state;
+	REQUIRE(System::Update());
+	const auto [vs, ps] = ActiveSizeShaders();
+	REQUIRE(vs);
+	REQUIRE(ps);
+	const ScopedCustomShader2D shaders{ vs, ps };
+	const ScopedScissorRect2D scissor{ none };
+	const ScopedRenderStates2D blend{ BlendState::Opaque };
+	const RenderTexture output{ Size{ 16, 8 } };
+	ConstantBuffer<std::array<Float4, 4096>> cb;
+	(*cb)[0] = Float4{ 4095, 0, 0, 0 };
+	(*cb)[4095] = Float4{ 1, 0, 1, 1 };
+	const ScopedVSConstantBuffer2D outerVS{ 2, cb };
+	const ScopedPSConstantBuffer2D outerPS{ 3, cb };
+	const std::array<size_t, 8> sizes{ 16, 208, 784, 4096, 4112, 65536, 16, 65536 };
+	for (int32 frame = 0; frame < 3; ++frame)
+	{
+		for (size_t i = 0; i < sizes.size(); ++i)
+		{
+			CAPTURE(frame, sizes[i]);
+			const ScopedRenderTarget2D target{ output };
+			output.clear(Palette::Black);
+			const size_t last = (sizes[i] / sizeof(Float4) - 1);
+			const Color color = (last == 0) ? Palette::Lime : ((i % 2) ? Palette::Blue : Palette::Red);
+			cb.setActiveSize(sizes[i]);
+			(*cb)[0] = Float4{ static_cast<float>(last), 0, 0, 0 };
+			(*cb)[last] = color.toFloat4();
+			{
+				const ScopedVSConstantBuffer2D innerVS{ 2, cb };
+				const ScopedPSConstantBuffer2D innerPS{ 3, cb };
+				// Existing snapshots retain both their data and size after these changes.
+				cb.setActiveSize(cb.size());
+				(*cb)[0] = Float4{ 0, 0, 0, 1 };
+				Graphics2D::Flush();
+				const ScopedViewport2D viewport{ Rect{ 0, 0, 8, 8 } };
+				Graphics2D::DrawTriangles(1);
+			}
+			Graphics2D::Flush();
+			{
+				const ScopedViewport2D viewport{ Rect{ 8, 0, 8, 8 } };
+				Graphics2D::DrawTriangles(1);
+			}
+			Image actual;
+			REQUIRE(output.readAsImage(actual));
+			for (int32 y = 0; y < 8; ++y)
+			{
+				for (int32 x = 0; x < 16; ++x)
+				{
+					CHECK(actual[y][x] == (x < 8 ? color : Palette::Magenta));
+				}
+			}
+		}
+		REQUIRE(System::Update());
+	}
+}
+
 TEST_CASE("ConstantBuffer.snapshot_owns_bytes")
 {
 	ConstantBuffer2DCommands commands;

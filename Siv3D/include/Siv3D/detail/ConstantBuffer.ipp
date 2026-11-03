@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "../Error.hpp"
 
 namespace s3d
 {
@@ -63,6 +64,33 @@ namespace s3d
 	constexpr size_t ConstantBuffer<Type>::size() const noexcept
 	{
 		return Size;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setActiveSize, activeSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	void ConstantBuffer<Type>::setActiveSize(const size_t size)
+	{
+		if ((size < 16) || (Size < size) || ((size % 16) != 0))
+		{
+			throw Error{ U"ConstantBuffer::setActiveSize(): size must be a multiple of 16 between 16 and Size" };
+		}
+
+		if (m_activeSize != size)
+		{
+			m_activeSize = size;
+			m_isDirty = true;
+		}
+	}
+
+	template <class Type>
+	size_t ConstantBuffer<Type>::activeSize() const noexcept
+	{
+		return m_activeSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -176,7 +204,7 @@ namespace s3d
 			return false;
 		}
 
-		if (m_base->_internal_update(_data(), Size))
+		if (m_base->_internal_update(_data(), m_activeSize))
 		{
 			m_isDirty = false;
 			return true;

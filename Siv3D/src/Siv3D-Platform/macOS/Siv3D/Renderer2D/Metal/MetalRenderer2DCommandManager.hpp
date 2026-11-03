@@ -35,8 +35,8 @@ namespace s3d
 
 		MetalRenderer2DCommandManager();
 
-		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
-		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0);
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0);
 		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
 		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
 

@@ -613,9 +613,9 @@ or scalar arrays into the shader's layout. The paired
 vertex offset and a straight-RGBA tint, with premultiplied output.
 
 Construct a constant-buffer scope around the draws that use its value.
-Renderer2D owns a snapshot taken at construction; changing or destroying the
-source object does not affect that snapshot. To apply a changed value, construct
-another scope after updating the source buffer. Keep a scope around a render
+Renderer2D owns a snapshot of the active prefix and its size taken at construction;
+changing or destroying the source object does not affect that snapshot. To apply
+a changed value, construct another scope after updating the source buffer. Keep a scope around a render
 pass or frame loop when the same value should remain active throughout it.
 Shader selection and custom constants survive `Graphics2D::Flush()` and frame
 boundaries while their scopes remain alive.
@@ -632,6 +632,30 @@ const ScopedCustomShader2D shader{ psHit };
 const ScopedPSConstantBuffer2D constants{ 2, hitParameters };
 enemy.draw();
 ```
+
+For a fixed-capacity array with a varying number of coefficients, select the
+active prefix before constructing the scope:
+
+```cpp
+ConstantBuffer<std::array<Float4, 49>> coefficients;
+// Each frame: samples is a nonempty std::span<const Float4>, at most 49 elements.
+std::copy(samples.begin(), samples.end(), coefficients->begin());
+coefficients.setActiveSize(samples.size_bytes());
+const ScopedPSConstantBuffer2D constants{ 2, coefficients };
+```
+
+`size()` remains the storage capacity; `activeSize()` controls the uploaded prefix.
+Changing it marks the buffer dirty, including expansion after a smaller upload.
+CPU values beyond the prefix remain available, but shaders must only read the
+active region. This does not preserve the previous GPU contents outside that
+region. Ordinary value assignment keeps the selected active size. Existing code
+defaults to the whole buffer.
+
+The shader declaration must fit the binding. For a variable-length Metal array,
+use `constant float4*` and a separately supplied element count; a structure
+reference containing a fixed-size array requires the whole structure. D3D11
+retains the typed capacity for its native constant buffer, even when uploading
+a shorter prefix. Keep the array count within the active prefix on both backends.
 
 The shared constant-buffer command store separates pending commands from current
 bindings and saved scope values. Immutable snapshots use reference counts on the
@@ -651,12 +675,44 @@ copies its source data; distinct snapshots are not deduplicated by comparing
 their bytes.
 
 D3D11 reuses a growing dynamic GPU buffer per stage/slot and uploads snapshots in
-command order. Metal uses setBytes up to 4096 bytes; larger snapshots use distinct,
-256-byte-aligned regions in 64 KiB upload pages. Pages are reused only after
+command order. Snapshots retain typed capacity separately from their active bytes;
+only the latter are copied and uploaded. Metal uses setBytes up to 4096 active
+bytes; larger snapshots use distinct, 256-byte-aligned regions in 64 KiB upload
+pages. Pages are reused only after
 MetalFrameContext permits reuse of that frame slot, including across intermediate
 flushes. Each new execution reapplies logical bindings. Restoration to an unset
 slot unbinds the backend resource when that state is committed.
 Allocation/upload failure during command execution raises InternalEngineError.
+
+The opt-in `ConstantBuffer.Metal.active_size_benchmark` in
+[Test_MetalConstantBuffer.cpp](../../Test/Test_MetalConstantBuffer.cpp) compares reusable CPU
+snapshots and actual Metal uploads for active sizes from 16 bytes to 64 KiB,
+including both sides of the 4096-byte setBytes boundary. It reports median CPU
+snapshot time, two-stage draw encoding time, and GPU time over seven rotating
+batches. Warm-up, frame advance, and GPU waits are outside the timed regions.
+Timing thresholds are not correctness assertions.
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=ConstantBuffer.Metal.active_size_benchmark'
+```
+
+An Apple M2 Release run with validation disabled gave these diagnostic samples.
+Each buffer has 64 KiB capacity. Encoding includes constructing both VS/PS scopes,
+recording a one-pixel draw, and flushing the batch through the actual backend;
+the shaders read only the first vector at every active size.
+
+| Active bytes | CPU snapshot ns | CPU encoding µs/draw | GPU µs/draw |
+| ---: | ---: | ---: | ---: |
+| 16 | 33.9 | 0.263 | 0.558 |
+| 208 | 35.3 | 0.264 | 0.560 |
+| 784 | 42.6 | 0.360 | 0.563 |
+| 4096 | 86.8 | 1.022 | 0.561 |
+| 4112 | 87.7 | 1.566 | 0.559 |
+| 65536 | 1084.9 | 14.457 | 0.586 |
+
+Selecting a smaller prefix reduces CPU copying and upload preparation, including
+avoiding the large-buffer path when at most 4096 bytes are needed. GPU draw time
+is nearly unchanged here; these figures do not predict shader execution savings.
 
 The recorded snapshot IDs describe only Renderer2D's command stream, not the
 current GPU bindings. Every Renderer2D execution establishes its own binding

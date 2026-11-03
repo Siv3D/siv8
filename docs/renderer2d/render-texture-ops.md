@@ -150,12 +150,16 @@ It does not change logical Renderer2D settings or wait for GPU completion.
   for each new encoder.
 - D3D11 uses CopySubresourceRegion or a vertex-ID fullscreen triangle. It unbinds
   outputs and shader resources between passes, and uses the renderer's native
-  state caches. Constants use the existing `ConstantBuffer_D3D11` implementation
-  with dynamic buffers and `WRITE_DISCARD`. The normal next flush replays logical shaders, constants,
-  targets, viewport, and states.
+  state caches. Constants use `ConstantBuffer<T>` and the existing shader binding
+  functions, backed by dynamic buffers and `WRITE_DISCARD`. The normal next flush
+  replays logical shaders, constants, targets, viewport, and states.
 
+Both backends reuse typed `ConstantBuffer` objects for processing constants.
 Common processing constants occupy 80 bytes at VS/PS slot 0. Gaussian
-coefficients are separate at PS slot 1; only active coefficients are uploaded.
+coefficients are separate at PS slot 1; `setActiveSize()` selects the used prefix
+of the 49-element array, so only active coefficients are uploaded.
+The native D3D11 buffer is created on first use, after device initialization;
+constructing the typed object does not require a ready renderer.
 Other filters do not prepare or upload Gaussian data. Shader selection maps
 each kernel explicitly to its whole-input and bounded-input entries and does
 not depend on the order of `EnginePS` enumerators.
@@ -218,18 +222,25 @@ of per-run medians over two runs. GPU times are milliseconds per operation on
 
 | Endpoint format | Gaussian sigma 8 | Dual Kawase radius 7 |
 | --- | ---: | ---: |
-| R8 UNORM | 1.223–1.234 | 0.363–0.380 |
-| R32Float | 1.339–1.348 | 0.425–0.430 |
-| RG32Float | 2.435–2.437 | 0.793–0.794 |
-| RGBA16Float | 1.594 | 0.481–0.485 |
+| R8 UNORM | 1.209–1.261 | 0.365–0.369 |
+| R32Float | 1.344–1.375 | 0.440–0.454 |
+| RG32Float | 2.432–2.501 | 0.800–0.819 |
+| RGBA16Float | 1.578–1.618 | 0.484–0.496 |
 
 Narrow intermediate formats matter most for larger float images. Small images
 can be dominated by per-pass overhead; reducing storage or constant bytes does
 not guarantee a shorter GPU time. Full-HD CPU encoding times varied substantially
 between runs, so they are unsuitable for attributing small changes in preparation
-cost. In 64×64 R8 cases, single-pass Downsample took 5.86–5.90 µs with a reused
-workspace and 5.92–5.99 µs with a fresh workspace, including its construction and
+cost. In 64×64 R8 cases, single-pass Downsample took 5.96–6.02 µs with a reused
+workspace and 5.82–6.19 µs with a fresh workspace, including its construction and
 destruction. The fresh-workspace path does not allocate intermediate handles.
+
+Moving processing constants to typed `ConstantBuffer` objects preserves the
+existing active-prefix transfer lengths. The 64×64 R8 Gaussian CPU time was
+11.30 µs before the change and 11.10–11.36 µs over the two runs above. Its full-HD
+GPU time was 1.248 ms before the change. These measurements show comparable cost,
+not an additional filter speedup; the benefit of selecting a smaller prefix for
+general custom constants is measured in the [constant-buffer benchmark](README.md#custom-constant-buffers).
 
 The separate path-comparison benchmark gave these GPU times for 1920×1080
 RGBA16Float. Both Gaussian variants use identical coefficients and shaders.

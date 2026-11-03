@@ -24,7 +24,7 @@ namespace s3d
 
 	/// @brief 2D 描画の独自定数バッファを一時的に設定するスコープオブジェクト
 	/// @tparam Stage 頂点またはピクセルシェーダのステージ
-	/// @remark 構築時の値をコピーして後続の描画に適用します。その後の元の定数バッファの変更・破棄は設定に影響しません。
+	/// @remark 構築時の有効領域の値とサイズをコピーして後続の描画に適用します。その後の元の定数バッファの変更・破棄は設定に影響しません。
 	/// @remark 破棄時に指定したステージ・スロットの以前の値を復元します。以前の設定がなければ解除します。
 	/// @remark 同じステージ・スロットのスコープは入れ子にし、構築と逆の順序で破棄してください。Flush() とフレーム境界を越えて有効です。
 	/// @remark シェーダが参照するすべての独自スロットを描画前に設定してください。ScopedCustomShader2D は定数バッファ設定を変更・復元しません。
@@ -42,7 +42,7 @@ namespace s3d
 		/// @brief 指定スロットの設定を保存し、定数バッファを設定します。
 		/// @tparam Type 定数データの型
 		/// @param slot スロット番号。2～13。HLSL の register(bN)、MSL の buffer(N) に対応します。0 と 1 はエンジン用に予約されています。
-		/// @param buffer 設定時に値をコピーする定数バッファ
+		/// @param buffer 設定時に activeSize() バイトの値をコピーする定数バッファ
 		/// @throw Error slot が範囲外の場合
 		template <class Type>
 		[[nodiscard]]
@@ -69,7 +69,7 @@ namespace s3d
 
 		bool m_active = false;
 
-		ScopedConstantBuffer2D(uint32 slot, const void* data, size_t size);
+		ScopedConstantBuffer2D(uint32 slot, const void* data, size_t size, size_t capacity);
 	};
 
 	/// @brief 頂点シェーダの独自定数バッファ設定スコープ

@@ -31,9 +31,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
-		m_constantBuffers.push(stage, slot, data, size);
+		m_constantBuffers.push(stage, slot, data, size, capacity);
 		if (m_constantBuffers.hasStateChange())
 		{
 			m_stateTracker.set(MetalRenderer2DCommandType::SetConstantBuffer);
@@ -45,12 +45,12 @@ namespace s3d
 	}
 
 
-	uint32 MetalRenderer2DCommandManager::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	uint32 MetalRenderer2DCommandManager::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
 		const uint32 previous = m_constantBuffers.save(stage, slot);
 		try
 		{
-			pushConstantBuffer(stage, slot, data, size);
+			pushConstantBuffer(stage, slot, data, size, capacity);
 		}
 		catch (...)
 		{

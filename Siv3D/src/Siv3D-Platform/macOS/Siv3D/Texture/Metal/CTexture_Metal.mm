@@ -381,12 +381,14 @@ namespace s3d
 				static_cast<double>(pass.destinationRect.w), static_cast<double>(pass.destinationRect.h), 0.0, 1.0 });
 			encoder->setScissorRect(MTL::ScissorRect{ static_cast<NS::UInteger>(pass.destinationRect.x), static_cast<NS::UInteger>(pass.destinationRect.y),
 				static_cast<NS::UInteger>(pass.destinationRect.w), static_cast<NS::UInteger>(pass.destinationRect.h) });
-			const auto& constants = bindings[i].constants;
-			encoder->setVertexBytes(&constants, sizeof(constants), 0);
-			encoder->setFragmentBytes(&constants, sizeof(constants), 0);
+			m_processingConstants = bindings[i].constants;
+			encoder->setVertexBytes(m_processingConstants._data(), m_processingConstants.activeSize(), 0);
+			encoder->setFragmentBytes(m_processingConstants._data(), m_processingConstants.activeSize(), 0);
 			if (pass.kernel == Kernel::Gaussian)
 			{
-				encoder->setFragmentBytes(pass.samples.data(), pass.samples.size_bytes(), 1);
+				std::copy(pass.samples.begin(), pass.samples.end(), m_gaussianSamples->begin());
+				m_gaussianSamples.setActiveSize(pass.samples.size_bytes());
+				encoder->setFragmentBytes(m_gaussianSamples._data(), m_gaussianSamples.activeSize(), 1);
 			}
 			encoder->setFragmentTexture(getTexture(pass.source), 0);
 			if (pass.secondary != Texture::IDType::Null())

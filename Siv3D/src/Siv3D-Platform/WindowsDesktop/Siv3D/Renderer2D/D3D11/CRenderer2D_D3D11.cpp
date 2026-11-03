@@ -1177,9 +1177,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 CRenderer2D_D3D11::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	uint32 CRenderer2D_D3D11::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
-		return m_commandManager.beginConstantBufferScope(stage, slot, data, size);
+		return m_commandManager.beginConstantBufferScope(stage, slot, data, size, capacity);
 	}
 
 	void CRenderer2D_D3D11::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
@@ -1347,9 +1347,9 @@ namespace s3d
 						break;
 					}
 					auto& destination = m_customConstantBuffers[FromEnum(cb.stage)][cb.slot];
-					if (destination.capacity < cb.size)
+					if (destination.capacity < cb.capacity)
 					{
-						const size_t capacity = std::bit_ceil(cb.size);
+						const size_t capacity = std::bit_ceil(cb.capacity);
 						destination.buffer = IConstantBuffer::Create(capacity);
 						destination.capacity = capacity;
 					}

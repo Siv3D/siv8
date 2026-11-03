@@ -13,6 +13,8 @@
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
+# include <Siv3D/ConstantBuffer.hpp>
+# include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
 # include "MetalTexture.hpp"
 
 namespace s3d
@@ -97,6 +99,10 @@ namespace s3d
 		MTL::Texture* getRenderTargetTexture(Texture::IDType handleID);
 
 	private:
+
+		ConstantBuffer<detail::TextureProcessingConstants> m_processingConstants;
+
+		ConstantBuffer<std::array<Float4, detail::MaxGaussianSamples>> m_gaussianSamples;
 
 		[[nodiscard]]
 		MTL::CommandBuffer* renderCommands(bool flushDraws);

@@ -86,7 +86,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief データを代入します。
+		/// @brief 有効サイズを保ったままデータを代入します。
 		/// @param data 代入するデータ
 		/// @return *this
 		ConstantBuffer& operator =(const Type& data);
@@ -97,10 +97,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 定数バッファのサイズ（バイト）を返します。
-		/// @return 定数バッファのサイズ（バイト）
+		/// @brief 有効サイズによらない格納容量（バイト）を返します。
+		/// @return Size
 		[[nodiscard]]
 		constexpr size_t size() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setActiveSize, activeSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief シェーダに渡す先頭領域の有効サイズを設定します。
+		/// @param size バイト数。16 以上、Size 以下の 16 の倍数。
+		/// @remark 初期値は Size です。サイズが変わるとダーティになります。格納容量と CPU 側の値は変化しません。
+		/// @remark シェーダの宣言は有効領域に適合させ、領域外を参照してはいけません。GPU 側の領域外の値は保証されません。
+		/// @throw Error size が条件を満たさない場合。値と有効サイズ、ダーティフラグは変化しません。
+		void setActiveSize(size_t size);
+
+		/// @brief シェーダに渡す先頭領域の有効サイズ（バイト）を返します。
+		/// @return 有効サイズ（バイト）
+		[[nodiscard]]
+		size_t activeSize() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -204,6 +222,8 @@ namespace s3d
 		std::unique_ptr<WrapperType, Deleter> m_wrapper{ AlignedNew<WrapperType>() };
 
 		std::unique_ptr<IConstantBuffer> m_base;
+
+		size_t m_activeSize = Size;
 
 		bool m_isDirty = true;
 	};

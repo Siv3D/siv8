@@ -277,6 +277,9 @@
     <ClCompile Include="..\Test\Test_MetalRenderTextureOps.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalConstantBuffer.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalMSRenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -286,10 +286,10 @@ namespace s3d
 				SIV3D_ENGINE(Renderer2D)->setConstantBuffer(stage, slot, data, size);
 			}
 
-			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 			{
 				ValidateConstantBufferSlot(slot);
-				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size);
+				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size, capacity);
 			}
 
 			void EndConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)

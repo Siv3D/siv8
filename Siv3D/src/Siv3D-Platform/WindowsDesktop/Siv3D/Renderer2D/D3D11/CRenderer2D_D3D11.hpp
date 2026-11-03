@@ -522,7 +522,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0) override;
 
 		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous) override;
 

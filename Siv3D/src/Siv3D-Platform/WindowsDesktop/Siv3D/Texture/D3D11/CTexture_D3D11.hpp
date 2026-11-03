@@ -14,7 +14,7 @@
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
-# include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
+# include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
 # include "D3D11Texture.hpp"
 
@@ -104,9 +104,9 @@ namespace s3d
 
 	private:
 
-		ConstantBuffer_D3D11 m_processingConstants{ sizeof(detail::TextureProcessingConstants) };
+		ConstantBuffer<detail::TextureProcessingConstants> m_processingConstants;
 
-		ConstantBuffer_D3D11 m_gaussianSamples{ (detail::MaxGaussianSamples * sizeof(Float4)) };
+		ConstantBuffer<std::array<Float4, detail::MaxGaussianSamples>> m_gaussianSamples;
 
 		CRenderer_D3D11* m_pRenderer = nullptr;
 
