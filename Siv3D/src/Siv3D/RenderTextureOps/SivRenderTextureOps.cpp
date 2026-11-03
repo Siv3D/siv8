@@ -157,17 +157,11 @@ namespace s3d
 				}
 			}
 
-			bool IsFloat32(const TextureFormat format)
-			{
-				return (format == TextureFormat::R32_Float) || (format == TextureFormat::R32G32_Float)
-					|| (format == TextureFormat::R32G32B32A32_Float);
-			}
-
 			TextureFormat GetIntermediateFormat(const Texture& source, const RenderTexture& destination)
 			{
 				const TextureFormat sourceFormat = source.format();
 				const TextureFormat destinationFormat = destination.format();
-				const bool float32 = (IsFloat32(sourceFormat) || IsFloat32(destinationFormat));
+				const bool float32 = (sourceFormat.isFloat32() || destinationFormat.isFloat32());
 				const uint32 channels = sourceFormat.channelCount();
 				if (channels == destinationFormat.channelCount())
 				{

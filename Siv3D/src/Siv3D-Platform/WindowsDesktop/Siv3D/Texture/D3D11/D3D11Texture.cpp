@@ -166,9 +166,10 @@ namespace s3d
 		{
 			return false;
 		}
-		const uint32 width = Max(1, (m_desc.size.x >> mipLevel));
-		const uint32 height = Max(1, (m_desc.size.y >> mipLevel));
-		const uint32 rowBytes = (width * m_desc.format.pixelSize());
+		const Size levelSize = ImageProcessing::CalculateMipmapSize(m_desc.size, mipLevel);
+		const uint32 width = levelSize.x;
+		const uint32 height = levelSize.y;
+		const uint32 rowBytes = static_cast<uint32>(m_desc.format.packedRowBytes(width));
 		if (destination.size_bytes() != (static_cast<size_t>(rowBytes) * height))
 		{
 			return false;
@@ -363,20 +364,16 @@ namespace s3d
 			false
 		}
 	{
-		const uint32 blockSize = bcnData.format.blockSize();
-
 		Array<D3D11_SUBRESOURCE_DATA> initDataList(m_desc.mipLevels);
 
 		for (uint32 i = 0; i < bcnData.textures.size(); ++i)
 		{
-			const uint32 mipWidth = Max<uint32>((bcnData.size.x >> i), 1);
-			const uint32 paddedWidth = ((mipWidth + 3) & ~3);
-			const uint32 xBlocks = (paddedWidth / 4);
+			const Size levelSize = ImageProcessing::CalculateMipmapSize(bcnData.size, i);
 
 			initDataList[i] =
 			{
 				.pSysMem = bcnData.textures[i].data(),
-				.SysMemPitch = (xBlocks * blockSize),
+				.SysMemPitch = static_cast<uint32>(bcnData.format.packedRowBytes(levelSize.x)),
 				.SysMemSlicePitch = 0
 			};
 		}
@@ -628,11 +625,8 @@ namespace s3d
 			return false;
 		}
 
-		const uint32 copyBytesPerRow = (m_desc.size.x * m_desc.format.pixelSize());
-		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * m_desc.size.y);
-
-		if ((srcBytesPerRow < copyBytesPerRow)
-			|| (data.size_bytes() < requiredSourceBytes))
+		const size_t copyBytesPerRow = GetTextureUploadRowBytes(m_desc.size, m_desc.format, data, srcBytesPerRow);
+		if (copyBytesPerRow == 0)
 		{
 			return false;
 		}
@@ -658,15 +652,7 @@ namespace s3d
 				return false;
 			}
 
-			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-			const Byte* pSrcRow = data.data();
-
-			for (int32 y = 0; y < m_desc.size.y; ++y)
-			{
-				std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
-				pDstRow += mapped.RowPitch;
-				pSrcRow += srcBytesPerRow;
-			}
+			FillWithImage(mapped.pData, m_desc.size, mapped.RowPitch, data, srcBytesPerRow, copyBytesPerRow);
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -745,11 +731,8 @@ namespace s3d
 			return false;
 		}
 
-		const uint32 copyBytesPerRow = (rect.w * m_desc.format.pixelSize());
-		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * rect.h);
-
-		if ((srcBytesPerRow < copyBytesPerRow)
-			|| (data.size_bytes() < requiredSourceBytes))
+		const size_t copyBytesPerRow = GetTextureUploadRowBytes(rect.size, m_desc.format, data, srcBytesPerRow);
+		if (copyBytesPerRow == 0)
 		{
 			return false;
 		}
@@ -769,15 +752,7 @@ namespace s3d
 			return false;
 		}
 
-		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-		const Byte* pSrcRow = data.data();
-
-		for (int32 y = 0; y < rect.h; ++y)
-		{
-			std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
-			pDstRow += mapped.RowPitch;
-			pSrcRow += srcBytesPerRow;
-		}
+		FillWithImage(mapped.pData, rect.size, mapped.RowPitch, data, srcBytesPerRow, copyBytesPerRow);
 
 		context->Unmap(m_stagingTexture.Get(), 0);
 

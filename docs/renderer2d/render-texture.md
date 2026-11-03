@@ -64,6 +64,31 @@ pixel size. Use `read(std::span<Byte>)` for format-independent raw bytes.
 RenderTexture and MSRenderTexture share the typed-read compatibility mapping.
 Reading a selected mip level also allows inspection of generated content.
 
+Use `texture.mipSize(level)` to size a raw readback buffer for an allocated mip:
+
+```cpp
+const uint32 level = 1;
+const Size levelSize = texture.mipSize(level);
+Array<Byte> raw(texture.format().packedDataSize(levelSize));
+const bool succeeded = texture.read(raw, level);
+```
+
+`ImageProcessing::CalculateMipmapSize(baseSize, level)` performs the same size
+calculation without a texture. It describes a complete mathematical mip chain;
+`Texture::mipSize()` also checks which levels the resource actually has. Mips
+halve each axis with truncation, unlike a reduction pyramid that rounds up.
+
+`TextureFormat::packedRowBytes()` and `packedDataSize()` describe tightly packed
+data, including BCn block rounding. They do not estimate GPU allocation size.
+For a 3×2 R8 image the row size is 3 bytes and the data size is 6 bytes. The older
+`bytesPerRow()` retains its four-byte row alignment for uncompressed formats;
+its result is 4 bytes for that image. Native transfer alignment remains internal.
+
+`TextureFormat::isFloat32()` identifies R32Float, RG32Float, and RGBA32Float.
+Processing code uses it to retain endpoint precision in intermediate textures,
+and native code uses it alongside device capability checks. It does not imply
+filtering or MSAA support on the active device.
+
 An explicit format controls sRGB metadata. Clear colors are linear, while image
 and Grid initialization transfers stored values unchanged. Reading an sRGB
 texture returns its encoded values. Use an explicit conversion when displaying
@@ -417,6 +442,11 @@ of each execution, and VS/PS input views are cleared around target binding, so
 subsequent sampling, clear, mip generation and readback do not inherit conflicts.
 
 ## Validation
+
+[TextureFormat tests](../../Test/Test_TextureFormat.cpp) check format classification,
+packed sizes, BCn blocks, overflow, and compatibility of the existing row pitch.
+[Mipmap tests](../../Test/Test_TextureMipmap.cpp) compare calculated and allocated
+sizes with readbacks, and draw a BC1 mip chain with a distinct color at each level.
 
 [MRT tests](../../Test/Test_MRT.cpp) cover array/list selection, one through eight
 outputs, standard/custom shader transitions, mixed formats and layout ordering,

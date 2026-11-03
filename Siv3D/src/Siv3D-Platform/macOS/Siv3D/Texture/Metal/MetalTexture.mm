@@ -40,8 +40,7 @@ namespace s3d
 			}
 			// Metal exposes the additional resolve capability separately from the sample count.
 			// https://developer.apple.com/documentation/metal/mtldevice/supports32bitmsaa
-			const bool float32 = ((format == TextureFormat::R32_Float)
-				|| (format == TextureFormat::R32G32_Float) || (format == TextureFormat::R32G32B32A32_Float));
+			const bool float32 = format.isFloat32();
 			if (float32 && (not device->supports32BitMSAA()
 				|| ((1 < m_desc.mipLevels) && not device->supports32BitFloatFiltering())))
 			{
@@ -172,8 +171,9 @@ namespace s3d
 	MTL::Buffer* MetalTexture::encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands,
 		const uint32 mipLevel, const uint32 bytesPerRow)
 	{
-		const uint32 width = Max(1, (m_desc.size.x >> mipLevel));
-		const uint32 height = Max(1, (m_desc.size.y >> mipLevel));
+		const Size levelSize = ImageProcessing::CalculateMipmapSize(m_desc.size, mipLevel);
+		const uint32 width = levelSize.x;
+		const uint32 height = levelSize.y;
 		const size_t bytes = (static_cast<size_t>(bytesPerRow) * height);
 		if (not m_readbackBuffer || (m_readbackBuffer->length() < bytes))
 		{
@@ -472,13 +472,12 @@ namespace s3d
 		{
 			for (uint32 i = 0; i < bcnData.textures.size(); ++i)
 			{
-				const uint32 mipWidth = Max<uint32>((bcnData.size.x >> i), 1);
-				const uint32 mipHeight = Max<uint32>((bcnData.size.y >> i), 1);
-				const uint32 paddedWidth = ((mipWidth + 3) & ~3);
-				const uint32 xBlocks = (paddedWidth / 4);
-				const uint32 rowPitch = (xBlocks * bcnData.format.blockSize());
+				const Size levelSize = ImageProcessing::CalculateMipmapSize(bcnData.size, i);
+				const uint32 mipWidth = levelSize.x;
+				const uint32 mipHeight = levelSize.y;
+				const size_t rowPitch = bcnData.format.packedRowBytes(mipWidth);
 				
-				const NSUInteger dataSize = (rowPitch * mipHeight);
+				const size_t dataSize = bcnData.format.packedDataSize(levelSize);
 				auto uploadBuffer = NS::TransferPtr(device->newBuffer(bcnData.textures[i].data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 				
 				const MTL::Size sourceSize{ static_cast<NSUInteger>(mipWidth), static_cast<NSUInteger>(mipHeight), 1 };
@@ -676,22 +675,18 @@ namespace s3d
 		{
 			return false;
 		}
-
-		if (not prepareUpload(wait))
+		const size_t rowBytes = GetTextureUploadRowBytes(m_desc.size, m_desc.format, data, srcBytesPerRow);
+		if ((rowBytes == 0) || not prepareUpload(wait))
 		{
 			return false;
 		}
-
 		const uint32 bytesPerRow = m_desc.format.bytesPerRow(m_desc.size.x);
-		void* ptr = m_uploadBuffer->contents();
-		
+		void* const ptr = m_uploadBuffer->contents();
 		if (not ptr)
 		{
 			return false;
 		}
-		
-		FillWithImage(ptr, m_desc.size, bytesPerRow, data, srcBytesPerRow);
-
+		FillWithImage(ptr, m_desc.size, bytesPerRow, data, srcBytesPerRow, rowBytes);
 		return uploadRegion(commandQueue, frame, bytesPerRow, Rect{ m_desc.size });
 	}
 
@@ -720,39 +715,22 @@ namespace s3d
 	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const std::span<const Byte> data,
 		const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
 	{
-		if ((not isValidRegion(rect))
-			|| (not prepareUpload(wait)))
+		if (not isValidRegion(rect))
 		{
 			return false;
 		}
-
-		const uint32 pixelSize = m_desc.format.pixelSize();
-		const size_t copyBytesPerRow = (static_cast<size_t>(rect.w) * pixelSize);
-		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * rect.h);
-
-		if ((pixelSize == 0)
-			|| (srcBytesPerRow < copyBytesPerRow)
-			|| (data.size_bytes() < requiredSourceBytes))
+		const size_t rowBytes = GetTextureUploadRowBytes(rect.size, m_desc.format, data, srcBytesPerRow);
+		if ((rowBytes == 0) || not prepareUpload(wait))
 		{
 			return false;
 		}
-
 		const uint32 bytesPerRow = m_desc.format.bytesPerRow(rect.w);
-		Byte* pDstRow = static_cast<Byte*>(m_uploadBuffer->contents());
-		const Byte* pSrcRow = data.data();
-
-		if (not pDstRow)
+		void* const ptr = m_uploadBuffer->contents();
+		if (not ptr)
 		{
 			return false;
 		}
-
-		for (int32 y = 0; y < rect.h; ++y)
-		{
-			std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
-			pDstRow += bytesPerRow;
-			pSrcRow += srcBytesPerRow;
-		}
-
+		FillWithImage(ptr, rect.size, bytesPerRow, data, srcBytesPerRow, rowBytes);
 		return uploadRegion(commandQueue, frame, bytesPerRow, rect);
 	}
 

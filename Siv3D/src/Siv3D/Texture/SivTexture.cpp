@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
@@ -255,6 +256,21 @@ namespace s3d
 	uint32 Texture::mipLevels() const
 	{
 		return SIV3D_ENGINE(Texture)->getMipLevels(m_handle->id());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mipSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	Size Texture::mipSize(const uint32 level) const
+	{
+		if (isEmpty() || (mipLevels() <= level))
+		{
+			return{ 0, 0 };
+		}
+		return ImageProcessing::CalculateMipmapSize(size(), level);
 	}
 
 	////////////////////////////////////////////////////////////////

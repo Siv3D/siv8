@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
+# include <limits>
 # include <Siv3D/TextureFormat.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -403,6 +404,39 @@ namespace s3d
 	bool TextureFormat::isBCn() const noexcept
 	{
 		return InRange(m_value, TexturePixelFormat::BC1_RGBA_Unorm, TexturePixelFormat::BC7_RGBA_Unorm_SRGB);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	packedRowBytes, packedDataSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	size_t TextureFormat::packedRowBytes(const uint32 width) const noexcept
+	{
+		if ((m_value == TexturePixelFormat::Unknown)
+			|| (TexturePixelFormat::BC7_RGBA_Unorm_SRGB < m_value))
+		{
+			return 0;
+		}
+		const uint64 bytes = isBCn() ? (((uint64{ width } + 3) / 4) * blockSize())
+			: (uint64{ width } * pixelSize());
+		return (bytes <= std::numeric_limits<size_t>::max()) ? static_cast<size_t>(bytes) : 0;
+	}
+
+	size_t TextureFormat::packedDataSize(const Size size) const noexcept
+	{
+		if ((size.x <= 0) || (size.y <= 0))
+		{
+			return 0;
+		}
+		const size_t rowBytes = packedRowBytes(static_cast<uint32>(size.x));
+		const size_t rows = isBCn() ? ((static_cast<size_t>(size.y) + 3) / 4) : static_cast<size_t>(size.y);
+		if ((rowBytes == 0) || (std::numeric_limits<size_t>::max() / rowBytes < rows))
+		{
+			return 0;
+		}
+		return (rowBytes * rows);
 	}
 
 	////////////////////////////////////////////////////////////////

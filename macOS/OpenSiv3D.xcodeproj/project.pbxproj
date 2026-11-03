@@ -94,6 +94,8 @@
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */; settings = {COMPILER_FLAGS = "-I$(SRCROOT)/../Siv3D/src"; }; };
 		C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */; };
+		940898F6F8B041319D4E83B1 /* Test_TextureMipmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AA22171C46646819724F84E /* Test_TextureMipmap.cpp */; };
+		F797200852004707ABAC76F9 /* Test_TextureFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AC54D278074C90A19D5F74 /* Test_TextureFormat.cpp */; };
 		9866E15B8ACCAAB46715EE65 /* Test_RenderTextureOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */; };
 		4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
@@ -3597,6 +3599,8 @@
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AssetHandleManager.cpp; sourceTree = "<group>"; };
 		2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTexture.cpp; sourceTree = "<group>"; };
+		9AA22171C46646819724F84E /* Test_TextureMipmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureMipmap.cpp; sourceTree = "<group>"; };
+		08AC54D278074C90A19D5F74 /* Test_TextureFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureFormat.cpp; sourceTree = "<group>"; };
 		36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RenderTextureOps.cpp; sourceTree = "<group>"; };
 		7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopedRenderTarget2D.cpp; sourceTree = "<group>"; };
 		AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalShader.cpp; sourceTree = "<group>"; };
@@ -7418,6 +7422,8 @@
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
 				ED25BB02B76949B392990153 /* Test_AssetHandleManager.cpp */,
 				2F1330AE782F49CE9CAB7B66 /* Test_RenderTexture.cpp */,
+				9AA22171C46646819724F84E /* Test_TextureMipmap.cpp */,
+				08AC54D278074C90A19D5F74 /* Test_TextureFormat.cpp */,
 				36C0084C037AF5AB91390529 /* Test_RenderTextureOps.cpp */,
 				7BCCC3F470934B25B2599D3B /* Test_ScopedRenderTarget2D.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
@@ -17490,6 +17496,8 @@
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
 				C42F86E30DFF4B6E9FDB9F5C /* Test_AssetHandleManager.cpp in Sources */,
 				C82134CE245247A787CFFDFD /* Test_RenderTexture.cpp in Sources */,
+				940898F6F8B041319D4E83B1 /* Test_TextureMipmap.cpp in Sources */,
+				F797200852004707ABAC76F9 /* Test_TextureFormat.cpp in Sources */,
 				9866E15B8ACCAAB46715EE65 /* Test_RenderTextureOps.cpp in Sources */,
 				4CC7DDCAC64C4DA08CCD53D0 /* Test_ScopedRenderTarget2D.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,

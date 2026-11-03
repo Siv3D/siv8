@@ -163,6 +163,12 @@
     <ClCompile Include="..\Test\Test_RenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureMipmap.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureFormat.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_RenderTextureOps.cpp">
       <Filter>Test</Filter>
     </ClCompile>

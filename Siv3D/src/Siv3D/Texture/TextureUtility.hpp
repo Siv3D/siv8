@@ -98,13 +98,12 @@ namespace s3d
 	bool ReadRenderTexturePixels(const RenderTextureType& texture, Container& image, const uint32 mipLevel)
 	{
 		using Pixel = std::ranges::range_value_t<Container>;
-		if (texture.isEmpty() || not IsRenderTextureReadCompatible<Pixel>(texture.format().value())
-			|| (texture.mipLevels() <= mipLevel))
+		const Size size = texture.mipSize(mipLevel);
+		if ((size.x == 0) || (size.y == 0) || not IsRenderTextureReadCompatible<Pixel>(texture.format().value()))
 		{
 			image.clear();
 			return false;
 		}
-		const Size size{ Max(1, (texture.width() >> mipLevel)), Max(1, (texture.height() >> mipLevel)) };
 		image.resize(size);
 		if (not texture.read(std::as_writable_bytes(std::span{ image }), mipLevel))
 		{
@@ -119,5 +118,10 @@ namespace s3d
 
 	void FillWithColor(void* const pDst, size_t bufferSizeBytes, const ColorF& color, const TextureFormat& format);
 	
-	void FillWithImage(void* const pDst, const Size& size, const uint32 dstBytesPerRow, std::span<const Byte> src, const uint32 srcBytesPerRow);
+	// Returns 0 for invalid upload data. Validate before allocating/waiting for upload storage.
+	[[nodiscard]]
+	size_t GetTextureUploadRowBytes(Size size, const TextureFormat& format, std::span<const Byte> src, uint32 srcBytesPerRow) noexcept;
+
+	// The caller validates the source span and destination pitch. Destination is write-only.
+	void FillWithImage(void* pDst, const Size& size, uint32 dstBytesPerRow, std::span<const Byte> src, uint32 srcBytesPerRow, size_t copyBytesPerRow);
 }

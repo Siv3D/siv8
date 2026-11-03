@@ -82,19 +82,18 @@ namespace s3d
 		{
 			return false;
 		}
-		const size_t dataSize = (static_cast<size_t>(size.x) * size.y * format.pixelSize());
+		const size_t dataSize = format.packedDataSize(size);
 		return (data.empty() || (data.size_bytes() == dataSize));
 	}
 
 	bool ReadRenderTexture(const Texture& texture, const std::span<Byte> destination, const uint32 mipLevel)
 	{
-		if (texture.isEmpty() || (texture.mipLevels() <= mipLevel))
+		const Size levelSize = texture.mipSize(mipLevel);
+		if ((levelSize.x == 0) || (levelSize.y == 0))
 		{
 			return false;
 		}
-		const Size levelSize{ Max(1, (texture.width() >> mipLevel)), Max(1, (texture.height() >> mipLevel)) };
-		const size_t bytesPerRow = (static_cast<size_t>(levelSize.x) * texture.format().pixelSize());
-		if (destination.size_bytes() != (bytesPerRow * levelSize.y))
+		if (destination.size_bytes() != texture.format().packedDataSize(levelSize))
 		{
 			return false;
 		}
@@ -276,22 +275,35 @@ namespace s3d
 		}
 	}
 
-	void FillWithImage(void* const pDst, const Size& size, const uint32 dstBytesPerRow, std::span<const Byte> src, const uint32 srcBytesPerRow)
+	size_t GetTextureUploadRowBytes(const Size size, const TextureFormat& format, const std::span<const Byte> src, const uint32 srcBytesPerRow) noexcept
 	{
-		if (dstBytesPerRow == srcBytesPerRow)
+		if ((size.x <= 0) || (size.y <= 0) || format.isBCn())
 		{
-			std::memcpy(pDst, src.data(), (dstBytesPerRow * size.y));
+			return 0;
+		}
+		const size_t rowBytes = format.packedRowBytes(static_cast<uint32>(size.x));
+		if ((rowBytes == 0) || (srcBytesPerRow < rowBytes)
+			|| (src.size_bytes() < (uint64{ srcBytesPerRow } * (size.y - 1) + rowBytes)))
+		{
+			return 0;
+		}
+		return rowBytes;
+	}
+
+	void FillWithImage(void* const pDst, const Size& size, const uint32 dstBytesPerRow, const std::span<const Byte> src,
+		const uint32 srcBytesPerRow, const size_t copyBytesPerRow)
+	{
+		if ((dstBytesPerRow == copyBytesPerRow) && (srcBytesPerRow == copyBytesPerRow))
+		{
+			std::memcpy(pDst, src.data(), (copyBytesPerRow * size.y));
 		}
 		else
 		{
-			Byte* pDstRow = static_cast<Byte*>(pDst);
-			const Byte* pSrcRow = src.data();
-
+			auto* destination = static_cast<Byte*>(pDst);
 			for (int32 y = 0; y < size.y; ++y)
 			{
-				std::memcpy(pDstRow, pSrcRow, srcBytesPerRow);
-				pDstRow += dstBytesPerRow;
-				pSrcRow += srcBytesPerRow;
+				std::memcpy(destination + static_cast<size_t>(y) * dstBytesPerRow,
+					src.data() + static_cast<size_t>(y) * srcBytesPerRow, copyBytesPerRow);
 			}
 		}
 	}

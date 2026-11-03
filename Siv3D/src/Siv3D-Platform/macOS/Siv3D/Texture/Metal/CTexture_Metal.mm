@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CTexture_Metal.hpp"
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -299,8 +300,7 @@ namespace s3d
 		const auto validateFiltering = [this](const Texture::IDType id)
 		{
 			const auto format = getFormat(id);
-			if (not m_float32Filtering && ((format == TextureFormat::R32_Float)
-				|| (format == TextureFormat::R32G32_Float) || (format == TextureFormat::R32G32B32A32_Float)))
+			if (not m_float32Filtering && format.isFloat32())
 			{
 				throw Error{ U"RenderTextureOps: this device cannot linearly filter 32-bit float textures" };
 			}
@@ -442,9 +442,10 @@ namespace s3d
 		{
 			return false;
 		}
-		const uint32 width = Max(1, (desc.size.x >> mipLevel));
-		const uint32 height = Max(1, (desc.size.y >> mipLevel));
-		const uint32 rowBytes = (width * desc.format.pixelSize());
+		const Size levelSize = ImageProcessing::CalculateMipmapSize(desc.size, mipLevel);
+		const uint32 width = levelSize.x;
+		const uint32 height = levelSize.y;
+		const uint32 rowBytes = static_cast<uint32>(desc.format.packedRowBytes(width));
 		if (destination.size_bytes() != (static_cast<size_t>(rowBytes) * height))
 		{
 			return false;

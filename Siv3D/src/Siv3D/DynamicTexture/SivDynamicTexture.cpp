@@ -96,6 +96,15 @@ namespace s3d
 		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), color, true);
 	}
 
+	bool DynamicTexture::fill(const std::span<const Byte> data, const uint32 sourceRowPitch)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), data, sourceRowPitch, true);
+	}
+
 	bool DynamicTexture::fill(const Image& image)
 	{
 		if (isEmpty())
@@ -117,7 +126,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<uint8>& image)
@@ -141,7 +150,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<HalfFloat>& image)
@@ -165,7 +174,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<std::pair<uint16, uint16>>& image)
@@ -191,7 +200,7 @@ namespace s3d
 
 		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, true);
+		return fill(std::as_bytes(std::span{ image }), bytesPerRow);
 	}
 
 	bool DynamicTexture::fill(const Grid<std::pair<HalfFloat, HalfFloat>>& image)
@@ -217,7 +226,7 @@ namespace s3d
 		
 		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, true);
+		return fill(std::as_bytes(std::span{ image }), bytesPerRow);
 	}
 
 	bool DynamicTexture::fill(const Grid<Color>& image)
@@ -241,7 +250,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<float>& image)
@@ -265,7 +274,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<std::array<HalfFloat, 4>>& image)
@@ -289,7 +298,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<Float2>& image)
@@ -313,7 +322,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fill(const Grid<Float4>& image)
@@ -337,7 +346,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -354,6 +363,15 @@ namespace s3d
 		}
 
 		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), color, rect);
+	}
+
+	bool DynamicTexture::fillRegion(const std::span<const Byte> data, const uint32 sourceRowPitch, const Rect& rect)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), data, sourceRowPitch, rect, true);
 	}
 
 	bool DynamicTexture::fillRegion(const Image& image, const Rect& rect)
@@ -426,6 +444,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool DynamicTexture::fillIfNotBusy(const std::span<const Byte> data, const uint32 sourceRowPitch)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), data, sourceRowPitch, false);
+	}
+
 	bool DynamicTexture::fillIfNotBusy(const Image& image)
 	{
 		if (isEmpty())
@@ -447,7 +474,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<uint8>& image)
@@ -471,7 +498,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<HalfFloat>& image)
@@ -495,7 +522,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<std::pair<uint16, uint16>>& image)
@@ -521,7 +548,7 @@ namespace s3d
 
 		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), bytesPerRow);
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<std::pair<HalfFloat, HalfFloat>>& image)
@@ -547,7 +574,7 @@ namespace s3d
 
 		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), bytesPerRow);
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<Color>& image)
@@ -571,7 +598,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<float>& image)
@@ -595,7 +622,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<std::array<HalfFloat, 4>>& image)
@@ -619,7 +646,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<Float2>& image)
@@ -643,7 +670,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	bool DynamicTexture::fillIfNotBusy(const Grid<Float4>& image)
@@ -667,7 +694,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -675,6 +702,15 @@ namespace s3d
 	//	fillRegionIfNotBusy
 	//
 	////////////////////////////////////////////////////////////////
+
+	bool DynamicTexture::fillRegionIfNotBusy(const std::span<const Byte> data, const uint32 sourceRowPitch, const Rect& rect)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), data, sourceRowPitch, rect, false);
+	}
 
 	bool DynamicTexture::fillRegionIfNotBusy(const Image& image, const Rect& rect)
 	{
@@ -759,7 +795,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fillRegion(handleID, src, srcBytesPerRow, rect, wait);
+		return wait ? fillRegion(src, srcBytesPerRow, rect) : fillRegionIfNotBusy(src, srcBytesPerRow, rect);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -11,6 +11,7 @@
 
 # include "Siv3DTest.hpp"
 # include <iostream>
+# include <limits>
 
 TEST_CASE("DynamicTexture.fillRegion")
 {
@@ -244,6 +245,164 @@ TEST_CASE("DynamicTexture.frame_upload_benchmark", "[.benchmark]")
 						<< " frame_p95_ms=" << (frameTimes[SampleFrames * 95 / 100] / 1000000.0) << '\n';
 				}
 			}
+		}
+	}
+}
+
+namespace
+{
+	Array<Byte> ReadDynamicBytes(const DynamicTexture& texture)
+	{
+		const RenderTexture result{ texture.size(), texture.format() };
+		RenderTextureOps::Copy(texture, result);
+		Array<Byte> bytes(texture.format().packedDataSize(texture.size()));
+		REQUIRE(result.read(bytes));
+		return bytes;
+	}
+}
+
+TEST_CASE("DynamicTexture.raw_rows_formats_and_regions")
+{
+	const DynamicTextureDrawState state;
+	const Size size{ 7, 5 };
+	for (uint8 i = FromEnum(TexturePixelFormat::R8_Unorm); i <= FromEnum(TexturePixelFormat::R32G32B32A32_Float); ++i)
+	{
+		const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+		CAPTURE(format);
+		const size_t pixelBytes = format.pixelSize();
+		Array<Byte> first(pixelBytes), second(pixelBytes);
+		REQUIRE(RenderTexture{ Size{ 1, 1 }, ColorF{ 0.25, 0.5, 0.75, 1.0 }, format }.read(first));
+		REQUIRE(RenderTexture{ Size{ 1, 1 }, ColorF{ 0.75, 0.25, 0.5, 0.5 }, format }.read(second));
+		Array<Byte> expected(format.packedDataSize(size));
+		for (int32 y = 0; y < size.y; ++y)
+		{
+			for (int32 x = 0; x < size.x; ++x)
+			{
+				const auto& pixel = ((x + 2 * y) % 3) ? first : second;
+				std::memcpy(expected.data() + (y * size.x + x) * pixelBytes, pixel.data(), pixelBytes);
+			}
+		}
+		DynamicTexture texture{ size, format };
+		REQUIRE(texture);
+		const auto id = texture.id();
+		const uint32 rowBytes = static_cast<uint32>(format.packedRowBytes(size.x));
+		for (const uint32 padding : { 0u, 1u, 13u })
+		{
+			const uint32 pitch = (rowBytes + padding);
+			// The span starts at an unaligned address and ends at the final pixel, without tail padding.
+			Array<Byte> storage(3 + (size.y - 1) * pitch + rowBytes, Byte{ 0xCD });
+			const std::span<Byte> data{ storage.data() + 3, storage.size() - 3 };
+			for (int32 y = 0; y < size.y; ++y)
+			{
+				std::memcpy(data.data() + y * pitch, expected.data() + y * rowBytes, rowBytes);
+			}
+			REQUIRE(texture.fill(data, pitch));
+			CHECK(ReadDynamicBytes(texture) == expected);
+			REQUIRE(texture.fillIfNotBusy(data, pitch));
+			CHECK(ReadDynamicBytes(texture) == expected);
+			CHECK(texture.id() == id);
+		}
+		const Rect rect{ 2, 1, 3, 3 };
+		const uint32 regionBytes = static_cast<uint32>(format.packedRowBytes(rect.w));
+		const uint32 pitch = (regionBytes + 11);
+		Array<Byte> region((rect.h - 1) * pitch + regionBytes, Byte{ 0xEF });
+		for (int32 y = 0; y < rect.h; ++y)
+		{
+			for (int32 x = 0; x < rect.w; ++x)
+			{
+				const auto& pixel = ((x + y) % 2) ? second : first;
+				std::memcpy(region.data() + y * pitch + x * pixelBytes, pixel.data(), pixelBytes);
+				std::memcpy(expected.data() + ((rect.y + y) * size.x + rect.x + x) * pixelBytes, pixel.data(), pixelBytes);
+			}
+		}
+		REQUIRE(texture.fillRegion(region, pitch, rect));
+		CHECK(ReadDynamicBytes(texture) == expected);
+		REQUIRE(texture.fillRegionIfNotBusy(region, pitch, rect));
+		CHECK(ReadDynamicBytes(texture) == expected);
+		// A single row only needs its pixels, even when the stated row pitch is large.
+		REQUIRE(texture.fillRegion(first, 1000, Rect{ 0, 0, 1, 1 }));
+		std::memcpy(expected.data(), first.data(), pixelBytes);
+		CHECK(ReadDynamicBytes(texture) == expected);
+	}
+}
+
+TEST_CASE("DynamicTexture.raw_invalid_inputs_preserve_contents")
+{
+	const DynamicTextureDrawState state;
+	DynamicTexture texture{ Size{ 3, 2 }, Palette::Blue };
+	const Array<Byte> expected = ReadDynamicBytes(texture);
+	Array<Byte> storage(32, Byte{ 0xFF });
+	const std::span<const Byte> data{ storage };
+	for (const bool wait : { true, false })
+	{
+		const auto fill = [&](const std::span<const Byte> src, const uint32 pitch)
+		{
+			return wait ? texture.fill(src, pitch) : texture.fillIfNotBusy(src, pitch);
+		};
+		CHECK_FALSE(fill({}, 12));
+		CHECK_FALSE(fill(data.first(23), 12));
+		CHECK_FALSE(fill(data, 11));
+		CHECK_FALSE(fill(data, 0));
+		CHECK_FALSE(fill(data, std::numeric_limits<uint32>::max()));
+		for (const Rect rect : { Rect{ -1, 0, 1, 1 }, Rect{ 0, -1, 1, 1 }, Rect{ 2, 0, 2, 1 }, Rect{ 0, 1, 1, 2 }, Rect{ 0, 0, 0, 1 }, Rect{ 0, 0, 1, -1 }, Rect{ std::numeric_limits<int32>::max(), 0, 2, 1 } })
+		{
+			CHECK_FALSE((wait ? texture.fillRegion(data, 12, rect) : texture.fillRegionIfNotBusy(data, 12, rect)));
+		}
+		CHECK_FALSE((wait ? texture.fillRegion(data.first(7), 4, Rect{ 0, 0, 1, 2 }) : texture.fillRegionIfNotBusy(data.first(7), 4, Rect{ 0, 0, 1, 2 })));
+		CHECK_FALSE((wait ? texture.fillRegion(data, 3, Rect{ 0, 0, 1, 1 }) : texture.fillRegionIfNotBusy(data, 3, Rect{ 0, 0, 1, 1 })));
+		CHECK(ReadDynamicBytes(texture) == expected);
+	}
+	DynamicTexture empty;
+	CHECK_FALSE(empty.fill(data, 12));
+	CHECK_FALSE(empty.fillIfNotBusy(data, 12));
+	CHECK_FALSE(empty.fillRegion(data, 12, Rect{ 3, 2 }));
+	CHECK_FALSE(empty.fillRegionIfNotBusy(data, 12, Rect{ 3, 2 }));
+	CHECK(empty.isEmpty());
+	REQUIRE(empty.fill(Image{ 3, 2, Palette::Blue }));
+	CHECK(ReadDynamicBytes(empty) == expected);
+	DynamicTexture typed;
+	REQUIRE(typed.fillIfNotBusy(Grid<float>{ 3, 2, 0.5f }));
+	CHECK(typed.format() == TextureFormat::R32_Float);
+	CHECK(typed.size() == Size{ 3, 2 });
+}
+
+TEST_CASE("DynamicTexture.raw_source_lifetime_order_and_mips")
+{
+	// The guide example includes padding between rows, but none after the final row.
+	DynamicTexture r8{ Size{ 3, 2 }, TextureFormat::R8_Unorm };
+	const std::array<uint8, 8> source{ 0, 64, 128, 0xCC, 0xCC, 255, 128, 64 };
+	REQUIRE(r8.fill(std::as_bytes(std::span{ source }), 5));
+	const Array<Byte> expected{ Byte{ 0 }, Byte{ 64 }, Byte{ 128 }, Byte{ 255 }, Byte{ 128 }, Byte{ 64 } };
+	CHECK(ReadDynamicBytes(r8) == expected);
+
+	const DynamicTextureDrawState state;
+	const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
+	const ScopedRenderStates2D states{ BlendState::Opaque, SamplerState::ClampNearest };
+	DynamicTexture texture{ Image{ 4, 4, Palette::Blue }, TextureDesc::Mipmap };
+	const RenderTexture output{ Size{ 6, 2 } };
+	{
+		const ScopedRenderTarget2D target{ output };
+		const ScopedViewport2D viewport{ Rect{ output.size() } };
+		texture.resized(2, 2).draw(0, 0);
+		Graphics2D::Flush();
+		{
+			Image temporary{ 4, 4, Palette::Red };
+			REQUIRE(texture.fill(std::as_bytes(std::span{ temporary }), temporary.bytesPerRow()));
+			temporary.fill(Palette::Green);
+		}
+		// The old mip remains blue until explicit generation.
+		texture.resized(2, 2).draw(2, 0);
+		Graphics2D::Flush();
+		texture.generateMips();
+		texture.resized(2, 2).draw(4, 0);
+	}
+	Image actual;
+	REQUIRE(output.readAsImage(actual));
+	for (int32 y = 0; y < 2; ++y)
+	{
+		for (int32 x = 0; x < 6; ++x)
+		{
+			CHECK(actual[y][x] == (x < 4 ? Palette::Blue : Palette::Red));
 		}
 	}
 }
