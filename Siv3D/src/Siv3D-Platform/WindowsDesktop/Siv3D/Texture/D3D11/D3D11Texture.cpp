@@ -595,13 +595,7 @@ namespace s3d
 				return false;
 			}
 
-			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-
-			for (int32 y = 0; y < m_desc.size.y; ++y)
-			{
-				FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
-				pDstRow += mapped.RowPitch;
-			}
+			FillWithColor(mapped.pData, m_desc.size, mapped.RowPitch, color, m_desc.format);
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -699,13 +693,7 @@ namespace s3d
 			return false;
 		}
 
-		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-
-		for (int32 y = 0; y < rect.h; ++y)
-		{
-			FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
-			pDstRow += mapped.RowPitch;
-		}
+		FillWithColor(mapped.pData, rect.size, mapped.RowPitch, color, m_desc.format);
 
 		context->Unmap(m_stagingTexture.Get(), 0);
 

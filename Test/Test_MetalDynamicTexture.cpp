@@ -43,13 +43,29 @@ namespace s3d
 		}
 	}
 
+	TEST_CASE("DynamicTexture.Metal.initial_upload_allocation_failure")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		Siv3DDynamicTextureTestQueue* proxy = [[Siv3DDynamicTextureTestQueue alloc] init];
+		proxy.fail = YES;
+		const Image image{ 4, 4, Palette::Blue };
+		for (const auto desc : { TextureDesc::NoMipmap, TextureDesc::Mipmap })
+		{
+			const MetalTexture texture{ MetalTexture::Dynamic{}, renderer->getDevice(), (__bridge MTL::CommandQueue*)proxy,
+				image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm, desc };
+			CHECK_FALSE(texture.isInitialized());
+		}
+		CHECK(proxy.requests == 2);
+	}
+
 	TEST_CASE("DynamicTexture.Metal.continuation_allocation_failure_and_standalone_updates")
 	{
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		auto* queue = renderer->getCommandQueue();
 		const Image blue{ 4, 4, Palette::Blue };
-		MetalTexture texture{ MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, renderer->getDevice(), queue,
+		MetalTexture texture{ MetalTexture::Dynamic{}, renderer->getDevice(), queue,
 			blue.size(), std::as_bytes(std::span{ blue }), TextureFormat::R8G8B8A8_Unorm, TextureDesc::NoMipmap };
 		REQUIRE(texture.isInitialized());
 		Siv3DDynamicTextureTestQueue* proxy = [[Siv3DDynamicTextureTestQueue alloc] init];
@@ -88,7 +104,7 @@ namespace s3d
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		auto* queue = renderer->getCommandQueue();
 		const Image blue{ 4, 4, Palette::Blue };
-		MetalTexture texture{ MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, renderer->getDevice(), queue,
+		MetalTexture texture{ MetalTexture::Dynamic{}, renderer->getDevice(), queue,
 			blue.size(), std::as_bytes(std::span{ blue }), TextureFormat::R8G8B8A8_Unorm, TextureDesc::NoMipmap };
 		REQUIRE(texture.isInitialized());
 		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
@@ -285,9 +301,10 @@ namespace s3d
 		REQUIRE(System::Update());
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		auto& frame = renderer->getFrameContext();
-		constexpr int32 Batches = 7;
+		constexpr std::array Modes{ "typed", "typed-if-not-busy", "raw", "color", "color-if-not-busy",
+			"color-region", "color-region-if-not-busy", "typed-region", "raw-region" };
+		constexpr int32 Batches = static_cast<int32>(Modes.size());
 		constexpr int32 Repetitions = 24;
-		constexpr std::array<const char*, 7> Modes{ "typed", "typed-if-not-busy", "raw", "color", "color-if-not-busy", "color-region", "color-region-if-not-busy" };
 		const Color color{ 32, 128, 224, 255 };
 		const ColorF colorF{ color };
 		const auto measure = [&](const auto& source, const char* formatName)
@@ -312,18 +329,20 @@ namespace s3d
 				case 3: return texture.fill(colorF);
 				case 4: return texture.fillIfNotBusy(colorF);
 				case 5: return texture.fillRegion(colorF, Rect{ size });
-				default: return texture.fillRegionIfNotBusy(colorF, Rect{ size });
+				case 6: return texture.fillRegionIfNotBusy(colorF, Rect{ size });
+				case 7: return texture.fillRegion(source, Rect{ size });
+				default: return texture.fillRegion(packed, source.bytesPerRow(), Rect{ size });
 				}
 			};
 			for (int32 batch = 0; batch < Batches; ++batch)
 			{
 				const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 				REQUIRE(System::Update());
-				FillWithColor(heap.data(), heap.size(), colorF, texture.format());
+				FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, texture.format());
 				for (int32 i = 0; i < Repetitions; ++i)
 				{
 					const int64 start = Time::GetNanosec();
-					FillWithColor(heap.data(), heap.size(), colorF, texture.format());
+					FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, texture.format());
 					std::atomic_signal_fence(std::memory_order_seq_cst);
 					heapTimes.push_back((Time::GetNanosec() - start) / 1000.0);
 				}

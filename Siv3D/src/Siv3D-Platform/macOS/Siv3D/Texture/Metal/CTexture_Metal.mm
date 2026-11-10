@@ -191,17 +191,8 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 		
-		std::unique_ptr<MetalTexture> texture;
-		
-		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, data, format, desc);
-		}
-		else
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, data, format, desc);
-		}
-		
+		auto texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, m_device, m_commandQueue, size, data, format, desc);
+
 		if (not texture->isInitialized())
 		{
 			return Texture::IDType::Null();

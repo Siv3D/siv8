@@ -31,10 +31,10 @@ namespace s3d
 	[[nodiscard]]
 	bool ReadRenderTexture(const Texture& texture, std::span<Byte> destination, uint32 mipLevel);
 
-	// Typed readback follows the public format mapping, not just sizeof(Pixel).
+	// Typed texture transfers follow the public format mapping, not just sizeof(Pixel).
 	template <class Pixel>
 	[[nodiscard]]
-	constexpr bool IsRenderTextureReadCompatible(const TexturePixelFormat format) noexcept
+	constexpr bool IsTexturePixelCompatible(const TexturePixelFormat format) noexcept
 	{
 		if constexpr (std::is_same_v<Pixel, uint8>)
 		{
@@ -90,7 +90,7 @@ namespace s3d
 		}
 		else
 		{
-			static_assert(sizeof(Pixel) == 0, "Unsupported render texture readback type");
+			static_assert(sizeof(Pixel) == 0, "Unsupported texture pixel type");
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace s3d
 	{
 		using Pixel = std::ranges::range_value_t<Container>;
 		const Size size = texture.mipSize(mipLevel);
-		if ((size.x == 0) || (size.y == 0) || not IsRenderTextureReadCompatible<Pixel>(texture.format().value()))
+		if ((size.x == 0) || (size.y == 0) || not IsTexturePixelCompatible<Pixel>(texture.format().value()))
 		{
 			image.clear();
 			return false;
@@ -116,7 +116,8 @@ namespace s3d
 	[[nodiscard]]
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format);
 
-	void FillWithColor(void* const pDst, size_t bufferSizeBytes, const ColorF& color, const TextureFormat& format);
+	// Writes only the pixels in each row. The caller supplies sufficient storage and row pitch.
+	void FillWithColor(void* pDst, const Size& size, uint32 dstBytesPerRow, const ColorF& color, const TextureFormat& format);
 	
 	// Returns 0 for invalid upload data. Validate before allocating/waiting for upload storage.
 	[[nodiscard]]

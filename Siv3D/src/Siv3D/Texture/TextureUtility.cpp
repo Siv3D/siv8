@@ -18,59 +18,26 @@ namespace s3d
 {
 	namespace
 	{
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const uint8 value)
-		{
-			uint8* const pDst = static_cast<uint8*>(pBytes);
-			uint8* const pEnd = (pDst + bufferSizeBytes);
-			std::fill(pDst, pEnd, value);
-		}
+		constexpr size_t ColorBlockBytes = 64;
 
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const uint16 value)
+		template <class Pixel>
+		void FillColorRow(Byte* dst, size_t bytes, const Pixel* const block)
 		{
-			const size_t count = (bufferSizeBytes / sizeof(uint16));
-			uint16* const pDst = static_cast<uint16*>(pBytes);
-			uint16* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
-		}
-
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const uint32 value)
-		{
-			const size_t count = (bufferSizeBytes / sizeof(uint32));
-			uint32* const pDst = static_cast<uint32*>(pBytes);
-			uint32* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
-		}
-
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const float value)
-		{
-			const size_t count = (bufferSizeBytes / sizeof(float));
-			float* const pDst = static_cast<float*>(pBytes);
-			float* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
-		}
-
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const uint64 value)
-		{
-			const size_t count = (bufferSizeBytes / sizeof(uint64));
-			uint64* const pDst = static_cast<uint64*>(pBytes);
-			uint64* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
-		}
-
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const Float2 value)
-		{
-			const size_t count = (bufferSizeBytes / sizeof(Float2));
-			Float2* const pDst = static_cast<Float2*>(pBytes);
-			Float2* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
-		}
-
-		void Fill(void* pBytes, const size_t bufferSizeBytes, const Float4 value)
-		{
-			const size_t count = (bufferSizeBytes / sizeof(Float4));
-			Float4* const pDst = static_cast<Float4*>(pBytes);
-			Float4* const pEnd = (pDst + count);
-			std::fill(pDst, pEnd, value);
+			if constexpr (std::is_same_v<Pixel, uint8>)
+			{
+				std::memset(dst, *block, bytes);
+				return;
+			}
+			while (ColorBlockBytes <= bytes)
+			{
+				std::memcpy(dst, block, ColorBlockBytes);
+				dst += ColorBlockBytes;
+				bytes -= ColorBlockBytes;
+			}
+			if (bytes)
+			{
+				std::memcpy(dst, block, bytes);
+			}
 		}
 	}
 
@@ -107,158 +74,96 @@ namespace s3d
 			return{};
 		}
 
-		// 1 行のバイト数
-		const size_t bytesPerRow = format.bytesPerRow(size.x);
-
-		// 全体のバイト数
-		const size_t bufferSizeBytes = (bytesPerRow * size.y);
-
-		Array<Byte> bytes(bufferSizeBytes);
-		
-		void* pBytes = static_cast<void*>(bytes.data());
-
-		switch (format.value())
-		{
-		case TexturePixelFormat::R8_Unorm:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR8_Unorm());
-				break;
-			}
-		case TexturePixelFormat::R8G8_Unorm:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR8G8_Unorm());
-				break;
-			}
-		case TexturePixelFormat::R16_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR16_Float().getBits());
-				break;
-			}
-		case TexturePixelFormat::R8G8B8A8_Unorm:
-		case TexturePixelFormat::R8G8B8A8_Unorm_SRGB:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR8G8B8A8_Unorm().asUint32());
-				break;
-			}
-		case TexturePixelFormat::R16G16_Unorm:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR16G16_Unorm());
-				break;
-			}
-		case TexturePixelFormat::R16G16_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR16G16_Float());
-				break;
-			}
-		case TexturePixelFormat::R32_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR32_Float());
-				break;
-			}
-		case TexturePixelFormat::R10G10B10A2_Unorm:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR10G10B10A2_Unorm());
-				break;
-			}
-		case TexturePixelFormat::R11G11B10_UFloat:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR11G11B10_UFloat());
-				break;
-			}
-		case TexturePixelFormat::R16G16B16A16_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR16G16B16A16_Float());
-				break;
-			}
-		case TexturePixelFormat::R32G32_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR32G32_Float());
-				break;
-			}
-		case TexturePixelFormat::R32G32B32A32_Float:
-			{
-				Fill(pBytes, bufferSizeBytes, color.toR32G32B32A32_Float());
-				break;
-			}
-		case TexturePixelFormat::Unknown:
-		case TexturePixelFormat::BC1_RGBA_Unorm:
-		case TexturePixelFormat::BC1_RGBA_Unorm_SRGB:
-		case TexturePixelFormat::BC3_RGBA_Unorm:
-		case TexturePixelFormat::BC3_RGBA_Unorm_SRGB:
-		case TexturePixelFormat::BC4_R_Unorm:
-		case TexturePixelFormat::BC5_RG_Unorm:
-		case TexturePixelFormat::BC7_RGBA_Unorm:
-		case TexturePixelFormat::BC7_RGBA_Unorm_SRGB:
-			// 単色のピクセル書き込みに対応しない形式
-			break;
-		}
+		const uint32 rowPitch = format.bytesPerRow(size.x);
+		Array<Byte> bytes(static_cast<size_t>(rowPitch) * size.y);
+		FillWithColor(bytes.data(), size, rowPitch, color, format);
 
 		return bytes;
 	}
 
-	void FillWithColor(void* const pDst, const size_t bufferSizeBytes, const ColorF& color, const TextureFormat& format)
+	void FillWithColor(void* const pDst, const Size& size, const uint32 dstBytesPerRow, const ColorF& color, const TextureFormat& format)
 	{
+		const auto fill = [&]<class Pixel>(const Pixel pixel)
+		{
+			// Build the repeated pattern in CPU memory; upload memory is write-only.
+			static_assert((ColorBlockBytes % sizeof(Pixel)) == 0);
+			std::array<Pixel, ColorBlockBytes / sizeof(Pixel)> block;
+			block.fill(pixel);
+
+			auto* const dst = static_cast<Byte*>(pDst);
+			const size_t rowBytes = (static_cast<size_t>(size.x) * sizeof(Pixel));
+			if (rowBytes == dstBytesPerRow)
+			{
+				FillColorRow(dst, (rowBytes * size.y), block.data());
+				return;
+			}
+			for (int32 y = 0; y < size.y; ++y)
+			{
+				FillColorRow(dst + static_cast<size_t>(y) * dstBytesPerRow, rowBytes, block.data());
+			}
+		};
+
 		switch (format.value())
 		{
 			case TexturePixelFormat::R8_Unorm:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR8_Unorm());
+				fill(color.toR8_Unorm());
 				break;
 			}
 			case TexturePixelFormat::R8G8_Unorm:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR8G8_Unorm());
+				fill(color.toR8G8_Unorm());
 				break;
 			}
 			case TexturePixelFormat::R16_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR16_Float().getBits());
+				fill(color.toR16_Float().getBits());
 				break;
 			}
 			case TexturePixelFormat::R8G8B8A8_Unorm:
 			case TexturePixelFormat::R8G8B8A8_Unorm_SRGB:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR8G8B8A8_Unorm().asUint32());
+				fill(color.toR8G8B8A8_Unorm().asUint32());
 				break;
 			}
 			case TexturePixelFormat::R16G16_Unorm:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR16G16_Unorm());
+				fill(color.toR16G16_Unorm());
 				break;
 			}
 			case TexturePixelFormat::R16G16_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR16G16_Float());
+				fill(color.toR16G16_Float());
 				break;
 			}
 			case TexturePixelFormat::R32_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR32_Float());
+				fill(color.toR32_Float());
 				break;
 			}
 			case TexturePixelFormat::R10G10B10A2_Unorm:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR10G10B10A2_Unorm());
+				fill(color.toR10G10B10A2_Unorm());
 				break;
 			}
 			case TexturePixelFormat::R11G11B10_UFloat:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR11G11B10_UFloat());
+				fill(color.toR11G11B10_UFloat());
 				break;
 			}
 			case TexturePixelFormat::R16G16B16A16_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR16G16B16A16_Float());
+				fill(color.toR16G16B16A16_Float());
 				break;
 			}
 			case TexturePixelFormat::R32G32_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR32G32_Float());
+				fill(color.toR32G32_Float());
 				break;
 			}
 			case TexturePixelFormat::R32G32B32A32_Float:
 			{
-				Fill(pDst, bufferSizeBytes, color.toR32G32B32A32_Float());
+				fill(color.toR32G32B32A32_Float());
 				break;
 			}
 			case TexturePixelFormat::Unknown:

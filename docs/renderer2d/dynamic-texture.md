@@ -15,7 +15,10 @@ path's alignment handling.
 
 `fillIfNotBusy(color)` and `fillRegionIfNotBusy(color, rect)` offer the same
 skip-when-busy choice as image and byte inputs. A busy result leaves the texture
-unchanged. Color filling uses the existing upload storage and conversion code.
+unchanged. Each successful color update converts the color once. Both backends
+write the repeated pixel value into the existing upload storage in blocks.
+Contiguous pixels are filled in one pass. With row padding, only the pixels
+of each row are written.
 
 When the destination is empty, whole-texture Image/Grid updates create it using
 the input's format and the default texture settings. Their return value reports whether
@@ -158,8 +161,9 @@ regression, but do not establish a speedup or zero overhead for typed updates.
 
 The `DynamicTexture.Metal.typed_and_color_upload_benchmark` compares typed,
 non-waiting typed, raw-byte, and whole/region color updates for RG8 and RGBA8 at
-the same two sizes. It rotates seven update paths across seven batches of 24
-samples and also measures color filling in ordinary CPU memory. GPU draining,
+the same two sizes. It also compares typed and raw region updates. Nine batches
+of 24 samples rotate the order of the nine paths. The benchmark also measures
+color filling in ordinary CPU memory. GPU draining,
 allocation, warm-up, and pixel verification remain outside the timed update.
 The non-waiting measurements use available upload storage; deterministic busy
 behavior is covered by correctness tests, without timing thresholds.
@@ -168,23 +172,21 @@ behavior is covered by correctness tests, without timing thresholds.
 CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=DynamicTexture.Metal.typed_and_color_upload_benchmark'
 ```
 
-A reference Apple M2 Release run, with validation disabled, measured the following
-full-HD CPU call times (median / p95, microseconds). These include submission and
-exclude GPU completion time.
+On an Apple M2, two Release runs of each build with validation disabled gave
+the following full-HD times. Each range spans the two run medians in
+microseconds. The public update includes CPU writes and submission, with GPU
+completion outside the timer.
 
-| Update path | RG8 | RGBA8 |
-|---|---:|---:|
-| Typed input | 88.04 / 101.13 | 155.54 / 175.04 |
-| Typed input, IfNotBusy | 85.17 / 99.50 | 154.92 / 205.25 |
-| Raw bytes | 84.46 / 96.04 | 154.88 / 182.13 |
-| Color | 616.79 / 700.21 | 615.21 / 692.96 |
-| Color, IfNotBusy | 615.58 / 705.67 | 615.33 / 693.00 |
-| Color region covering the texture | 615.13 / 735.96 | 614.71 / 675.92 |
-| Color region, IfNotBusy | 615.71 / 774.96 | 614.92 / 689.21 |
+| Operation | RG8 before | RG8 after | RGBA8 before | RGBA8 after |
+|---|---:|---:|---:|---:|
+| Whole color update | 619–775 | 83–91 | 614–681 | 137–226 |
+| Color fill in ordinary CPU memory | 595–764 | 61–81 | 592–603 | 121–243 |
 
-The RG8 typed path stays close to raw-byte transfer without a repacking step.
-At 63×31, update medians were 11.54–13.21 µs across both formats and all paths.
-Full-HD color filling in ordinary CPU memory measured 599.67 µs for RG8 and
-594.21 µs for RGBA8, so color generation itself accounts for much of the ready
-color-update cost in this run. IfNotBusy avoids a wait when storage is busy;
-a successful call still performs the same color filling and upload work.
+The full-HD color-update p95 ranged from 775–879 to 95–155 µs for RG8 and
+from 679–817 to 143–278 µs for RGBA8. At 63×31, color-update medians were
+11.1–12.0 µs after the change. Typed and raw region medians at that size
+differed by at most 0.3 µs in either build. In the separate raw-upload
+benchmark, packed full-HD transfers measured 171–172 µs before and 166–169 µs
+after. The typed/color benchmark showed more run-to-run variation for both
+typed and raw transfers. See the Windows validation item in
+[TODO.md](../../TODO.md) for D3D11 hardware coverage.

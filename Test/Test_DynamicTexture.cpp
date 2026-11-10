@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "../Siv3D/src/Siv3D/Texture/TextureUtility.hpp"
 # include <iostream>
 # include <limits>
 
@@ -486,6 +487,19 @@ TEST_CASE("DynamicTexture.typed_creation_reports_failure")
 			CHECK_FALSE(update(Container{}));
 			CHECK(texture.id() == id);
 			CHECK(ReadDynamicBytes(texture) == before);
+
+			// Exercise the existing-texture path for every typed overload.
+			REQUIRE(texture.fill(ColorF{ 0.0, 0.0 }));
+			auto expected = ReadDynamicBytes(texture);
+			const Rect corner{ source.width() - 1, source.height() - 1, 1, 1 };
+			const Container pixel{ corner.size, source[0][0] };
+			REQUIRE((nonWaiting ? texture.fillRegionIfNotBusy(pixel, corner) : texture.fillRegion(pixel, corner)));
+			const size_t pixelBytes = texture.format().pixelSize();
+			std::memcpy(expected.data() + expected.size() - pixelBytes, before.data(), pixelBytes);
+			CHECK(ReadDynamicBytes(texture) == expected);
+			REQUIRE(update(source));
+			CHECK(ReadDynamicBytes(texture) == before);
+			CHECK(texture.id() == id);
 		}
 	};
 	const Size size{ 3, 2 };
@@ -500,6 +514,71 @@ TEST_CASE("DynamicTexture.typed_creation_reports_failure")
 	checkCreation(Grid<std::array<HalfFloat, 4>>{ size, { HalfFloat{ 0.25f }, HalfFloat{ 0.5f }, HalfFloat{ 0.75f }, HalfFloat{ 1.0f } } });
 	checkCreation(Grid<Float2>{ size, Float2{ 0.25f, 0.5f } });
 	checkCreation(Grid<Float4>{ size, Float4{ 0.25f, 0.5f, 0.75f, 1.0f } });
+}
+
+TEST_CASE("DynamicTexture.color_upload_rows_and_padding")
+{
+	const auto check = [](const TextureFormat format, const auto redPixel)
+	{
+		CAPTURE(format);
+		constexpr int32 pixelBytes = sizeof(redPixel);
+		for (const int32 width : { 1, 64 / pixelBytes - 1, 64 / pixelBytes, 64 / pixelBytes + 1 })
+		{
+			const Size size{ width, 3 };
+			for (const uint32 padding : { 0u, 3u })
+			{
+				const uint32 pitch = (width * pixelBytes + padding);
+				Array<Byte> bytes(1 + pitch * size.y + 1, Byte{ 0xCD });
+				auto expected = bytes;
+				for (int32 y = 0; y < size.y; ++y)
+				{
+					for (int32 x = 0; x < width; ++x)
+					{
+						std::memcpy(expected.data() + 1 + y * pitch + x * pixelBytes, &redPixel, pixelBytes);
+					}
+				}
+				FillWithColor(bytes.data() + 1, size, pitch, Palette::Red, format);
+				CHECK(bytes == expected);
+			}
+		}
+	};
+	check(TextureFormat::R8_Unorm, uint8{ 255 });
+	check(TextureFormat::R8G8_Unorm, uint16{ 0x00FF });
+	check(TextureFormat::R16_Float, uint16{ 0x3C00 });
+	check(TextureFormat::R8G8B8A8_Unorm, Color{ 255, 0, 0, 255 });
+	check(TextureFormat::R8G8B8A8_Unorm_SRGB, Color{ 255, 0, 0, 255 });
+	check(TextureFormat::R16G16_Unorm, uint32{ 0x0000FFFF });
+	check(TextureFormat::R16G16_Float, uint32{ 0x00003C00 });
+	check(TextureFormat::R32_Float, 1.0f);
+	check(TextureFormat::R10G10B10A2_Unorm, uint32{ 0xC00003FF });
+	check(TextureFormat::R11G11B10_UFloat, uint32{ 0x000003C0 });
+	check(TextureFormat::R16G16B16A16_Float, uint64{ 0x3C00000000003C00 });
+	check(TextureFormat::R32G32_Float, Float2{ 1, 0 });
+	check(TextureFormat::R32G32B32A32_Float, Float4{ 1, 0, 0, 1 });
+}
+
+TEST_CASE("DynamicTexture.srgb_image_and_grid_updates")
+{
+	const Size size{ 3, 2 };
+	DynamicTexture texture{ size, TextureFormat::R8G8B8A8_Unorm_SRGB };
+	const Image green{ size, Palette::Green };
+	const Grid<Color> red{ size, Palette::Red };
+	const Rect rect{ 2, 1, 1, 1 };
+	const auto bytesOf = [](const auto& image)
+	{
+		const auto bytes = std::as_bytes(std::span{ image });
+		return Array<Byte>(bytes.begin(), bytes.end());
+	};
+	REQUIRE(texture.fill(green));
+	CHECK(ReadDynamicBytes(texture) == bytesOf(green));
+	REQUIRE(texture.fillIfNotBusy(red));
+	CHECK(ReadDynamicBytes(texture) == bytesOf(red));
+	auto expected = red;
+	expected[1][2] = Palette::Green;
+	REQUIRE(texture.fillRegionIfNotBusy(Image{ rect.size, Palette::Green }, rect));
+	CHECK(ReadDynamicBytes(texture) == bytesOf(expected));
+	REQUIRE(texture.fillRegion(Grid<Color>{ rect.size, Palette::Red }, rect));
+	CHECK(ReadDynamicBytes(texture) == bytesOf(red));
 }
 
 TEST_CASE("DynamicTexture.non_waiting_color_updates")

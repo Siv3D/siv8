@@ -834,8 +834,8 @@ namespace s3d
 
 	private:
 
-		bool fillRegionImpl(std::span<const Byte> src, const Size& srcSize, uint32 srcBytesPerRow,
-			const TextureFormat& expectedFormat, bool allowSRGB, const Rect& rect, bool wait);
+		[[nodiscard]]
+		static DynamicTexture CreateWithRowPadding(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 	protected:
 
