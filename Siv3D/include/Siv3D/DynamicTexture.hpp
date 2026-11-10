@@ -32,7 +32,7 @@ namespace s3d
 	/// fill() と fillRegion() は転送領域がビジーなら再利用可能になるまで待ちます。
 	/// fillIfNotBusy() と fillRegionIfNotBusy() はビジーなら待機・更新せず false を返します。
 	/// Image / Grid を受け取る全体更新は、空のテクスチャに対しては入力から既定の設定で作成を試みます。
-	/// この場合は作成の成否にかかわらず true を返すため、作成結果は isEmpty() で確認します。
+	/// 作成に失敗した場合は空のまま false を返します。
 	/// 色・生データによる全体更新とすべての領域更新は、空のテクスチャに対して false を返します。
 	/// @par 描画とミップマップ
 	/// 更新とミップ生成は保留中の 2D 描画を発行しません。以前の内容を使う描画は呼び出し前に Graphics2D::Flush() で発行します。
@@ -78,6 +78,12 @@ namespace s3d
 		/// @param desc ミップマップなどの設定
 		[[nodiscard]]
 		explicit DynamicTexture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		/// @brief `R8G8_Unorm` 形式の動的テクスチャを作成します。
+		/// @param image 1 要素を 1 ピクセルとする初期データ
+		/// @param desc ミップマップなどの設定
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<uint16>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		/// @brief `R16_Float` 形式の動的テクスチャを作成します。
 		/// @param image 1 要素を 1 ピクセルとする初期データ
@@ -150,43 +156,49 @@ namespace s3d
 
 		/// @brief `R8G8B8A8_Unorm` / `R8G8B8A8_Unorm_SRGB` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Image& image);
 
 		/// @brief `R8_Unorm` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<uint8>& image);
 
+		/// @brief `R8G8_Unorm` 形式のテクスチャ全体を更新します。
+		/// @param image 既存のテクスチャと同サイズの入力データ
+		/// @return 更新または作成に成功した場合 true, それ以外は false
+		/// @see @ref dynamic_texture_update_contract
+		bool fill(const Grid<uint16>& image);
+
 		/// @brief `R16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<HalfFloat>& image);
 
 		/// @brief `R16G16_Unorm` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<std::pair<uint16, uint16>>& image);
 
 		/// @brief `R16G16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<std::pair<HalfFloat, HalfFloat>>& image);
 
 		/// @brief `R8G8B8A8_Unorm` / `R8G8B8A8_Unorm_SRGB` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<Color>& image);
 
 		/// @brief `R32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<float>& image);
 
@@ -194,19 +206,19 @@ namespace s3d
 
 		/// @brief `R16G16B16A16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<std::array<HalfFloat, 4>>& image);
 
 		/// @brief `R32G32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<Float2>& image);
 
 		/// @brief `R32G32B32A32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<Float4>& image);
 
@@ -244,6 +256,13 @@ namespace s3d
 		/// @return 成功なら true。空のテクスチャ、サイズ・形式の不一致、不正な領域、転送失敗では false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillRegion(const Grid<uint8>& image, const Rect& rect);
+
+		/// @brief `R8G8_Unorm` 形式のテクスチャの指定領域を更新します。
+		/// @param image rect.size と同サイズの入力データ
+		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
+		/// @return 成功なら true。空のテクスチャ、サイズ・形式の不一致、不正な領域、転送失敗では false
+		/// @see @ref dynamic_texture_update_contract
+		bool fillRegion(const Grid<uint16>& image, const Rect& rect);
 
 		/// @brief `R16_Float` 形式のテクスチャの指定領域を更新します。
 		/// @param image rect.size と同サイズの入力データ
@@ -307,9 +326,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ビジーでなければ、テクスチャ全体を指定した色で更新します。
+		/// @param color 塗りつぶしの色
+		/// @return 成功なら true。ビジー状態、空のテクスチャ、転送失敗では false
+		/// @see @ref dynamic_texture_update_contract
+		bool fillIfNotBusy(const ColorF& color);
+
 		/// @brief ビジーでなければ、`R8G8B8A8_Unorm` / `R8G8B8A8_Unorm_SRGB` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Image& image);
 
@@ -322,55 +347,61 @@ namespace s3d
 
 		/// @brief ビジーでなければ、`R8_Unorm` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<uint8>& image);
 
+		/// @brief ビジーでなければ、`R8G8_Unorm` 形式のテクスチャ全体を更新します。
+		/// @param image 既存のテクスチャと同サイズの入力データ
+		/// @return 更新または作成に成功した場合 true, それ以外は false
+		/// @see @ref dynamic_texture_update_contract
+		bool fillIfNotBusy(const Grid<uint16>& image);
+
 		/// @brief ビジーでなければ、`R16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<HalfFloat>& image);
 
 		/// @brief ビジーでなければ、`R16G16_Unorm` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<std::pair<uint16, uint16>>& image);
 
 		/// @brief ビジーでなければ、`R16G16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<std::pair<HalfFloat, HalfFloat>>& image);
 
 		/// @brief ビジーでなければ、`R8G8B8A8_Unorm` / `R8G8B8A8_Unorm_SRGB` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<Color>& image);
 
 		/// @brief ビジーでなければ、`R32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<float>& image);
 
 		/// @brief ビジーでなければ、`R16G16B16A16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<std::array<HalfFloat, 4>>& image);
 
 		/// @brief ビジーでなければ、`R32G32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<Float2>& image);
 
 		/// @brief ビジーでなければ、`R32G32B32A32_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
-		/// @return 更新成功時、または空のテクスチャに作成を試みた場合は true。それ以外は false
+		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<Float4>& image);
 
@@ -379,6 +410,13 @@ namespace s3d
 		//	fillRegionIfNotBusy
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief ビジーでなければ、テクスチャの指定領域を指定した色で更新します。
+		/// @param color 塗りつぶしの色
+		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
+		/// @return 成功なら true。ビジー状態、空のテクスチャ、不正な領域、転送失敗では false
+		/// @see @ref dynamic_texture_update_contract
+		bool fillRegionIfNotBusy(const ColorF& color, const Rect& rect);
 
 		/// @brief ビジーでなければ、`R8G8B8A8_Unorm` / `R8G8B8A8_Unorm_SRGB` 形式のテクスチャの指定領域を更新します。
 		/// @param image rect.size と同サイズの入力データ
@@ -401,6 +439,13 @@ namespace s3d
 		/// @return 成功なら true。ビジー状態、空のテクスチャ、サイズ・形式の不一致、不正な領域、転送失敗では false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillRegionIfNotBusy(const Grid<uint8>& image, const Rect& rect);
+
+		/// @brief ビジーでなければ、`R8G8_Unorm` 形式のテクスチャの指定領域を更新します。
+		/// @param image rect.size と同サイズの入力データ
+		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
+		/// @return 成功なら true。ビジー状態、空のテクスチャ、サイズ・形式の不一致、不正な領域、転送失敗では false
+		/// @see @ref dynamic_texture_update_contract
+		bool fillRegionIfNotBusy(const Grid<uint16>& image, const Rect& rect);
 
 		/// @brief ビジーでなければ、`R16_Float` 形式のテクスチャの指定領域を更新します。
 		/// @param image rect.size と同サイズの入力データ

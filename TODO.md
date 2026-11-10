@@ -23,7 +23,7 @@
 
 ## RenderTexture / DepthTexture
 
-- [テクスチャのサイズ問い合わせ](docs/renderer2d/render-texture.md)と [DynamicTexture の生データ更新](docs/renderer2d/dynamic-texture.md)を Windows 実機で検証する。共通テスト、BCn ミップ描画、行ピッチと末尾パディング、非待機更新、D3D11 の実アップロード性能を確認する。
+- [テクスチャのサイズ問い合わせ](docs/renderer2d/render-texture.md)と [DynamicTexture の生データ更新](docs/renderer2d/dynamic-texture.md)を Windows 実機で検証する。共通テスト、BCn ミップ描画、行ピッチと末尾パディング、色指定と RG8 の非待機更新、作成失敗時の戻り値、D3D11 の実アップロード性能を確認する。
 
 ### RT 画像処理の追加候補
 

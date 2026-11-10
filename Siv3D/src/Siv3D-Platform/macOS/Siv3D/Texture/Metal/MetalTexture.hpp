@@ -111,7 +111,7 @@ namespace s3d
 
 		bool fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
-		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect);
+		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect, bool wait);
 
 		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
 

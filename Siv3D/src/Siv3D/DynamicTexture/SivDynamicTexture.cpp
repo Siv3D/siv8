@@ -53,6 +53,9 @@ namespace s3d
 	DynamicTexture::DynamicTexture(const Grid<uint8>& image, const TextureDesc desc)
 		: DynamicTexture{ CreateR8_Unorm(image, desc) } {}
 
+	DynamicTexture::DynamicTexture(const Grid<uint16>& image, const TextureDesc desc)
+		: DynamicTexture{ CreateR8G8_Unorm(image, desc) } {}
+
 	DynamicTexture::DynamicTexture(const Grid<HalfFloat>& image, const TextureDesc desc)
 		: DynamicTexture{ CreateR16_Float(image, desc) } {}
 
@@ -110,7 +113,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 		
 		if (image.size() != size())
@@ -134,7 +137,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -153,12 +156,36 @@ namespace s3d
 		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
+	bool DynamicTexture::fill(const Grid<uint16>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return (not isEmpty());
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R8G8_Unorm)
+		{
+			return false;
+		}
+
+		return fill(std::as_bytes(std::span{ image }), image.bytesPerRow());
+	}
+
 	bool DynamicTexture::fill(const Grid<HalfFloat>& image)
 	{
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -182,7 +209,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -208,7 +235,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -234,7 +261,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -258,7 +285,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -282,7 +309,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -306,7 +333,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -330,7 +357,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -362,7 +389,7 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), color, rect);
+		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), color, rect, true);
 	}
 
 	bool DynamicTexture::fillRegion(const std::span<const Byte> data, const uint32 sourceRowPitch, const Rect& rect)
@@ -384,6 +411,12 @@ namespace s3d
 	{
 		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
 			TextureFormat::R8_Unorm, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<uint16>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8_Unorm, false, rect, true);
 	}
 
 	bool DynamicTexture::fillRegion(const Grid<HalfFloat>& image, const Rect& rect)
@@ -444,6 +477,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool DynamicTexture::fillIfNotBusy(const ColorF& color)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), color, false);
+	}
+
 	bool DynamicTexture::fillIfNotBusy(const std::span<const Byte> data, const uint32 sourceRowPitch)
 	{
 		if (isEmpty())
@@ -458,7 +501,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -482,7 +525,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -501,12 +544,36 @@ namespace s3d
 		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
 	}
 
+	bool DynamicTexture::fillIfNotBusy(const Grid<uint16>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return (not isEmpty());
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R8G8_Unorm)
+		{
+			return false;
+		}
+
+		return fillIfNotBusy(std::as_bytes(std::span{ image }), image.bytesPerRow());
+	}
+
 	bool DynamicTexture::fillIfNotBusy(const Grid<HalfFloat>& image)
 	{
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -530,7 +597,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -556,7 +623,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -582,7 +649,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -606,7 +673,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -630,7 +697,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -654,7 +721,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -678,7 +745,7 @@ namespace s3d
 		if (isEmpty())
 		{
 			*this = DynamicTexture{ image };
-			return true;
+			return (not isEmpty());
 		}
 
 		if (image.size() != size())
@@ -703,6 +770,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool DynamicTexture::fillRegionIfNotBusy(const ColorF& color, const Rect& rect)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), color, rect, false);
+	}
+
 	bool DynamicTexture::fillRegionIfNotBusy(const std::span<const Byte> data, const uint32 sourceRowPitch, const Rect& rect)
 	{
 		if (isEmpty())
@@ -722,6 +799,12 @@ namespace s3d
 	{
 		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
 			TextureFormat::R8_Unorm, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<uint16>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8_Unorm, false, rect, false);
 	}
 
 	bool DynamicTexture::fillRegionIfNotBusy(const Grid<HalfFloat>& image, const Rect& rect)

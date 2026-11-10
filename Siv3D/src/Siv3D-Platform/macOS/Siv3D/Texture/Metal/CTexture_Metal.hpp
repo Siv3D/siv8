@@ -86,7 +86,7 @@ namespace s3d
 
 		bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) override;
 
-		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) override;
+		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect, bool wait) override;
 
 		bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) override;
 

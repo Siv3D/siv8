@@ -690,10 +690,10 @@ namespace s3d
 		return uploadRegion(commandQueue, frame, bytesPerRow, Rect{ m_desc.size });
 	}
 
-	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect)
+	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect, const bool wait)
 	{
 		if ((not isValidRegion(rect))
-			|| (not prepareUpload(true)))
+			|| (not prepareUpload(wait)))
 		{
 			return false;
 		}

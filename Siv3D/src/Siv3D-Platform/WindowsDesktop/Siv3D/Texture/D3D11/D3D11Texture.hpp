@@ -72,7 +72,7 @@ namespace s3d
 
 		bool fill(ID3D11DeviceContext* context, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
-		bool fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect);
+		bool fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect, bool wait);
 
 		bool fillRegion(ID3D11DeviceContext* context, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
 

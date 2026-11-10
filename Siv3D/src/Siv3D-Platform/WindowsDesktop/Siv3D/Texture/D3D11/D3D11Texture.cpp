@@ -675,7 +675,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect)
+	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect, const bool wait)
 	{
 		if ((m_desc.type != TextureType::Dynamic)
 			|| (not IsValidRegion(m_desc.size, rect)))
@@ -685,8 +685,9 @@ namespace s3d
 
 		const uint32 bytesPerRow = (rect.w * m_desc.format.pixelSize());
 		D3D11_MAPPED_SUBRESOURCE mapped;
+		const UINT mapFlag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
 
-		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, 0, &mapped)))
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, mapFlag, &mapped)))
 		{
 			return false;
 		}

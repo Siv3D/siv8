@@ -75,7 +75,7 @@ namespace s3d
 		frame.cancel();
 		// Operations before/after an acquired frame still submit and track uploads.
 		REQUIRE(texture.fill(queue, frame, Palette::Green, true));
-		REQUIRE(texture.fillRegion(queue, frame, Palette::Blue, Rect{ 4, 4 }));
+		REQUIRE(texture.fillRegion(queue, frame, Palette::Blue, Rect{ 4, 4 }, true));
 		const auto barrier = NS::RetainPtr(queue->commandBuffer());
 		barrier->commit();
 		barrier->waitUntilCompleted();
@@ -103,6 +103,7 @@ namespace s3d
 		Siv3DDynamicTextureTestQueue* proxy = [[Siv3DDynamicTextureTestQueue alloc] init];
 		proxy.queue = (__bridge id<MTLCommandQueue>)queue;
 		CHECK_FALSE(texture.fill((__bridge MTL::CommandQueue*)proxy, frame, Palette::Green, false));
+		CHECK_FALSE(texture.fillRegion((__bridge MTL::CommandQueue*)proxy, frame, Palette::Green, Rect{ 1, 1, 2, 2 }, false));
 		const Image green{ 4, 4, Palette::Green };
 		std::array<Byte, 76> padded{};
 		FillWithImage(padded.data(), Size{ 4, 4 }, 20, std::as_bytes(std::span{ green }), 16, 16);
@@ -118,6 +119,41 @@ namespace s3d
 		REQUIRE(frame.flushAndWait(queue));
 		CheckPixels(texture, Palette::Green);
 	}
+
+	TEST_CASE("DynamicTexture.Metal.public_non_waiting_color_and_rg8_busy")
+	{
+		REQUIRE(System::Update());
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		auto& frame = renderer->getFrameContext();
+		const Grid<uint16> source{ Size{ 4, 4 }, uint16{ 0x1234 } };
+		const Grid<uint16> region{ Size{ 2, 2 }, uint16{ 0x5678 } };
+		DynamicTexture texture{ source };
+		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
+		REQUIRE(event);
+		const ScopeExit unblock{ [&] { event->setSignaledValue(1); } };
+		frame.getCommandBuffer()->encodeWait(event.get(), 1);
+		REQUIRE(texture.fill(Palette::Red));
+		const auto continuation = NS::RetainPtr(frame.getCommandBuffer());
+		CHECK_FALSE(texture.fillIfNotBusy(Palette::Green));
+		CHECK_FALSE(texture.fillRegionIfNotBusy(Palette::Green, Rect{ 1, 1, 2, 2 }));
+		CHECK_FALSE(texture.fillIfNotBusy(source));
+		CHECK_FALSE(texture.fillRegionIfNotBusy(region, Rect{ 1, 1, 2, 2 }));
+		CHECK(frame.getCommandBuffer() == continuation.get());
+		CHECK(continuation->status() == MTL::CommandBufferStatusNotEnqueued);
+		event->setSignaledValue(1);
+		REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
+		const RenderTexture result{ texture.size(), texture.format() };
+		RenderTextureOps::Copy(texture, result);
+		Grid<uint16> pixels;
+		REQUIRE(result.read(pixels));
+		CHECK(pixels == Grid<uint16>{ Size{ 4, 4 }, uint16{ 0x00FF } });
+		REQUIRE(texture.fillIfNotBusy(source));
+		RenderTextureOps::Copy(texture, result);
+		REQUIRE(result.read(pixels));
+		CHECK(pixels == source);
+	}
+
 	TEST_CASE("DynamicTexture.Metal.row_copy_preserves_padding")
 	{
 		const Size size{ 3, 2 };
@@ -238,6 +274,94 @@ namespace s3d
 				std::cout << "heap-row-copy " << size.x << 'x' << size.y << (layout ? " padded" : " packed")
 					<< " median_us=" << times[times.size() / 2] << " p95_us=" << times[times.size() * 95 / 100] << '\n';
 			}
+		}
+	}
+
+	TEST_CASE("DynamicTexture.Metal.typed_and_color_upload_benchmark", "[.benchmark]")
+	{
+		const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+		REQUIRE(qos);
+		const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
+		REQUIRE(System::Update());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		auto& frame = renderer->getFrameContext();
+		constexpr int32 Batches = 7;
+		constexpr int32 Repetitions = 24;
+		constexpr std::array<const char*, 7> Modes{ "typed", "typed-if-not-busy", "raw", "color", "color-if-not-busy", "color-region", "color-region-if-not-busy" };
+		const Color color{ 32, 128, 224, 255 };
+		const ColorF colorF{ color };
+		const auto measure = [&](const auto& source, const char* formatName)
+		{
+			const Size size = source.size();
+			const auto packed = std::as_bytes(std::span{ source });
+			DynamicTexture texture{ source };
+			const auto id = texture.id();
+			const RenderTexture output{ size, texture.format() };
+			Array<Byte> actual(packed.size()), heap(packed.size());
+			std::array<Array<double>, Modes.size()> timings;
+			Array<double> heapTimes;
+			for (auto& times : timings) { times.reserve(Batches * Repetitions); }
+			heapTimes.reserve(Batches * Repetitions);
+			const auto update = [&](const size_t mode)
+			{
+				switch (mode)
+				{
+				case 0: return texture.fill(source);
+				case 1: return texture.fillIfNotBusy(source);
+				case 2: return texture.fill(packed, source.bytesPerRow());
+				case 3: return texture.fill(colorF);
+				case 4: return texture.fillIfNotBusy(colorF);
+				case 5: return texture.fillRegion(colorF, Rect{ size });
+				default: return texture.fillRegionIfNotBusy(colorF, Rect{ size });
+				}
+			};
+			for (int32 batch = 0; batch < Batches; ++batch)
+			{
+				const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+				REQUIRE(System::Update());
+				FillWithColor(heap.data(), heap.size(), colorF, texture.format());
+				for (int32 i = 0; i < Repetitions; ++i)
+				{
+					const int64 start = Time::GetNanosec();
+					FillWithColor(heap.data(), heap.size(), colorF, texture.format());
+					std::atomic_signal_fence(std::memory_order_seq_cst);
+					heapTimes.push_back((Time::GetNanosec() - start) / 1000.0);
+				}
+				CHECK(std::memcmp(heap.data(), packed.data(), heap.size()) == 0);
+				for (size_t order = 0; order < Modes.size(); ++order)
+				{
+					const size_t mode = ((order + batch) % Modes.size());
+					REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
+					REQUIRE(update(mode));
+					for (int32 i = 0; i < Repetitions; ++i)
+					{
+						// Ready storage: measure CPU writes and submission, with the GPU wait outside timing.
+						REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
+						const int64 start = Time::GetNanosec();
+						const bool success = update(mode);
+						const int64 elapsed = (Time::GetNanosec() - start);
+						REQUIRE(success);
+						timings[mode].push_back(elapsed / 1000.0);
+					}
+					RenderTextureOps::Copy(texture, output);
+					REQUIRE(output.read(actual));
+					CHECK(std::memcmp(actual.data(), packed.data(), actual.size()) == 0);
+					CHECK(texture.id() == id);
+				}
+			}
+			const auto report = [&](Array<double>& times, const char* name)
+			{
+				times.sort();
+				std::cout << "typed-color-upload " << formatName << ' ' << size.x << 'x' << size.y << ' ' << name
+					<< " median_us=" << times[times.size() / 2] << " p95_us=" << times[times.size() * 95 / 100] << '\n';
+			};
+			for (size_t mode = 0; mode < Modes.size(); ++mode) { report(timings[mode], Modes[mode]); }
+			report(heapTimes, "heap-color");
+		};
+		for (const Size size : { Size{ 63, 31 }, Size{ 1920, 1080 } })
+		{
+			measure(Grid<uint16>{ size, colorF.toR8G8_Unorm() }, "RG8");
+			measure(Image{ size, color }, "RGBA8");
 		}
 	}
 

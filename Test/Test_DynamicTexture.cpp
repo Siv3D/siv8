@@ -406,3 +406,136 @@ TEST_CASE("DynamicTexture.raw_source_lifetime_order_and_mips")
 		}
 	}
 }
+
+TEST_CASE("DynamicTexture.R8G8_Unorm.typed_updates")
+{
+	for (const Size size : { Size{ 1, 1 }, Size{ 3, 5 }, Size{ 4, 2 }, Size{ 7, 5 } })
+	{
+		CAPTURE(size);
+		Grid<uint16> source(size);
+		for (int32 y = 0; y < size.y; ++y)
+		{
+			for (int32 x = 0; x < size.x; ++x)
+			{
+				source[y][x] = static_cast<uint16>((17 + x * 13) | ((31 + y * 19) << 8));
+			}
+		}
+		const auto checkPixels = [&](const DynamicTexture& texture, const Grid<uint16>& expected)
+		{
+			const auto bytes = ReadDynamicBytes(texture);
+			const auto data = std::as_bytes(std::span{ expected });
+			REQUIRE(bytes.size() == data.size());
+			CHECK(std::memcmp(bytes.data(), data.data(), bytes.size()) == 0);
+		};
+		DynamicTexture texture{ source, TextureDesc::Mipmap };
+		REQUIRE(texture);
+		CHECK(texture.format() == TextureFormat::R8G8_Unorm);
+		CHECK(texture.size() == size);
+		CHECK(texture.mipLevels() == ImageProcessing::CalculateMipmapLevel(size.x, size.y));
+		checkPixels(texture, source);
+		const auto id = texture.id();
+		for (const bool nonWaiting : { false, true })
+		{
+			const Grid<uint16> full{ size, uint16{ 0xA34B } };
+			REQUIRE((nonWaiting ? texture.fillIfNotBusy(full) : texture.fill(full)));
+			checkPixels(texture, full);
+			const Rect rect{ size.x - 1, size.y - 1, 1, 1 };
+			const Grid<uint16> region{ Size{ 1, 1 }, uint16{ 0x12E7 } };
+			REQUIRE((nonWaiting ? texture.fillRegionIfNotBusy(region, rect) : texture.fillRegion(region, rect)));
+			auto expected = full;
+			expected[rect.y][rect.x] = region[0][0];
+			checkPixels(texture, expected);
+			CHECK(texture.id() == id);
+			CHECK_FALSE((nonWaiting ? texture.fillIfNotBusy(Grid<uint16>{ Size{ size.x + 1, size.y } })
+				: texture.fill(Grid<uint16>{ Size{ size.x + 1, size.y } })));
+			CHECK_FALSE((nonWaiting ? texture.fillRegionIfNotBusy(region, Rect{ size.x, size.y, 1, 1 })
+				: texture.fillRegion(region, Rect{ size.x, size.y, 1, 1 })));
+			CHECK_FALSE((nonWaiting ? texture.fillRegionIfNotBusy(source, Rect{ size.x + 1, size.y })
+				: texture.fillRegion(source, Rect{ size.x + 1, size.y })));
+			checkPixels(texture, expected);
+		}
+		DynamicTexture wrongFormat{ size, Palette::Blue };
+		const auto original = ReadDynamicBytes(wrongFormat);
+		CHECK_FALSE(wrongFormat.fill(source));
+		CHECK_FALSE(wrongFormat.fillIfNotBusy(source));
+		CHECK_FALSE(wrongFormat.fillRegion(source, Rect{ size }));
+		CHECK_FALSE(wrongFormat.fillRegionIfNotBusy(source, Rect{ size }));
+		CHECK(ReadDynamicBytes(wrongFormat) == original);
+	}
+}
+
+TEST_CASE("DynamicTexture.typed_creation_reports_failure")
+{
+	const auto checkCreation = [](const auto& source)
+	{
+		using Container = std::decay_t<decltype(source)>;
+		for (const bool nonWaiting : { false, true })
+		{
+			DynamicTexture texture;
+			const auto update = [&](const Container& data)
+			{
+				return nonWaiting ? texture.fillIfNotBusy(data) : texture.fill(data);
+			};
+			CHECK_FALSE(update(Container{}));
+			CHECK(texture.isEmpty());
+			REQUIRE(update(source));
+			REQUIRE(texture);
+			CHECK(texture.size() == source.size());
+			const auto id = texture.id();
+			const auto before = ReadDynamicBytes(texture);
+			CHECK_FALSE(update(Container{}));
+			CHECK(texture.id() == id);
+			CHECK(ReadDynamicBytes(texture) == before);
+		}
+	};
+	const Size size{ 3, 2 };
+	checkCreation(Image{ size, Palette::Red });
+	checkCreation(Grid<uint8>{ size, uint8{ 64 } });
+	checkCreation(Grid<uint16>{ size, uint16{ 0xA34B } });
+	checkCreation(Grid<HalfFloat>{ size, HalfFloat{ 0.25f } });
+	checkCreation(Grid<Color>{ size, Palette::Red });
+	checkCreation(Grid<std::pair<uint16, uint16>>{ size, { 1234, 5678 } });
+	checkCreation(Grid<std::pair<HalfFloat, HalfFloat>>{ size, { HalfFloat{ 0.25f }, HalfFloat{ 0.5f } } });
+	checkCreation(Grid<float>{ size, 0.25f });
+	checkCreation(Grid<std::array<HalfFloat, 4>>{ size, { HalfFloat{ 0.25f }, HalfFloat{ 0.5f }, HalfFloat{ 0.75f }, HalfFloat{ 1.0f } } });
+	checkCreation(Grid<Float2>{ size, Float2{ 0.25f, 0.5f } });
+	checkCreation(Grid<Float4>{ size, Float4{ 0.25f, 0.5f, 0.75f, 1.0f } });
+}
+
+TEST_CASE("DynamicTexture.non_waiting_color_updates")
+{
+	const Size size{ 7, 5 };
+	const Rect region{ 2, 1, 3, 3 };
+	for (uint8 i = FromEnum(TexturePixelFormat::R8_Unorm); i <= FromEnum(TexturePixelFormat::R32G32B32A32_Float); ++i)
+	{
+		const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+		CAPTURE(format);
+		const DynamicTexture red{ size, Palette::Red, format };
+		DynamicTexture texture{ size, Palette::Blue, format };
+		const auto id = texture.id();
+		const auto redBytes = ReadDynamicBytes(red);
+		REQUIRE(texture.fillIfNotBusy(Palette::Red));
+		CHECK(ReadDynamicBytes(texture) == redBytes);
+		REQUIRE(texture.fillRegionIfNotBusy(Palette::Blue, region));
+		auto expected = redBytes;
+		const auto bluePixel = ReadDynamicBytes(DynamicTexture{ Size{ 1, 1 }, Palette::Blue, format });
+		for (int32 y = region.y; y < region.y + region.h; ++y)
+		{
+			for (int32 x = region.x; x < region.x + region.w; ++x)
+			{
+				std::memcpy(expected.data() + (y * size.x + x) * bluePixel.size(), bluePixel.data(), bluePixel.size());
+			}
+		}
+		CHECK(ReadDynamicBytes(texture) == expected);
+		CHECK(texture.id() == id);
+		for (const Rect invalid : { Rect{ -1, 0, 1, 1 }, Rect{ 0, 0, 0, 1 }, Rect{ 0, 0, 1, -1 }, Rect{ 6, 4, 2, 1 } })
+		{
+			CHECK_FALSE(texture.fillRegionIfNotBusy(Palette::Green, invalid));
+		}
+		CHECK(ReadDynamicBytes(texture) == expected);
+	}
+	DynamicTexture empty;
+	CHECK_FALSE(empty.fillIfNotBusy(Palette::Red));
+	CHECK_FALSE(empty.fillRegionIfNotBusy(Palette::Red, Rect{ 1, 1 }));
+	CHECK(empty.isEmpty());
+}

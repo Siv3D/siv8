@@ -542,9 +542,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
+	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect, const bool wait)
 	{
-		return m_textures[handleID]->fillRegion(m_context, color, rect);
+		return m_textures[handleID]->fillRegion(m_context, color, rect, wait);
 	}
 
 	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)

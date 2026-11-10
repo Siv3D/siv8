@@ -571,9 +571,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
+	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect, const bool wait)
 	{
-		return m_textures[handleID]->fillRegion(m_commandQueue, m_pRenderer->getFrameContext(), color, rect);
+		return m_textures[handleID]->fillRegion(m_commandQueue, m_pRenderer->getFrameContext(), color, rect, wait);
 	}
 
 	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
