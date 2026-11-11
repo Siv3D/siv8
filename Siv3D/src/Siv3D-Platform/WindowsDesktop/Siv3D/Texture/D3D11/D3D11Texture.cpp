@@ -208,7 +208,7 @@ namespace s3d
 		return true;
 	}
 
-	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,
 			image.size(),

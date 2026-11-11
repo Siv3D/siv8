@@ -286,7 +286,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,
 			image.size(),

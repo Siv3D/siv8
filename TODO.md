@@ -21,6 +21,11 @@
 - 四隅別角丸枠や Shape2D / Polygon 枠の LineStyle、楕円弧の矢印、LineString / 図形枠の JoinStyle は、自然な退化境界と半透明の見た目、描画の準備費用を比較する。
 - 形状生成や複合パスは、保存形状と既存の変換・点列生成で不足する具体的な用途を確認してから設計する。
 
+## Texture の作成
+
+- **手組みの圧縮データの検証。** `Texture(BCnData)` の作成時に、形式、基底寸法、レベル数、各 `Blob` の必要バイト数を確認する。`ImageProcessing::CalculateMipmapSize()` と `TextureFormat::packedDataSize()` を使い、最小ブロック未満のミップや 1 バイト不足の入力も検証する。
+- **Metal の初期アップロード失敗。** 通常の `Texture` の作成経路でも、転送用バッファや encoder の取得、コマンド完了状態を確認してから初期化成功とする。既存の失敗注入テストを参考に、失敗時に空のハンドルが返り、次の正常な作成が成功することを確認する。
+
 ## RenderTexture / DepthTexture
 
 ### RT 画像処理の追加候補

@@ -42,7 +42,7 @@ namespace s3d
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
-		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+		D3D11Texture(ID3D11Device* device, const Image& image, std::span<const Image> mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
 		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);

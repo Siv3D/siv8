@@ -33,8 +33,9 @@ namespace s3d
 		[[nodiscard]]
 		virtual Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) = 0;
 
+		// mipmaps contains the validated levels following the base image.
 		[[nodiscard]]
-		virtual Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) = 0;
+		virtual Texture::IDType create(const Image& image, std::span<const Image> mipmaps, TextureDesc desc) = 0;
 
 		[[nodiscard]]
 		virtual Texture::IDType create(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) = 0;

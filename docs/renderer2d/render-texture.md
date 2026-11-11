@@ -52,11 +52,10 @@ if (texture.read(pixels))
 }
 ```
 
-Grid initialization and named factories use the same format mappings as
-`DynamicTexture`. RenderTexture additionally accepts `Grid<uint16>` directly
-as `R8G8_Unorm`; DynamicTexture uses `CreateR8G8_Unorm()` for that input. Packed
-formats such as `R10G10B10A2_Unorm` use named factories or the size/span/format
-constructor.
+Both `RenderTexture` and `DynamicTexture` accept `Grid<uint16>` directly as
+`R8G8_Unorm` and also provide `CreateR8G8_Unorm()`. To initialize a
+`RenderTexture` from a packed format such as `R10G10B10A2_Unorm`, use its
+named factory or the size/span/format constructor.
 The span contains tightly packed rows; backend transfer alignment is internal.
 The public header specifies the corresponding readback types and failure rules.
 Integer Grid reads accept their listed formats, not every format with the same
@@ -446,7 +445,8 @@ subsequent sampling, clear, mip generation and readback do not inherit conflicts
 [TextureFormat tests](../../Test/Test_TextureFormat.cpp) check format classification,
 packed sizes, BCn blocks, overflow, and compatibility of the existing row pitch.
 [Mipmap tests](../../Test/Test_TextureMipmap.cpp) compare calculated and allocated
-sizes with readbacks, and draw a BC1 mip chain with a distinct color at each level.
+sizes with readbacks. They draw each retained level of explicit Image and BC1
+chains in a distinct color, including Image chains truncated at an invalid level.
 
 [MRT tests](../../Test/Test_MRT.cpp) cover array/list selection, one through eight
 outputs, standard/custom shader transitions, mixed formats and layout ordering,

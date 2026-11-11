@@ -171,7 +171,7 @@ namespace s3d
 		}
 	}
 
-	Texture::IDType CTexture_D3D11::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::create(const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -180,7 +180,7 @@ namespace s3d
 
 		std::unique_ptr<D3D11Texture> texture;
 
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
+		if (mipmaps.empty())
 		{
 			const TextureFormat format = (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm);
 			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image.size(), std::as_bytes(std::span{ image }), format, desc);

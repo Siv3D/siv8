@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
@@ -41,6 +42,34 @@ namespace s3d
 				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, type);
 				std::exit(EXIT_FAILURE);
 			}
+		}
+
+		static std::span<const Image> GetValidMipmaps(const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
+		{
+			if ((not desc.hasMipmap) || (not image))
+			{
+				return{};
+			}
+
+			for (uint32 i = 0; i < mipmaps.size(); ++i)
+			{
+				const uint32 level = (i + 1);
+				const Size expected = ImageProcessing::CalculateMipmapSize(image.size(), level);
+				if (expected.isZero())
+				{
+					LOG_WARN(fmt::format("Texture mip level {} follows the 1x1 level. Keeping {} level(s).", level, level));
+					return mipmaps.first(i);
+				}
+
+				const Size actual = mipmaps[i].size();
+				if (actual != expected)
+				{
+					LOG_WARN(fmt::format("Texture mip level {} expected {}x{}, got {}x{}. Keeping {} level(s).",
+						level, expected.x, expected.y, actual.x, actual.y, level));
+					return mipmaps.first(i);
+				}
+			}
+			return mipmaps;
 		}
 	}
 
@@ -76,7 +105,7 @@ namespace s3d
 	}
 
 	Texture::Texture(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, mipmaps, desc))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, GetValidMipmaps(image, mipmaps, desc), desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}

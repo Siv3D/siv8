@@ -112,7 +112,7 @@ namespace s3d
 		}
 	}
 
-	Texture::IDType CTexture_Metal::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	Texture::IDType CTexture_Metal::create(const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -121,7 +121,7 @@ namespace s3d
 
 		std::unique_ptr<MetalTexture> texture;
 
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
+		if (mipmaps.empty())
 		{
 			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, image, desc);
 		}

@@ -62,16 +62,77 @@ TEST_CASE("Texture.mipmap_size_calculation_and_resources")
 	CHECK(ImageProcessing::CalculateMipmapSize(Size{ 1, 1 }, std::numeric_limits<uint32>::max()) == Size{ 0, 0 });
 }
 
+namespace
+{
+	void CheckMipColors(const Texture& texture, const std::span<const Color> colors)
+	{
+		REQUIRE(texture);
+		REQUIRE(texture.mipLevels() == colors.size());
+		CHECK(texture.hasMipmaps() == (1 < colors.size()));
+		CHECK(texture.mipSize(texture.mipLevels()).isZero());
+		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
+		const ScopedScissorRect2D scissor{ none };
+		const ScopedColorMul2D mul{ ColorF{ 1.0 }, ScopedColorMul2D::Target::Set };
+		const ScopedColorAdd2D add{ ColorF{ 0.0, 0.0 }, ScopedColorAdd2D::Target::Set };
+		const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
+		const ScopedRenderStates2D states{ BlendState::Opaque, SamplerState::ClampNearest };
+		for (uint32 level = 0; level < texture.mipLevels(); ++level)
+		{
+			const Size size = texture.mipSize(level);
+			const RenderTexture target{ size };
+			{
+				const ScopedRenderTarget2D renderTarget{ target };
+				const ScopedViewport2D viewport{ Rect{ size } };
+				texture.resized(size).draw();
+			}
+			Image actual;
+			REQUIRE(target.readAsImage(actual));
+			CHECK(actual == Image{ size, colors[level] });
+		}
+	}
+}
+
+TEST_CASE("Texture.explicit_mipmap_prefix")
+{
+	const std::array<Color, 4> colors{ Palette::Red, Palette::Lime, Palette::Blue, Palette::White };
+	const Size base{ 15, 9 };
+	const Image level1{ 7, 4, colors[1] };
+	const Image level2{ 3, 2, colors[2] };
+	const Image level3{ 1, 1, colors[3] };
+	const auto check = [&](const Size size, const Array<Image>& mipmaps, const size_t levels, const TextureDesc desc = TextureDesc::Default2D)
+	{
+		const Texture texture{ Image{ size, colors[0] }, mipmaps, desc };
+		CheckMipColors(texture, std::span{ colors }.first(levels));
+	};
+
+	SECTION("Complete odd-size chain") { check(base, { level1, level2, level3 }, 4); }
+	SECTION("Valid partial chain") { check(base, { level1, level2 }, 3); }
+	SECTION("Empty chain") { check(base, {}, 1); }
+	SECTION("Single-column chain") { check({ 1, 7 }, { Image{ 1, 3, colors[1] }, Image{ 1, 1, colors[2] } }, 3); }
+	SECTION("Wrong first level") { check(base, { Image{ 8, 4 }, level2 }, 1); }
+	SECTION("Wrong middle level") { check(base, { level1, Image{ 3, 3 }, level3 }, 2); }
+	SECTION("Empty middle level") { check(base, { level1, Image{}, level3 }, 2); }
+	SECTION("Excess levels after 1x1")
+	{
+		Array<Image> mipmaps(255);
+		mipmaps[0] = level1;
+		mipmaps[1] = level2;
+		mipmaps[2] = level3;
+		check(base, mipmaps, 4);
+	}
+	SECTION("Extra level after 1x1 base") { check({ 1, 1 }, { Image{} }, 1); }
+	SECTION("Mipmaps disabled") { check(base, { level1, Image{} }, 1, TextureDesc::NoMipmap); }
+	SECTION("Empty base")
+	{
+		const Texture texture{ Image{}, Array<Image>{ level1 } };
+		CHECK_FALSE(texture);
+	}
+}
+
 TEST_CASE("Texture.bcn_mipmap_upload_and_sizes")
 {
-	const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-	const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
-	const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-	const ScopedScissorRect2D scissor{ none };
-	const ScopedColorMul2D mul{ ColorF{ 1.0 }, ScopedColorMul2D::Target::Set };
-	const ScopedColorAdd2D add{ ColorF{ 0.0, 0.0 }, ScopedColorAdd2D::Target::Set };
-	const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
-	const ScopedRenderStates2D states{ BlendState::Opaque, SamplerState::ClampNearest };
 	BCnData data;
 	data.size = Size{ 8, 8 };
 	data.format = TextureFormat::BC1_RGBA_Unorm;
@@ -90,20 +151,5 @@ TEST_CASE("Texture.bcn_mipmap_upload_and_sizes")
 		}
 		data.textures.push_back(std::move(blocks));
 	}
-	const Texture texture{ data };
-	REQUIRE(texture);
-	REQUIRE(texture.mipLevels() == 4);
-	for (uint32 level = 0; level < 4; ++level)
-	{
-		const Size size = texture.mipSize(level);
-		const RenderTexture target{ size };
-		{
-			const ScopedRenderTarget2D renderTarget{ target };
-			const ScopedViewport2D viewport{ Rect{ size } };
-			texture.resized(size).draw();
-		}
-		Image actual;
-		REQUIRE(target.readAsImage(actual));
-		CHECK(actual == Image{ size, colors[level] });
-	}
+	CheckMipColors(Texture{ data }, colors);
 }
