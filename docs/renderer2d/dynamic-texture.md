@@ -159,34 +159,90 @@ trial frame medians remained 16.62–16.67 ms before and 16.59–16.70 ms after.
 and display pacing affect these results; they show no clear frame-throughput
 regression, but do not establish a speedup or zero overhead for typed updates.
 
-The `DynamicTexture.Metal.typed_and_color_upload_benchmark` compares typed,
-non-waiting typed, raw-byte, and whole/region color updates for RG8 and RGBA8 at
-the same two sizes. It also compares typed and raw region updates. Nine batches
-of 24 samples rotate the order of the nine paths. The benchmark also measures
-color filling in ordinary CPU memory. GPU draining,
-allocation, warm-up, and pixel verification remain outside the timed update.
-The non-waiting measurements use available upload storage; deterministic busy
-behavior is covered by correctness tests, without timing thresholds.
+### Whole and regional upload latency
+
+`DynamicTexture.typed_and_color_upload_benchmark` uses the same public API calls
+on Metal and D3D11. It measures RG8 (`Grid<uint16>`) and RGBA8 (`Image`) with
+typed data, packed bytes, and a solid color. Each input uses both the waiting
+and `IfNotBusy` overloads. Both update shapes use a 1920×1080 texture:
+
+| Update | Destination | Bytes per updated row, RG8 / RGBA8 |
+|---|---|---:|
+| `fill` | Entire texture | 3840 / 7680 |
+| `fillRegion` | 63×31 at (317, 193) | 126 / 252 |
+
+The narrow region exercises the D3D11 staging texture's full-width row pitch.
+Typed and raw sources carry a marker in a different column of each row.
+Every timed call alternates between two prepared inputs. A dependent 1×1 copy
+and synchronous read verify the new pixel and make upload storage available
+before the next call. Each batch also checks the texture ID and reads back the
+whole result for each overload, including the background outside the rectangle.
+
+Only the CPU update call is timed. Source preparation, warm-up, readback, and
+`System::Update()` run outside the timer. Six batches rotate the six overloads
+through each position, with 24 samples per overload per batch. Each output line
+reports the median and p95 of 144 calls in microseconds. The frame benchmark
+above covers waits under rendering load.
 
 ```sh
-CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=DynamicTexture.Metal.typed_and_color_upload_benchmark'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=DynamicTexture.typed_and_color_upload_benchmark'
 ```
 
-On an Apple M2, two Release runs of each build with validation disabled gave
-the following full-HD times. Each range spans the two run medians in
-microseconds. The public update includes CPU writes and submission, with GPU
-completion outside the timer.
+Three Release runs on Apple M2 with Metal validation disabled gave the following
+waiting-overload times in microseconds. Each cell shows the middle of the three
+run medians and the middle of the three run p95s.
 
-| Operation | RG8 before | RG8 after | RGBA8 before | RGBA8 after |
-|---|---:|---:|---:|---:|
-| Whole color update | 619–775 | 83–91 | 614–681 | 137–226 |
-| Color fill in ordinary CPU memory | 595–764 | 61–81 | 592–603 | 121–243 |
+| Format and update | Typed median / p95 | Raw median / p95 | Color median / p95 |
+|---|---:|---:|---:|
+| RG8 whole | 105.0 / 141.5 | 102.2 / 128.7 | 82.1 / 97.0 |
+| RGBA8 whole | 191.6 / 243.5 | 188.3 / 239.7 | 146.9 / 175.9 |
+| RG8 region | 12.3 / 15.0 | 12.2 / 15.1 | 12.3 / 14.8 |
+| RGBA8 region | 12.2 / 14.1 | 12.1 / 13.7 | 12.0 / 13.6 |
 
-The full-HD color-update p95 ranged from 775–879 to 95–155 µs for RG8 and
-from 679–817 to 143–278 µs for RGBA8. At 63×31, color-update medians were
-11.1–12.0 µs after the change. Typed and raw region medians at that size
-differed by at most 0.3 µs in either build. In the separate raw-upload
-benchmark, packed full-HD transfers measured 171–172 µs before and 166–169 µs
-after. The typed/color benchmark showed more run-to-run variation for both
-typed and raw transfers. See the Windows validation item in
-[TODO.md](../../TODO.md) for D3D11 hardware coverage.
+The earlier Metal-only comparison used a native queue drain and repeated the
+same input. When block filling was introduced, whole-texture color medians
+went from 619–775 to 83–91 µs for RG8 and from 614–681 to 137–226 µs for
+RGBA8. In ordinary CPU memory, fill medians went from 595–764 to 61–81 µs for
+RG8 and from 592–603 to 121–243 µs for RGBA8. The isolated fill is available as
+`DynamicTexture.Metal.heap_color_benchmark`.
+
+### Comparing two builds on Windows
+
+Use PowerShell 7 in the updated checkout with the shared benchmark present.
+For the color-fill optimization, use its implementation commit as `$change`.
+The subsequent diff in the shared test file adds the benchmark. Apply that
+diff to a fresh checkout of the parent so both executables run the same
+workload and each revision keeps its own engine and correctness tests.
+
+```powershell
+$change = Read-Host 'Implementation commit to compare with its parent'
+$after = (Get-Location).Path
+$before = Join-Path (Split-Path $after) 'siv8-upload-before'
+$patch = Join-Path ([IO.Path]::GetTempPath()) 'siv8-upload-benchmark.patch'
+git diff --output="$patch" $change -- Test/Test_DynamicTexture.cpp &&
+    git worktree add --detach "$before" "$change^" &&
+    git -C "$before" apply "$patch"
+if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the baseline checkout' }
+Copy-Item -Recurse ./Dependencies/boost_1_88_0/boost "$before/Dependencies/boost_1_88_0/"
+```
+
+Build each checkout and run its DynamicTexture correctness tests. Then measure
+each binary three times on the same GPU, driver, and power settings with the
+D3D11 debug layer disabled. Switching run order reduces the effect of drift.
+
+```powershell
+foreach ($tree in $before, $after) {
+    & "$tree/WindowsDesktop/run-tests.ps1" -Configuration Release -TestArguments '--test-case=~[benchmark]DynamicTexture.*'
+}
+$case = '--test-case=DynamicTexture.typed_and_color_upload_benchmark'
+foreach ($tree in $before, $after, $after, $before, $before, $after) {
+    & "$tree/WindowsDesktop/run-tests.ps1" -Configuration Release -SkipBuild -TestArguments $case
+}
+```
+
+Each checkout retains timestamped text and XML reports in
+`WindowsDesktop/Intermediate/TestReports/`. Match the `typed-color-upload` lines
+by format, rectangle, and overload. Compare `median_us` and `p95_us` across
+runs, including the ranges. The whole-color and narrow-region color rows
+exercise different destination pitches. Typed and raw rows give the transfer
+cost for the same number of pixels.

@@ -293,94 +293,39 @@ namespace s3d
 		}
 	}
 
-	TEST_CASE("DynamicTexture.Metal.typed_and_color_upload_benchmark", "[.benchmark]")
+	TEST_CASE("DynamicTexture.Metal.heap_color_benchmark", "[.benchmark]")
 	{
 		const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
 		REQUIRE(qos);
 		const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
-		REQUIRE(System::Update());
-		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
-		auto& frame = renderer->getFrameContext();
-		constexpr std::array Modes{ "typed", "typed-if-not-busy", "raw", "color", "color-if-not-busy",
-			"color-region", "color-region-if-not-busy", "typed-region", "raw-region" };
-		constexpr int32 Batches = static_cast<int32>(Modes.size());
-		constexpr int32 Repetitions = 24;
+		constexpr size_t Samples = (9 * 24);
 		const Color color{ 32, 128, 224, 255 };
 		const ColorF colorF{ color };
-		const auto measure = [&](const auto& source, const char* formatName)
+		const auto measure = [&](const auto& source, const TextureFormat format, const char* formatName)
 		{
 			const Size size = source.size();
-			const auto packed = std::as_bytes(std::span{ source });
-			DynamicTexture texture{ source };
-			const auto id = texture.id();
-			const RenderTexture output{ size, texture.format() };
-			Array<Byte> actual(packed.size()), heap(packed.size());
-			std::array<Array<double>, Modes.size()> timings;
-			Array<double> heapTimes;
-			for (auto& times : timings) { times.reserve(Batches * Repetitions); }
-			heapTimes.reserve(Batches * Repetitions);
-			const auto update = [&](const size_t mode)
+			const auto expected = std::as_bytes(std::span{ source });
+			Array<Byte> heap(expected.size());
+			Array<int64> times;
+			times.reserve(Samples);
+			FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, format);
+			for (size_t i = 0; i < Samples; ++i)
 			{
-				switch (mode)
-				{
-				case 0: return texture.fill(source);
-				case 1: return texture.fillIfNotBusy(source);
-				case 2: return texture.fill(packed, source.bytesPerRow());
-				case 3: return texture.fill(colorF);
-				case 4: return texture.fillIfNotBusy(colorF);
-				case 5: return texture.fillRegion(colorF, Rect{ size });
-				case 6: return texture.fillRegionIfNotBusy(colorF, Rect{ size });
-				case 7: return texture.fillRegion(source, Rect{ size });
-				default: return texture.fillRegion(packed, source.bytesPerRow(), Rect{ size });
-				}
-			};
-			for (int32 batch = 0; batch < Batches; ++batch)
-			{
-				const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-				REQUIRE(System::Update());
-				FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, texture.format());
-				for (int32 i = 0; i < Repetitions; ++i)
-				{
-					const int64 start = Time::GetNanosec();
-					FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, texture.format());
-					std::atomic_signal_fence(std::memory_order_seq_cst);
-					heapTimes.push_back((Time::GetNanosec() - start) / 1000.0);
-				}
-				CHECK(std::memcmp(heap.data(), packed.data(), heap.size()) == 0);
-				for (size_t order = 0; order < Modes.size(); ++order)
-				{
-					const size_t mode = ((order + batch) % Modes.size());
-					REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
-					REQUIRE(update(mode));
-					for (int32 i = 0; i < Repetitions; ++i)
-					{
-						// Ready storage: measure CPU writes and submission, with the GPU wait outside timing.
-						REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
-						const int64 start = Time::GetNanosec();
-						const bool success = update(mode);
-						const int64 elapsed = (Time::GetNanosec() - start);
-						REQUIRE(success);
-						timings[mode].push_back(elapsed / 1000.0);
-					}
-					RenderTextureOps::Copy(texture, output);
-					REQUIRE(output.read(actual));
-					CHECK(std::memcmp(actual.data(), packed.data(), actual.size()) == 0);
-					CHECK(texture.id() == id);
-				}
+				const int64 start = Time::GetNanosec();
+				FillWithColor(heap.data(), size, source.bytesPerRow(), colorF, format);
+				std::atomic_signal_fence(std::memory_order_seq_cst);
+				times.push_back(Time::GetNanosec() - start);
 			}
-			const auto report = [&](Array<double>& times, const char* name)
-			{
-				times.sort();
-				std::cout << "typed-color-upload " << formatName << ' ' << size.x << 'x' << size.y << ' ' << name
-					<< " median_us=" << times[times.size() / 2] << " p95_us=" << times[times.size() * 95 / 100] << '\n';
-			};
-			for (size_t mode = 0; mode < Modes.size(); ++mode) { report(timings[mode], Modes[mode]); }
-			report(heapTimes, "heap-color");
+			CHECK(std::memcmp(heap.data(), expected.data(), heap.size()) == 0);
+			times.sort();
+			std::cout << "heap-color " << formatName << ' ' << size.x << 'x' << size.y
+				<< " median_us=" << (times[times.size() / 2] / 1000.0)
+				<< " p95_us=" << (times[times.size() * 95 / 100] / 1000.0) << '\n';
 		};
 		for (const Size size : { Size{ 63, 31 }, Size{ 1920, 1080 } })
 		{
-			measure(Grid<uint16>{ size, colorF.toR8G8_Unorm() }, "RG8");
-			measure(Image{ size, color }, "RGBA8");
+			measure(Grid<uint16>{ size, colorF.toR8G8_Unorm() }, TextureFormat::R8G8_Unorm, "RG8");
+			measure(Image{ size, color }, TextureFormat::R8G8B8A8_Unorm, "RGBA8");
 		}
 	}
 

@@ -14,6 +14,11 @@
 # include <iostream>
 # include <limits>
 
+# if SIV3D_PLATFORM(MACOS)
+# include <pthread.h>
+# include <pthread/qos.h>
+# endif
+
 TEST_CASE("DynamicTexture.fillRegion")
 {
 	DynamicTexture texture{ Size{ 64, 64 }, Palette::Black };
@@ -248,6 +253,117 @@ TEST_CASE("DynamicTexture.frame_upload_benchmark", "[.benchmark]")
 			}
 		}
 	}
+}
+
+TEST_CASE("DynamicTexture.typed_and_color_upload_benchmark", "[.benchmark]")
+{
+# if SIV3D_PLATFORM(MACOS)
+	const auto qos = pthread_override_qos_class_start_np(pthread_self(), QOS_CLASS_USER_INTERACTIVE, 0);
+	REQUIRE(qos);
+	const ScopeExit restoreQoS{ [=] { pthread_override_qos_class_end_np(qos); } };
+# endif
+	constexpr Size TextureSize{ 1920, 1080 };
+	constexpr std::array Inputs{ "typed", "raw", "color" };
+	constexpr size_t ModeCount = (Inputs.size() * 2); // Waiting and non-waiting overloads.
+	constexpr size_t Repetitions = 24;
+	const std::array colors{ Color{ 32, 128, 224, 255 }, Color{ 210, 76, 19, 173 } };
+	const std::array paints{ ColorF{ colors[0] }, ColorF{ colors[1] } };
+	const auto measure = [&](const char* formatName, const auto& makePixels)
+	{
+		const auto background = makePixels(TextureSize, Color{ 9, 55, 103, 191 });
+		DynamicTexture texture{ background };
+		REQUIRE(texture);
+		const auto id = texture.id();
+		const RenderTexture output{ TextureSize, texture.format() };
+		const RenderTexture probe{ Size{ 1, 1 }, texture.format() };
+		Array<Byte> actual(texture.format().packedDataSize(TextureSize));
+		Array<Byte> probePixel(texture.format().pixelSize());
+		for (const Rect rect : { Rect{ TextureSize }, Rect{ 317, 193, 63, 31 } })
+		{
+			const bool whole = (rect.size == TextureSize);
+			std::array sources{ makePixels(rect.size, colors[0]), makePixels(rect.size, colors[1]) };
+			const std::array pixels{ sources[0][0][0], sources[1][0][0] };
+			constexpr size_t LastPhase = ((Repetitions - 1) % 2);
+			auto expectedColor = background;
+			auto expectedTyped = background;
+			for (int32 y = 0; y < rect.h; ++y)
+			{
+				// A marker at a different column in each row exposes source-pitch errors.
+				for (auto& source : sources) { source[y][(y + 1) % rect.w] = background[0][0]; }
+				std::copy_n(sources[LastPhase][y], rect.w, &expectedTyped[rect.y + y][rect.x]);
+				std::fill_n(&expectedColor[rect.y + y][rect.x], rect.w, pixels[LastPhase]);
+			}
+			const std::array packed{ std::as_bytes(std::span{ sources[0] }), std::as_bytes(std::span{ sources[1] }) };
+			const uint32 pitch = sources[0].bytesPerRow();
+			const auto checkProbe = [&](const auto& expected)
+			{
+				RenderTextureOps::Copy(texture, Rect{ rect.pos, 1, 1 }, probe, Rect{ 1, 1 });
+				REQUIRE(probe.read(probePixel));
+				REQUIRE(std::memcmp(probePixel.data(), &expected, probePixel.size()) == 0);
+			};
+			REQUIRE(texture.fill(background));
+			checkProbe(background[0][0]);
+			std::array<Array<int64>, ModeCount> timings;
+			for (auto& times : timings) { times.reserve(ModeCount * Repetitions); }
+			for (size_t batch = 0; batch < ModeCount; ++batch)
+			{
+				REQUIRE(System::Update());
+				for (size_t order = 0; order < ModeCount; ++order)
+				{
+					const size_t mode = ((batch + order) % ModeCount);
+					const size_t input = (mode / 2);
+					const bool nonWaiting = (mode % 2 != 0);
+					CAPTURE(formatName, rect, batch, Inputs[input], nonWaiting);
+					const auto fill = [&](const auto&... args)
+					{
+						if (whole) { return nonWaiting ? texture.fillIfNotBusy(args...) : texture.fill(args...); }
+						return nonWaiting ? texture.fillRegionIfNotBusy(args..., rect) : texture.fillRegion(args..., rect);
+					};
+					const auto update = [&](const size_t phase)
+					{
+						switch (input)
+						{
+						case 0: return fill(sources[phase]);
+						case 1: return fill(packed[phase], pitch);
+						default: return fill(paints[phase]);
+						}
+					};
+
+					// Warm up with the other pixel so every timed update must change the probe.
+					REQUIRE(update(1));
+					checkProbe(pixels[1]);
+					for (size_t i = 0; i < Repetitions; ++i)
+					{
+						const size_t phase = (i % 2);
+						const int64 start = Time::GetNanosec();
+						const bool success = update(phase);
+						const int64 elapsed = (Time::GetNanosec() - start);
+						REQUIRE(success);
+						timings[mode].push_back(elapsed);
+						// The dependent read completes this upload before the next call, including IfNotBusy().
+						checkProbe(pixels[phase]);
+					}
+					RenderTextureOps::Copy(texture, output);
+					REQUIRE(output.read(actual));
+					const auto& expected = (input == 2) ? expectedColor : expectedTyped;
+					REQUIRE(std::memcmp(actual.data(), expected.data(), actual.size()) == 0);
+					REQUIRE(texture.id() == id);
+				}
+			}
+			for (size_t mode = 0; mode < ModeCount; ++mode)
+			{
+				auto& times = timings[mode];
+				times.sort();
+				std::cout << "typed-color-upload " << formatName << ' ' << rect.w << 'x' << rect.h
+					<< " at=" << rect.x << ',' << rect.y << ' ' << Inputs[mode / 2]
+					<< ((mode % 2) ? "-if-not-busy" : "")
+					<< " median_us=" << (times[times.size() / 2] / 1000.0)
+					<< " p95_us=" << (times[times.size() * 95 / 100] / 1000.0) << '\n';
+			}
+		}
+	};
+	measure("RG8", [](Size size, Color color) { return Grid<uint16>{ size, ColorF{ color }.toR8G8_Unorm() }; });
+	measure("RGBA8", [](Size size, Color color) { return Image{ size, color }; });
 }
 
 namespace
