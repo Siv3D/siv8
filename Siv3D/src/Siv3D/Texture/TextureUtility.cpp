@@ -13,6 +13,9 @@
 # include <Siv3D/HalfFloat.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# if SIV3D_COMPILER(MSVC)
+# include <atomic>
+# endif
 
 namespace s3d
 {
@@ -26,17 +29,23 @@ namespace s3d
 			if constexpr (std::is_same_v<Pixel, uint8>)
 			{
 				std::memset(dst, *block, bytes);
-				return;
 			}
-			while (ColorBlockBytes <= bytes)
+			else
 			{
-				std::memcpy(dst, block, ColorBlockBytes);
-				dst += ColorBlockBytes;
-				bytes -= ColorBlockBytes;
-			}
-			if (bytes)
-			{
-				std::memcpy(dst, block, bytes);
+				while (ColorBlockBytes <= bytes)
+				{
+					std::memcpy(dst, block, ColorBlockBytes);
+# if SIV3D_COMPILER(MSVC)
+					// MSVC can turn repeated block stores into rep movs from the write-only destination.
+					std::atomic_signal_fence(std::memory_order_acq_rel);
+# endif
+					dst += ColorBlockBytes;
+					bytes -= ColorBlockBytes;
+				}
+				if (bytes)
+				{
+					std::memcpy(dst, block, bytes);
+				}
 			}
 		}
 	}

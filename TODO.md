@@ -23,11 +23,8 @@
 
 ## RenderTexture / DepthTexture
 
-- [テクスチャのサイズ問い合わせ](docs/renderer2d/render-texture.md)と [DynamicTexture の生データ更新](docs/renderer2d/dynamic-texture.md)を Windows 実機で検証する。共通テスト、BCn ミップ描画、行ピッチと末尾パディング、色指定と RG8 の非待機更新、作成失敗時の戻り値、D3D11 の実アップロード性能を確認する。
-
 ### RT 画像処理の追加候補
 
-- [RenderTextureOps](docs/renderer2d/render-texture-ops.md) の D3D11 実装を Windows 実機でビルドし、共通テスト・ギャラリー・性能を確認する。1 / 2 チャンネル中間画像、`ConstantBuffer` の有効サイズによる Gaussian 係数の転送、Scoped 経由の型容量と転送量の分離、通常描画の定数復元も対象にする。macOS での検証を Windows の実測へ広げない。
 - [操作候補と重要度](docs/renderer2d/proposals/texture-processing.md#操作の候補と重要度)から、GaussianBlurH/V、輪郭・影・Bloom、custom Blit、mask 生成・複数画像合成を用途別に評価する。重要度 A の全件を採用する前提にはしない。
 - Compute は保留。具体的な用途で、書き込み属性・中間画像・最終コピーまで含む利益が導入と保守の複雑さに見合う場合に再検討する。
 

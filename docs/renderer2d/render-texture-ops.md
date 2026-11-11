@@ -195,6 +195,13 @@ CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=RenderTextureOps.Metal.p
 ./macOS/run-tests.sh
 ```
 
+On Windows, this selection checks the processed images and the constant-buffer
+bindings used by normal draws before and after a processing pass.
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -Configuration Release -TestArguments '--test-case=RenderTextureOps.*,ConstantBuffer.*'
+```
+
 The opt-in benchmark warms textures, pipelines, and coefficients, then records
 seven batches of 20 repeated operations on resident RGBA16Float images with a deterministic textured input. It reports
 median CPU encoding time without GPU waits and command-buffer GPU time per
@@ -262,6 +269,13 @@ sampling had a small cost in this full-HD case; the 512×512 measurements were
 more variable, so these results do not define a universal cutoff or clamp
 penalty. More passes can outweigh Dual Kawase's sampling savings on small images.
 
+On a GeForce RTX 4090 Laptop GPU in Release x64 with the D3D11 debug layer
+off, the same 1920×1080 RGBA16Float processing-cost workload took
+0.158–0.177 ms for Gaussian sigma 8 and 0.047–0.049 ms for Dual Kawase radius 7.
+These are ranges of three run medians. D3D11 timestamp queries bracketed each
+batch of 20 operations after warm-up, with the disjoint flag checked before
+converting ticks to elapsed GPU time.
+
 For an isolated central point in a 513×513 float image, Kawase radii 3, 7, and 15
 had horizontal RMS widths of approximately 5.39, 10.98, and 21.88 pixels, with
 total contributions around 0.99. Thus radius 7 and Gaussian sigma 12 compare
@@ -270,10 +284,13 @@ faster still; use the gallery to decide whether its detail loss is acceptable.
 The point measurement and odd-size/one-pixel-shift regression tests guard against
 brightness amplification during repeated reduction.
 
-The gallery is the canonical manual program. Its default configuration was built,
-rendered, and captured on macOS; the generated image showed clean crop edges and
-the expected differences among the three blur paths. Interactive slider checks
-on other devices remain part of the manual procedure. Windows hardware/build verification
-is tracked in [TODO](../../TODO.md); macOS results are not evidence of D3D11
-runtime performance. [Backend research](proposals/texture-processing.md) retains
-the earlier standalone Compute/MPS diagnostic separately from engine measurements.
+The gallery's default configuration was rendered and captured on macOS and
+Windows. Both captures showed clean crop edges and the expected differences
+among the three blur paths. On D3D11, setting both strengths to zero reproduced
+the source crop pixel for pixel in the Gaussian and Dual Kawase panels.
+Changing the active width from 256 to 97 to 64 pixels, then restoring the initial
+width and strengths, reproduced the original frame. The gallery sliders let
+you repeat these checks interactively on another device.
+
+[Backend research](proposals/texture-processing.md) describes the standalone
+Compute/MPS diagnostic.

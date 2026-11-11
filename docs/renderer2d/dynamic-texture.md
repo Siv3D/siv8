@@ -206,6 +206,29 @@ RGBA8. In ordinary CPU memory, fill medians went from 595–764 to 61–81 µs f
 RG8 and from 592–603 to 121–243 µs for RGBA8. The isolated fill is available as
 `DynamicTexture.Metal.heap_color_benchmark`.
 
+On Windows, check the optimized executable when changing the color-fill loop.
+MSVC can store the first 64-byte color block and use it as the source of
+`rep movs` for the rest of the mapped texture. The MSVC compiler barrier in
+`FillColorRow` keeps the repeated stores write-only. Check both the contiguous
+loop and the per-row loop, then measure full textures and narrow regions on
+the D3D11 staging resource.
+
+On a GeForce RTX 4090 Laptop GPU with MSVC 14.51, Release x64 and the D3D11
+debug layer off, the waiting color overload gave the following CPU times in
+microseconds. Each cell is the middle of three run medians. The per-row
+implementation and the final block implementation ran in alternating order.
+
+| Format and update | Before block fill | Block fill without compiler barrier | Block fill with compiler barrier |
+|---|---:|---:|---:|
+| RG8 whole | 141.7 | 7939.8 | 94.7 |
+| RGBA8 whole | 226.5 | 15856.9 | 176.9 |
+| RG8 region | 0.8 | 0.9 | 0.6 |
+| RGBA8 region | 0.8 | 14.1 | 0.7 |
+
+The same full-HD RGBA8 block fill in ordinary CPU memory took 163–194 µs
+without the barrier and 173–191 µs with it (ranges of run medians). Only
+the mapped upload showed the multi-millisecond cost of destination reads.
+
 ### Comparing two builds on Windows
 
 Use PowerShell 7 in the updated checkout with the shared benchmark present.
