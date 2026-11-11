@@ -195,6 +195,73 @@ key/mouse observation, and OS setting changes or monitor unplugging. One does
 not establish the results of another. Concurrency tests supplement ownership and
 lock-scope review; passing tests alone does not establish freedom from data races.
 
+### Inspecting D3D11 upload code generation
+
+When a change affects how the CPU writes to a mapped D3D11 buffer or texture,
+inspect the affected upload paths and any shared copy or fill helper they use.
+The same procedure can help compare MSVC versions when investigating an upload
+regression. Build and test in Release x64 with the [Windows runner](#build-and-test).
+Use the linked `Siv3D-Test.exe` beside its matching PDB so the disassembler
+can resolve names.
+
+From the repository root, use PowerShell 7 with the matching Visual Studio x64
+tools and `rg` on `PATH`. Locate the affected write mappings, including calls that
+select the map mode through a variable. Skip intentional `D3D11_MAP_READ`
+paths such as screen capture. Locate the upload functions and CRT entry points
+in this build. Their addresses can change at every link.
+
+```powershell
+rg -n -- '->Map\(|D3D11_MAP_WRITE' Siv3D/src/Siv3D-Platform/WindowsDesktop
+$exe = 'WindowsDesktop/Intermediate/Siv3D-Test/Release/Siv3D-Test.exe'
+$out = 'WindowsDesktop/Intermediate/TestReports/d3d11-upload-' + (Get-Date -Format yyyyMMdd-HHmmss)
+New-Item -ItemType Directory -Path $out | Out-Null
+git rev-parse HEAD | Set-Content "$out/build.txt"
+(Get-Item (Get-Command cl.exe).Source).VersionInfo.FileVersion | Add-Content "$out/build.txt"
+$hash = (Get-FileHash $exe -Algorithm SHA256).Hash
+if ($hash -ne (Get-FileHash 'WindowsDesktop/App/Siv3D-Test.exe').Hash) { throw 'Test executable differs from linked image.' }
+$hash | Add-Content "$out/build.txt"
+dumpbin /pdbpath:verbose $exe
+$symbols = '^\?(commitBuffers@D3D11VertexBufferManager2D|_internal_update@ConstantBuffer_D3D11|fill(Region)?@D3D11Texture|FillWith(Color|Image)@s3d)|^(memcpy|memset)\w*:'
+dumpbin /disasm:nobytes $exe | rg -A 1 $symbols | Tee-Object "$out/entries.txt"
+```
+
+Use the address on the instruction line below a label to save a disassembly
+excerpt. Follow reachable instructions, extending the range for loops, branch
+targets and callees as needed. If a helper was inlined, follow its code in the
+caller. Add the enclosing function of any new write mapping to `$symbols`.
+
+```powershell
+$va = Read-Host 'First instruction address in hex'
+$start = [Convert]::ToUInt64($va, 16)
+$range = '/range:0x{0:X},0x{1:X}' -f $start, ($start + 0x7FF)
+dumpbin /disasm:nobytes $range $exe | Tee-Object "$out/$va.asm"
+```
+
+Trace the successful `Map` through `Unmap`. Loading the `pData` field obtains
+the pointer. Check each access to the **bytes it points to**, including aliases
+formed by adding a buffer offset or row pitch.
+
+| Upload path | What to trace in Release code |
+| --- | --- |
+| `D3D11VertexBufferManager2D::commitBuffers` | For both vertex and index copies, follow `WRITE_DISCARD` and `WRITE_NO_OVERWRITE`. The source is the corresponding CPU array and the destination is the mapped buffer plus its write offset. |
+| `ConstantBuffer_D3D11::_internal_update` | The source is the caller's data for the active byte count. The mapped constant buffer receives the stores. |
+| `D3D11Texture::fill` and `fillRegion` with image data | In `FillWithImage`, trace the contiguous copy and the pitched row loop. Source rows advance from the input span and destination rows from the mapping. |
+| `D3D11Texture::fill` and `fillRegion` with a color | In `FillWithColor` and its helpers, check the byte fill, repeated color blocks, and short tails for each pixel width, both contiguous and pitched. Color bytes must come from registers or the CPU color block throughout. |
+
+Follow calls into the linked `memcpy` and `memset`, including their size and
+CPU dispatch branches. At a Windows x64 `memcpy` call, `RCX` is the destination,
+`RDX` the source and `R8` the byte count. For `rep movs`, trace where `RSI`
+(source) and `RDI` (destination) came from. Copying from CPU memory to the mapping
+passes. Seeding a mapped block and then using it as the source for later blocks
+is a readback. Also flag explicit loads and read-modify-write instructions such
+as `and dword ptr [dst], 0`. Microsoft describes the cost of these reads in the
+[D3D11 Map remarks](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-map#dont-read-from-a-subresource-mapped-for-writing).
+
+Record the verdict for each inspected mapping alongside the excerpts and the runner's
+report. For a readback, retain the instructions that establish the source
+address and the instruction that reads it. After a fix, repeat the inspection
+and [measure the affected upload on the backend](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
+
 ### Catch2
 
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)

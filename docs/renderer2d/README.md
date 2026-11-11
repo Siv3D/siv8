@@ -423,7 +423,8 @@ geometry/image tests, followed by the full host suite. On macOS, the focused
 command is `./macOS/run-tests.sh '--test-case=Renderer2DUpload.*'`.
 Also compare Release performance in ordinary CPU memory and the actual backend's
 upload memory; a heap-array benchmark alone is insufficient. Inspect generated
-code when destination access is uncertain.
+code when destination access is uncertain. For Windows, follow the
+[D3D11 Release disassembly procedure](../development/README.md#inspecting-d3d11-upload-code-generation).
 
 The opt-in `Renderer2D.arc_caps_upload_benchmark` in
 [Test_Renderer2DCircleArc.cpp](../../Test/Test_Renderer2DCircleArc.cpp) compares

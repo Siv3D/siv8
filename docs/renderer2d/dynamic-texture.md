@@ -206,7 +206,8 @@ RGBA8. In ordinary CPU memory, fill medians went from 595–764 to 61–81 µs f
 RG8 and from 592–603 to 121–243 µs for RGBA8. The isolated fill is available as
 `DynamicTexture.Metal.heap_color_benchmark`.
 
-On Windows, check the optimized executable when changing the color-fill loop.
+When changing the color-fill loop, check its Windows machine code with the
+[D3D11 Release disassembly procedure](../development/README.md#inspecting-d3d11-upload-code-generation).
 MSVC can store the first 64-byte color block and use it as the source of
 `rep movs` for the rest of the mapped texture. The MSVC compiler barrier in
 `FillColorRow` keeps the repeated stores write-only. Check both the contiguous
