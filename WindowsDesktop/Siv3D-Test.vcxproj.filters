@@ -277,6 +277,9 @@
     <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalTextureUpload.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -731,6 +734,9 @@
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\TextureMipmapTestHelper.hpp">
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp">

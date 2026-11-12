@@ -7,7 +7,7 @@
 //
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "TextureMipmapTestHelper.hpp"
 # include <limits>
 
 static_assert(ImageProcessing::CalculateMipmapSize(Size{ 7, 5 }, 0) == Size{ 7, 5 });
@@ -62,38 +62,6 @@ TEST_CASE("Texture.mipmap_size_calculation_and_resources")
 	CHECK(ImageProcessing::CalculateMipmapSize(Size{ 1, 1 }, std::numeric_limits<uint32>::max()) == Size{ 0, 0 });
 }
 
-namespace
-{
-	void CheckMipColors(const Texture& texture, const std::span<const Color> colors)
-	{
-		REQUIRE(texture);
-		REQUIRE(texture.mipLevels() == colors.size());
-		CHECK(texture.hasMipmaps() == (1 < colors.size()));
-		CHECK(texture.mipSize(texture.mipLevels()).isZero());
-		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
-		const ScopedQuadWarp2D warp{ Mat3x3::Identity(), ScopedQuadWarp2D::Target::Set };
-		const ScopedScissorRect2D scissor{ none };
-		const ScopedColorMul2D mul{ ColorF{ 1.0 }, ScopedColorMul2D::Target::Set };
-		const ScopedColorAdd2D add{ ColorF{ 0.0, 0.0 }, ScopedColorAdd2D::Target::Set };
-		const ScopedCustomShader2D shaders{ VertexShader{}, PixelShader{} };
-		const ScopedRenderStates2D states{ BlendState::Opaque, SamplerState::ClampNearest };
-		for (uint32 level = 0; level < texture.mipLevels(); ++level)
-		{
-			const Size size = texture.mipSize(level);
-			const RenderTexture target{ size };
-			{
-				const ScopedRenderTarget2D renderTarget{ target };
-				const ScopedViewport2D viewport{ Rect{ size } };
-				texture.resized(size).draw();
-			}
-			Image actual;
-			REQUIRE(target.readAsImage(actual));
-			CHECK(actual == Image{ size, colors[level] });
-		}
-	}
-}
-
 TEST_CASE("Texture.explicit_mipmap_prefix")
 {
 	const std::array<Color, 4> colors{ Palette::Red, Palette::Lime, Palette::Blue, Palette::White };
@@ -104,7 +72,7 @@ TEST_CASE("Texture.explicit_mipmap_prefix")
 	const auto check = [&](const Size size, const Array<Image>& mipmaps, const size_t levels, const TextureDesc desc = TextureDesc::Default2D)
 	{
 		const Texture texture{ Image{ size, colors[0] }, mipmaps, desc };
-		CheckMipColors(texture, std::span{ colors }.first(levels));
+		Test::CheckMipColors(texture, std::span{ colors }.first(levels));
 	};
 
 	SECTION("Complete odd-size chain") { check(base, { level1, level2, level3 }, 4); }
@@ -153,7 +121,7 @@ TEST_CASE("Texture.bcn_mipmap_upload_and_sizes")
 	}
 	const auto check = [&](const size_t levels)
 	{
-		CheckMipColors(Texture{ data }, std::span{ colors }.first(levels));
+		Test::CheckMipColors(Texture{ data }, std::span{ colors }.first(levels));
 	};
 	SECTION("Complete chain through 6x4, 3x2 and 1x1") { check(4); }
 	SECTION("Valid partial chain")

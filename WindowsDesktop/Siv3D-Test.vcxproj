@@ -196,6 +196,9 @@
     <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalTextureUpload.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -317,6 +320,7 @@
     <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
     <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp" />
     <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp" />
+    <ClInclude Include="..\Test\TextureMipmapTestHelper.hpp" />
     <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />

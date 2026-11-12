@@ -195,301 +195,120 @@ namespace s3d
 		return m_readbackBuffer.get();
 	}
 
-	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			image.size(),
-			1,
-			1,
-			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
-			false
-		}
+	namespace
 	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
-		textureDescriptor->setWidth(image.width());
-		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
+		struct MipSource
 		{
-			return;
-		}
-		
-		const NSUInteger dataSize = (image.bytesPerRow() * image.height());
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-		
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
+			Size size;
+			size_t rowPitch;
+			std::span<const Byte> bytes;
+		};
+
+		constexpr size_t UploadSize(const uint32 rowPitch, const uint32 height) noexcept
 		{
-			const MTL::Size sourceSize{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
-			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.bytesPerRow(), 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			blitCommandEncoder->endEncoding();
+			return (static_cast<size_t>(rowPitch) * height);
 		}
-		
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
 
-		m_initialized = true;
-	}
+		static_assert(UploadSize(16384 * 16, 16384) == (uint64{ 1 } << 32));
 
-	MetalTexture::MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			image.size(),
-			ImageProcessing::CalculateMipmapLevel(image.width(), image.height()),
-			1,
-			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
-			false
-		}
-	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
-		textureDescriptor->setWidth(image.width());
-		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
-		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
+		template <class GetMipSource>
+		NS::SharedPtr<MTL::Texture> CreateImmutableTexture(MTL::Device* device, MTL::CommandQueue* queue,
+			const MetalTexture2DDesc& desc, const uint32 sourceLevels, GetMipSource getSource)
 		{
-			return;
-		}
-		
-		const NSUInteger dataSize = (image.bytesPerRow() * image.height());
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-		
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			const MTL::Size sourceSize{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
-			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.bytesPerRow(), 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			
-			blitCommandEncoder->generateMipmaps(m_texture.get());
-			blitCommandEncoder->endEncoding();
-		}
+			const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+			const bool generateMips = (sourceLevels < desc.mipLevels);
+			auto descriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+			descriptor->setTextureType(MTL::TextureType2D);
+			descriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(desc.format.MTLPixelFormat()));
+			descriptor->setWidth(desc.size.x);
+			descriptor->setHeight(desc.size.y);
+			descriptor->setStorageMode(MTL::StorageModePrivate);
+			descriptor->setUsage(generateMips ? (MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget) : MTL::TextureUsageShaderRead);
+			descriptor->setMipmapLevelCount(desc.mipLevels);
+			auto texture = NS::TransferPtr(device->newTexture(descriptor.get()));
+			if (not texture)
+			{
+				return{};
+			}
 
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
-		
-		m_initialized = true;
+			auto* commands = queue->commandBuffer();
+			if (not commands)
+			{
+				return{};
+			}
+			auto* encoder = commands->blitCommandEncoder();
+			if (not encoder)
+			{
+				return{};
+			}
+
+			for (uint32 level = 0; level < sourceLevels; ++level)
+			{
+				const MipSource mip = getSource(level);
+				auto upload = NS::TransferPtr(device->newBuffer(mip.bytes.data(), mip.bytes.size_bytes(), MTL::ResourceOptionCPUCacheModeDefault));
+				if (not upload)
+				{
+					encoder->endEncoding();
+					return{};
+				}
+				const MTL::Size extent{ static_cast<NS::UInteger>(mip.size.x), static_cast<NS::UInteger>(mip.size.y), 1 };
+				encoder->copyFromBuffer(upload.get(), 0, mip.rowPitch, 0, extent, texture.get(), 0, level, MTL::Origin{ 0, 0, 0 });
+			}
+			if (generateMips)
+			{
+				encoder->generateMipmaps(texture.get());
+			}
+			encoder->endEncoding();
+			commands->commit();
+			commands->waitUntilCompleted();
+			if (commands->status() != MTL::CommandBufferStatusCompleted)
+			{
+				return{};
+			}
+			return texture;
+		}
 	}
 
 	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			image.size(),
-			static_cast<uint8>(mipmaps.size() + 1),
-			1,
-			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
-			false
-		}
+		: m_desc{ desc, TextureType::Default, image.size(), static_cast<uint8>(mipmaps.size() + 1), 1,
+			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm), false }
 	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
-		textureDescriptor->setWidth(image.width());
-		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
-		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
+		m_texture = CreateImmutableTexture(device, commandQueue, m_desc, m_desc.mipLevels, [&](const uint32 level)
 		{
-			return;
-		}
-		
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			// base
-			{
-				const NSUInteger dataSize = (image.bytesPerRow() * image.height());
-				auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-				
-				const MTL::Size size{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
-				blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.bytesPerRow(), 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			}
-			
-			// mipmaps
-			for (uint32 i = 0; i < mipmaps.size(); ++i)
-			{
-				const Image& mipmap = mipmaps[i];
-				const NSUInteger dataSize = (mipmap.bytesPerRow() * mipmap.height());
-				auto uploadBuffer = NS::TransferPtr(device->newBuffer(mipmap.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-				
-				const MTL::Size sourceSize{ static_cast<NSUInteger>(mipmap.width()), static_cast<NSUInteger>(mipmap.height()), 1 };
-				blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, mipmap.bytesPerRow(), 0, sourceSize, m_texture.get(), 0, (i + 1), MTL::Origin{ 0, 0, 0 });
-			}
-			
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
-
-		m_initialized = true;
+			const Image& mip = (level == 0) ? image : mipmaps[level - 1];
+			return MipSource{ mip.size(), mip.bytesPerRow(), std::as_bytes(std::span{ mip }) };
+		});
+		m_initialized = static_cast<bool>(m_texture);
 	}
 
-	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			size,
-			1,
-			1,
-			format,
-			false
-		}
+	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size,
+		const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc, TextureType::Default, size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, format, false }
 	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
-		textureDescriptor->setWidth(size.x);
-		textureDescriptor->setHeight(size.y);
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
+		const uint32 rowPitch = format.bytesPerRow(size.x);
+		const size_t bytes = UploadSize(rowPitch, size.y);
+		if (data.size_bytes() < bytes)
 		{
 			return;
 		}
-		
-		const uint32 rowPitch = (((size.x * m_desc.format.pixelSize()) + 3) & ~3);
-		const NSUInteger dataSize = (rowPitch * size.y);
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-		
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
+		m_texture = CreateImmutableTexture(device, commandQueue, m_desc, 1, [&](uint32)
 		{
-			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
-			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
-		
-		m_initialized = true;
-	}
-
-	MetalTexture::MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			size,
-			ImageProcessing::CalculateMipmapLevel(size.x, size.y),
-			1,
-			format,
-			false
-		}
-	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
-		textureDescriptor->setWidth(size.x);
-		textureDescriptor->setHeight(size.y);
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
-		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
-		{
-			return;
-		}
-	
-		const uint32 rowPitch = (((size.x * m_desc.format.pixelSize()) + 3) & ~3);
-		const NSUInteger dataSize = (rowPitch * size.y);
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-	
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
-			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
-			
-			blitCommandEncoder->generateMipmaps(m_texture.get());
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
-
-		m_initialized = true;
+			return MipSource{ size, rowPitch, data.first(bytes) };
+		});
+		m_initialized = static_cast<bool>(m_texture);
 	}
 
 	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const TextureFormat& format, const std::span<const Blob> mipmaps)
 		: m_desc{ ((1 < mipmaps.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
-			TextureType::Default,
-			size,
-			static_cast<uint8>(mipmaps.size()),
-			1,
-			format,
-			false
-		}
+			TextureType::Default, size, static_cast<uint8>(mipmaps.size()), 1, format, false }
 	{
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-		textureDescriptor->setTextureType(MTL::TextureType2D);
-		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
-		textureDescriptor->setWidth(size.x);
-		textureDescriptor->setHeight(size.y);
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
-		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
-
-		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
-		
-		if (not m_texture)
+		m_texture = CreateImmutableTexture(device, commandQueue, m_desc, m_desc.mipLevels, [&](const uint32 level)
 		{
-			return;
-		}
-		
-		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
-		{
-			for (uint32 i = 0; i < mipmaps.size(); ++i)
-			{
-				const Size levelSize = ImageProcessing::CalculateMipmapSize(size, i);
-				const uint32 mipWidth = levelSize.x;
-				const uint32 mipHeight = levelSize.y;
-				const size_t rowPitch = format.packedRowBytes(mipWidth);
-				
-				auto uploadBuffer = NS::TransferPtr(device->newBuffer(mipmaps[i].data(), mipmaps[i].size(), MTL::ResourceOptionCPUCacheModeDefault));
-				
-				const MTL::Size sourceSize{ static_cast<NSUInteger>(mipWidth), static_cast<NSUInteger>(mipHeight), 1 };
-				blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, i, MTL::Origin{ 0, 0, 0 });
-			}
-			
-			blitCommandEncoder->endEncoding();
-		}
-		
-		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
-
-		m_initialized = true;
+			const Size mipSize = ImageProcessing::CalculateMipmapSize(size, level);
+			return MipSource{ mipSize, format.packedRowBytes(mipSize.x), mipmaps[level] };
+		});
+		m_initialized = static_cast<bool>(m_texture);
 	}
 
 	MetalTexture::MetalTexture(Dynamic, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size,

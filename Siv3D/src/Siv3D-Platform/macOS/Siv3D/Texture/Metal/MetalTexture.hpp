@@ -40,10 +40,6 @@ namespace s3d
 		[[nodiscard]]
 		MTL::Buffer* encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands, uint32 mipLevel, uint32 bytesPerRow);
 
-		struct NoMipmap {};
-
-		struct GenerateMipmap {};
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
@@ -51,19 +47,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
-
-		[[nodiscard]]
-		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
-
-		[[nodiscard]]
 		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, std::span<const Image> mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-
-		[[nodiscard]]
-		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const TextureFormat& format, std::span<const Blob> mipmaps);
