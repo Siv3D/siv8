@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	struct BCnData;
+	class Blob;
 
 	class MetalFrameContext;
 
@@ -66,7 +66,7 @@ namespace s3d
 		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const BCnData& bcnData);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const TextureFormat& format, std::span<const Blob> mipmaps);
 
 		[[nodiscard]]
 		MetalTexture(Dynamic, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);

@@ -137,6 +137,10 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief BCn 圧縮データからテクスチャを作成します。
+		/// @param bcnData レベル 0 から順に並べた BCn 圧縮データ。基底の幅・高さは各 4～16384 の 4 の倍数で、ミップは途中の段まで指定できます。
+		/// @remark 形式または基底サイズが条件外の場合、レベル 0 がない場合、またはそのバイト数が TextureFormat::packedDataSize() と異なる場合は、空のテクスチャになります。
+		/// @remark レベル 1 以降でバイト数が合わない段や 1×1 より後の段があれば、警告を 1 回出し、その直前の段までを使います。
 		[[nodiscard]]
 		explicit Texture(const BCnData& bcnData);
 

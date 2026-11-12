@@ -12,7 +12,7 @@
 # include "D3D11Texture.hpp"
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
-# include <Siv3D/BCnData.hpp>
+# include <Siv3D/Blob.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Anchor.hpp>
 # include <Siv3D/Rect.hpp>
@@ -354,26 +354,26 @@ namespace s3d
 		generateMipmaps(context);
 	}
 
-	D3D11Texture::D3D11Texture(ID3D11Device* device, const BCnData& bcnData)
-		: m_desc{ ((1 < bcnData.textures.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
+	D3D11Texture::D3D11Texture(ID3D11Device* device, const Size& size, const TextureFormat& format, const std::span<const Blob> mipmaps)
+		: m_desc{ ((1 < mipmaps.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
 			TextureType::Default,
-			bcnData.size,
-			static_cast<uint8>(bcnData.textures.size()),
+			size,
+			static_cast<uint8>(mipmaps.size()),
 			1, 0,
-			bcnData.format,
+			format,
 			false
 		}
 	{
 		Array<D3D11_SUBRESOURCE_DATA> initDataList(m_desc.mipLevels);
 
-		for (uint32 i = 0; i < bcnData.textures.size(); ++i)
+		for (uint32 i = 0; i < mipmaps.size(); ++i)
 		{
-			const Size levelSize = ImageProcessing::CalculateMipmapSize(bcnData.size, i);
+			const Size levelSize = ImageProcessing::CalculateMipmapSize(size, i);
 
 			initDataList[i] =
 			{
-				.pSysMem = bcnData.textures[i].data(),
-				.SysMemPitch = static_cast<uint32>(bcnData.format.packedRowBytes(levelSize.x)),
+				.pSysMem = mipmaps[i].data(),
+				.SysMemPitch = static_cast<uint32>(format.packedRowBytes(levelSize.x)),
 				.SysMemSlicePitch = 0
 			};
 		}

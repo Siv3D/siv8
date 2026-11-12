@@ -23,7 +23,6 @@
 
 ## Texture の作成
 
-- **手組みの圧縮データの検証。** `Texture(BCnData)` の作成時に、形式、基底寸法、レベル数、各 `Blob` の必要バイト数を確認する。`ImageProcessing::CalculateMipmapSize()` と `TextureFormat::packedDataSize()` を使い、最小ブロック未満のミップや 1 バイト不足の入力も検証する。
 - **Metal の初期アップロード失敗。** 通常の `Texture` の作成経路でも、転送用バッファや encoder の取得、コマンド完了状態を確認してから初期化成功とする。既存の失敗注入テストを参考に、失敗時に空のハンドルが返り、次の正常な作成が成功することを確認する。
 
 ## RenderTexture / DepthTexture

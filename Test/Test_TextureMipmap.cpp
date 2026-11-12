@@ -134,7 +134,7 @@ TEST_CASE("Texture.explicit_mipmap_prefix")
 TEST_CASE("Texture.bcn_mipmap_upload_and_sizes")
 {
 	BCnData data;
-	data.size = Size{ 8, 8 };
+	data.size = Size{ 12, 8 };
 	data.format = TextureFormat::BC1_RGBA_Unorm;
 	const std::array<uint16, 4> endpoints{ 0xF800, 0x07E0, 0x001F, 0xFFFF };
 	const std::array<Color, 4> colors{ Palette::Red, Palette::Lime, Palette::Blue, Palette::White };
@@ -151,5 +151,106 @@ TEST_CASE("Texture.bcn_mipmap_upload_and_sizes")
 		}
 		data.textures.push_back(std::move(blocks));
 	}
-	CheckMipColors(Texture{ data }, colors);
+	const auto check = [&](const size_t levels)
+	{
+		CheckMipColors(Texture{ data }, std::span{ colors }.first(levels));
+	};
+	SECTION("Complete chain through 6x4, 3x2 and 1x1") { check(4); }
+	SECTION("Valid partial chain")
+	{
+		data.textures.resize(3);
+		check(3);
+	}
+	SECTION("Base only")
+	{
+		data.textures.resize(1);
+		check(1);
+	}
+	SECTION("First mip one byte short")
+	{
+		data.textures[1].resize(15); // 6x4 needs two BC1 blocks.
+		check(1);
+	}
+	SECTION("Middle mip one byte too large")
+	{
+		data.textures[2].resize(9);
+		check(2);
+	}
+	SECTION("Empty middle mip followed by a valid mip")
+	{
+		data.textures[2].clear();
+		check(2);
+	}
+	SECTION("Extra levels after 1x1")
+	{
+		data.textures.resize(256);
+		check(4);
+	}
+}
+
+TEST_CASE("Texture.bcn_invalid_base")
+{
+	BCnData data{ Size{ 4, 4 }, TextureFormat::BC1_RGBA_Unorm, { Blob{ 8 } } };
+	SECTION("Missing level zero") { data.textures.clear(); }
+	SECTION("Empty level zero followed by a valid block") { data.textures = { Blob{}, Blob{ 8 } }; }
+	SECTION("Level zero one byte short") { data.textures[0].resize(7); }
+	SECTION("Level zero one byte too large") { data.textures[0].resize(9); }
+	SECTION("Unknown format") { data.format = TextureFormat::Unknown; }
+	SECTION("Invalid format value") { data.format = static_cast<TexturePixelFormat>(255); }
+	SECTION("Eight-byte block supplied for BC3") { data.format = TextureFormat::BC3_RGBA_Unorm; }
+	SECTION("Uncompressed format with correct byte count")
+	{
+		data.format = TextureFormat::R8_Unorm;
+		data.textures[0].resize(16);
+	}
+	SECTION("Invalid base dimensions")
+	{
+		for (const Size size : { Size{ 0, 4 }, Size{ 4, 0 }, Size{ -4, 4 }, Size{ 4, -4 },
+			Size{ 3, 4 }, Size{ 4, 5 }, Size{ Image::MaxWidth + 4, 4 }, Size{ 4, Image::MaxHeight + 4 } })
+		{
+			CAPTURE(size);
+			data.size = size;
+			data.textures[0].resize(data.format.packedDataSize(size));
+			CHECK_FALSE(Texture{ data });
+		}
+		return;
+	}
+	CHECK_FALSE(Texture{ data });
+}
+
+TEST_CASE("Texture.bcn_block_size_and_dimension_limits")
+{
+	for (const TextureFormat format : { TextureFormat::BC1_RGBA_Unorm, TextureFormat::BC1_RGBA_Unorm_SRGB,
+		TextureFormat::BC3_RGBA_Unorm, TextureFormat::BC3_RGBA_Unorm_SRGB, TextureFormat::BC4_R_Unorm,
+		TextureFormat::BC5_RG_Unorm, TextureFormat::BC7_RGBA_Unorm, TextureFormat::BC7_RGBA_Unorm_SRGB })
+	{
+		CAPTURE(format.value());
+		const size_t bytes = format.blockSize();
+		const BCnData data{ Size{ 4, 4 }, format, { Blob{ bytes }, Blob{ bytes }, Blob{ bytes } } };
+		const Texture texture{ data };
+		REQUIRE(texture);
+		CHECK(texture.format() == format);
+		CHECK(texture.mipLevels() == 3);
+		CHECK(texture.mipSize(2) == Size{ 1, 1 });
+	}
+	for (const Size size : { Size{ Image::MaxWidth, 4 }, Size{ 4, Image::MaxHeight } })
+	{
+		const TextureFormat format = TextureFormat::BC1_RGBA_Unorm;
+		const BCnData data{ size, format, { Blob{ format.packedDataSize(size) } } };
+		const Texture texture{ data };
+		REQUIRE(texture);
+		CHECK(texture.size() == size);
+	}
+}
+
+TEST_CASE("Texture.bcn_from_dds_reader")
+{
+	const Size size{ 12, 8 };
+	const Blob dds = BCnEncoder{}.encodeBC3(Image{ size, Palette::White });
+	REQUIRE(dds);
+	const Texture texture{ MemoryViewReader{ dds.data(), dds.size() }, TextureDesc::Mipmap };
+	REQUIRE(texture);
+	CHECK(texture.format() == TextureFormat::BC3_RGBA_Unorm);
+	CHECK(texture.size() == size);
+	CHECK(texture.mipLevels() == 4);
 }

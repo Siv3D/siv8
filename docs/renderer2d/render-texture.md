@@ -446,7 +446,8 @@ subsequent sampling, clear, mip generation and readback do not inherit conflicts
 packed sizes, BCn blocks, overflow, and compatibility of the existing row pitch.
 [Mipmap tests](../../Test/Test_TextureMipmap.cpp) compare calculated and allocated
 sizes with readbacks. They draw each retained level of explicit Image and BC1
-chains in a distinct color, including Image chains truncated at an invalid level.
+chains in a distinct color, including chains truncated at an invalid level. BCn
+cases also exercise invalid base data, both block sizes, and base dimension limits.
 
 [MRT tests](../../Test/Test_MRT.cpp) cover array/list selection, one through eight
 outputs, standard/custom shader transitions, mixed formats and layout ordering,

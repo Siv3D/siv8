@@ -228,12 +228,13 @@ namespace s3d
 
 	Texture::IDType CTexture_D3D11::create(const BCnData& bcnData)
 	{
-		if (not bcnData)
+		const auto mipmaps = GetValidBCnMipmaps(bcnData);
+		if (mipmaps.empty())
 		{
 			return Texture::IDType::Null();
 		}
 
-		std::unique_ptr<D3D11Texture> texture = std::make_unique<D3D11Texture>(m_device, bcnData);
+		std::unique_ptr<D3D11Texture> texture = std::make_unique<D3D11Texture>(m_device, bcnData.size, bcnData.format, mipmaps);
 
 		if (not texture->isInitialized())
 		{

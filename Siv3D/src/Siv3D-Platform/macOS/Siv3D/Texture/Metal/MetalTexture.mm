@@ -14,7 +14,7 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
-# include <Siv3D/BCnData.hpp>
+# include <Siv3D/Blob.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <cstring>
 # include <Siv3D/Error/InternalEngineError.hpp>
@@ -439,13 +439,13 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const BCnData& bcnData)
-		: m_desc{ ((1 < bcnData.textures.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
+	MetalTexture::MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const TextureFormat& format, const std::span<const Blob> mipmaps)
+		: m_desc{ ((1 < mipmaps.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
 			TextureType::Default,
-			bcnData.size,
-			static_cast<uint8>(bcnData.textures.size()),
+			size,
+			static_cast<uint8>(mipmaps.size()),
 			1,
-			bcnData.format,
+			format,
 			false
 		}
 	{
@@ -454,8 +454,8 @@ namespace s3d
 		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
-		textureDescriptor->setWidth(bcnData.size.x);
-		textureDescriptor->setHeight(bcnData.size.y);
+		textureDescriptor->setWidth(size.x);
+		textureDescriptor->setHeight(size.y);
 		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
 		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
 		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
@@ -470,15 +470,14 @@ namespace s3d
 		MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
 		MTL::BlitCommandEncoder* blitCommandEncoder = commandBuffer->blitCommandEncoder();
 		{
-			for (uint32 i = 0; i < bcnData.textures.size(); ++i)
+			for (uint32 i = 0; i < mipmaps.size(); ++i)
 			{
-				const Size levelSize = ImageProcessing::CalculateMipmapSize(bcnData.size, i);
+				const Size levelSize = ImageProcessing::CalculateMipmapSize(size, i);
 				const uint32 mipWidth = levelSize.x;
 				const uint32 mipHeight = levelSize.y;
-				const size_t rowPitch = bcnData.format.packedRowBytes(mipWidth);
+				const size_t rowPitch = format.packedRowBytes(mipWidth);
 				
-				const size_t dataSize = bcnData.format.packedDataSize(levelSize);
-				auto uploadBuffer = NS::TransferPtr(device->newBuffer(bcnData.textures[i].data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
+				auto uploadBuffer = NS::TransferPtr(device->newBuffer(mipmaps[i].data(), mipmaps[i].size(), MTL::ResourceOptionCPUCacheModeDefault));
 				
 				const MTL::Size sourceSize{ static_cast<NSUInteger>(mipWidth), static_cast<NSUInteger>(mipHeight), 1 };
 				blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, rowPitch, 0, sourceSize, m_texture.get(), 0, i, MTL::Origin{ 0, 0, 0 });

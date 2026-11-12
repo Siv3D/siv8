@@ -10,7 +10,11 @@
 //-----------------------------------------------
 
 # include "TextureUtility.hpp"
+# include <Siv3D/BCnData.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/HalfFloat.hpp>
+# include <Siv3D/Image.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # if SIV3D_COMPILER(MSVC)
@@ -48,6 +52,41 @@ namespace s3d
 				}
 			}
 		}
+	}
+
+	std::span<const Blob> GetValidBCnMipmaps(const BCnData& data)
+	{
+		const Size size = data.size;
+		if ((not data.format.isBCn()) || not InRange(size.x, 1, Image::MaxWidth) || not InRange(size.y, 1, Image::MaxHeight)
+			|| ((size.x % 4) != 0) || ((size.y % 4) != 0))
+		{
+			return{};
+		}
+
+		const std::span<const Blob> mipmaps = data.textures;
+		if (mipmaps.empty() || (mipmaps.front().size() != data.format.packedDataSize(size)))
+		{
+			return{};
+		}
+
+		for (uint32 level = 1; level < mipmaps.size(); ++level)
+		{
+			const Size levelSize = ImageProcessing::CalculateMipmapSize(size, level);
+			if (levelSize.isZero())
+			{
+				LOG_WARN(fmt::format("BCn texture mip level {} follows the 1x1 level. Keeping {} level(s).", level, level));
+				return mipmaps.first(level);
+			}
+
+			const size_t expected = data.format.packedDataSize(levelSize);
+			const size_t actual = mipmaps[level].size();
+			if (actual != expected)
+			{
+				LOG_WARN(fmt::format("BCn texture mip level {} expected {} bytes, got {}. Keeping {} level(s).", level, expected, actual, level));
+				return mipmaps.first(level);
+			}
+		}
+		return mipmaps;
 	}
 
 	bool IsValidRenderTexture(const Size& size, const std::span<const Byte> data, const TextureFormat& format) noexcept

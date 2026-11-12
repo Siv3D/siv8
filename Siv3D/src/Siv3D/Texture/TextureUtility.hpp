@@ -25,6 +25,12 @@
 
 namespace s3d
 {
+	class Blob;
+	struct BCnData;
+
+	[[nodiscard]]
+	std::span<const Blob> GetValidBCnMipmaps(const BCnData& data);
+
 	[[nodiscard]]
 	bool IsValidRenderTexture(const Size& size, std::span<const Byte> data, const TextureFormat& format) noexcept;
 

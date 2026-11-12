@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	struct BCnData;
+	class Blob;
 	struct Rect;
 
 	class D3D11Texture
@@ -51,7 +51,7 @@ namespace s3d
 		D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
+		D3D11Texture(ID3D11Device* device, const Size& size, const TextureFormat& format, std::span<const Blob> mipmaps);
 
 		[[nodiscard]]
 		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
