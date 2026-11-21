@@ -8,6 +8,9 @@ MSL at compile time. Windows applications can select the Direct3D 11 driver with
 - [Dynamic texture updates](dynamic-texture.md): explicit Flush ordering,
   upload storage reuse, and the per-frame update benchmark.
 
+- [NinePatch](nine-patch.md): stretchable/tiled texture panels, frames, atlas regions,
+  small-destination layout, and validation.
+
 - [Vertex-ID triangles](draw-triangles.md): custom vertex shader generation,
   command integration, examples, and validation on D3D11 and Metal.
 
@@ -468,9 +471,11 @@ ordinary RAM, Metal default-cache memory, and Metal write-combined memory. It
 measures representative copy kernels and the actual shared Polygon, Mesh2D,
 textured round-rectangle, circle/ellipse arc, hollow rectangle shadow, and closed
 line-string builders (smooth and sharp contours at several point counts),
-single- and double-headed arrows, trimmed and styled arcs, rounded frames, round dots, crescents, teardrops, cached lens fills and frames, and rounded balloon fills and frames,
-with preallocated reusable buffers, no renderer initialization, no GPU commands,
-and no presentation. Destination checks happen after timing. Run on macOS from
+single- and double-headed arrows, trimmed and styled arcs, rounded frames, round
+dots, crescents, teardrops, cached lens fills and frames, rounded balloon fills
+and frames, and stretched/tiled NinePatch mesh/quad emission, with preallocated
+reusable buffers, no renderer initialization, no GPU commands, and no presentation.
+Destination checks happen after timing. Run on macOS from
 the repository root, outside the sandbox:
 
 ```sh

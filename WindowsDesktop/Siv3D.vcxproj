@@ -146,6 +146,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x3.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat4x4.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\NinePatch.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3DBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MaterialTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Material.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NinePatch.hpp" />
 	<ClInclude Include="..\Siv3D\include\Siv3D\Box.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxFace.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxUVMapping.hpp" />
@@ -1161,6 +1163,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\ITexture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureClipping.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureCover.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\NinePatch\NinePatchGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RenderTextureOps\TextureProcessing.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
@@ -1916,6 +1919,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh2D\SivMesh2D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NinePatch\SivNinePatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DExtrude.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DHeightField.cpp" />

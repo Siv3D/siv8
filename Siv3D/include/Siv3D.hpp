@@ -1537,6 +1537,7 @@
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
+# include <Siv3D/NinePatch.hpp>
 
 // 動的テクスチャ | Dynamic texture
 # include <Siv3D/DynamicTexture.hpp>

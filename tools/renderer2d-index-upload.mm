@@ -11,6 +11,8 @@
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Renderer2D/CircleArcArrow.hpp>
 # include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
+# include <Siv3D/NinePatch/NinePatchGeometry.hpp>
+# include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/LineStyle.hpp>
@@ -262,6 +264,83 @@ int main()
 			MeasureBuilder(device, (moved ? "MeshOffset" : "Mesh"), [&](const BufferCreatorFunc& allocate)
 			{
 				return Vertex2DBuilder::BuildMesh2D(allocate, meshVertices, triangles, (moved ? Optional<Float2>{ Float2{ 20, 30 } } : none));
+			});
+		}
+		for (const bool center : { true, false })
+		for (const bool separate : { false, true })
+		{
+			const std::string name = (std::string("NinePatch_") + (center ? "fill_" : "frame_") + (separate ? "quads" : "mesh"));
+			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				const auto layout = detail::MakeNinePatchLayout({ 10, 20, 200, 120 }, { 4, 6, 8, 2 }, 1);
+				const std::array<float, 4> u{ 0.125f, 0.25f, 0.625f, 0.75f }, v{ 0.125f, 0.25f, 0.5f, 0.75f };
+				const Float4 color{ 0.2f, 0.4f, 0.6f, 0.5f };
+				if (not separate)
+				{
+					std::array<Vertex2D, 16> vertices;
+					std::array<TriangleIndex, 18> indices;
+					const auto count = detail::BuildNinePatchMesh(layout, u, v, color, center, vertices, indices);
+					return Vertex2DBuilder::BuildMesh2D(allocate, vertices, std::span{ indices.data(), count }, none);
+				}
+
+				const uint16 patches = (center ? 9 : 8);
+				auto [vertex, index, offset] = allocate(patches * 4, patches * 6);
+				const auto chunk = [&](uint16 vertexCount, uint32 indexCount)
+				{
+					const Vertex2DBufferPointer result{ vertex, index, offset };
+					vertex += vertexCount;
+					index += indexCount;
+					offset += vertexCount;
+					return result;
+				};
+				for (size_t y = 0; y < 3; ++y)
+				for (size_t x = 0; x < 3; ++x)
+				{
+					if ((not center) && x == 1 && y == 1) continue;
+					const FloatQuad quad = FloatQuad::FromRect(layout.x[x], layout.y[y],
+						layout.x[x + 1] - layout.x[x], layout.y[y + 1] - layout.y[y]);
+					(void)Vertex2DBuilder::BuildTexturedQuad(chunk, quad, { u[x], v[y], u[x + 1], v[y + 1] }, color);
+				}
+				return uint32(patches * 6);
+			});
+		}
+		for (const bool center : { true, false })
+		for (const bool separate : { false, true })
+		{
+			const std::string name = (std::string("NinePatchTiled_") + (center ? "fill_" : "frame_") + (separate ? "quads" : "mesh"));
+			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
+			{
+				const auto layout = detail::MakeNinePatchLayout({ 10, 20, 320, 180 }, { 4, 6, 8, 2 }, 1);
+				const std::array<float, 4> u{ 0.125f, 0.25f, 0.625f, 0.75f }, v{ 0.125f, 0.25f, 0.5f, 0.75f };
+				const Float4 color{ 0.2f, 0.4f, 0.6f, 0.5f };
+				const uint16 quads = (center ? 240 : 58); // 13 x 14 center tiles, plus edges/corners
+				auto [vertex, index, offset] = allocate(quads * 4, quads * 6);
+				const auto chunk = [&](uint16 vertexCount, uint32 indexCount)
+				{
+					const Vertex2DBufferPointer result{ vertex, index, offset };
+					vertex += vertexCount;
+					index += indexCount;
+					offset += vertexCount;
+					return result;
+				};
+				const auto count = detail::BuildNinePatchTiles(layout, { 24, 12 }, u, v, NinePatch::Tiling::All(), color, center,
+					[&](const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices)
+					{
+						if (not separate)
+						{
+							(void)Vertex2DBuilder::BuildMesh2D(chunk, vertices, indices, none);
+							return;
+						}
+						for (size_t i = 0; i < vertices.size(); i += 4)
+						{
+							// Read the CPU tile batch, retaining write-only upload cursors above.
+							const auto& tl = vertices[i];
+							const auto& br = vertices[i + 3];
+							const FloatQuad quad{ tl.pos, vertices[i + 1].pos, br.pos, vertices[i + 2].pos };
+							(void)Vertex2DBuilder::BuildTexturedQuad(chunk, quad, { tl.tex.x, tl.tex.y, br.tex.x, br.tex.y }, color);
+						}
+					});
+				return (count * 6);
 			});
 		}
 		for (const bool gradient : { false, true })

@@ -262,6 +262,7 @@
     <ClCompile Include="..\Test\Test_Renderer2DArcTessellation.cpp" />
     <ClCompile Include="..\Test\Test_TextureClipping.cpp" />
     <ClCompile Include="..\Test\Test_TextureCover.cpp" />
+    <ClCompile Include="..\Test\Test_NinePatch.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DTexturedRoundRect.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp" />

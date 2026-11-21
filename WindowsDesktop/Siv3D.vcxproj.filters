@@ -1462,6 +1462,9 @@
     <Filter Include="src\Siv3D\Mesh2D">
       <UniqueIdentifier>{54df963e-fe04-4f37-80cf-e4c099ca287e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\NinePatch">
+      <UniqueIdentifier>{8c985792-5245-46db-9757-dc8ee51d155f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\Mesh3D">
       <UniqueIdentifier>{7a5296ba-b353-413a-a5c5-ea24657f9dc7}</UniqueIdentifier>
     </Filter>
@@ -4524,6 +4527,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureCover.hpp">
       <Filter>src\Siv3D\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\NinePatch\NinePatchGeometry.hpp">
+      <Filter>src\Siv3D\NinePatch</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp">
       <Filter>src\Siv3D\Texture</Filter>
     </ClInclude>
@@ -6162,6 +6168,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NinePatch.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MaterialAlphaMode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -6172,6 +6181,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\NinePatch.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3D.hpp">
@@ -9442,6 +9454,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh2D\SivMesh2D.cpp">
       <Filter>src\Siv3D\Mesh2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NinePatch\SivNinePatch.cpp">
+      <Filter>src\Siv3D\NinePatch</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>

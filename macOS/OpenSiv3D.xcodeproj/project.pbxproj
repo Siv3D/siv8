@@ -121,6 +121,7 @@
 		CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */; };
 		81D90EE60697402B9622ED46 /* Test_TextureClipping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */; };
 		3121ACF1D8934017B88C4F43 /* Test_TextureCover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */; };
+		45889BCAEEE3400C82F740C3 /* Test_NinePatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B1FEC5CC58745B3841E4C82 /* Test_NinePatch.cpp */; };
 		F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */; };
 		04A84050C9B241449E42C40D /* Test_Renderer2DTexturedRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */; };
 		E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */; };
@@ -924,8 +925,11 @@
 		F93BD7E8300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7C2300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp */; };
 		F93BD7EA3016825E00B3542E /* Test_Format_2DShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */; };
 		F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7EB3016828C00B3542E /* Mesh2D.hpp */; };
+		C52ABC7D7487460E93BB127B /* NinePatch.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 151C9CF78E1F474B8819C1E4 /* NinePatch.hpp */; };
 		F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7ED301682A900B3542E /* Mesh2D.ipp */; };
+		E95C444899EF4ABA88421109 /* NinePatch.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 656440583C654C8FA40500F3 /* NinePatch.ipp */; };
 		F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */; };
+		AC37081C1D3F45E4BCD61A03 /* SivNinePatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9E5A8746825D4696A3CFABCF /* SivNinePatch.cpp */; };
 		F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */; };
 		F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F43016936900B3542E /* Test_CSV.cpp */; };
 		F93BD7F83016AE7100B3542E /* PolygonParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F73016AE7100B3542E /* PolygonParser.cpp */; };
@@ -3132,6 +3136,7 @@
 		5C8B96A3927241F588D8E19E /* ColorRenderTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = E2D3C348EEB24D6CB8468CE2 /* ColorRenderTarget.hpp */; };
 		135E8897E5F7441D819D2797 /* TextureClipping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6187551EFA664002A66C4C48 /* TextureClipping.hpp */; };
 		DE6F9AB046BE42888BACA305 /* TextureCover.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EFF66C946385440E9F562118 /* TextureCover.hpp */; };
+		A0E6D0DBEA7B4B90901F85F5 /* NinePatchGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FFEB7C5C1E334DAB8CC063C9 /* NinePatchGeometry.hpp */; };
 		F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */; };
 		F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */; };
 		F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */; };
@@ -3628,6 +3633,7 @@
 		CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DArcTessellation.cpp; sourceTree = "<group>"; };
 		CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureClipping.cpp; sourceTree = "<group>"; };
 		E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextureCover.cpp; sourceTree = "<group>"; };
+		8B1FEC5CC58745B3841E4C82 /* Test_NinePatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_NinePatch.cpp; sourceTree = "<group>"; };
 		F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTexturedCircle.cpp; sourceTree = "<group>"; };
 		FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DTexturedRoundRect.cpp; sourceTree = "<group>"; };
 		E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleArc.cpp; sourceTree = "<group>"; };
@@ -4493,8 +4499,11 @@
 		F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PolynomialSolver.cpp; sourceTree = "<group>"; };
 		F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Format_2DShapes.cpp; sourceTree = "<group>"; };
 		F93BD7EB3016828C00B3542E /* Mesh2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.hpp; sourceTree = "<group>"; };
+		151C9CF78E1F474B8819C1E4 /* NinePatch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NinePatch.hpp; sourceTree = "<group>"; };
 		F93BD7ED301682A900B3542E /* Mesh2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.ipp; sourceTree = "<group>"; };
+		656440583C654C8FA40500F3 /* NinePatch.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NinePatch.ipp; sourceTree = "<group>"; };
 		F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMesh2D.cpp; sourceTree = "<group>"; };
+		9E5A8746825D4696A3CFABCF /* SivNinePatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNinePatch.cpp; sourceTree = "<group>"; };
 		F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSONSerialization.cpp; sourceTree = "<group>"; };
 		F93BD7F43016936900B3542E /* Test_CSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CSV.cpp; sourceTree = "<group>"; };
 		F93BD7F63016950000B3542E /* Siv3DTestPCH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTestPCH.hpp; sourceTree = "<group>"; };
@@ -6748,6 +6757,7 @@
 		E2D3C348EEB24D6CB8468CE2 /* ColorRenderTarget.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ColorRenderTarget.hpp; sourceTree = "<group>"; };
 		6187551EFA664002A66C4C48 /* TextureClipping.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureClipping.hpp; sourceTree = "<group>"; };
 		EFF66C946385440E9F562118 /* TextureCover.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureCover.hpp; sourceTree = "<group>"; };
+		FFEB7C5C1E334DAB8CC063C9 /* NinePatchGeometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NinePatchGeometry.hpp; sourceTree = "<group>"; };
 		F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureUtility.hpp; sourceTree = "<group>"; };
 		F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtility.cpp; sourceTree = "<group>"; };
 		F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDynamicTexture.cpp; sourceTree = "<group>"; };
@@ -7545,6 +7555,7 @@
 				CFA453912AD544FABE14E002 /* Test_Renderer2DArcTessellation.cpp */,
 				CFDEAA1102094027955FB445 /* Test_TextureClipping.cpp */,
 				E56C598830384BC7A3AD202E /* Test_TextureCover.cpp */,
+				8B1FEC5CC58745B3841E4C82 /* Test_NinePatch.cpp */,
 				F24B2635F319499CA2D1A002 /* Test_Renderer2DTexturedCircle.cpp */,
 				FEB3CDAA2F094B7FBA82A032 /* Test_Renderer2DTexturedRoundRect.cpp */,
 				E68475AA70DC479F8B260002 /* Test_Renderer2DCircleArc.cpp */,
@@ -8053,6 +8064,7 @@
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
 				F9528BAD2BBE7D1100222F45 /* MemoryWriter.ipp */,
 				F93BD7ED301682A900B3542E /* Mesh2D.ipp */,
+				656440583C654C8FA40500F3 /* NinePatch.ipp */,
 				F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */,
 				F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */,
 				F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */,
@@ -8440,6 +8452,7 @@
 				F9A3D01C30A1000000C0DE01 /* MaterialTexture.hpp */,
 				F9A3D01D30A1000000C0DE01 /* Material.hpp */,
 				F93BD7EB3016828C00B3542E /* Mesh2D.hpp */,
+				151C9CF78E1F474B8819C1E4 /* NinePatch.hpp */,
 				A5D4F50030A5000000000002 /* Box.hpp */,
 				F9A3D60130A4000000C0DE01 /* BoxFace.hpp */,
 				F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */,
@@ -9334,6 +9347,7 @@
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
 				F93BD7F0301682CB00B3542E /* Mesh2D */,
+				26D2E25ECDE54237B05DDB63 /* NinePatch */,
 				F9A3D01630A1000000C0DE01 /* Mesh3D */,
 				F9A3D51530A3000000C0DE01 /* Mesh3DBuilder */,
 				A5D4F61330A6000000000001 /* Mesh3DAssembly */,
@@ -10355,6 +10369,15 @@
 				F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */,
 			);
 			path = Mesh2D;
+			sourceTree = "<group>";
+		};
+		26D2E25ECDE54237B05DDB63 /* NinePatch */ = {
+			isa = PBXGroup;
+			children = (
+				9E5A8746825D4696A3CFABCF /* SivNinePatch.cpp */,
+				FFEB7C5C1E334DAB8CC063C9 /* NinePatchGeometry.hpp */,
+			);
+			path = NinePatch;
 			sourceTree = "<group>";
 		};
 		F93BD7FC301B7D1900B3542E /* wuffs */ = {
@@ -15457,6 +15480,7 @@
 				F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */,
 				F986032D2BCFBB54006A4C0F /* SkPathOpsTCurve.h in Headers */,
 				F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */,
+				E95C444899EF4ABA88421109 /* NinePatch.ipp in Headers */,
 				F9A3D00430A1000000C0DE01 /* Mesh3D.ipp in Headers */,
 				F9A3D50230A3000000C0DE01 /* Mesh3DBuilder.ipp in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
@@ -15798,6 +15822,7 @@
 				F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */,
 				135E8897E5F7441D819D2797 /* TextureClipping.hpp in Headers */,
 				DE6F9AB046BE42888BACA305 /* TextureCover.hpp in Headers */,
+				A0E6D0DBEA7B4B90901F85F5 /* NinePatchGeometry.hpp in Headers */,
 				F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
 				F986FA6D2BCFB53B006A4C0F /* sfnt.h in Headers */,
@@ -16980,6 +17005,7 @@
 				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
 				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
 				F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */,
+				C52ABC7D7487460E93BB127B /* NinePatch.hpp in Headers */,
 				A5D4F50030A5000000000001 /* Box.hpp in Headers */,
 				F9A3D60030A4000000C0DE01 /* BoxFace.hpp in Headers */,
 				F9A3D00830A1000000C0DE01 /* BoxUVMapping.hpp in Headers */,
@@ -17359,6 +17385,7 @@
 				CFA453912AD544FABE14E001 /* Test_Renderer2DArcTessellation.cpp in Sources */,
 				81D90EE60697402B9622ED46 /* Test_TextureClipping.cpp in Sources */,
 				3121ACF1D8934017B88C4F43 /* Test_TextureCover.cpp in Sources */,
+				45889BCAEEE3400C82F740C3 /* Test_NinePatch.cpp in Sources */,
 				F24B2635F319499CA2D1A001 /* Test_Renderer2DTexturedCircle.cpp in Sources */,
 				04A84050C9B241449E42C40D /* Test_Renderer2DTexturedRoundRect.cpp in Sources */,
 				E68475AA70DC479F8B260001 /* Test_Renderer2DCircleArc.cpp in Sources */,
@@ -18120,6 +18147,7 @@
 				F9797F7D2FA73DBB00518D26 /* plutovg-blend.c in Sources */,
 				F9797F7E2FA73DBB00518D26 /* plutovg-ft-math.c in Sources */,
 				F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */,
+				AC37081C1D3F45E4BCD61A03 /* SivNinePatch.cpp in Sources */,
 				F9A3D00530A1000000C0DE01 /* Mesh3D.cpp in Sources */,
 				F9A3D00930A1000000C0DE01 /* Mesh3DExtrude.cpp in Sources */,
 				F9A3D30630A1000000C0DE01 /* Mesh3DHeightField.cpp in Sources */,
