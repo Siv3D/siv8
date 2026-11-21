@@ -125,6 +125,12 @@ namespace s3d
 	// Writes only the pixels in each row. The caller supplies sufficient storage and row pitch.
 	void FillWithColor(void* pDst, const Size& size, uint32 dstBytesPerRow, const ColorF& color, const TextureFormat& format);
 	
+	[[nodiscard]]
+	constexpr uint64 GetTextureUploadSize(const uint32 rowPitch, const uint32 rowCount) noexcept
+	{
+		return (static_cast<uint64>(rowPitch) * rowCount);
+	}
+
 	// Returns 0 for invalid upload data. Validate before allocating/waiting for upload storage.
 	[[nodiscard]]
 	size_t GetTextureUploadRowBytes(Size size, const TextureFormat& format, std::span<const Byte> src, uint32 srcBytesPerRow) noexcept;

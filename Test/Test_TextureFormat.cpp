@@ -8,12 +8,23 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "../Siv3D/src/Siv3D/Texture/TextureUtility.hpp"
 # include <limits>
 
 static_assert(TextureFormat{ TextureFormat::R32_Float }.isFloat32());
 static_assert(TextureFormat{ TextureFormat::R32G32_Float }.isFloat32());
 static_assert(TextureFormat{ TextureFormat::R32G32B32A32_Float }.isFloat32());
 static_assert(not TextureFormat{ TextureFormat::R11G11B10_UFloat }.isFloat32());
+
+TEST_CASE("Texture.upload_size_4GiB_boundary")
+{
+	constexpr uint32 RowPitch = (16384 * 16);
+	constexpr uint64 FourGiB = (uint64{ 1 } << 32);
+	CHECK(TextureFormat{ TextureFormat::R32G32B32A32_Float }.bytesPerRow(16384) == RowPitch);
+	STATIC_REQUIRE(GetTextureUploadSize(RowPitch, 16383) == (FourGiB - RowPitch));
+	STATIC_REQUIRE(GetTextureUploadSize(RowPitch, 16384) == FourGiB);
+	STATIC_REQUIRE(GetTextureUploadSize(RowPitch, 16385) == (FourGiB + RowPitch));
+}
 
 TEST_CASE("TextureFormat.properties_and_packed_layout")
 {

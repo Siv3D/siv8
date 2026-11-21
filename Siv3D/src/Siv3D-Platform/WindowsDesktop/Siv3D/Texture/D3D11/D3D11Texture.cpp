@@ -267,7 +267,7 @@ namespace s3d
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		
-		if (const size_t expectedSize = (bytesPerRow * size.y); 
+		if (const uint64 expectedSize = GetTextureUploadSize(bytesPerRow, size.y);
 			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
@@ -315,7 +315,7 @@ namespace s3d
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		
-		if (const size_t expectedSize = (bytesPerRow * size.y); 
+		if (const uint64 expectedSize = GetTextureUploadSize(bytesPerRow, size.y);
 			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));

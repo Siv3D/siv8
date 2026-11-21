@@ -204,13 +204,6 @@ namespace s3d
 			std::span<const Byte> bytes;
 		};
 
-		constexpr size_t UploadSize(const uint32 rowPitch, const uint32 height) noexcept
-		{
-			return (static_cast<size_t>(rowPitch) * height);
-		}
-
-		static_assert(UploadSize(16384 * 16, 16384) == (uint64{ 1 } << 32));
-
 		template <class GetMipSource>
 		NS::SharedPtr<MTL::Texture> CreateImmutableTexture(MTL::Device* device, MTL::CommandQueue* queue,
 			const MetalTexture2DDesc& desc, const uint32 sourceLevels, GetMipSource getSource)
@@ -287,7 +280,7 @@ namespace s3d
 			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), 1, format, false }
 	{
 		const uint32 rowPitch = format.bytesPerRow(size.x);
-		const size_t bytes = UploadSize(rowPitch, size.y);
+		const size_t bytes = GetTextureUploadSize(rowPitch, size.y);
 		if (data.size_bytes() < bytes)
 		{
 			return;
