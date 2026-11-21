@@ -78,6 +78,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="..\Test\Test_RenderTexture.cpp" />
+    <ClCompile Include="..\Test\Test_BCnDecoder.cpp" />
     <ClCompile Include="..\Test\Test_TextureMipmap.cpp" />
     <ClCompile Include="..\Test\Test_TextureFormat.cpp" />
     <ClCompile Include="..\Test\Test_RenderTextureOps.cpp" />

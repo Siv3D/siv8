@@ -448,6 +448,8 @@ packed sizes, BCn blocks, overflow, and compatibility of the existing row pitch.
 sizes with readbacks. They draw each retained level of explicit Image and BC1
 chains in a distinct color, including chains truncated at an invalid level. BCn
 cases also exercise invalid base data, both block sizes, and base dimension limits.
+[DDS decoder tests](../../Test/Test_BCnDecoder.cpp) cover partial mip chains,
+truncated reads, and the levels required for image and native decoding.
 [Metal initial upload tests](../../Test/Test_MetalTextureUpload.cpp) inject staging
 buffer, command buffer, encoder, and completion failures. They check the empty
 handle and draw every mip after retrying the same input.
