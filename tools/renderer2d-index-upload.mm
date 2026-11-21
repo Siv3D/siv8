@@ -304,17 +304,21 @@ int main()
 				return uint32(patches * 6);
 			});
 		}
-		for (const bool center : { true, false })
+		struct NinePatchCase { const char* name; bool drawCenter; NinePatch::Tiling tiling; uint16 vertices; uint32 indices; };
+		for (const auto& c : { NinePatchCase{ "fill_", true, NinePatch::Tiling::All(), 960, 1440 },
+			NinePatchCase{ "frame_", false, NinePatch::Tiling::All(), 232, 348 },
+			NinePatchCase{ "stretch_center_", true, { true, true, false }, 294, 510 } })
 		for (const bool separate : { false, true })
 		{
-			const std::string name = (std::string("NinePatchTiled_") + (center ? "fill_" : "frame_") + (separate ? "quads" : "mesh"));
+			if (separate && not c.tiling.center) continue; // The stretched center uses triangle fans.
+			const std::string name = (std::string("NinePatchTiled_") + c.name + (separate ? "quads" : "mesh"));
 			MeasureBuilder(device, name.c_str(), [&](const BufferCreatorFunc& allocate)
 			{
 				const auto layout = detail::MakeNinePatchLayout({ 10, 20, 320, 180 }, { 4, 6, 8, 2 }, 1);
 				const std::array<float, 4> u{ 0.125f, 0.25f, 0.625f, 0.75f }, v{ 0.125f, 0.25f, 0.5f, 0.75f };
 				const Float4 color{ 0.2f, 0.4f, 0.6f, 0.5f };
-				const uint16 quads = (center ? 240 : 58); // 13 x 14 center tiles, plus edges/corners
-				auto [vertex, index, offset] = allocate(quads * 4, quads * 6);
+				// 13 x 14 center tiles, or boundary fans, plus edges/corners.
+				auto [vertex, index, offset] = allocate(c.vertices, c.indices);
 				const auto chunk = [&](uint16 vertexCount, uint32 indexCount)
 				{
 					const Vertex2DBufferPointer result{ vertex, index, offset };
@@ -323,7 +327,7 @@ int main()
 					offset += vertexCount;
 					return result;
 				};
-				const auto count = detail::BuildNinePatchTiles(layout, { 24, 12 }, u, v, NinePatch::Tiling::All(), color, center,
+				const auto count = detail::BuildNinePatchTiles(layout, { 24, 12 }, u, v, c.tiling, color, c.drawCenter,
 					[&](const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices)
 					{
 						if (not separate)
@@ -340,7 +344,7 @@ int main()
 							(void)Vertex2DBuilder::BuildTexturedQuad(chunk, quad, { tl.tex.x, tl.tex.y, br.tex.x, br.tex.y }, color);
 						}
 					});
-				return (count * 6);
+				return (count * 3);
 			});
 		}
 		for (const bool gradient : { false, true })

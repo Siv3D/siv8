@@ -94,6 +94,8 @@ it fits, preserving the center pattern's aspect ratio. Border placement and
 edges. For example, a 1 x 2 source center filling a 1000 x 1000 inner rectangle
 uses 7.8125 x 15.625 tiles, while its border widths stay fixed. Large or very
 dense panels can still be substantially more expensive than stretched ones.
+`drawFrame()` uses the same pattern scale as `draw()`, including the center's
+contribution to this limit, so choosing frame-only drawing does not change the border pattern.
 
 Tiled patches use the ordinary texture sampling path. At a repeated boundary,
 Linear filtering may sample the adjacent source patch, and mipmaps may mix
@@ -111,7 +113,12 @@ a border scale, and three tiling flags. Copies share the texture but retain
 independent settings. Stretch drawing uses at most 16 vertices and 18 triangles
 (16 triangles for a frame) in fixed CPU arrays and calls the existing textured
 `addMesh2D()` once. Tiling emits batches of at most 128 quads in a fixed CPU
-array, using a shared constant index table and the same uploader. Zero-area
+array, using shared constant index tables and the same uploader. Adjacent
+regions share subdivision positions even when only one of them tiles. This
+avoids T-junctions that can cause gaps or alpha overlaps after transformation.
+A center stretched between tiled edges uses boundary triangle fans when both
+axes are subdivided, reusing the same workspace. Its geometry grows with the
+sum of the edge counts rather than their product. Zero-area
 patches are omitted. Renderer buffer growth, 16-bit buffer rollover, and batching
 remain backend responsibilities; multiple mesh submissions can share a GPU draw
 call. The Mesh2D uploader preserves the write-only upload cursor boundary.
@@ -132,7 +139,9 @@ with one rectangle exercise internal alpha seams under transforms. Tests also
 cover reflected atlas regions, resized sources, both samplers, empty draws,
 three-slice inputs, zero border scale, texture updates, and scene render resolution.
 Tiling checks include all flag combinations, clipped final tiles, density limits
-and aspect ratio, batch boundaries, and the backend's 16-bit buffer rollover.
+and aspect ratio, frame/fill pattern consistency, batch boundaries, and the
+backend's 16-bit buffer rollover. Mixed stretch/tile modes are included in the
+transformed alpha-seam and reflected source checks.
 The transformed uniform-texture comparison permits one MSAA sample of coverage
 rounding only within one render pixel of the independently transformed outer
 edges; internal patch boundaries retain the strict color comparison.
@@ -162,7 +171,8 @@ The shared [upload diagnostic](README.md#measuring-cpu-writes-to-upload-buffers)
 also compares mesh generation/upload with eight or nine textured-quad builders
 in ordinary RAM and Metal default/write-combined buffers. Its tiled cases share
 tile generation, then compare batch mesh upload with individual textured-quad
-builders for 240-quad filled panels and 58-quad frames. It excludes command
+builders for 240-quad filled panels and 58-quad frames, and measures tiled borders
+with a stretched center using 294 vertices and 170 triangles. It excludes command
 registration and texture-handle preparation. Compare both measurements before
 introducing a dedicated renderer path; neither is a GPU execution benchmark.
 Timing results are diagnostic, not correctness thresholds.

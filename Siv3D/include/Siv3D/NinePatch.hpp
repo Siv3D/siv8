@@ -150,6 +150,7 @@ namespace s3d
 		/// @param rect 描画先
 		/// @param color 乗算する色
 		/// @return rect。描画するパッチがない場合は { rect.pos, 0, 0 }
+		/// @remark 密度制限を含め、反復模様の倍率は draw() と同じです。
 		/// @see draw()
 		RectF drawFrame(const RectF& rect, const ColorF& color = Palette::White) const;
 

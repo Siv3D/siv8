@@ -312,24 +312,25 @@ TEST_CASE("NinePatch.tiling_modes_partial_tiles_and_regions")
 		patch.setTiling(tiling);
 		const auto actual = Capture([&] { CHECK((center ? patch.draw(rect, Tint) : patch.drawFrame(rect, Tint)) == rect); });
 		const auto expected = Capture([&] { DrawReference(source, Slice, 1, rect, center, Tint, tiling); });
-		const int64 quads = 4 + 2 * (tiling.topBottom ? 3 : 1) + 2 * (tiling.leftRight ? 3 : 1) + (center ? (tiling.center ? 9 : 1) : 0);
+		constexpr int64 FilledTriangles[]{ 18, 30, 30, 44, 50, 50, 50, 50 };
+		constexpr int64 FrameTriangles[]{ 16, 24, 24, 32, 16, 32, 32, 32 };
 		CAPTURE(mode, center);
-		CHECK(actual.triangles == quads * 2);
+		CHECK(actual.triangles == (center ? FilledTriangles[mode] : FrameTriangles[mode]));
 		CHECK(actual.drawCalls == 1);
 		CheckNear(actual.image, expected.image);
 	}
 	for (const SamplerState sampler : { SamplerState::ClampNearest, SamplerState::ClampLinear })
+	for (const auto tiling : { NinePatch::Tiling::All(), NinePatch::Tiling{ true, true, false } })
 	for (uint32 variant = 0; variant < 16; ++variant)
 	{
 		const ScopedRenderStates2D sampling{ sampler };
 		const auto source = texture(8, 4, 32, 24).mirrored(variant & 1).flipped(variant & 2)
 			.resized(variant & 4 ? -64 : 64, variant & 8 ? -48 : 48);
 		NinePatch patch{ source, Slice };
-		patch.setTiling(NinePatch::Tiling::All()).setBorderScale(0.75);
+		patch.setTiling(tiling).setBorderScale(0.75);
 		const auto actual = Capture([&] { patch.draw(rect, Tint); });
-		const auto expected = Capture([&] { DrawReference(source, Slice, 0.75, rect, true, Tint, NinePatch::Tiling::All()); });
-		CAPTURE(variant, sampler);
-		CHECK(actual.triangles == expected.triangles);
+		const auto expected = Capture([&] { DrawReference(source, Slice, 0.75, rect, true, Tint, tiling); });
+		CAPTURE(variant, sampler, tiling.center);
 		CheckNear(actual.image, expected.image);
 	}
 	for (const auto slice : { Slice, NinePatch::Slice{}, NinePatch::Slice{ 0, 6, 0, 2 }, NinePatch::Slice{ 4, 0, 8, 0 } })
@@ -351,14 +352,14 @@ TEST_CASE("NinePatch.tiling_mesh_and_density_budget")
 	const std::array<float, 4> u{ 0, 0.0625f, 0.8125f, 1 }, v{ 0, 0.125f, 0.625f, 1 };
 	const auto layout = detail::MakeNinePatchLayout({ 10, 20, 76, 42 }, Slice, 1);
 	Array<Vertex2D> captured;
-	const auto quads = detail::BuildNinePatchTiles(layout, { 24, 12 }, u, v, NinePatch::Tiling::All(), Tint.toFloat4(), true,
+	const auto triangles = detail::BuildNinePatchTiles(layout, { 24, 12 }, u, v, NinePatch::Tiling::All(), Tint.toFloat4(), true,
 		[&](std::span<const Vertex2D> vertices, std::span<const TriangleIndex> indices)
 		{
 			CHECK(vertices.size() == 100);
 			CHECK(indices.size() == 50);
 			captured.insert(captured.end(), vertices.begin(), vertices.end());
 		});
-	CHECK(quads == 25);
+	CHECK(triangles == 50);
 	bool found = false;
 	for (size_t i = 0; i < captured.size(); i += 4)
 	{
@@ -404,12 +405,33 @@ TEST_CASE("NinePatch.tiling_mesh_and_density_budget")
 				}
 			});
 		CHECK(valid);
-		CHECK(count == (centerSize.y == 1 ? 16900 : 8580));
-		CHECK(batches == (count + detail::NinePatchTileBatchSize - 1) / detail::NinePatchTileBatchSize);
+		CHECK(count == 2 * (centerSize.y == 1 ? 16900 : 8580));
+		CHECK(batches == (count / 2 + detail::NinePatchTileBatchSize - 1) / detail::NinePatchTileBatchSize);
 		CHECK(maxBatch == detail::NinePatchTileBatchSize);
 		CHECK(area == Catch::Approx(1002.0 * 1002.0));
 		CHECK(large.innerRect() == RectF{ 1, 1, 1000, 1000 });
 	}
+
+	// Repeating borders around a stretched center must not create a dense center grid.
+	const auto large = detail::MakeNinePatchLayout({ 0, 0, 1002, 1002 }, { 1, 1, 1, 1 }, 1);
+	double area = 0;
+	uint32 vertexCount = 0;
+	const auto count = detail::BuildNinePatchTiles(large, { 1, 1 }, u, v, { true, true, false }, Tint.toFloat4(), true,
+		[&](std::span<const Vertex2D> vertices, std::span<const TriangleIndex> indices)
+		{
+			vertexCount += static_cast<uint32>(vertices.size());
+			for (const auto triangle : indices)
+			{
+				REQUIRE(Max(triangle.i0, triangle.i1, triangle.i2) < vertices.size());
+				const Vec2 a = vertices[triangle.i0].pos, b = vertices[triangle.i1].pos, c = vertices[triangle.i2].pos;
+				const double twiceArea = (b - a).cross(c - a);
+				CHECK(twiceArea > 0);
+				area += twiceArea / 2;
+			}
+		});
+	CHECK(count == 1544);
+	CHECK(vertexCount < 3000);
+	CHECK(area == Catch::Approx(1002.0 * 1002.0));
 }
 
 TEST_CASE("NinePatch.tiling_batch_rollover")
@@ -427,6 +449,28 @@ TEST_CASE("NinePatch.tiling_batch_rollover")
 	CheckNear(actual.image, expected.image);
 }
 
+TEST_CASE("NinePatch.frame_preserves_pattern_at_density_limit")
+{
+	const SceneScope scene;
+	Image image{ 3, 4, Palette::White };
+	for (int32 x = 0; x < 3; ++x)
+	{
+		image[1][x] = Palette::Red;
+		image[2][x] = Palette::Blue;
+	}
+	const Texture texture{ image, TextureDesc::NoMipmap };
+	NinePatch patch{ texture, 1 };
+	patch.setTiling({ .leftRight = true, .center = true });
+	const RectF rect{ 20, 30, 258, 34 };
+	const auto filled = Capture([&]
+	{
+		patch.draw(rect);
+		patch.innerRect(rect).draw(Palette::Black);
+	});
+	const auto frame = Capture([&] { patch.drawFrame(rect); });
+	CheckNear(frame.image, filled.image);
+}
+
 TEST_CASE("NinePatch.transforms_state_and_alpha_seams")
 {
 	const SceneScope scene;
@@ -436,12 +480,12 @@ TEST_CASE("NinePatch.transforms_state_and_alpha_seams")
 	const ScopedRenderStates2D sampler{ SamplerState::ClampLinear };
 	const ScopedColorMul2D mul{ ColorF{ 0.5, 0.75, 1, 0.8 } };
 	const ScopedColorAdd2D add{ ColorF{ 0.1, 0, 0.2, 0 } };
-	for (const bool tiled : { false, true })
+	for (uint32 mode = 0; mode < 8; ++mode)
 	for (const auto resolution : { SceneResolution::SceneSize, SceneResolution::Display })
 	for (const auto transform : { Mat3x2::Identity(), Mat3x2::Scale(1.5, 0.75).rotated(30_deg), Mat3x2::Scale(-2, 1.25) })
 	{
-		CAPTURE(tiled, resolution, transform);
-		patch.setTiling(tiled ? NinePatch::Tiling::All() : NinePatch::Tiling{});
+		CAPTURE(mode, resolution, transform);
+		patch.setTiling({ bool(mode & 1), bool(mode & 2), bool(mode & 4) });
 		Scene::Configure(SceneConfig::Fixed({ 320, 240 }, resolution));
 		const Transformer2D local{ transform, Transformer2D::Target::SetLocal };
 		const Transformer2D camera{ Mat3x2::Translate(160, 120), Transformer2D::Target::SetCamera };
