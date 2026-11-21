@@ -97,6 +97,37 @@ static Image MakeTestImage(const int32 size)
 	return image;
 }
 
+TEST_CASE("Image.generator.integral_dimensions")
+{
+	const auto check = [](const char* signature, const auto& generator)
+	{
+		CAPTURE(signature);
+		constexpr uint16 side = 3;
+		constexpr int32 height = 2;
+		CHECK((Image{ side, generator } == Image{ Size{ side, side }, generator }));
+		CHECK((Image{ side, height, generator } == Image{ Size{ side, height }, generator }));
+	};
+
+	check("()", Arg::generator = [] { return Palette::Red; });
+	check("(x, y)", Arg::generator = [](int32 x, int32 y) { return Color{ x, y, 100 }; });
+	check("(Point)", Arg::generator = [](Point pos) { return Color{ pos.x, pos.y, 100 }; });
+	check("(u, v)", Arg::generator0_1 = [](double u, double v) { return ColorF{ u, v, 0.0 }.toColor(); });
+	check("(Vec2)", Arg::generator0_1 = [](Vec2 uv) { return ColorF{ uv.x, uv.y, 0.0 }.toColor(); });
+}
+
+TEST_CASE("Image.generator.boundaries")
+{
+	int32 calls = 0;
+	const Image empty{ 0, 3, Arg::generator = [&calls] { ++calls; return Palette::Red; } };
+	CHECK(empty.isEmpty());
+	CHECK(calls == 0);
+
+	Vec2 center{ 0.0, 0.0 };
+	const Image single{ 1, Arg::generator0_1 = [&center](Vec2 uv) { center = uv; return Palette::Red; } };
+	CHECK(single.size() == Size{ 1, 1 });
+	CHECK(center == Vec2{ 0.5, 0.5 });
+}
+
 TEST_CASE("Image.premultiplyAlpha")
 {
 	const Image testImage = MakeTestImage(512);

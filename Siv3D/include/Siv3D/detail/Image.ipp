@@ -46,6 +46,36 @@ namespace s3d
 		: m_size{ ValidImageSizeOrEmpty(size) }
 		, m_pixels(m_size.area(), color) {}
 
+	inline Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color()>> generator)
+		: Image{ Size{ size, size }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
+		: Image{ Size{ size, size }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color(Point)>> generator)
+		: Image{ Size{ size, size }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
+		: Image{ Size{ size, size }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
+		: Image{ Size{ size, size }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color()>> generator)
+		: Image{ Size{ width, height }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
+		: Image{ Size{ width, height }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color(Point)>> generator)
+		: Image{ Size{ width, height }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
+		: Image{ Size{ width, height }, generator } {}
+
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
+		: Image{ Size{ width, height }, generator } {}
+
 	template <ReaderObject Reader>
 	Image::Image(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 		: Image{ std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, format } {}
