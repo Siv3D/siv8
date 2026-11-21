@@ -166,6 +166,9 @@
     <ClCompile Include="..\Test\Test_BCnDecoder.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BCnEncoder.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_TextureMipmap.cpp">
       <Filter>Test</Filter>
     </ClCompile>

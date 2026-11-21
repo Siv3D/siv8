@@ -450,6 +450,8 @@ chains in a distinct color, including chains truncated at an invalid level. BCn
 cases also exercise invalid base data, both block sizes, and base dimension limits.
 [DDS decoder tests](../../Test/Test_BCnDecoder.cpp) cover partial mip chains,
 truncated reads, and the levels required for image and native decoding.
+[DDS encoder tests](../../Test/Test_BCnEncoder.cpp) cover empty images and short
+writes in headers and compressed blocks across all five formats.
 [Metal initial upload tests](../../Test/Test_MetalTextureUpload.cpp) inject staging
 buffer, command buffer, encoder, and completion failures. They check the empty
 handle and draw every mip after retrying the same input.

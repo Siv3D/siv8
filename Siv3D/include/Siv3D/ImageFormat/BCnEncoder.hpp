@@ -21,6 +21,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief BCn 形式画像のエンコーダ
+	/// @remark 入力画像の幅と高さは、ともに 4 の正の倍数である必要があります。
+	/// @remark ヘッダまたは圧縮ブロックを書き切れない場合は、その時点で書き出しを終了します。失敗時は IWriter 版が false、Blob 版が空の Blob を返します。
 	class BCnEncoder : public IImageEncoder
 	{
 	public:
@@ -73,7 +75,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Image を BC7 形式でエンコードしてファイルに保存します。
+		/// @brief Image を BC3 形式でエンコードしてファイルに保存します。
 		/// @param image エンコードする Image
 		/// @param path 保存するファイルのパス
 		/// @return 保存に成功した場合 true, それ以外の場合は false
@@ -85,13 +87,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Image を BC7 形式でエンコードして書き出します。
+		/// @brief Image を BC3 形式でエンコードして書き出します。
 		/// @param image エンコードする Image
 		/// @param writer 書き出し先の IWriter インタフェース
 		/// @return 書き出しに成功した場合 true, それ以外の場合は false
 		bool encode(const Image& image, IWriter& writer) const override;
 
-		/// @brief Image を BC7 形式でエンコードした結果を Blob で返します。
+		/// @brief Image を BC3 形式でエンコードした結果を Blob で返します。
 		/// @param image エンコードする Image
 		/// @return エンコード結果
 		[[nodiscard]]
