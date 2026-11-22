@@ -24,44 +24,61 @@ namespace s3d
 		static_assert(sizeof(std::pair<HalfFloat, HalfFloat>) == 4);
 		static_assert(sizeof(std::array<HalfFloat, 4>) == sizeof(uint64));
 
-		template <class Container>
-		bool FillTexture(DynamicTexture& texture, const Container& image, const bool wait)
+		// Normalize source storage here; format matching and empty-texture creation stay with the input adapter.
+		template <class FormatCheck, class CreateTexture>
+		bool FillTexture(DynamicTexture& texture, const Size& size, const std::span<const Byte> data,
+			const uint32 sourceRowPitch, const bool wait, const FormatCheck& matchesFormat, const CreateTexture& createTexture)
 		{
 			const auto id = texture.id();
 			if (id.isNull())
 			{
-				texture = DynamicTexture{ image };
+				texture = createTexture();
 				return (not texture.isEmpty());
 			}
 
-			using Pixel = std::ranges::range_value_t<Container>;
 			auto* const textures = SIV3D_ENGINE(Texture);
-			if ((image.size() != textures->getSize(id))
-				|| not IsTexturePixelCompatible<Pixel>(textures->getFormat(id).value()))
+			if ((size != textures->getSize(id)) || not matchesFormat(textures->getFormat(id).value()))
 			{
 				return false;
 			}
-			const uint32 rowPitch = static_cast<uint32>(image.width() * sizeof(Pixel));
-			return textures->fill(id, std::as_bytes(std::span{ image }), rowPitch, wait);
+			return textures->fill(id, data, sourceRowPitch, wait);
+		}
+
+		template <class FormatCheck>
+		bool FillTextureRegion(const DynamicTexture& texture, const Size& size, const std::span<const Byte> data,
+			const uint32 sourceRowPitch, const Rect& rect, const bool wait, const FormatCheck& matchesFormat)
+		{
+			const auto id = texture.id();
+			if (id.isNull() || (size != rect.size))
+			{
+				return false;
+			}
+
+			auto* const textures = SIV3D_ENGINE(Texture);
+			if (not matchesFormat(textures->getFormat(id).value()))
+			{
+				return false;
+			}
+			return textures->fillRegion(id, data, sourceRowPitch, rect, wait);
 		}
 
 		template <class Container>
-		bool FillTextureRegion(DynamicTexture& texture, const Container& image, const Rect& rect, const bool wait)
+		bool FillTexture(DynamicTexture& texture, const Container& image, const bool wait)
 		{
-			const auto id = texture.id();
-			if (id.isNull() || (image.size() != rect.size))
-			{
-				return false;
-			}
-
 			using Pixel = std::ranges::range_value_t<Container>;
-			auto* const textures = SIV3D_ENGINE(Texture);
-			if (not IsTexturePixelCompatible<Pixel>(textures->getFormat(id).value()))
-			{
-				return false;
-			}
-			const uint32 rowPitch = static_cast<uint32>(image.width() * sizeof(Pixel));
-			return textures->fillRegion(id, std::as_bytes(std::span{ image }), rowPitch, rect, wait);
+			const uint32 sourceRowPitch = static_cast<uint32>(image.width() * sizeof(Pixel));
+			return FillTexture(texture, image.size(), std::as_bytes(std::span{ image }), sourceRowPitch, wait,
+				[](const TexturePixelFormat format) { return IsTexturePixelCompatible<Pixel>(format); },
+				[&image] { return DynamicTexture{ image }; });
+		}
+
+		template <class Container>
+		bool FillTextureRegion(const DynamicTexture& texture, const Container& image, const Rect& rect, const bool wait)
+		{
+			using Pixel = std::ranges::range_value_t<Container>;
+			const uint32 sourceRowPitch = static_cast<uint32>(image.width() * sizeof(Pixel));
+			return FillTextureRegion(texture, image.size(), std::as_bytes(std::span{ image }), sourceRowPitch, rect, wait,
+				[](const TexturePixelFormat format) { return IsTexturePixelCompatible<Pixel>(format); });
 		}
 	}
 
@@ -482,19 +499,10 @@ namespace s3d
 			return false;
 		}
 
-		const auto id = this->id();
-		if (id.isNull())
-		{
-			*this = DynamicTexture{ image.size(), std::as_bytes(std::span{ image }), format, TextureDesc::NoMipmap };
-			return (not isEmpty());
-		}
-
-		auto* const textures = SIV3D_ENGINE(Texture);
-		if ((image.size() != textures->getSize(id)) || (format != textures->getFormat(id)))
-		{
-			return false;
-		}
-		return textures->fill(id, std::as_bytes(std::span{ image }), image.bytesPerRow(), wait);
+		const auto data = std::as_bytes(std::span{ image });
+		return FillTexture(*this, image.size(), data, image.bytesPerRow(), wait,
+			[&format](const TexturePixelFormat destination) { return (format.value() == destination); },
+			[&] { return DynamicTexture{ image.size(), data, format, TextureDesc::NoMipmap }; });
 	}
 
 	bool DynamicTexture::fillRegionWithFormat(const Grid<uint32>& image, const TextureFormat& format, const Rect& rect, const bool wait)
@@ -504,18 +512,8 @@ namespace s3d
 			return false;
 		}
 
-		const auto id = this->id();
-		if (id.isNull() || (image.size() != rect.size))
-		{
-			return false;
-		}
-
-		auto* const textures = SIV3D_ENGINE(Texture);
-		if (format != textures->getFormat(id))
-		{
-			return false;
-		}
-		return textures->fillRegion(id, std::as_bytes(std::span{ image }), image.bytesPerRow(), rect, wait);
+		return FillTextureRegion(*this, image.size(), std::as_bytes(std::span{ image }), image.bytesPerRow(), rect, wait,
+			[&format](const TexturePixelFormat destination) { return (format.value() == destination); });
 	}
 
 	DynamicTexture DynamicTexture::CreateWithRowPadding(const Size& size, const std::span<const Byte> data,

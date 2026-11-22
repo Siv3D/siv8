@@ -754,7 +754,22 @@ TEST_CASE("DynamicTexture.typed_creation_reports_failure")
 			CHECK(ReadDynamicBytes(texture) == expected);
 			REQUIRE(update(source));
 			CHECK(ReadDynamicBytes(texture) == before);
+			CHECK_FALSE(update(Container{ Size{ source.width() + 1, source.height() } }));
+			const Rect wrongSize{ 0, 0, source.width() + 1, source.height() };
+			CHECK_FALSE((nonWaiting ? texture.fillRegionIfNotBusy(source, wrongSize) : texture.fillRegion(source, wrongSize)));
 			CHECK(texture.id() == id);
+			CHECK(ReadDynamicBytes(texture) == before);
+
+			const TextureFormat otherFormat = ((texture.format() == TextureFormat::R8G8B8A8_Unorm)
+				? TextureFormat::R32_Float : TextureFormat::R8G8B8A8_Unorm);
+			DynamicTexture other{ source.size(), Palette::Blue, otherFormat };
+			REQUIRE(other);
+			const auto otherID = other.id();
+			const auto otherBefore = ReadDynamicBytes(other);
+			CHECK_FALSE((nonWaiting ? other.fillIfNotBusy(source) : other.fill(source)));
+			CHECK_FALSE((nonWaiting ? other.fillRegionIfNotBusy(source, Rect{ source.size() }) : other.fillRegion(source, Rect{ source.size() })));
+			CHECK(other.id() == otherID);
+			CHECK(ReadDynamicBytes(other) == otherBefore);
 		}
 	};
 	const Size size{ 3, 2 };

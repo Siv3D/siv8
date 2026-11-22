@@ -39,6 +39,23 @@ the input's format and the default texture settings. Their return value reports 
 creation succeeded. Color, raw-byte, and region updates require an existing
 texture.
 
+### Shared implementation
+
+Typed whole and regional updates in
+[`SivDynamicTexture.cpp`](../../Siv3D/src/Siv3D/DynamicTexture/SivDynamicTexture.cpp)
+pass a byte span, dimensions, and source row pitch to shared helpers. The input
+adapters supply format matching; whole updates also supply the constructor to
+use for an empty destination. This keeps size checks, creation-result handling,
+and backend dispatch shared while preserving the existing constructors' format,
+padding, and default-setting behavior. Image/Color inputs accept both RGBA8
+variants, and explicit uint32 inputs require the specified format to match.
+These adapter operations are template parameters, with no stored callbacks or
+intermediate pixel containers. Preserve the existing packed `std::pair` inputs
+and their representation checks when generalizing adapters; they do not satisfy
+`Grid::bytesPerRow()`'s trivially-copyable constraint. Raw-byte and color updates
+continue to use the backend directly because they require an existing texture
+and have distinct input validation.
+
 ## Raw pixels and row pitch
 
 The byte-span overloads of `fill()` and `fillRegion()` accept external pixel
