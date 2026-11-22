@@ -53,6 +53,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 現在値と目標値、および速度を設定します。
+		/// @param value 新しい現在値と目標値
+		/// @param velocity 新しい速度。省略時は 0
+		/// @return *this
 		constexpr Smooth& setState(const value_type& value, const value_type& velocity = MakeZeroVelocity()) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -93,8 +97,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @copydoc update(double, const Optional<double>&, double)
 		const value_type& update(const Duration& smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime()) noexcept;
 
+		/// @brief 目標値に向かって現在値と速度を更新します。
+		/// @param smoothTime 平滑化時間（秒）
+		/// @param maxSpeed 速度制限値
+		/// @param deltaTime 前回からの経過時間（秒）
+		/// @return 更新後の現在値への参照
+		/// @see Math::SmoothDamp(float, float, float&, float, const Optional<float>&, float)
 		const value_type& update(double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime()) noexcept;
 
 		////////////////////////////////////////////////////////////////

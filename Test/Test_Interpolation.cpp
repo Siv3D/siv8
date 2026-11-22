@@ -244,3 +244,30 @@ TEST_CASE("Math::SmoothDamp")
 		}
 	}
 }
+
+TEMPLATE_TEST_CASE("Math::SmoothDamp.maxSpeed does not clamp existing velocity", "", float, double)
+{
+	using Float = TestType;
+	using Vector = Vector2D<Float>;
+	constexpr Float smoothTime = Float{ 0.2 };
+	constexpr Float deltaTime = (Float{ 1 } / Float{ 60 });
+
+	for (const Float maxSpeed : { Float{ 1 }, Float{ 0 }, Float{ -1 } })
+	{
+		CAPTURE(maxSpeed);
+		const Float limit = Max(maxSpeed, Float{ 0 });
+		Float velocity = 10;
+		const Float result = Math::SmoothDamp(Float{ 0 }, Float{ 1000 }, velocity, smoothTime, maxSpeed, deltaTime);
+
+		CHECK(result > (limit * deltaTime));
+		CHECK(velocity > limit);
+		CHECK(velocity < Float{ 10 });
+
+		Vector vectorVelocity{ 6, 8 };
+		const Vector vectorResult = Math::SmoothDamp(Vector{ 0, 0 }, Vector{ 600, 800 }, vectorVelocity, smoothTime, maxSpeed, deltaTime);
+
+		CHECK(vectorResult.length() > (limit * deltaTime));
+		CHECK(vectorVelocity.length() > limit);
+		CHECK(vectorVelocity.length() < Float{ 10 });
+	}
+}
