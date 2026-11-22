@@ -35,7 +35,7 @@ Name | Version
 [mimalloc](https://github.com/microsoft/mimalloc) | v3.4.5
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
-[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
+[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13.1
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.9.0

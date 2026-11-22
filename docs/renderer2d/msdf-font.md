@@ -55,6 +55,25 @@ OutlineShadow pixel shaders receive the original style PMA colors in
 before applying ColorAdd.
 Print's dedicated grayscale shader does not consume these style colors.
 
+## Vendored msdfgen
+
+The [vendored sources](../../Siv3D/src/ThirdParty/msdfgen) contain upstream
+`core/`, `msdfgen.h`, and `ext/resolve-shape-geometry.{h,cpp}`. Siv3D loads font
+outlines through FreeType itself; msdfgen's font/SVG importers and command-line
+application are not included. [ThirdParty.md](../../ThirdParty.md) records the
+release version.
+
+When updating, compare the existing files with that upstream release and
+preserve the local Skia include paths, `[[maybe_unused]]` parameter attributes
+in `MSDFErrorCorrection.cpp`, `edge-segments.cpp`, and `edge-selectors.cpp`, and
+the static-library, C++11, and Skia settings in
+[msdfgen-config.h](../../Siv3D/src/ThirdParty/msdfgen/msdfgen-config.h).
+Update its version macros and copyright year along with `ThirdParty.md` and
+the msdfgen entry in
+[LicenseList.hpp](../../Siv3D/src/Siv3D/LicenseManager/LicenseList.hpp), using the
+upstream release's license. The Skia geometry adapter uses `SkPathBuilder`;
+its implementation must remain registered in both platform projects.
+
 ## Validation
 
 [Test_MSDFFont.cpp](../../Test/Test_MSDFFont.cpp) owns the

@@ -688,7 +688,7 @@ BSD_2_LICENSE
 
 {
 R"-(msdfgen)-",
-R"-(Copyright (c) 2014 - 2025 Viktor Chlumsky)-",
+R"-(Copyright (c) 2014 - 2026 Viktor Chlumsky)-",
 MIT_LICENSE
 },
 
