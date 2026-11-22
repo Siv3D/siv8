@@ -32,6 +32,7 @@
     <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp" />
     <ClCompile Include="..\Test\Test_BigInt.cpp" />
     <ClCompile Include="..\Test\Test_BigFloat.cpp" />
+    <ClCompile Include="..\Test\Test_ParseFloat.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_ChildProcess.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />

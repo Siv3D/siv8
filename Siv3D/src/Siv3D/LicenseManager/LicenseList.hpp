@@ -236,6 +236,12 @@ BSD_2_LICENSE
 },
 
 {
+R"-(fast_float)-",
+R"-(Copyright (c) 2021 The fast_float authors)-",
+MIT_LICENSE
+},
+
+{
 R"-(fmt)-",
 R"-(Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors)-",
 MIT_LICENSE

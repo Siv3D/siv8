@@ -6,7 +6,8 @@ This page describes the existing validation workflows. For public-header
 Doxygen changes, follow [API documentation](api-documentation.md).
 
 For the vendored window library and its local integration changes, see
-[GLFW maintenance](glfw.md).
+[GLFW maintenance](glfw.md). For floating-point parsing, see
+[fast_float maintenance](fast-float.md).
 
 ## Build and test
 
