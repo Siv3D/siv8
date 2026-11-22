@@ -13,6 +13,20 @@ transfer path as raw bytes; repeated updates do not repack the Grid into a
 temporary image. Constructors with odd-width rows reuse the existing creation
 path's alignment handling.
 
+`Grid<uint32>` updates take an explicit format because the same storage can
+represent different packed pixel layouts. Pass the format after the Grid and,
+for regional updates, before the rectangle. The
+[public contract](../../Siv3D/include/Siv3D/DynamicTexture.hpp) lists the accepted
+formats and failure behavior. For example:
+
+```cpp
+const Grid<uint32> pixels{ Size{ 3, 2 }, ColorF{ 0.25, 0.5, 0.0 }.toR16G16_Unorm() };
+DynamicTexture texture;
+const bool created = texture.fill(pixels, TextureFormat::R16G16_Unorm);
+const Grid<uint32> patch{ Size{ 1, 1 }, ColorF{ 0.75, 0.25, 0.0 }.toR16G16_Unorm() };
+const bool updated = texture.fillRegion(patch, TextureFormat::R16G16_Unorm, Rect{ 2, 1, 1, 1 });
+```
+
 `fillIfNotBusy(color)` and `fillRegionIfNotBusy(color, rect)` offer the same
 skip-when-busy choice as image and byte inputs. A busy result leaves the texture
 unchanged. Each successful color update converts the color once. Both backends
@@ -91,6 +105,10 @@ inputs. Native Metal tests also hold an upload busy to verify that a non-waiting
 call does not copy, split the frame, or submit work. Color and RG8 typed paths
 are also checked through the public API with GPU progress held by a shared event.
 Typed creation tests cover success and failure for every Image/Grid overload.
+Explicit-format uint32 tests compare all four packed formats byte for byte,
+check whole and regional updates, preserve existing mip settings, and reject
+unsupported or mismatched formats without changing the texture. Native Metal
+checks exercise the uint32 non-waiting overloads while the upload is busy.
 
 Run the opt-in upload benchmark in Release:
 
@@ -121,9 +139,11 @@ and total frame time rather than inferring GPU performance from submission time.
 
 The separate `DynamicTexture.Metal.raw_upload_benchmark` in
 [Test_MetalDynamicTexture.cpp](../../Test/Test_MetalDynamicTexture.cpp) compares
-ordinary CPU row copies and actual Metal updates at 63×31 and 1920×1080. Its four
-update paths are typed Image, packed raw bytes, padded raw bytes, and repacking
-padded bytes into a reusable Image before a typed update. All storage is prepared
+ordinary CPU row copies and actual Metal updates at 63×31 and 1920×1080. It
+compares typed Image, packed raw bytes, padded raw bytes, and repacking
+padded bytes into a reusable Image before a typed update. A second texture in
+R16G16_Unorm compares explicit-format `Grid<uint32>` updates with raw-byte updates
+of the same data. All storage is prepared
 before measurement. Seven batches rotate the path order, with 24 samples each;
 warm-up and GPU draining are outside timing. It reports median and p95 CPU wall
 times, including native upload submission, and checks the resulting pixels.

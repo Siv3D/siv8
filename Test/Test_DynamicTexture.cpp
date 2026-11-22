@@ -368,6 +368,13 @@ TEST_CASE("DynamicTexture.typed_and_color_upload_benchmark", "[.benchmark]")
 
 namespace
 {
+	constexpr std::array Uint32TextureFormats{
+		TexturePixelFormat::R16G16_Unorm,
+		TexturePixelFormat::R16G16_Float,
+		TexturePixelFormat::R10G10B10A2_Unorm,
+		TexturePixelFormat::R11G11B10_UFloat,
+	};
+
 	Array<Byte> ReadDynamicBytes(const DynamicTexture& texture)
 	{
 		const RenderTexture result{ texture.size(), texture.format() };
@@ -376,6 +383,138 @@ namespace
 		REQUIRE(result.read(bytes));
 		return bytes;
 	}
+}
+
+TEST_CASE("DynamicTexture.uint32_formats_and_regions")
+{
+	for (const TextureFormat format : Uint32TextureFormats)
+	{
+		for (const Size size : { Size{ 1, 1 }, Size{ 3, 5 }, Size{ 4, 2 } })
+		{
+			Grid<uint32> source(size);
+			for (size_t i = 0; i < source.elementCount(); ++i)
+			{
+				source.data()[i] = (0x38003400u + static_cast<uint32>(i));
+			}
+			const auto checkPixels = [&](const DynamicTexture& texture, const Grid<uint32>& expected)
+			{
+				const auto bytes = ReadDynamicBytes(texture);
+				const auto data = std::as_bytes(std::span{ expected });
+				REQUIRE(bytes.size() == data.size());
+				CHECK(std::memcmp(bytes.data(), data.data(), bytes.size()) == 0);
+			};
+			for (const bool nonWaiting : { false, true })
+			{
+				CAPTURE(format, size, nonWaiting);
+				DynamicTexture texture;
+				const auto update = [&](const Grid<uint32>& data, const TextureFormat inputFormat)
+				{
+					return nonWaiting ? texture.fillIfNotBusy(data, inputFormat) : texture.fill(data, inputFormat);
+				};
+				const auto updateRegion = [&](const Grid<uint32>& data, const TextureFormat inputFormat, const Rect& rect)
+				{
+					return nonWaiting ? texture.fillRegionIfNotBusy(data, inputFormat, rect) : texture.fillRegion(data, inputFormat, rect);
+				};
+				CHECK_FALSE(update({}, format));
+				CHECK(texture.isEmpty());
+				CHECK_FALSE(updateRegion(source, format, Rect{ size }));
+				CHECK(texture.isEmpty());
+				REQUIRE(update(source, format));
+				CHECK(texture.size() == size);
+				CHECK(texture.format() == format);
+				CHECK(texture.mipLevels() == 1);
+				checkPixels(texture, source);
+
+				// Updating an existing texture must also retain its mip configuration and ID.
+				texture = DynamicTexture{ size, format, TextureDesc::Mipmap };
+				REQUIRE(texture);
+				const auto id = texture.id();
+				REQUIRE(update(source, format));
+				checkPixels(texture, source);
+				const Point offset{ size.x / 2, size.y / 2 };
+				const Rect region{ offset, size - offset };
+				Grid<uint32> regionPixels(region.size);
+				auto expected = source;
+				for (int32 y = 0; y < region.h; ++y)
+				{
+					for (int32 x = 0; x < region.w; ++x)
+					{
+						const uint32 value = (0x34003000u + y * region.w + x);
+						regionPixels[y][x] = value;
+						expected[region.y + y][region.x + x] = value;
+					}
+				}
+				REQUIRE(updateRegion(regionPixels, format, region));
+				checkPixels(texture, expected);
+				const Rect corner{ size.x - 1, size.y - 1, 1, 1 };
+				const Grid<uint32> pixel{ corner.size, 0x30003800u };
+				REQUIRE(updateRegion(pixel, format, corner));
+				expected[corner.y][corner.x] = pixel[0][0];
+				checkPixels(texture, expected);
+
+				CHECK_FALSE(update({}, format));
+				CHECK_FALSE(update(Grid<uint32>{ Size{ size.x + 1, size.y } }, format));
+				for (const Rect invalid : { Rect{ -1, 0, 1, 1 }, Rect{ size.x, 0, 1, 1 }, Rect{ 0, size.y, 1, 1 },
+					Rect{ 0, 0, 0, 1 }, Rect{ 0, 0, 1, -1 }, Rect{ 0, 0, 2, 1 } })
+				{
+					CHECK_FALSE(updateRegion(pixel, format, invalid));
+				}
+				CHECK_FALSE(updateRegion({}, format, Rect{}));
+				for (const TextureFormat other : Uint32TextureFormats)
+				{
+					if (other == format) { continue; }
+					CHECK_FALSE(update(source, other));
+					CHECK_FALSE(updateRegion(pixel, other, corner));
+				}
+				CHECK(texture.id() == id);
+				CHECK(texture.format() == format);
+				CHECK(texture.mipLevels() == ImageProcessing::CalculateMipmapLevel(size.x, size.y));
+				checkPixels(texture, expected);
+			}
+		}
+	}
+}
+
+TEST_CASE("DynamicTexture.uint32_rejects_formats")
+{
+	const Grid<uint32> source{ Size{ 3, 2 }, 0x38003400u };
+	DynamicTexture texture;
+	REQUIRE(texture.fill(source, TextureFormat::R16G16_Unorm));
+	const auto id = texture.id();
+	const auto original = ReadDynamicBytes(texture);
+	// Check every enum value, including Unknown and values outside the defined range.
+	for (uint32 value = 0; value <= 255; ++value)
+	{
+		const auto pixelFormat = static_cast<TexturePixelFormat>(value);
+		if (std::find(Uint32TextureFormats.begin(), Uint32TextureFormats.end(), pixelFormat) != Uint32TextureFormats.end())
+		{
+			continue;
+		}
+		CAPTURE(value);
+		const TextureFormat format{ pixelFormat };
+		const auto reject = [&](DynamicTexture& destination)
+		{
+			CHECK_FALSE(destination.fill(source, format));
+			CHECK_FALSE(destination.fillIfNotBusy(source, format));
+			CHECK_FALSE(destination.fillRegion(source, format, Rect{ source.size() }));
+			CHECK_FALSE(destination.fillRegionIfNotBusy(source, format, Rect{ source.size() }));
+		};
+		DynamicTexture empty;
+		reject(empty);
+		CHECK(empty.isEmpty());
+		reject(texture);
+		CHECK(texture.id() == id);
+		if ((value >= FromEnum(TexturePixelFormat::R8_Unorm)) && (value <= FromEnum(TexturePixelFormat::R32G32B32A32_Float)))
+		{
+			// Even a matching destination format is insufficient when uint32 does not support it.
+			DynamicTexture matching{ source.size(), Palette::Blue, format };
+			REQUIRE(matching);
+			const auto before = ReadDynamicBytes(matching);
+			reject(matching);
+			CHECK(ReadDynamicBytes(matching) == before);
+		}
+	}
+	CHECK(ReadDynamicBytes(texture) == original);
 }
 
 TEST_CASE("DynamicTexture.raw_rows_formats_and_regions")

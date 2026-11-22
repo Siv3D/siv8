@@ -170,6 +170,52 @@ namespace s3d
 		CHECK(pixels == source);
 	}
 
+	TEST_CASE("DynamicTexture.Metal.public_uint32_busy")
+	{
+		REQUIRE(System::Update());
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		auto& frame = renderer->getFrameContext();
+		const TextureFormat format{ TextureFormat::R16G16_Unorm };
+		const Grid<uint32> source{ Size{ 4, 4 }, 0x12345678u };
+		const Grid<uint32> region{ Size{ 2, 2 }, 0x87654321u };
+		DynamicTexture texture;
+		REQUIRE(texture.fill(source, format));
+		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
+		REQUIRE(event);
+		const ScopeExit unblock{ [&] { event->setSignaledValue(1); } };
+		frame.getCommandBuffer()->encodeWait(event.get(), 1);
+		REQUIRE(texture.fill(Palette::Red));
+		const auto continuation = NS::RetainPtr(frame.getCommandBuffer());
+		CHECK_FALSE(texture.fillIfNotBusy(source, format));
+		CHECK_FALSE(texture.fillRegionIfNotBusy(region, format, Rect{ 1, 1, 2, 2 }));
+		// Invalid formats must be rejected before even a waiting update reaches the busy upload.
+		CHECK_FALSE(texture.fill(source, TextureFormat::R32_Float));
+		CHECK_FALSE(texture.fillRegion(region, TextureFormat::R10G10B10A2_Unorm, Rect{ 1, 1, 2, 2 }));
+		CHECK(frame.getCommandBuffer() == continuation.get());
+		CHECK(continuation->status() == MTL::CommandBufferStatusNotEnqueued);
+		event->setSignaledValue(1);
+		REQUIRE(frame.flushAndWait(renderer->getCommandQueue()));
+		const RenderTexture result{ texture.size(), format };
+		RenderTextureOps::Copy(texture, result);
+		Grid<uint32> pixels;
+		REQUIRE(result.read(pixels));
+		CHECK(pixels == Grid<uint32>{ source.size(), 0x0000FFFFu });
+		REQUIRE(texture.fillIfNotBusy(source, format));
+		RenderTextureOps::Copy(texture, result);
+		REQUIRE(result.read(pixels));
+		CHECK(pixels == source);
+		REQUIRE(texture.fillRegionIfNotBusy(region, format, Rect{ 1, 1, 2, 2 }));
+		RenderTextureOps::Copy(texture, result);
+		REQUIRE(result.read(pixels));
+		auto expected = source;
+		for (int32 y = 1; y <= 2; ++y)
+		{
+			for (int32 x = 1; x <= 2; ++x) { expected[y][x] = region[y - 1][x - 1]; }
+		}
+		CHECK(pixels == expected);
+	}
+
 	TEST_CASE("DynamicTexture.Metal.row_copy_preserves_padding")
 	{
 		const Size size{ 3, 2 };
@@ -207,7 +253,7 @@ namespace s3d
 		auto& frame = renderer->getFrameContext();
 		constexpr int32 Batches = 7;
 		constexpr int32 Repetitions = 24;
-		constexpr std::array<const char*, 4> Modes{ "typed", "packed-raw", "padded-raw", "repack-and-typed" };
+		constexpr std::array<const char*, 6> Modes{ "typed", "packed-raw", "padded-raw", "repack-and-typed", "uint32-format", "uint32-raw" };
 		for (const Size size : { Size{ 63, 31 }, Size{ 1920, 1080 } })
 		{
 			Image source{ size, Color{ 32, 128, 224, 255 } };
@@ -221,7 +267,13 @@ namespace s3d
 			DynamicTexture texture{ source };
 			const auto originalID = texture.id();
 			const RenderTexture output{ size };
-			std::array<Array<double>, 4> timings;
+			Grid<uint32> source32(size);
+			std::memcpy(source32.data(), packed.data(), packed.size());
+			const TextureFormat format32{ TextureFormat::R16G16_Unorm };
+			DynamicTexture texture32 = DynamicTexture::CreateR16G16_Unorm(source32);
+			const auto originalID32 = texture32.id();
+			const RenderTexture output32{ size, format32 };
+			std::array<Array<double>, Modes.size()> timings;
 			std::array<Array<double>, 2> copies;
 			for (auto& times : timings) { times.reserve(Batches * Repetitions); }
 			for (auto& times : copies) { times.reserve(Batches * Repetitions); }
@@ -232,9 +284,11 @@ namespace s3d
 				case 0: return texture.fill(source);
 				case 1: return texture.fill(packed, rowBytes);
 				case 2: return texture.fill(padded, pitch);
-				default:
+				case 3:
 					FillWithImage(repacked.data(), size, rowBytes, padded, pitch, rowBytes);
 					return texture.fill(repacked);
+				case 4: return texture32.fill(source32, format32);
+				default: return texture32.fill(std::as_bytes(std::span{ source32 }), rowBytes);
 				}
 			};
 			for (int32 batch = 0; batch < Batches; ++batch)
@@ -269,11 +323,22 @@ namespace s3d
 						REQUIRE(success);
 						timings[mode].push_back(elapsed / 1000.0);
 					}
-					RenderTextureOps::Copy(texture, output);
-					Image actual;
-					REQUIRE(output.readAsImage(actual));
-					CHECK(actual == source);
-					CHECK(texture.id() == originalID);
+					if (mode < 4)
+					{
+						RenderTextureOps::Copy(texture, output);
+						Image actual;
+						REQUIRE(output.readAsImage(actual));
+						CHECK(actual == source);
+						CHECK(texture.id() == originalID);
+					}
+					else
+					{
+						RenderTextureOps::Copy(texture32, output32);
+						Grid<uint32> actual;
+						REQUIRE(output32.read(actual));
+						CHECK(actual == source32);
+						CHECK(texture32.id() == originalID32);
+					}
 				}
 			}
 			for (size_t mode = 0; mode < Modes.size(); ++mode)

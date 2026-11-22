@@ -202,7 +202,15 @@ namespace s3d
 		/// @see @ref dynamic_texture_update_contract
 		bool fill(const Grid<float>& image);
 
-		//bool fill(const Grid<uint32>& image);
+		/// @brief 指定したパック形式のデータでテクスチャ全体を更新します。
+		/// @anchor dynamic_texture_uint32_contract
+		/// @param image 1 要素を 1 ピクセルとする入力データ。既存のテクスチャと同サイズが必要です。
+		/// @param format 入力形式。R16G16_Unorm, R16G16_Float, R10G10B10A2_Unorm, R11G11B10_UFloat のいずれか。
+		/// @return 更新または作成に成功した場合 true, それ以外は false
+		/// @remark 対象外の形式では作成・更新せず false を返します。既存のテクスチャでは format との完全一致が必要です。
+		/// @remark 空のテクスチャへの全体更新は、指定形式と既定の設定で作成を試みます。領域更新は空なら false を返します。
+		/// @see @ref dynamic_texture_update_contract
+		bool fill(const Grid<uint32>& image, const TextureFormat& format);
 
 		/// @brief `R16G16B16A16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
@@ -299,6 +307,15 @@ namespace s3d
 		/// @see @ref dynamic_texture_update_contract
 		bool fillRegion(const Grid<float>& image, const Rect& rect);
 
+		/// @brief 指定したパック形式のデータでテクスチャの指定領域を更新します。
+		/// @param image rect.size と同サイズの入力データ
+		/// @param format 入力形式。許可される形式は @ref dynamic_texture_uint32_contract を参照。
+		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
+		/// @return 成功なら true。空のテクスチャ、サイズ・形式の不一致、対象外の形式、不正な領域、転送失敗では false
+		/// @see @ref dynamic_texture_uint32_contract
+		/// @see @ref dynamic_texture_update_contract
+		bool fillRegion(const Grid<uint32>& image, const TextureFormat& format, const Rect& rect);
+
 		/// @brief `R16G16B16A16_Float` 形式のテクスチャの指定領域を更新します。
 		/// @param image rect.size と同サイズの入力データ
 		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
@@ -386,6 +403,14 @@ namespace s3d
 		/// @return 更新または作成に成功した場合 true, それ以外は false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillIfNotBusy(const Grid<float>& image);
+
+		/// @brief ビジーでなければ、指定したパック形式のデータでテクスチャ全体を更新します。
+		/// @param image 1 要素を 1 ピクセルとする入力データ。既存のテクスチャと同サイズが必要です。
+		/// @param format 入力形式。許可される形式は @ref dynamic_texture_uint32_contract を参照。
+		/// @return 更新または作成に成功した場合 true。ビジー状態や入力不正、作成・転送失敗では false
+		/// @see @ref dynamic_texture_uint32_contract
+		/// @see @ref dynamic_texture_update_contract
+		bool fillIfNotBusy(const Grid<uint32>& image, const TextureFormat& format);
 
 		/// @brief ビジーでなければ、`R16G16B16A16_Float` 形式のテクスチャ全体を更新します。
 		/// @param image 既存のテクスチャと同サイズの入力データ
@@ -481,6 +506,15 @@ namespace s3d
 		/// @return 成功なら true。ビジー状態、空のテクスチャ、サイズ・形式の不一致、不正な領域、転送失敗では false
 		/// @see @ref dynamic_texture_update_contract
 		bool fillRegionIfNotBusy(const Grid<float>& image, const Rect& rect);
+
+		/// @brief ビジーでなければ、指定したパック形式のデータでテクスチャの指定領域を更新します。
+		/// @param image rect.size と同サイズの入力データ
+		/// @param format 入力形式。許可される形式は @ref dynamic_texture_uint32_contract を参照。
+		/// @param rect 更新領域。幅・高さが正で、テクスチャ内に収まる必要があります。
+		/// @return 成功なら true。ビジー状態、空のテクスチャ、サイズ・形式の不一致、対象外の形式、不正な領域、転送失敗では false
+		/// @see @ref dynamic_texture_uint32_contract
+		/// @see @ref dynamic_texture_update_contract
+		bool fillRegionIfNotBusy(const Grid<uint32>& image, const TextureFormat& format, const Rect& rect);
 
 		/// @brief ビジーでなければ、`R16G16B16A16_Float` 形式のテクスチャの指定領域を更新します。
 		/// @param image rect.size と同サイズの入力データ
@@ -833,6 +867,10 @@ namespace s3d
 		static DynamicTexture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 	private:
+
+		bool fillWithFormat(const Grid<uint32>& image, const TextureFormat& format, bool wait);
+
+		bool fillRegionWithFormat(const Grid<uint32>& image, const TextureFormat& format, const Rect& rect, bool wait);
 
 		[[nodiscard]]
 		static DynamicTexture CreateWithRowPadding(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
