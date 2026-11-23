@@ -1,1 +1,2 @@
 *.csv binary
+toml/invalid_non_utf8_latin1.toml binary

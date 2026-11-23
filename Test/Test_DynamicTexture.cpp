@@ -778,7 +778,7 @@ TEST_CASE("DynamicTexture.typed_creation_reports_failure")
 	checkCreation(Grid<uint16>{ size, uint16{ 0xA34B } });
 	checkCreation(Grid<HalfFloat>{ size, HalfFloat{ 0.25f } });
 	checkCreation(Grid<Color>{ size, Palette::Red });
-	checkCreation(Grid<std::pair<uint16, uint16>>{ size, { 1234, 5678 } });
+	checkCreation(Grid<std::pair<uint16, uint16>>{ size, { uint16{ 1234 }, uint16{ 5678 } } });
 	checkCreation(Grid<std::pair<HalfFloat, HalfFloat>>{ size, { HalfFloat{ 0.25f }, HalfFloat{ 0.5f } } });
 	checkCreation(Grid<float>{ size, 0.25f });
 	checkCreation(Grid<std::array<HalfFloat, 4>>{ size, { HalfFloat{ 0.25f }, HalfFloat{ 0.5f }, HalfFloat{ 0.75f }, HalfFloat{ 1.0f } } });

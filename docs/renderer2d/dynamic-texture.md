@@ -251,9 +251,9 @@ MSVC can store the first 64-byte color block and use it as the source of
 loop and the per-row loop, then measure full textures and narrow regions on
 the D3D11 staging resource.
 
-On a GeForce RTX 4090 Laptop GPU with MSVC 14.51, Release x64 and the D3D11
-debug layer off, the waiting color overload gave the following CPU times in
-microseconds. Each cell is the middle of three run medians. The per-row
+On a GeForce RTX 4090 Laptop GPU with MSVC 14.51, Catch2 3.16.0, Release x64
+and the D3D11 debug layer off, the waiting color overload gave the following
+CPU times in microseconds. Each cell is the middle of three run medians. The per-row
 implementation and the final block implementation ran in alternating order.
 
 | Format and update | Before block fill | Block fill without compiler barrier | Block fill with compiler barrier |
@@ -267,29 +267,53 @@ The same full-HD RGBA8 block fill in ordinary CPU memory took 163–194 µs
 without the barrier and 173–191 µs with it (ranges of run medians). Only
 the mapped upload showed the multi-millisecond cost of destination reads.
 
+A repeat on the same GPU with MSVC 14.52 used each historical engine with
+two test builds, one with the original Catch2 3.16.0 header and one with only
+its MSVC optimization guard corrected. With the corrected guard, a waiting
+full-HD RGBA8 color fill took 225.2 µs for the row-based implementation,
+16,223.4 µs for block fill without the barrier, and 180.6 µs for block fill
+with it (middle of three run medians). The barrier still avoids the cost of
+reading the mapped destination.
+
 ### Comparing two builds on Windows
 
-Use PowerShell 7 in the updated checkout with the shared benchmark present.
-For the color-fill optimization, use its implementation commit as `$change`.
-The subsequent diff in the shared test file adds the benchmark. Apply that
-diff to a fresh checkout of the parent so both executables run the same
-workload and each revision keeps its own engine and correctness tests.
+From the repository root, use PowerShell 7 to prepare separate worktrees for
+the two engine revisions. For the color-fill comparison above, the row-based
+and barrier-protected engines can run the same workload by applying the
+original benchmark addition to the earlier tree. Each revision keeps its own
+correctness tests. For the block implementation before and after the barrier,
+set `$beforeRevision` to `45654c27`, which already contains the benchmark.
 
 ```powershell
-$change = Read-Host 'Implementation commit to compare with its parent'
-$after = (Get-Location).Path
-$before = Join-Path (Split-Path $after) 'siv8-upload-before'
-$patch = Join-Path ([IO.Path]::GetTempPath()) 'siv8-upload-benchmark.patch'
-git diff --output="$patch" $change -- Test/Test_DynamicTexture.cpp &&
-    git worktree add --detach "$before" "$change^" &&
-    git -C "$before" apply "$patch"
-if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the baseline checkout' }
-Copy-Item -Recurse ./Dependencies/boost_1_88_0/boost "$before/Dependencies/boost_1_88_0/"
+$parentDir = Split-Path (Get-Location).Path
+$before = Join-Path $parentDir 'siv8-upload-before'
+$after = Join-Path $parentDir 'siv8-upload-after'
+$benchmark = '45654c27'
+$beforeRevision = '255a81b3'
+git worktree add --detach "$before" $beforeRevision &&
+    git worktree add --detach "$after" c4b6b66b
+if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the comparison worktrees' }
+if ($beforeRevision -eq '255a81b3') {
+    $patch = [IO.Path]::GetTempFileName()
+    git diff --output="$patch" "$benchmark^" $benchmark -- Test/Test_DynamicTexture.cpp &&
+        git -C "$before" apply "$patch"
+    if ($LASTEXITCODE -ne 0) { throw 'Could not apply the benchmark patch' }
+}
+foreach ($tree in $before, $after) {
+    Copy-Item -Recurse ./Dependencies/boost_1_88_0/boost "$tree/Dependencies/boost_1_88_0/"
+}
 ```
 
-Build each checkout and run its DynamicTexture correctness tests. Then measure
-each binary three times on the same GPU, driver, and power settings with the
-D3D11 debug layer disabled. Switching run order reduces the effect of drift.
+Both revisions bundle Catch2 3.16.0. Before building, change `_MSVC_VER` to
+`_MSC_VER` above `#pragma optimize("", on)` in each worktree's
+`Test/ThirdParty/Catch2/catch_amalgamated.hpp`. Record the two revisions,
+benchmark patch, header change and MSVC toolset with the reports.
+See the [Catch2 build notes](../development/README.md#catch2).
+
+Build both checkouts with the same toolset and run their DynamicTexture
+correctness tests. Then measure each binary three times on the same GPU,
+driver, and power settings with the D3D11 debug layer disabled. Switching run
+order reduces the effect of drift.
 
 ```powershell
 foreach ($tree in $before, $after) {

@@ -86,12 +86,6 @@
 - 子要素は親を所有しない参照。親の寿命終了や object/array の構造変更後に使うと無効になる。安全な長期保持は `clone()` で行えるが、所有する `JSON` と借用する view を型で分ける設計は別途検討する。常時 shared ownership を追加する前に費用と既存 API への影響を評価する。
 - 編集・flatten・書式化・バイナリ出力などは基盤ライブラリの例外を返す一方、Parse/Load/get 等は `Error` へ変換する。例外体系を統一する場合はユーザー定義 serializer / reader の例外も含めた境界を決める。
 
-## `Siv3D/include/Siv3D/TOML.hpp`
-
-### Windows Debug の不正入力テスト
-
-- テストアプリをクリーンビルドした Debug 全テストが `TOML.Load.invalid` で CRT アサート（`isctype.cpp:36`、`c >= -1 && c <= 255`）に停止する。どの入力・文字分類呼び出しが原因か、エンジンと依存ライブラリを含めて切り分ける。Release 全テストは通過する。警告整理とは別件として保留し、不正入力の拒否を検証するテストやバイト単位の fixture を弱めない。
-
 ## `Siv3D/include/Siv3D/Network.hpp` / macOS の到達性
 
 - `HasInternetConnectivity()` は同期問い合わせの動作を維持するため、非推奨の `SCNetworkReachability` の2呼び出しに限って警告を抑制している。[Apple の移行方針](https://developer.apple.com/documentation/systemconfiguration/scnetworkreachability-g7d)に沿って `NWPathMonitor` へ移行する際は、監視の開始・終了、初回通知前の戻り値、更新の同期、IPv4 / IPv6 と VPN の扱いを決める。呼び出しごとの監視生成や通知待ちをフレームループへ持ち込まない。接続成否は実際の通信結果で判断する既存契約を維持する。

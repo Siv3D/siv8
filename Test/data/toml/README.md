@@ -32,4 +32,4 @@
 - `invalid_invalid_number.toml`
   - Invalid numeric literal.
 - `invalid_non_utf8_latin1.toml`
-  - Latin-1 encoded file. Intended to fail Siv3D-side UTF-8 text reading before TOML parsing.
+  - The value contains the Latin-1 byte `0xE9`. Loading must reject the invalid UTF-8, and `LoadResult()` must report the offending source line.

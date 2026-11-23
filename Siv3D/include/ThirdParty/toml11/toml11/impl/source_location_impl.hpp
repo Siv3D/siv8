@@ -111,13 +111,14 @@ TOML11_INLINE std::ostringstream& format_line(std::ostringstream& oss,
         << std::right << linenum << " | "  << color::reset;
     for(const char c : line)
     {
-        if(std::isgraph(c) || c == ' ')
+        const auto byte = static_cast<unsigned char>(c);
+        if(std::isgraph(byte) || c == ' ')
         {
             oss << c;
         }
         else
         {
-            oss << show_char(c);
+            oss << show_char(byte);
         }
     }
     oss << '\n';

@@ -211,7 +211,7 @@ TEST_CASE("NinePatch.mesh_coverage_uv_and_budget")
 		std::array<Vertex2D, 16> vertices;
 		std::array<TriangleIndex, 18> triangles;
 		const auto count = detail::BuildNinePatchMesh(layout, u, v, Tint.toFloat4(), center, vertices, triangles);
-		CHECK(count <= (center ? 18 : 16));
+		CHECK(count <= (center ? 18u : 16u));
 		for (size_t y = 0; y < 4; ++y)
 		for (size_t x = 0; x < 4; ++x)
 		{
@@ -405,7 +405,7 @@ TEST_CASE("NinePatch.tiling_mesh_and_density_budget")
 				}
 			});
 		CHECK(valid);
-		CHECK(count == 2 * (centerSize.y == 1 ? 16900 : 8580));
+		CHECK(count == 2u * (centerSize.y == 1 ? 16900u : 8580u));
 		CHECK(batches == (count / 2 + detail::NinePatchTileBatchSize - 1) / detail::NinePatchTileBatchSize);
 		CHECK(maxBatch == detail::NinePatchTileBatchSize);
 		CHECK(area == Catch::Approx(1002.0 * 1002.0));

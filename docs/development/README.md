@@ -281,6 +281,17 @@ files together and validating both platform projects. The Windows test target
 uses its normal Release optimization settings, including LTCG. The external
 implementation opts out of the application's PCH and forced includes.
 
+Catch2 3.16.0 left MSVC optimization disabled for functions defined after its
+benchmarking header, including benchmark code in the test translation unit.
+The guard before `#pragma optimize("", on)` used `_MSVC_VER` in place of
+`_MSC_VER`. For a historical engine comparison, check the header used by each
+test build and rebuild its PCH and test objects with the corrected guard.
+Release flags such as `/O2` and `/LTCG` alone cannot establish that the timed
+code was optimized. To measure the effect of the guard itself, link both test
+variants to the same engine library and change only that line in an isolated
+copy of 3.16.0. Record the header patch with the results since both variants
+still report 3.16.0 in the XML.
+
 When updating, compare the existing files with their recorded release and verify
 the downloaded release assets against upstream's SHA-256 digests. Keep the
 distribution files unmodified; project settings and the shared adapter own local
