@@ -55,6 +55,47 @@ TEST_CASE("Base64Value")
 	}
 }
 
+TEST_CASE("Base64Value.decodeToMemory.OutputBoundary")
+{
+	const auto checkOutput = [](const std::string& input, const size_t expectedSize)
+		{
+			CAPTURE(input.size(), expectedSize);
+			const Base64Value value{ input };
+			REQUIRE(expectedSize <= value.getMaxBinarySize());
+			std::string storage(value.getMaxBinarySize() + 32, 'Z');
+			const auto result = value.decodeToMemory(storage.data() + 16);
+			REQUIRE(result);
+			CHECK((*result) == expectedSize);
+			CHECK(std::string_view{ storage }.substr(0, 16) == std::string(16, 'Z'));
+			CHECK(std::string_view{ storage }.substr(16, expectedSize) == std::string(expectedSize, '\0'));
+			// Check the actual output boundary even when whitespace makes the
+			// required allocation larger than the decoded payload.
+			CHECK(std::string_view{ storage }.substr(16 + expectedSize)
+				== std::string(storage.size() - 16 - expectedSize, 'Z'));
+		};
+
+	for (const size_t spaces : { 0, 1, 15, 16, 31, 32, 63, 64, 65, 127, 128, 129 })
+	{
+		for (const size_t chars : { 0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 62, 63, 64, 66, 67, 68, 126, 127, 128, 510, 511, 512 })
+		{
+			for (const bool padded : { false, true })
+			{
+				CAPTURE(spaces, chars, padded);
+				std::string input = (std::string(spaces, ' ') + std::string(chars, 'A'));
+				if (padded && (chars % 4))
+				{
+					input.append(4 - chars % 4, '=');
+				}
+				checkOutput(input, (chars * 3 / 4));
+				checkOutput(input + "\t\r\n", (chars * 3 / 4));
+			}
+		}
+	}
+
+	checkOutput(std::string(64, 'A') + std::string(64, ' ') + std::string(64, 'A'), 96);
+	checkOutput(std::string(64, 'A') + std::string(1000, ' ') + "AAAA", 51);
+}
+
 TEST_CASE("Base64Value.encodeSelfReference")
 {
 	for (const size_t length : { 1, 2, 3, 7, 15, 16, 22, 23, 24, 31, 32, 63, 64, 65, 127, 128, 129, 255, 256, 257, 1024 })

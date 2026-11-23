@@ -291,7 +291,7 @@
 		F9070B022B9DEB5900383E4D /* format.cc in Sources */ = {isa = PBXBuildFile; fileRef = F9070A6E2B9DEB5900383E4D /* format.cc */; };
 		F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070A702B9DEB5900383E4D /* levenshtein-sse.hpp */; };
 		F9070B052B9DEB5900383E4D /* RFC1321.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070A742B9DEB5900383E4D /* RFC1321.hpp */; };
-		F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070A762B9DEB5900383E4D /* simdutf.cpp */; };
+		F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070A762B9DEB5900383E4D /* simdutf.cpp */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
 		F9070B072B9DEB5900383E4D /* simdutf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070A772B9DEB5900383E4D /* simdutf.h */; };
 		F9070B082B9DEB5900383E4D /* uuid.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070A792B9DEB5900383E4D /* uuid.h */; };
 		F9070B092B9DEB5900383E4D /* wyhash.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070A7B2B9DEB5900383E4D /* wyhash.h */; };
