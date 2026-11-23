@@ -92,7 +92,7 @@ when launching the macOS runner or the executable to list cases. Windows' runner
 reserves listing options because it requires actual test execution. Unknown
 options fail instead of being ignored.
 
-Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.0/docs/command-line.md):
+Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.1/docs/command-line.md):
 `Array*`, `*Mesh3D*`, exact names, and tags are supported. This alias does not
 emulate the former framework's full filter syntax. The `[.benchmark]` tag hides
 the opt-in TextFileReader benchmark from the default suite. An explicit matching
@@ -273,13 +273,28 @@ and [measure the affected upload on the backend](../renderer2d/README.md#measuri
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
 and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the
 unmodified amalgamated distribution from the pinned
-[v3.16.0 release](https://github.com/catchorg/Catch2/releases/tag/v3.16.0), under the
+[v3.16.1 release](https://github.com/catchorg/Catch2/releases/tag/v3.16.1), under the
 [Boost Software License](../../Test/ThirdParty/Catch2/LICENSE.txt). Both test
 projects compile the implementation directly with `CATCH_AMALGAMATED_CUSTOM_MAIN`;
 `RunTest()` owns the session. Updating Catch2 requires replacing both distribution
 files together and validating both platform projects. The Windows test target
 uses its normal Release optimization settings, including LTCG. The external
 implementation opts out of the application's PCH and forced includes.
+
+When updating, compare the existing files with their recorded release and verify
+the downloaded release assets against upstream's SHA-256 digests. Keep the
+distribution files unmodified; project settings and the shared adapter own local
+configuration. Catch2 is a test-only dependency, so its license is retained here
+and its version is listed under test dependencies in `ThirdParty.md`.
+
+Run `Test::*`, `ImageDrawingTestHelper.*`, and `MetalFrameErrors.*` with both
+console and XML reporters before the full host suite. The image-helper tests
+also check the custom `Image` stringifier and matcher diagnostics. Verify the
+XML totals and captured-output paths used by the Windows runner, including
+failure, skip-only, and unmatched-filter runs.
+Passing macOS reporter checks does not validate the Windows process runner or
+MSVC-specific compilation behavior. Catch2 reporter callbacks must not throw;
+keep fallible setup in reporter constructors if custom reporters are added.
 
 [Siv3DTestFramework.hpp](../../Test/Siv3DTestFramework.hpp) supplies the shared
 framework include, argument adapter and `Test::Approx`. The comparison helper
