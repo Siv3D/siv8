@@ -867,9 +867,10 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ostream.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ranges.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Environment.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeNoTable.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeCompact.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanoflann\nanoflann.hpp" />
@@ -4211,6 +4212,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases32.txt" />
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases64Compact.txt" />
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\LICENSE" />
     <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeTable10.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

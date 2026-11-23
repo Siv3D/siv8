@@ -24,7 +24,7 @@ Name | Version
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 12.3.2
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
-[libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
+[libcpprime](https://github.com/sortA0329/libcpprime) | v1.4.2
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.1.4.1
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.58

@@ -238,6 +238,7 @@
 		F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */; };
 		F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */; };
 		8FB4128E7E924C45BC0603B9 /* Test_KDTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED812E279DE34CA0BCE823D7 /* Test_KDTree.cpp */; };
+		16479008E0BF40E4A7D93CA7 /* Test_IsPrime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E38181B8C0640C991B42D97 /* Test_IsPrime.cpp */; };
 		4B45F6D2A9974D58BCEC1A77 /* Test_ParallelHashmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D10518B294E4D3FAB46AEE1 /* Test_ParallelHashmap.cpp */; };
 		F90703002B9DAEB900383E4D /* Test_Indexed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */; };
 		F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C12B9DAEB900383E4D /* Test_Memory.cpp */; };
@@ -648,7 +649,7 @@
 		F90F2BE32D91861F00CC89CA /* SivImageProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */; };
 		F90F2BE52D9278A400CC89CA /* IsPrime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE42D9278A400CC89CA /* IsPrime.hpp */; };
 		F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */; };
-		F90F2BEC2D9278DE00CC89CA /* IsPrimeNoTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */; };
+		F90F2BEC2D9278DE00CC89CA /* IsPrimeCompact.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BEA2D9278DE00CC89CA /* IsPrimeCompact.hpp */; };
 		F90F2BED2D9278DE00CC89CA /* IsPrimeCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */; };
 		F90F79DC2FA7B6590077F398 /* xchar.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79DA2FA7B6590077F398 /* xchar.h */; };
 		F90F79DD2FA7B6590077F398 /* base.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D32FA7B6590077F398 /* base.h */; };
@@ -2933,6 +2934,7 @@
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
 		F99881382F40B4A200C8991D /* Utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881372F40B4A100C8991D /* Utils.hpp */; };
+		E1C3B105F392439DA1A4EDF6 /* Environment.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 36D3FB872FC7461DB2D7770F /* Environment.hpp */; };
 		F998813C2F40B4EB00C8991D /* Bezier2.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998813B2F40B4EB00C8991D /* Bezier2.ipp */; };
 		F998813E2F40B4F600C8991D /* Bezier3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998813D2F40B4F600C8991D /* Bezier3.ipp */; };
 		F99881412F40B51200C8991D /* SivBezier2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998813F2F40B51200C8991D /* SivBezier2.cpp */; };
@@ -3749,6 +3751,7 @@
 		F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FunctionRef.cpp; sourceTree = "<group>"; };
 		F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Hash.cpp; sourceTree = "<group>"; };
 		ED812E279DE34CA0BCE823D7 /* Test_KDTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_KDTree.cpp; sourceTree = "<group>"; };
+		7E38181B8C0640C991B42D97 /* Test_IsPrime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_IsPrime.cpp; sourceTree = "<group>"; };
 		1D10518B294E4D3FAB46AEE1 /* Test_ParallelHashmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ParallelHashmap.cpp; sourceTree = "<group>"; };
 		F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Indexed.cpp; sourceTree = "<group>"; };
 		F90702C12B9DAEB900383E4D /* Test_Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Memory.cpp; sourceTree = "<group>"; };
@@ -4167,7 +4170,7 @@
 		F90F2BE42D9278A400CC89CA /* IsPrime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime.hpp; sourceTree = "<group>"; };
 		F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime_impl.ipp; sourceTree = "<group>"; };
 		F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeCommon.hpp; sourceTree = "<group>"; };
-		F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeNoTable.hpp; sourceTree = "<group>"; };
+		F90F2BEA2D9278DE00CC89CA /* IsPrimeCompact.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeCompact.hpp; sourceTree = "<group>"; };
 		F90F79D32FA7B6590077F398 /* base.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = base.h; sourceTree = "<group>"; };
 		F90F79D42FA7B6590077F398 /* chrono.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = chrono.h; sourceTree = "<group>"; };
 		F90F79D52FA7B6590077F398 /* color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = color.h; sourceTree = "<group>"; };
@@ -6556,6 +6559,9 @@
 		F99881352F40B4A100C8991D /* IsPrimeBases32.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IsPrimeBases32.txt; sourceTree = "<group>"; };
 		F99881362F40B4A100C8991D /* IsPrimeTable10.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IsPrimeTable10.txt; sourceTree = "<group>"; };
 		F99881372F40B4A100C8991D /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Utils.hpp; sourceTree = "<group>"; };
+		36D3FB872FC7461DB2D7770F /* Environment.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Environment.hpp; sourceTree = "<group>"; };
+		41D6DE729B1C452BB4C8156C /* IsPrimeBases64Compact.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IsPrimeBases64Compact.txt; sourceTree = "<group>"; };
+		7D75D986BC074EC49DBB6F86 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F998813B2F40B4EB00C8991D /* Bezier2.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier2.ipp; sourceTree = "<group>"; };
 		F998813D2F40B4F600C8991D /* Bezier3.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3.ipp; sourceTree = "<group>"; };
 		F998813F2F40B51200C8991D /* SivBezier2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBezier2.cpp; sourceTree = "<group>"; };
@@ -7448,6 +7454,7 @@
 				F97E6DB82D7B3B9A0066E408 /* Test_Grid.cpp */,
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				ED812E279DE34CA0BCE823D7 /* Test_KDTree.cpp */,
+				7E38181B8C0640C991B42D97 /* Test_IsPrime.cpp */,
 				1D10518B294E4D3FAB46AEE1 /* Test_ParallelHashmap.cpp */,
 				F90B02010000000000000001 /* Test_DirectoryWatcher.cpp */,
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
@@ -9785,6 +9792,8 @@
 				F99881352F40B4A100C8991D /* IsPrimeBases32.txt */,
 				F99881362F40B4A100C8991D /* IsPrimeTable10.txt */,
 				F99881372F40B4A100C8991D /* Utils.hpp */,
+				36D3FB872FC7461DB2D7770F /* Environment.hpp */,
+				41D6DE729B1C452BB4C8156C /* IsPrimeBases64Compact.txt */,
 				F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */,
 			);
 			path = internal;
@@ -9794,7 +9803,8 @@
 			isa = PBXGroup;
 			children = (
 				F90F2BE92D9278DE00CC89CA /* internal */,
-				F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */,
+				F90F2BEA2D9278DE00CC89CA /* IsPrimeCompact.hpp */,
+				7D75D986BC074EC49DBB6F86 /* LICENSE */,
 			);
 			path = libcpprime;
 			sourceTree = "<group>";
@@ -15255,7 +15265,7 @@
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
-				F90F2BEC2D9278DE00CC89CA /* IsPrimeNoTable.hpp in Headers */,
+				F90F2BEC2D9278DE00CC89CA /* IsPrimeCompact.hpp in Headers */,
 				F90F2BED2D9278DE00CC89CA /* IsPrimeCommon.hpp in Headers */,
 				F98600632BCFBB53006A4C0F /* SkOverdrawColorFilter.h in Headers */,
 				F98603782BCFBB54006A4C0F /* SkOTTable_fvar.h in Headers */,
@@ -16317,6 +16327,7 @@
 				F9FD0BA62D1D334700A584CE /* MTLFence.hpp in Headers */,
 				F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */,
 				F99881382F40B4A200C8991D /* Utils.hpp in Headers */,
+				E1C3B105F392439DA1A4EDF6 /* Environment.hpp in Headers */,
 				F9FD0BA72D1D334700A584CE /* MTLIOCommandQueue.hpp in Headers */,
 				F9FD0BA82D1D334700A584CE /* MTLCounters.hpp in Headers */,
 				F9FD0BA92D1D334700A584CE /* MTLResidencySet.hpp in Headers */,
@@ -17479,6 +17490,7 @@
 				F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */,
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				8FB4128E7E924C45BC0603B9 /* Test_KDTree.cpp in Sources */,
+				16479008E0BF40E4A7D93CA7 /* Test_IsPrime.cpp in Sources */,
 				4B45F6D2A9974D58BCEC1A77 /* Test_ParallelHashmap.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
 				F90F79E72FA85F6E0077F398 /* Test_Step2D.cpp in Sources */,

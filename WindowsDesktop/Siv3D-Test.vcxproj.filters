@@ -76,6 +76,9 @@
     <ClCompile Include="..\Test\Test_KDTree.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_IsPrime.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ParallelHashmap.cpp">
       <Filter>Test</Filter>
     </ClCompile>

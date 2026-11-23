@@ -33,7 +33,7 @@ namespace s3d
 				[[nodiscard]]
 				static constexpr bool operator ()(uint64 n) noexcept
 				{
-					return cppr::IsPrimeNoTable(n);
+					return cppr::IsPrimeCompact(n);
 				}
 			};
 		}

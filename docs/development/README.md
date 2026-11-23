@@ -11,7 +11,8 @@ For vendored library integration and updates, see
 [simdutf maintenance](simdutf.md),
 [Parallel Hashmap maintenance](parallel-hashmap.md),
 [Wuffs maintenance](wuffs.md), [nanoflann maintenance](nanoflann.md),
-and [stb_image_resize2 maintenance](stb-image-resize2.md).
+[stb_image_resize2 maintenance](stb-image-resize2.md),
+and [libcpprime maintenance](libcpprime.md).
 
 ## Build and test
 

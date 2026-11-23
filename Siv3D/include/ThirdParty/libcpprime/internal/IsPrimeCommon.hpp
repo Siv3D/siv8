@@ -1,8 +1,8 @@
 /**
  *
- * libcpprime https://github.com/Rac75116/libcpprime
+ * libcpprime https://github.com/sortA0329/libcpprime
  *
- * Copyright (c) 2025 Rac75116
+ * Copyright (c) 2026 sortA
  * SPDX-License-Identifier: MIT
  *
  **/
@@ -10,7 +10,7 @@
  *
  * The algorithm in this library is based on Bradley Berg's method.
  * See this page for more information:
- *https://www.techneon.com/download/is.prime.32.base.data
+ * https://www.techneon.com/download/is.prime.32.base.data
  *
  * Copyright 2018 Bradley Berg   < (My last name) @ t e c h n e o n . c o m >
  *
@@ -30,6 +30,7 @@
 
 #include <cstdint>
 
+#include "Environment.hpp"
 #include "Utils.hpp"
 
 namespace cppr {
@@ -41,7 +42,6 @@ class MontgomeryModint64Impl {
     std::uint64_t mod_ = 0, rs = 0, nr = 0, np = 0;
 
     CPPR_INTERNAL_CONSTEXPR_INLINE std::uint64_t reduce(const std::uint64_t n) const noexcept {
-        // Montgomery reduction of a 128-bit value with implicit low half `n`.
         std::uint64_t q = n * nr;
         if CPPR_INTERNAL_IF_CONSTEXPR (Strict) {
             std::uint64_t m = Mulu128High(q, mod_);
@@ -68,7 +68,7 @@ class MontgomeryModint64Impl {
     }
 
    public:
-    CPPR_INTERNAL_CONSTEXPR MontgomeryModint64Impl(std::uint64_t n) noexcept {
+    CPPR_INTERNAL_CONSTEXPR_INLINE MontgomeryModint64Impl(std::uint64_t n) noexcept {
         // Precondition: n is an odd modulus > 2.
         // Internals:
         // - rs: R^2 mod n (with R = 2^64) for Montgomery domain conversion
@@ -108,13 +108,13 @@ class MontgomeryModint64Impl {
             return np;
         }
     }
-    CPPR_INTERNAL_CONSTEXPR_INLINE std::uint64_t neg(std::uint64_t x) const noexcept {
+    CPPR_INTERNAL_CONSTEXPR_INLINE std::uint64_t mone() const noexcept {
         if CPPR_INTERNAL_IF_CONSTEXPR (Strict) {
-            Assume(x < mod_);
-            return (mod_ - x) * (x != 0);
+            Assume(np != 0 && np < mod_);
+            return mod_ - np;
         } else {
-            Assume(x < 2 * mod_);
-            return (2 * mod_ - x) * (x != 0);
+            Assume(np != 0 && np < 2 * mod_);
+            return 2 * mod_ - np;
         }
     }
     CPPR_INTERNAL_CONSTEXPR_INLINE std::uint64_t mul(std::uint64_t x, std::uint64_t y) const noexcept {
@@ -167,7 +167,6 @@ class MontgomeryModint64Impl {
 };
 
 CPPR_INTERNAL_CONSTEXPR_INLINE bool TrialDivision32(const std::uint32_t n) noexcept {
-    // Branchless screening against a fixed set of small primes.
     return (n & 1) == 0 || 1431655766u > (0u - 1431655765u) * n || 858993460u > (0u - 858993459u) * n || 613566757u > (0u - 1227133513u) * n || 390451573u > (0u - 1171354717u) * n ||
            330382100u > (0u - 991146299u) * n || 252645136u > (0u - 252645135u) * n || 226050911u > 678152731u * n || 186737709u > (0u - 373475417u) * n;
 }
@@ -175,7 +174,7 @@ CPPR_INTERNAL_CONSTEXPR_INLINE bool TrialDivision32(const std::uint32_t n) noexc
 constexpr std::uint16_t Bases32[256] = {
 #include "IsPrimeBases32.txt"
 };
-CPPR_INTERNAL_CONSTEXPR bool IsPrime32(const std::uint32_t x) noexcept {
+CPPR_INTERNAL_CONSTEXPR_INLINE bool IsPrime32(const std::uint32_t x) noexcept {
     const std::uint32_t h = x * 0xad625b89;
     std::uint32_t d = x - 1;
     std::uint32_t pw = static_cast<std::uint32_t>(Bases32[h >> 24]);
@@ -183,7 +182,7 @@ CPPR_INTERNAL_CONSTEXPR bool IsPrime32(const std::uint32_t x) noexcept {
     d >>= s;
     if (x < (1u << 21)) {
         std::uint64_t m = 0xffffffffffffffff / x + 1;
-        auto mul = [m, x](std::uint32_t a, std::uint32_t b) -> std::uint32_t { return static_cast<std::uint32_t>(Mulu128High(static_cast<std::uint64_t>(a) * b * m, x)); };
+        auto mul = [m, x](std::uint32_t a, std::uint32_t b) CPPR_INTERNAL_INLINE_LAMBDA -> std::uint32_t { return static_cast<std::uint32_t>(Mulu128High(static_cast<std::uint64_t>(a) * b * m, x)); };
         std::uint32_t cur = pw;
         if (d != 1) {
             pw = mul(pw, pw);
@@ -229,7 +228,6 @@ CPPR_INTERNAL_CONSTEXPR bool IsPrime32(const std::uint32_t x) noexcept {
 }
 
 CPPR_INTERNAL_CONSTEXPR_INLINE bool TrialDivision64(const std::uint64_t n) noexcept {
-    // Branchless screening against a fixed set of small primes.
     return (n & 1) == 0 || 6148914691236517205u >= 12297829382473034411u * n || 3689348814741910323u >= 14757395258967641293u * n || 2635249153387078802u >= 7905747460161236407u * n ||
            1676976733973595601u >= 3353953467947191203u * n || 1418980313362273201u >= 5675921253449092805u * n || 1085102592571150095u >= 17361641481138401521u * n;
 }
