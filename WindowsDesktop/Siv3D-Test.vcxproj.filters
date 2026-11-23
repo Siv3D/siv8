@@ -73,6 +73,9 @@
     <ClCompile Include="..\Test\Test_Hash.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ParallelHashmap.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Step.cpp">
       <Filter>Test</Filter>
     </ClCompile>

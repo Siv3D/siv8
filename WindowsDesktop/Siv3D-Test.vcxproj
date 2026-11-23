@@ -295,6 +295,7 @@
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
+    <ClCompile Include="..\Test\Test_ParallelHashmap.cpp" />
     <ClCompile Include="..\Test\Test_Indexed.cpp" />
     <ClCompile Include="..\Test\Test_Memory.cpp" />
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />

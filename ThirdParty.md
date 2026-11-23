@@ -59,7 +59,7 @@ Name | Version
 [skia](https://github.com/google/skia) |
 [stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.18
 [stduuid](https://github.com/mariusbancila/stduuid) | 
-[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
+[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.1.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [toml11](https://github.com/ToruNiina/toml11) | 
 [variant](https://github.com/mapbox/variant) | 

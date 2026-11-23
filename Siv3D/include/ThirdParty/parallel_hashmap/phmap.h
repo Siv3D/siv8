@@ -555,7 +555,7 @@ inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 //   FULL -> DELETED
 // --------------------------------------------------------------------------
 inline void ConvertDeletedToEmptyAndFullToDeleted(
-    ctrl_t* ctrl, size_t capacity) 
+    ctrl_t* PHMAP_RESTRICT ctrl, size_t capacity)
 {
     assert(ctrl[capacity] == kSentinel);
     assert(IsValidCapacity(capacity));
@@ -1245,6 +1245,7 @@ public:
     ~raw_hash_set() { destroy_slots(); }
 
     iterator begin() {
+        if (empty()) return end();
         auto it = iterator_at(0);
         it.skip_empty_or_deleted();
         return it;
@@ -1704,7 +1705,7 @@ public:
         }
         // bitor is a faster way of doing `max` here. We will round up to the next
         // power-of-2-minus-1, so bitor is good enough.
-        auto m = NormalizeCapacity((std::max)(n, size()));
+        auto m = NormalizeCapacity(n | GrowthToLowerboundCapacity(size()));
         // n == 0 unconditionally rehashes as per the standard.
         if (n == 0 || m > capacity_) {
             resize(m);
@@ -1857,7 +1858,7 @@ private:
     friend struct phmap::priv::hashtable_debug_internal::HashtableDebugAccess;
 
     template <class K = key_type>
-    bool find_impl(const key_arg<K>& key, size_t hashval, size_t& offset) {
+    bool find_impl(const key_arg<K>& PHMAP_RESTRICT key, size_t hashval, size_t& PHMAP_RESTRICT offset) {
         PHMAP_IF_CONSTEXPR (!std_alloc_t::value) {
             // ctrl_ could be nullptr
             if (!ctrl_)
@@ -2034,7 +2035,7 @@ private:
                             std::is_same<typename Policy::is_flat, std::false_type>::value)) {
             // node map, or not trivially destructible... we  need to iterate and destroy values one by one
             // std::cout << "either this is a node map or " << type_name<typename PolicyTraits::value_type>()  << " is not trivially_destructible\n";
-            for (size_t i = 0; i != capacity_; ++i) {
+            for (size_t i = 0, cnt = capacity_; i != cnt; ++i) {
                 if (IsFull(ctrl_[i])) {
                     PolicyTraits::destroy(&alloc_ref(), slots_ + i);
                 }
@@ -2153,7 +2154,7 @@ private:
         }
     }
 
-    bool has_element(const value_type& elem, size_t hashval) const {
+    bool has_element(const value_type& PHMAP_RESTRICT elem, size_t hashval) const {
         PHMAP_IF_CONSTEXPR (!std_alloc_t::value) {
             // ctrl_ could be nullptr
             if (!ctrl_)
@@ -2220,7 +2221,7 @@ private:
 
 protected:
     template <class K>
-    size_t _find_key(const K& key, size_t hashval) {
+    size_t _find_key(const K& PHMAP_RESTRICT key, size_t hashval) {
         PHMAP_IF_CONSTEXPR (!std_alloc_t::value) {
             // ctrl_ could be nullptr
             if (!ctrl_)
@@ -3159,8 +3160,8 @@ public:
         Inner& inner    = sets_[subidx(hashval)];
         auto&  set      = inner.set_;
         UniqueLock m(inner);
-        typename EmbeddedSet::template InsertSlotWithHash<true> f { inner, std::move(*slot), hashval };
-        return make_rv(PolicyTraits::apply(f, elem));
+        typename EmbeddedSet::template InsertSlotWithHash<true> f { inner.set_, std::move(*slot), hashval };
+        return make_rv(&inner, PolicyTraits::apply(std::move(f), elem));
     }
 
     template <class... Args>
@@ -3227,15 +3228,15 @@ public:
     std::pair<iterator, bool> emplace(Args&&... args) {
         typename phmap::aligned_storage<sizeof(slot_type), alignof(slot_type)>::type raw;
         slot_type* slot = reinterpret_cast<slot_type*>(&raw);
-        size_t hashval  = this->hash(PolicyTraits::key(slot));
-
         PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
+
         const auto& elem = PolicyTraits::element(slot);
+        size_t hashval   = this->hash(PolicyTraits::key(slot));
         Inner& inner     = sets_[subidx(hashval)];
         auto&  set       = inner.set_;
         UniqueLock m(inner);
-        typename EmbeddedSet::template InsertSlotWithHash<true> f { inner, std::move(*slot), hashval };
-        return make_rv(PolicyTraits::apply(f, elem));
+        typename EmbeddedSet::template InsertSlotWithHash<true> f { inner.set_, std::move(*slot), hashval };
+        return make_rv(&inner, PolicyTraits::apply(std::move(f), elem));
     }
 
     template <class... Args>
@@ -3296,9 +3297,17 @@ public:
     // and if_contains returns true. This is a const API and lambda should not modify the value
     // -----------------------------------------------------------------------------------------
     template <class K = key_type, class F>
-    bool if_contains(const key_arg<K>& key, F&& f) const {
+    bool if_contains_with_hash(const key_arg<K>& key, size_t hashval, F&& f) const {
         return const_cast<parallel_hash_set*>(this)->template 
-            modify_if_impl<K, F, SharedLock>(key, std::forward<F>(f));
+            modify_if_impl_with_hash<K, F, SharedLock>(key, hashval, std::forward<F>(f));
+    }
+
+    // if set contains key, lambda is called with the value_type (under read lock protection),
+    // and if_contains returns true. This is a const API and lambda should not modify the value
+    // -----------------------------------------------------------------------------------------
+    template <class K = key_type, class F>
+    bool if_contains(const key_arg<K>& key, F&& f) const {
+        return if_contains_with_hash<K, F>(key, this->hash(key), std::forward<F>(f));
     }
 
     // if set contains key, lambda is called with the value_type  without read lock protection,
@@ -3321,16 +3330,22 @@ public:
 
     // -----------------------------------------------------------------------------------------
     template <class K = key_type, class F, class L>
-    bool modify_if_impl(const key_arg<K>& key, F&& f) {
+    bool modify_if_impl_with_hash(const key_arg<K>& key, size_t hashval, F&& f) {
 #if __cplusplus >= 201703L
         static_assert(std::is_invocable<F, value_type&>::value);
 #endif
         L m;
-        auto ptr = this->template find_ptr<K, L>(key, this->hash(key), m);
+        auto ptr = this->template find_ptr<K, L>(key, hashval, m);
         if (ptr == nullptr)
             return false;
         std::forward<F>(f)(*ptr);
         return true;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    template <class K = key_type, class F, class L>
+    bool modify_if_impl(const key_arg<K>& key, F&& f) {
+        return modify_if_impl_with_hash<K, F, L>(key, this->hash(key), std::forward<F>(f));
     }
 
     // if map contains key, lambda is called with the mapped value  (under write lock protection).
@@ -3376,8 +3391,7 @@ public:
     // returns true if key was not already present, false otherwise.
     // ---------------------------------------------------------------------------------------
     template <class K = key_type, class FExists, class FEmplace>
-    bool lazy_emplace_l(const key_arg<K>& key, FExists&& fExists, FEmplace&& fEmplace) {
-        size_t hashval = this->hash(key);
+    bool lazy_emplace_l_with_hash(const key_arg<K>& key, size_t hashval, FExists&& fExists, FEmplace&& fEmplace) {
         UniqueLock m;
         auto res = this->find_or_prepare_insert_with_hash(hashval, key, m);
         Inner* inner = std::get<0>(res);
@@ -3391,6 +3405,19 @@ public:
             std::forward<FExists>(fExists)(const_cast<value_type &>(*it)); 
         }
         return std::get<2>(res);
+    }
+
+    // if map already  contains key, the first lambda is called with the mapped value (under
+    // write lock protection) and can update the mapped value.
+    // if map does not contains key, the second lambda is called and it should invoke the
+    // passed constructor to construct the value
+    // returns true if key was not already present, false otherwise.
+    // ---------------------------------------------------------------------------------------
+    template <class K = key_type, class FExists, class FEmplace>
+    bool lazy_emplace_l(const key_arg<K>& key, FExists&& fExists, FEmplace&& fEmplace) {
+        return lazy_emplace_l_with_hash<K, FExists, FEmplace>(key, this->hash(key),
+                                                              std::forward<FExists>(fExists),
+                                                              std::forward<FEmplace>(fEmplace));
     }
 
     // Extension API: support iterating over all values
@@ -3559,7 +3586,8 @@ public:
         class K = key_type,
         typename std::enable_if<!std::is_same<K, iterator>::value, int>::type = 0>
     node_type extract(const key_arg<K>& key) {
-        auto it = find(key);
+        UniqueLock m;
+        auto it = this->template find<K, UniqueLock>(key, this->hash(key), m);
         return it == end() ? node_type() : extract(const_iterator{it});
     }
 
@@ -3591,6 +3619,8 @@ public:
 
     void reserve(size_t n) 
     {
+        if (n <= capacity())
+            return;
         size_t target = GrowthToLowerboundCapacity(n);
         size_t normalized = num_tables * NormalizeCapacity(n / num_tables);
         rehash(normalized > target ? normalized : target); 
