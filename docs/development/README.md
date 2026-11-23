@@ -12,7 +12,7 @@ For vendored library integration and updates, see
 [Parallel Hashmap maintenance](parallel-hashmap.md),
 [Wuffs maintenance](wuffs.md), [nanoflann maintenance](nanoflann.md),
 [stb_image_resize2 maintenance](stb-image-resize2.md),
-and [libcpprime maintenance](libcpprime.md).
+[libcpprime maintenance](libcpprime.md), and [polylabel maintenance](polylabel.md).
 
 ## Build and test
 
