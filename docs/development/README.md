@@ -7,7 +7,8 @@ Doxygen changes, follow [API documentation](api-documentation.md).
 
 For the vendored window library and its local integration changes, see
 [GLFW maintenance](glfw.md). For floating-point parsing, see
-[fast_float maintenance](fast-float.md).
+[fast_float maintenance](fast-float.md); for string formatting, see
+[fmt maintenance](fmt.md).
 
 ## Build and test
 
