@@ -32,6 +32,7 @@
 		37C087F1A38D0BB48EB7A454 /* ScopedQuadWarp2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */; };
 		3C12E829669A3CAA88A3728F /* Test_BigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 315A1A954557FA476A89D60D /* Test_BigFloat.cpp */; };
 		D79CD8A1F6B442C7B26DA180 /* Test_ParseFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34CC148BB5DE4222A088F612 /* Test_ParseFloat.cpp */; };
+		46C07A8DCD8D4D33B8AD3796 /* Test_Miniaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 79B95FB7A8D442C99217B6C1 /* Test_Miniaudio.cpp */; };
 		3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */; };
 		40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */; };
 		422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */; };
@@ -3532,6 +3533,7 @@
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		315A1A954557FA476A89D60D /* Test_BigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BigFloat.cpp; sourceTree = "<group>"; };
 		34CC148BB5DE4222A088F612 /* Test_ParseFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ParseFloat.cpp; sourceTree = "<group>"; };
+		79B95FB7A8D442C99217B6C1 /* Test_Miniaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Miniaudio.cpp; sourceTree = "<group>"; };
 		36D38289ABC948A9810E2D02 /* Test_Finite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Finite.cpp; sourceTree = "<group>"; };
 		37B19946552E772146018900 /* Test_ArrayLike.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayLike.cpp; sourceTree = "<group>"; };
 		A313451F7F14915A56D7CF7F /* Test_DisjointSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DisjointSet.cpp; sourceTree = "<group>"; };
@@ -7399,6 +7401,7 @@
 				B369622B957860456E509653 /* Test_BigInt.cpp */,
 				315A1A954557FA476A89D60D /* Test_BigFloat.cpp */,
 				34CC148BB5DE4222A088F612 /* Test_ParseFloat.cpp */,
+				79B95FB7A8D442C99217B6C1 /* Test_Miniaudio.cpp */,
 				F90702B82B9DAEB900383E4D /* Test_Byte.cpp */,
 				F90702B92B9DAEB900383E4D /* Test_Color.cpp */,
 				F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */,
@@ -17410,6 +17413,7 @@
 				6B33913B595F8CB0EDBA09B1 /* Test_BigInt.cpp in Sources */,
 				3C12E829669A3CAA88A3728F /* Test_BigFloat.cpp in Sources */,
 				D79CD8A1F6B442C7B26DA180 /* Test_ParseFloat.cpp in Sources */,
+				46C07A8DCD8D4D33B8AD3796 /* Test_Miniaudio.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
 				F90F2BE02D91749500CC89CA /* Test_BinaryFileReader.cpp in Sources */,
