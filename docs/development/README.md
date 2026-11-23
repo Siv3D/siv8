@@ -9,8 +9,8 @@ For vendored library integration and updates, see
 [GLFW maintenance](glfw.md), [fast_float maintenance](fast-float.md),
 [fmt maintenance](fmt.md), [miniaudio maintenance](miniaudio.md),
 [simdutf maintenance](simdutf.md),
-[Parallel Hashmap maintenance](parallel-hashmap.md), and
-[Wuffs maintenance](wuffs.md).
+[Parallel Hashmap maintenance](parallel-hashmap.md),
+[Wuffs maintenance](wuffs.md), and [nanoflann maintenance](nanoflann.md).
 
 ## Build and test
 

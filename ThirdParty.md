@@ -38,7 +38,7 @@ Name | Version
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13.1
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.9.0
+[nanoflann](https://github.com/jlblancoc/nanoflann) | 2.0.2
 [Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.051
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
