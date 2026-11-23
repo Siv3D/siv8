@@ -8,8 +8,9 @@ Doxygen changes, follow [API documentation](api-documentation.md).
 For vendored library integration and updates, see
 [GLFW maintenance](glfw.md), [fast_float maintenance](fast-float.md),
 [fmt maintenance](fmt.md), [miniaudio maintenance](miniaudio.md),
-[simdutf maintenance](simdutf.md), and
-[Parallel Hashmap maintenance](parallel-hashmap.md).
+[simdutf maintenance](simdutf.md),
+[Parallel Hashmap maintenance](parallel-hashmap.md), and
+[Wuffs maintenance](wuffs.md).
 
 ## Build and test
 
