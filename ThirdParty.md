@@ -57,7 +57,7 @@ Name | Version
 [serial_cpp](https://github.com/gbionics/serial_cpp) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 9.4.0
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.18
+[stb_image_resize2.h](https://github.com/nothings/stb_image_resize/blob/main/stb_image_resize2.h) | 2.51
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.1.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 

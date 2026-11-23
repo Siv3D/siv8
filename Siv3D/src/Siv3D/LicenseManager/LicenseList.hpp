@@ -926,6 +926,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(stb_image_resize2.h)-",
+R"-(Copyright (c) 2017 Sean Barrett)-",
+MIT_LICENSE
+},
+
+{
 R"-(stduuid)-",
 R"-()-",
 MIT_LICENSE
