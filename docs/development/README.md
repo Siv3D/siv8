@@ -99,6 +99,37 @@ the opt-in TextFileReader benchmark from the default suite. An explicit matching
 name, wildcard, or tag runs it; there is no `--no-skip` option. Put
 `~[benchmark]` before a name pattern to exclude benchmark cases.
 
+### Windows Release test optimization
+
+The [Windows test application](../../WindowsDesktop/Siv3D-Test.vcxproj) defaults
+to `/O2` with `WholeProgramOptimization=false` for Release x64. MSVC 14.52
+(v145) can crash during link-time code generation (LTCG) when linking the full
+test executable. The engine static library already compiles without `/GL`.
+The test setting keeps optimization within each translation unit and moves
+code generation from the link back to the compilation of each test source.
+In curve benchmarks, caching spline distance queries gave a large speedup
+with either setting, while two nearly tied methods could change order.
+
+Build both sides of a performance comparison with the same toolset and LTCG
+setting. For a close result, a comparison with a historical LTCG build, or a
+performance claim about an application that ships with LTCG, repeat the
+measurement with LTCG enabled on the target that contains the timed caller.
+Record the flags and target alongside the timings.
+
+Check the [Visual Studio Stable release history](https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-history)
+monthly for a new MSVC toolset or relevant compiler or linker fixes. When
+MSBuild selects such a version, record the compiler and linker versions and
+compare both settings in separate build trees using the same sources and
+Release engine library. To enable LTCG for the
+test application, append `/p:WholeProgramOptimization=true` to the
+[application-only rebuild command](#windows-incremental-build-failures).
+Repeat clean builds of the full test target, then edit one representative test
+source and build again with the same setting to measure a developer relink.
+Record compile, link and total times. Run the full suite with `-SkipBuild`
+on each configuration's verified executable and check the complete XML reports.
+Consider restoring LTCG when the full target links reliably, the suite passes,
+and the measured benefit justifies its cost during development.
+
 ### Draw submission benchmark
 
 The opt-in [draw submission benchmark](../../Test/Test_Renderer2DDrawSubmission.cpp)
@@ -277,9 +308,9 @@ unmodified amalgamated distribution from the pinned
 [Boost Software License](../../Test/ThirdParty/Catch2/LICENSE.txt). Both test
 projects compile the implementation directly with `CATCH_AMALGAMATED_CUSTOM_MAIN`;
 `RunTest()` owns the session. Updating Catch2 requires replacing both distribution
-files together and validating both platform projects. The Windows test target
-uses its normal Release optimization settings, including LTCG. The external
-implementation opts out of the application's PCH and forced includes.
+files together and validating both platform projects. The Catch2 implementation
+uses the test target's optimization settings and opts out of the application's
+PCH and forced includes.
 
 Catch2 3.16.0 left MSVC optimization disabled for functions defined after its
 benchmarking header, including benchmark code in the test translation unit.
@@ -451,11 +482,11 @@ diagnostic step, not a requirement for every change.
 
 1. Preserve the console/XML reports under `WindowsDesktop/Intermediate/TestReports/`.
    Keep the build log too. Record the last test started, the exception, configuration,
-   toolchain and whether the build reused object files or LTCG output. The last test
+   toolchain, LTCG setting and whether the build reused intermediate files. The last test
    name is a starting point for investigation, not proof that its implementation is faulty.
 2. Stop repeated runs of the same binary. Before comparing current and reverted
-   source, establish a clean build. An engine rebuild alone does not ensure that
-   the test application's PCH, objects or LTCG artifacts have been regenerated.
+   source, establish a clean build of the test application, including its PCH,
+   object files and any enabled LTCG output.
 3. With no other runner or IDE build active in this checkout, rebuild the matching
    configuration using MSBuild `Rebuild`, then repeat the failing selection and
    required regression suite under the same conditions. Use the commands

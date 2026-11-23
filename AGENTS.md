@@ -71,6 +71,7 @@ Read and follow the applicable sections before the listed work; unrelated sectio
 | Writing or revising public API documentation | [API documentation](docs/development/api-documentation.md) |
 | Adding or changing tests or visual programs | [Test authoring](docs/development/README.md#test-authoring) and [output/configuration](docs/development/README.md#test-output-and-configuration) |
 | Building or running tests | [Build and test](docs/development/README.md#build-and-test), using the host's section |
+| Windows Release benchmarks or MSVC toolset updates | Keep `Siv3D-Test` at `/O2` with LTCG off for routine development. Follow [Windows Release test optimization](docs/development/README.md#windows-release-test-optimization) for benchmark comparisons and reassessment. |
 | GPU upload paths in shared code or platform backends | [Upload rules and validation](docs/renderer2d/README.md#measuring-cpu-writes-to-upload-buffers) |
 | Documentation changes or feature completion | [Documentation ownership and cleanup](docs/AGENTS.md) |
 
