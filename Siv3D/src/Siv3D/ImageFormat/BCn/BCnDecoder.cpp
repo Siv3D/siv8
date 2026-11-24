@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/IReader.hpp>
 # include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -19,30 +20,111 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static constexpr TextureFormat ToTextureFormat(const DXGI_FORMAT format) noexcept
+		struct DDSInfo
 		{
-			switch (format)
+			Size size;
+			TextureFormat format;
+			uint32 mipCount;
+		};
+
+		static bool ReadDDSBytes(IReader& reader, void* dst, const size_t size)
+		{
+			auto* out = static_cast<Byte*>(dst);
+			int64 remaining = static_cast<int64>(size);
+			while (remaining > 0)
 			{
-			case DXGI_FORMAT_BC1_UNORM:
-				return TextureFormat::BC1_RGBA_Unorm;
-			case DXGI_FORMAT_BC1_UNORM_SRGB:
-				return TextureFormat::BC1_RGBA_Unorm_SRGB;
-			case DXGI_FORMAT_BC3_UNORM:
-				return TextureFormat::BC3_RGBA_Unorm;
-			case DXGI_FORMAT_BC3_UNORM_SRGB:
-				return TextureFormat::BC3_RGBA_Unorm_SRGB;
+				const int64 read = reader.read(out, remaining);
+				if ((read <= 0) || (remaining < read))
+				{
+					LOG_FAIL("❌ BCnDecoder: Failed to read DDS data");
+					return false;
+				}
+				out += read;
+				remaining -= read;
+			}
+			return true;
+		}
+
+		static TextureFormat ReadDDSFormat(IReader& reader, const uint32 fourCC, const bool sRGB)
+		{
+			switch (fourCC)
+			{
+			case PIXEL_FMT_DXT1:
+				return (sRGB ? TextureFormat::BC1_RGBA_Unorm_SRGB : TextureFormat::BC1_RGBA_Unorm);
+			case PIXEL_FMT_DXT5:
+				return (sRGB ? TextureFormat::BC3_RGBA_Unorm_SRGB : TextureFormat::BC3_RGBA_Unorm);
+			case PIXEL_FMT_FOURCC('B', 'C', '4', 'U'):
+				return TextureFormat::BC4_R_Unorm;
+			case PIXEL_FMT_FOURCC('B', 'C', '5', 'U'):
+				return TextureFormat::BC5_RG_Unorm;
+			case PIXEL_FMT_FOURCC('D', 'X', '1', '0'):
+				break;
+			default:
+				LOG_FAIL(fmt::format("❌ BCnDecoder: Unsupported format {:#X}", fourCC));
+				return TextureFormat::Unknown;
+			}
+
+			DDS_HEADER_DXT10 ext{};
+			if (not ReadDDSBytes(reader, &ext, sizeof(ext)))
+			{
+				return TextureFormat::Unknown;
+			}
+			switch (ext.dxgiFormat)
+			{
 			case DXGI_FORMAT_BC4_UNORM:
 				return TextureFormat::BC4_R_Unorm;
 			case DXGI_FORMAT_BC5_UNORM:
 				return TextureFormat::BC5_RG_Unorm;
 			case DXGI_FORMAT_BC7_UNORM:
-				return TextureFormat::BC7_RGBA_Unorm;
+				return (sRGB ? TextureFormat::BC7_RGBA_Unorm_SRGB : TextureFormat::BC7_RGBA_Unorm);
 			case DXGI_FORMAT_BC7_UNORM_SRGB:
 				return TextureFormat::BC7_RGBA_Unorm_SRGB;
 			default:
+				LOG_FAIL(fmt::format("❌ BCnDecoder: Unsupported DXGI format {:#X}", static_cast<uint32>(ext.dxgiFormat)));
 				return TextureFormat::Unknown;
 			}
+		}
+
+		static Optional<DDSInfo> ReadDDSHeader(IReader& reader, const bool sRGB)
+		{
+			struct
+			{
+				uint32 magic;
+				DDSURFACEDESC2 desc;
+			} header{};
+			static_assert(sizeof(header) == 128);
+
+			if ((reader.setPos(0) != 0) || not ReadDDSBytes(reader, &header, sizeof(header)))
+			{
+				return{};
+			}
+
+			const auto& desc = header.desc;
+			if ((header.magic != PIXEL_FMT_FOURCC('D', 'D', 'S', ' ')) || (desc.dwSize != sizeof(desc)))
+			{
+				LOG_FAIL("❌ BCnDecoder: Invalid DDS header");
+				return{};
+			}
+			if (not InRange(desc.dwWidth, 1u, static_cast<uint32>(Image::MaxWidth))
+				|| not InRange(desc.dwHeight, 1u, static_cast<uint32>(Image::MaxHeight)))
+			{
+				LOG_FAIL(fmt::format("BCnDecoder: Image size {}x{} is not supported", desc.dwWidth, desc.dwHeight));
+				return{};
+			}
+
+			const uint32 mipCount = Max(desc.dwMipMapCount, 1u);
+			if (ImageProcessing::CalculateMipmapLevel(desc.dwWidth, desc.dwHeight) < mipCount)
+			{
+				LOG_FAIL(fmt::format("BCnDecoder: Too many mip levels ({}) for {}x{}", mipCount, desc.dwWidth, desc.dwHeight));
+				return{};
+			}
+
+			const TextureFormat format = ReadDDSFormat(reader, desc.ddpfPixelFormat.dwFourCC, sRGB);
+			if (format == TextureFormat::Unknown)
+			{
+				return{};
+			}
+			return DDSInfo{ { desc.dwWidth, desc.dwHeight }, format, mipCount };
 		}
 	}
 
@@ -171,95 +253,26 @@ namespace s3d
 			return{};
 		}
 
-		DDSURFACEDESC2 desc{};
-
-		if (reader->read(&desc, 4, sizeof(desc)) != sizeof(desc))
+		const auto info = ReadDDSHeader(*reader, false);
+		if (not info)
 		{
-			LOG_FAIL("❌ BCnDecoder::decode(): Failed to read header");
 			return{};
 		}
 
-		if (desc.dwSize != 124)
+		if ((reader->size() - reader->getPos()) < static_cast<int64>(info->format.packedDataSize(info->size)))
 		{
-			LOG_FAIL("❌ BCnDecoder::decode(): Invalid header size");
+			LOG_FAIL("❌ BCnDecoder::decode(): Incomplete base level");
 			return{};
 		}
 
-		const bool hasDX10Header = (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0'));
-
-		DXGI_FORMAT dxgiFormat = DXGI_FORMAT_UNKNOWN;
-
-		if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT1) // BC1
-		{
-			dxgiFormat = DXGI_FORMAT_BC1_UNORM;
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5) // BC3
-		{
-			dxgiFormat = DXGI_FORMAT_BC3_UNORM;
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '4', 'U')) // BC4
-		{
-			dxgiFormat = DXGI_FORMAT_BC4_UNORM;
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '5', 'U')) // BC5
-		{
-			dxgiFormat = DXGI_FORMAT_BC5_UNORM;
-		}
-		else if (not hasDX10Header)
-		{
-			LOG_FAIL(fmt::format("❌ BCnDecoder::decode(): Unsupported format {:#X}", desc.ddpfPixelFormat.dwFourCC));
-			return{};
-		}
-
-		const uint32 width = desc.dwWidth;
-		const uint32 height = desc.dwHeight;
-
-		if (not InRange<int32>(width, 1, Image::MaxWidth)
-			|| not InRange<int32>(height, 1, Image::MaxHeight))
-		{
-			LOG_FAIL(fmt::format("BCnDecoder::decode(): Image size {}x{} is not supported", width, height));
-			return{};
-		}
-
-		DDS_HEADER_DXT10 hdr10{};
-
-		if (hasDX10Header)
-		{
-			if (reader->read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
-			{
-				LOG_FAIL("❌ BCnDecoder::decode(): Failed to read DXT10 header");
-				return{};
-			}
-
-			if (hdr10.dxgiFormat == DXGI_FORMAT_BC4_UNORM) // BC4
-			{
-				dxgiFormat = DXGI_FORMAT_BC4_UNORM;
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC5_UNORM) // BC5
-			{
-				dxgiFormat = DXGI_FORMAT_BC5_UNORM;
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM) // BC7
-			{
-				dxgiFormat = DXGI_FORMAT_BC7_UNORM;
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB) // BC7_SRGB
-			{
-				dxgiFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
-			}
-			else if (dxgiFormat == DXGI_FORMAT_UNKNOWN)
-			{
-				LOG_FAIL(fmt::format("❌ BCnDecoder::decode(): Unsupported DXGI format {:#X}", static_cast<uint32>(hdr10.dxgiFormat)));
-				return{};
-			}
-		}
-
+		const uint32 width = info->size.x;
+		const uint32 height = info->size.y;
 		Image image{ width, height };
 
 		const uint32 xBlocks = ((width + 3) / 4);
 		const uint32 yBlocks = ((height + 3) / 4);
 
-		if (dxgiFormat == DXGI_FORMAT_BC1_UNORM) // BC1
+		if (info->format == TextureFormat::BC1_RGBA_Unorm) // BC1
 		{
 			constexpr uint32 BlockSize = 8;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -267,7 +280,10 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader->read(lineBuffer.data(), lineSize);
+				if (not ReadDDSBytes(*reader, lineBuffer.data(), lineSize))
+				{
+					return{};
+				}
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -301,7 +317,7 @@ namespace s3d
 				}
 			}
 		}
-		else if (dxgiFormat == DXGI_FORMAT_BC3_UNORM) // BC3
+		else if (info->format == TextureFormat::BC3_RGBA_Unorm) // BC3
 		{
 			constexpr uint32 BlockSize = 16;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -309,7 +325,10 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader->read(lineBuffer.data(), lineSize);
+				if (not ReadDDSBytes(*reader, lineBuffer.data(), lineSize))
+				{
+					return{};
+				}
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -343,7 +362,7 @@ namespace s3d
 				}
 			}
 		}
-		else if (dxgiFormat == DXGI_FORMAT_BC4_UNORM)
+		else if (info->format == TextureFormat::BC4_R_Unorm)
 		{
 			constexpr uint32 BlockSize = 8;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -351,7 +370,10 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader->read(lineBuffer.data(), lineSize);
+				if (not ReadDDSBytes(*reader, lineBuffer.data(), lineSize))
+				{
+					return{};
+				}
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -385,7 +407,7 @@ namespace s3d
 				}
 			}
 		}
-		else if (dxgiFormat == DXGI_FORMAT_BC5_UNORM)
+		else if (info->format == TextureFormat::BC5_RG_Unorm)
 		{
 			constexpr uint32 BlockSize = 16;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -393,7 +415,10 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader->read(lineBuffer.data(), lineSize);
+				if (not ReadDDSBytes(*reader, lineBuffer.data(), lineSize))
+				{
+					return{};
+				}
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -427,7 +452,7 @@ namespace s3d
 				}
 			}
 		}
-		else if ((dxgiFormat == DXGI_FORMAT_BC7_UNORM) || (dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB))
+		else if ((info->format == TextureFormat::BC7_RGBA_Unorm) || (info->format == TextureFormat::BC7_RGBA_Unorm_SRGB))
 		{
 			constexpr uint32 BlockSize = 16;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -435,7 +460,10 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader->read(lineBuffer.data(), lineSize);
+				if (not ReadDDSBytes(*reader, lineBuffer.data(), lineSize))
+				{
+					return{};
+				}
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -507,116 +535,36 @@ namespace s3d
 			return{};
 		}
 
-		DDSURFACEDESC2 desc{};
-
-		if (reader->read(&desc, 4, sizeof(desc)) != sizeof(desc))
+		const auto info = ReadDDSHeader(*reader, sRGB);
+		if (not info)
 		{
-			LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read header");
 			return{};
 		}
-
-		if (desc.dwSize != 124)
-		{
-			LOG_FAIL("❌ BCnDecoder::decodeNative(): Invalid header size");
-			return{};
-		}
-
-		const bool hasDX10Header = (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0'));
-
-		DXGI_FORMAT dxgiFormat = DXGI_FORMAT_UNKNOWN;
-
-		if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT1) // BC1
-		{
-			dxgiFormat = (sRGB ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC1_UNORM);
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5) // BC3
-		{
-			dxgiFormat = (sRGB ? DXGI_FORMAT_BC3_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM);
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '4', 'U')) // BC4
-		{
-			dxgiFormat = DXGI_FORMAT_BC4_UNORM;
-		}
-		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '5', 'U')) // BC5
-		{
-			dxgiFormat = DXGI_FORMAT_BC5_UNORM;
-		}
-		else if (not hasDX10Header)
-		{
-			LOG_FAIL(fmt::format("❌ BCnDecoder::decodeNative(): Unsupported format {:#X}", desc.ddpfPixelFormat.dwFourCC));
-			return{};
-		}
-
-		const uint32 width = desc.dwWidth;
-		const uint32 height = desc.dwHeight;
-		const uint32 mipCount = Max(desc.dwMipMapCount, 1u);
-
-		if (not InRange<int32>(width, 1, Image::MaxWidth)
-			|| not InRange<int32>(height, 1, Image::MaxHeight))
-		{
-			LOG_FAIL(fmt::format("BCnDecoder::decodeNative(): Image size {}x{} is not supported", width, height));
-			return{};
-		}
-
-		DDS_HEADER_DXT10 hdr10{};
-
-		if (hasDX10Header)
-		{
-			if (reader->read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
-			{
-				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read DXT10 header");
-				return{};
-			}
-
-			if (hdr10.dxgiFormat == DXGI_FORMAT_BC4_UNORM) // BC4
-			{
-				dxgiFormat = DXGI_FORMAT_BC4_UNORM;
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC5_UNORM) // BC5
-			{
-				dxgiFormat = DXGI_FORMAT_BC5_UNORM;
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM) // BC7
-			{
-				dxgiFormat = (sRGB ? DXGI_FORMAT_BC7_UNORM_SRGB : DXGI_FORMAT_BC7_UNORM);
-			}
-			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB) // BC7_SRGB
-			{
-				dxgiFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
-			}
-			else if (dxgiFormat == DXGI_FORMAT_UNKNOWN)
-			{
-				LOG_FAIL(fmt::format("❌ BCnDecoder::decode(): Unsupported DXGI format {:#X}", static_cast<uint32>(hdr10.dxgiFormat)));
-				return{};
-			}
-		}
-
-		const TextureFormat textureFormat = ToTextureFormat(dxgiFormat);
-		const uint32 blockSize = textureFormat.blockSize();
 
 		BCnData bcnData;
-		bcnData.size = { width, height };
-		bcnData.format = textureFormat;
-
-		for (uint32 i = 0; i < mipCount; ++i)
+		bcnData.size = info->size;
+		bcnData.format = info->format;
+		bcnData.textures.reserve(info->mipCount);
+		int64 remaining = (reader->size() - reader->getPos());
+		for (uint32 level = 0; level < info->mipCount; ++level)
 		{
-			const uint32 mipWidth = Max(1u, (width >> i));
-			const uint32 mipHeight = Max(1u, (height >> i));
-			const uint32 xBlocks = ((mipWidth + 3) / 4);
-			const uint32 yBlocks = ((mipHeight + 3) / 4);
-			const size_t textureSize = (xBlocks * yBlocks * blockSize);
-
-			Blob blob{ textureSize };
-			if (reader->read(blob.data(), textureSize) != static_cast<int64>(textureSize))
+			const Size size = ImageProcessing::CalculateMipmapSize(info->size, level);
+			const size_t bytes = info->format.packedDataSize(size);
+			if (remaining < static_cast<int64>(bytes))
 			{
-				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read texture data");
+				LOG_FAIL(fmt::format("❌ BCnDecoder::decodeNative(): Incomplete mip level {}", level));
 				return{};
 			}
-
+			Blob blob{ bytes };
+			if (not ReadDDSBytes(*reader, blob.data(), bytes))
+			{
+				return{};
+			}
 			bcnData.textures.push_back(std::move(blob));
+			remaining -= static_cast<int64>(bytes);
 		}
 
-		LOG_TRACE(fmt::format("Image ({}x{}, Mips: {}) decoded", width, height, mipCount));
+		LOG_TRACE(fmt::format("Image ({}x{}, Mips: {}) decoded", info->size.x, info->size.y, info->mipCount));
 
 		return bcnData;
 	}

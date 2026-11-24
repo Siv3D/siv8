@@ -523,6 +523,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <Concept::FloatingPoint Float>
+	Vector3D<Float>& Vector3D<Float>::clamp(const Box& box) noexcept
+	{
+		return (*this = clamped(box));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

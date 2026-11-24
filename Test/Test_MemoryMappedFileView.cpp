@@ -10,6 +10,36 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <cstring>
+# include <limits>
+# include <type_traits>
+
+TEST_CASE("MemoryMappedFileView.zero_length_unaligned_map")
+{
+	ScopedLogSilencer silence;
+	MemoryMappedFileView file{ U"../../Test/data/text/utf8_chars.txt" };
+	REQUIRE(file.isOpen());
+	for (const size_t offset : { size_t{ 0 }, size_t{ 1 }, size_t{ 99 } })
+	{
+		CAPTURE(offset);
+		const auto empty = file.map(offset, 0);
+		CHECK_FALSE(empty);
+		CHECK(empty.data == nullptr);
+		CHECK(empty.size == 0);
+		CHECK(file.mapAll()); // A rejected request must not occupy the mapping slot.
+		file.unmap();
+	}
+}
+
+TEST_CASE("MemoryMappedFileView.rejects_directory")
+{
+	ScopedLogSilencer silence;
+	MemoryMappedFileView file;
+	CHECK_FALSE(file.open(U"../../Test/data/text/"));
+	CHECK_FALSE(file.isOpen());
+	CHECK(file.path().isEmpty());
+	CHECK(file.size() == 0);
+}
 
 [[nodiscard]]
 static std::string CreateTestData()
@@ -133,4 +163,63 @@ TEST_CASE("MemoryMappedFileView.ImageFileTest")
 			file.unmap();
 		}
 	}
+}
+
+TEST_CASE("MemoryMappedFileView.clamps_to_end_and_rejects_large_offsets")
+{
+	ScopedLogSilencer silence;
+	const FilePath path = U"../../Test/data/text/utf8_chars.txt";
+	const Blob expected{ path };
+	REQUIRE(expected.size() > 10);
+	MemoryMappedFileView file{ path };
+	REQUIRE(file.isOpen());
+	for (const size_t offset : { size_t{ 0 }, expected.size() - 1 })
+	{
+		const auto mapped = file.map(offset, std::numeric_limits<size_t>::max());
+		REQUIRE(mapped);
+		CHECK(mapped.size == (expected.size() - offset));
+		CHECK(std::memcmp(mapped.data, expected.data() + offset, mapped.size) == 0);
+		file.unmap();
+	}
+	for (const size_t offset : { expected.size(), expected.size() + 1, std::numeric_limits<size_t>::max() })
+	{
+		CHECK_FALSE(file.map(offset, 1));
+		REQUIRE(file.mapAll());
+		file.unmap();
+	}
+	CHECK(file.size() == static_cast<int64>(expected.size()));
+}
+
+TEST_CASE("MemoryMappedFileView.resource_and_file_transitions")
+{
+	ScopedLogSilencer silence;
+	const auto resource = Resource(U"engine/texture/box-shadow/64.png");
+	const Blob expected{ resource };
+	REQUIRE(expected.size() > 32);
+	const auto path = Test::OutputPath(U"mapped/resource-copy.bin");
+	REQUIRE(expected.save(path));
+	MemoryMappedFileView file;
+	for (const auto& source : { resource, path, resource, path })
+	{
+		REQUIRE(file.open(source));
+		CHECK(file.path() == FileSystem::FullPath(source));
+		CHECK(file.size() == static_cast<int64>(expected.size()));
+		CHECK_FALSE(file.map(1, 0));
+		const auto mapped = file.map(1, 31);
+		REQUIRE(mapped);
+		CHECK(mapped.size == 31);
+		CHECK(std::memcmp(mapped.data, expected.data() + 1, 31) == 0);
+		CHECK_FALSE(file.mapAll());
+		CHECK_FALSE(file.map(2, 1));
+		CHECK(std::memcmp(mapped.data, expected.data() + 1, 31) == 0);
+		file.unmap();
+		file.unmap();
+		REQUIRE(file.mapAll());
+		REQUIRE(file.open(file.path()));
+		REQUIRE(file.mapAll());
+	}
+	file.close();
+	CHECK_FALSE(file.open(Resource(U"missing-resource/mapped-file.bin")));
+	CHECK_FALSE(file.isOpen());
+	CHECK(file.path().isEmpty());
 }

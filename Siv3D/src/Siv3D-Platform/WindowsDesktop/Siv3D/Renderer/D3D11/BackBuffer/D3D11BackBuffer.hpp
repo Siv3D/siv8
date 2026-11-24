@@ -15,6 +15,7 @@
 # include <Siv3D/EngineOption.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
+# include <Siv3D/Scene/SceneUtility.hpp>
 # include "../Device/D3D11Device.hpp"
 # include "D3D11ClearTarget.hpp"
 # include "D3D11InternalTexture2D.hpp"
@@ -34,10 +35,15 @@ namespace s3d
 		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept;
 
-		void setSceneResizeMode(ResizeMode resizeMode);
+		void configureScene(const SceneConfig& config);
 
 		[[nodiscard]]
-		ResizeMode getSceneResizeMode() const noexcept;
+		SceneConfig getSceneConfig() const noexcept;
+
+		void setSceneSampleCount(uint32 sampleCount);
+
+		[[nodiscard]]
+		uint32 getSceneSampleCount() const noexcept;
 
 		void updateSceneBufferSize();
 
@@ -48,7 +54,7 @@ namespace s3d
 		[[nodiscard]]
 		const Size& getBackBufferSize() const noexcept;
 
-		void resizeSceneBuffer(Size size);
+		const Size& getSceneSize() const noexcept;
 
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept;
@@ -58,6 +64,18 @@ namespace s3d
 		void bindSceneTextureAsRenderTarget();
 
 		std::pair<ID3D11Texture2D*, Size> getCaptureTexture();
+
+		[[nodiscard]]
+		ID3D11Texture2D* getBackBufferTexture() const noexcept
+		{
+			return m_backBuffer.getTexture();
+		}
+
+		[[nodiscard]]
+		ID3D11Texture2D* getSceneTexture() const noexcept
+		{
+			return m_sceneBuffers.getSceneTexture().getTexture();
+		}
 
 	private:
 		
@@ -71,7 +89,7 @@ namespace s3d
 
 		SceneStyle m_sceneStyle;
 
-		ResizeMode m_sceneResizeMode	= Scene::DefaultResizeMode;
+		SceneMisc::RenderState m_sceneState;
 
 		D3D11InternalTexture2D m_backBuffer;
 
@@ -82,6 +100,9 @@ namespace s3d
 			D3D11InternalTexture2D msaa;
 		
 			D3D11InternalTexture2D nonMSAA;
+
+			// Valid until the scene is cleared or bound for drawing.
+			bool resolved = false;
 
 			D3D11InternalTexture2D& getSceneTexture() noexcept
 			{
@@ -107,5 +128,12 @@ namespace s3d
 		void unbindAllPSTextures();
 
 		void drawFullScreenTriangle();
+
+		void resolveScene();
+
+		[[nodiscard]]
+		SceneBuffer createSceneBuffers(Size size, uint32 sampleCount) const;
+
+		void applySceneState(const SceneMisc::RenderState& state, uint32 sampleCount);
 	};
 }

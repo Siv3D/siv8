@@ -20,6 +20,8 @@
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../Geometry2D/RectCornerGeometry.hpp"
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/QuarterArcTable.hpp>
@@ -73,38 +75,8 @@ namespace s3d
 				: static_cast<Vertex2D::IndexType>(Min<double>(QuarterArcTable::MaxQuality, (r * 0.2 + 6)));
 		}
 
-		static constexpr void ScaleCornerSizes(double& tl, double& tr, double& br, double& bl, const double w, const double h) noexcept
-		{
-			double scale = 1.0;
-
-			if (const double top = (tl + tr); w < top)
-			{
-				scale = Min(scale, (w / top));
-			}
-
-			if (const double right = (tr + br); h < right)
-			{
-				scale = Min(scale, (h / right));
-			}
-
-			if (const double bottom = (br + bl); w < bottom)
-			{
-				scale = Min(scale, (w / bottom));
-			}
-
-			if (const double left = (bl + tl); h < left)
-			{
-				scale = Min(scale, (h / left));
-			}
-
-			if (scale < 1.0)
-			{
-				tl *= scale;
-				tr *= scale;
-				br *= scale;
-				bl *= scale;
-			}
-		}
+		using detail::RectCornerGeometry::ScaleCornerSizes;
+		using detail::RectCornerGeometry::NormalizeCornerRadii;
 
 		[[nodiscard]]
 		static constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
@@ -464,40 +436,7 @@ namespace s3d
 			return{};
 		}
 
-		tl = Max(tl, 0.0);
-		tr = Max(tr, 0.0);
-		br = Max(br, 0.0);
-		bl = Max(bl, 0.0);
-
-		double radiusScale = 1.0;
-
-		if (const double t = (tl + tr); w < t)
-		{
-			radiusScale = Min(radiusScale, (w / t));
-		}
-
-		if (const double r = (tr + br); h < r)
-		{
-			radiusScale = Min(radiusScale, (h / r));
-		}
-
-		if (const double b = (bl + br); w < b)
-		{
-			radiusScale = Min(radiusScale, (w / b));
-		}
-
-		if (const double l = (tl + bl); h < l)
-		{
-			radiusScale = Min(radiusScale, (h / l));
-		}
-
-		if (radiusScale < 1.0)
-		{
-			tl *= radiusScale;
-			tr *= radiusScale;
-			br *= radiusScale;
-			bl *= radiusScale;
-		}
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
 
 		const Vec2 rectTL = this->tl();
 		const Vec2 rectTR = this->tr();
@@ -1661,6 +1600,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const RectF& RectF::paintFrame(Image& dst, const double thickness, const Color& color) const
+	{
+		return paintFrame(dst, thickness * 0.5, thickness * 0.5, color);
+	}
+
 	const RectF& RectF::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
 	{
 		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
@@ -1673,9 +1617,72 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const RectF& RectF::overwriteFrame(Image& dst, const double thickness, const Color& color) const
+	{
+		return overwriteFrame(dst, thickness * 0.5, thickness * 0.5, color);
+	}
+
 	const RectF& RectF::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
 	{
 		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::paintRounded(Image& dst, const double tl, const double tr, const double br, const double bl, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Rounded(dst, *this, { tl, tr, br, bl }, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::paintRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintRoundedFrame(dst, tl, tr, br, bl, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const RectF& RectF::paintRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::RoundedFrame(dst, *this, { tl, tr, br, bl }, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::overwriteRounded(Image& dst, const double tl, const double tr, const double br, const double bl, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Rounded(dst, *this, { tl, tr, br, bl }, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::overwriteRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteRoundedFrame(dst, tl, tr, br, bl, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const RectF& RectF::overwriteRoundedFrame(Image& dst, const double tl, const double tr, const double br, const double bl, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::RoundedFrame(dst, *this, { tl, tr, br, bl }, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -1740,6 +1747,88 @@ namespace s3d
 	const RectF& RectF::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, pattern);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawRounded(double tl, double tr, double br, double bl, const ColorF& color) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return *this;
+		}
+
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
+
+		if ((tl == tr) && (tl == br) && (tl == bl))
+		{
+			if (tl == 0.0)
+			{
+				return draw(color);
+			}
+
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ *this }, static_cast<float>(tl), color.toFloat4());
+		}
+		else
+		{
+			const std::array<float, 4> radii{ static_cast<float>(tl), static_cast<float>(tr), static_cast<float>(br), static_cast<float>(bl) };
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ *this }, radii, color.toFloat4());
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRoundedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawRoundedFrame(const double tl, const double tr, const double br, const double bl, const double thickness, const ColorF& color) const
+	{
+		return drawRoundedFrame(tl, tr, br, bl, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RectF& RectF::drawRoundedFrame(double tl, double tr, double br, double bl, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if ((w <= 0.0) || (h <= 0.0) || (innerThickness < 0.0) || (outerThickness < 0.0)
+			|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
+		{
+			return *this;
+		}
+
+		NormalizeCornerRadii(tl, tr, br, bl, w, h);
+
+		if ((tl == tr) && (tl == br) && (tl == bl))
+		{
+			RoundRect{ *this, tl }.drawFrame(innerThickness, outerThickness, color);
+			return *this;
+		}
+
+		const RectF outerRect = stretched(outerThickness);
+		const std::array<float, 4> outerRadii{
+			static_cast<float>(tl + outerThickness), static_cast<float>(tr + outerThickness),
+			static_cast<float>(br + outerThickness), static_cast<float>(bl + outerThickness) };
+		const RectF innerRect = stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ outerRect }, outerRadii, color.toFloat4());
+			return *this;
+		}
+
+		tl -= innerThickness;
+		tr -= innerThickness;
+		br -= innerThickness;
+		bl -= innerThickness;
+		NormalizeCornerRadii(tl, tr, br, bl, innerRect.w, innerRect.h);
+		const std::array<float, 4> innerRadii{ static_cast<float>(tl), static_cast<float>(tr), static_cast<float>(br), static_cast<float>(bl) };
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(FloatRect{ innerRect }, innerRadii, FloatRect{ outerRect }, outerRadii, color.toFloat4());
 		return *this;
 	}
 

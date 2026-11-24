@@ -19,7 +19,7 @@ namespace s3d
 		{
 			void SetConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
 
-			uint32 BeginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+			uint32 BeginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0);
 
 			void EndConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
 

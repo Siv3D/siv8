@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "ImageDrawingTestHelper.hpp"
 
 // Vertex boundaries apply to both D3D11 buffers and Metal vertex ranges.
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
@@ -30,8 +31,8 @@ namespace
 		Scene::SetBackground(Palette::Black);
 		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-		const ScopedColorMul2D colorMul{ Palette::White };
-		const ScopedColorAdd2D colorAdd{ 0.0 };
+		const ScopedColorMul2D colorMul{ Palette::White, ScopedColorMul2D::Target::Set };
+		const ScopedColorAdd2D colorAdd{ 0.0, ScopedColorAdd2D::Target::Set };
 
 		if (beginFrame)
 		{
@@ -441,7 +442,7 @@ TEST_CASE("Renderer2D.round_arc_directions")
 				}
 				draw();
 			});
-			CHECK((actual.image == reference.image));
+			CHECK_THAT(actual.image, ImageDrawingTest::ImageEquals(reference.image));
 			CHECK(actual.triangleCount == (reference.triangleCount + rectangleCount * 2));
 		}
 	}

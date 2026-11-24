@@ -12,6 +12,7 @@
 # include <array>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Geometry2D/CircularShapes.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -25,6 +26,19 @@ namespace s3d
 {
 	namespace
 	{
+		template <class Placement>
+		Shape2D MakeCircularShape(const Placement& placement, const uint16 fullQuality)
+		{
+			const uint16 count = detail::CircularShapes::VertexCount(placement, fullQuality);
+			Array<Float2> vertices(count);
+			Array<TriangleIndex> indices(count - 2);
+			size_t triangle = 0;
+			detail::CircularShapes::Write(placement, fullQuality,
+				[&](uint16 i, const Float2& point) { vertices[i] = point; },
+				[&](uint16 a, uint16 b, uint16 c) { indices[triangle++] = { a, b, c }; });
+			return { std::move(vertices), std::move(indices) };
+		}
+
 		[[nodiscard]]
 		static RectF MakeRectFromMinMax(const double minX, const double minY, const double maxX, const double maxY) noexcept
 		{
@@ -514,6 +528,45 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Crescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Crescent(const Circle& circle, const double openingAngle, const double width, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->circle.r).value()));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Lens
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Lens(const Vec2& from, const Vec2& to, const double halfWidth, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceLens(from, to, halfWidth);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->halfLength).value()));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Teardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	Shape2D Shape2D::Teardrop(const Circle& circle, const Vec2& tip, const QualityFactor& qualityFactor)
+	{
+		const auto placement = detail::CircularShapes::PlaceTeardrop(circle, tip);
+		if (not placement) return {};
+		return MakeCircularShape(*placement, static_cast<uint16>(qualityFactor.toPointsPerCircle(placement->circle.r).value()));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Heart
 	//
 	////////////////////////////////////////////////////////////////
@@ -944,15 +997,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
-	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	const Shape2D& Shape2D::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -964,13 +1017,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::overwrite(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::FillPolygon(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Fill(dst, *this, offset, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -982,13 +1035,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::paintFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
 		return *this;
 	}
 
@@ -1000,13 +1053,13 @@ namespace s3d
 
 	const Shape2D& Shape2D::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
 	const Shape2D& Shape2D::overwriteFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::ClosedLineString(dst, m_vertices.map([&](const Vec2& v) { return (v + offset); }), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::Shape2DFrame(dst, *this, offset, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 

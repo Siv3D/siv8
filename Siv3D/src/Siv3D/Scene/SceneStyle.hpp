@@ -21,6 +21,20 @@ namespace s3d
 
 		ColorF backgroundColor		= Scene::DefaultBackgroundColor;
 
-		TextureFilter textureFilter	= Scene::DefaultTextureFilter;
+		void beginFrame() noexcept
+		{
+			m_frameBackgroundColor = backgroundColor;
+		}
+
+		[[nodiscard]]
+		const ColorF& getFrameBackgroundColor() const noexcept
+		{
+			return m_frameBackgroundColor;
+		}
+
+	private:
+
+		// サイズ・MSAA の変更で再クリアするときも、フレーム開始時の色を使う。
+		ColorF m_frameBackgroundColor = Scene::DefaultBackgroundColor;
 	};
 }

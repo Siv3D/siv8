@@ -768,21 +768,64 @@ namespace s3d
 		[[nodiscard]]
 		bool mouseOver() const noexcept;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	paint
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
 
-		////const Ellipse& paint(Image& dst, const Color& color) const;
+		/// @brief スーパー楕円を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_superellipse "スーパー楕円の描画"
+		const SuperEllipse& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	overwrite
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
 
-		////const Ellipse& overwrite(Image& dst, const Color& color) const;
+		/// @brief スーパー楕円を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @remark アンチエイリアスが有効な場合、縁の色と透明度を描き込み先になじませます。
+		/// @see @ref image_draw_superellipse "スーパー楕円の描画"
+		const SuperEllipse& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief スーパー楕円の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_superellipse_frame "スーパー楕円の枠の描画"
+		const SuperEllipse& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief スーパー楕円の枠を Image に上書きします。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_superellipse_frame "スーパー楕円の枠の描画"
+		const SuperEllipse& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

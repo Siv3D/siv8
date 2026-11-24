@@ -13,6 +13,7 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/ShaderStage.hpp>
+# include <algorithm>
 # include <array>
 # include <bit>
 # include <cstddef>
@@ -26,6 +27,7 @@ namespace s3d
 		uint32 slot;
 		uint32 snapshot;
 		size_t size;
+		size_t capacity;
 	};
 
 	// 設定値をコマンド・現在の設定・スコープで共有する。GPU リソースの寿命とは独立。
@@ -35,9 +37,9 @@ namespace s3d
 	public:
 
 		// 値はここでコピーするが、コマンドは次の描画または flush まで確定しない。
-		void push(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+		void push(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity = 0)
 		{
-			const uint32 snapshot = (size ? create(data, size) : 0);
+			const uint32 snapshot = (size ? create(data, size, capacity) : 0);
 			apply(stage, slot, snapshot);
 			release(snapshot);
 		}
@@ -128,6 +130,7 @@ namespace s3d
 		struct Snapshot
 		{
 			Array<std::byte> bytes;
+			size_t capacity = 0; // GPU allocation capacity; only bytes holds the active prefix.
 			uint32 references = 0;
 			uint32 nextFree = 0;
 			uint32 bucket = 0;
@@ -151,7 +154,7 @@ namespace s3d
 			}
 		}
 
-		uint32 create(const void* data, const size_t size)
+		uint32 create(const void* data, const size_t size, const size_t capacity)
 		{
 			const uint32 bucket = static_cast<uint32>(std::bit_width(size - 1) - 4);
 			uint32 snapshot = m_free[bucket];
@@ -169,6 +172,7 @@ namespace s3d
 			}
 			auto& value = m_snapshots[snapshot];
 			value.bytes.resize(size);
+			value.capacity = std::max(size, capacity);
 			std::memcpy(value.bytes.data(), data, size);
 			value.references = 1;
 			return snapshot;
@@ -176,7 +180,8 @@ namespace s3d
 
 		void record(const ShaderStage stage, const uint32 slot, const uint32 snapshot)
 		{
-			m_commands.push_back({ stage, slot, snapshot, m_snapshots[snapshot].bytes.size() });
+			const auto& value = m_snapshots[snapshot];
+			m_commands.push_back({ stage, slot, snapshot, value.bytes.size(), value.capacity });
 			retain(snapshot);
 		}
 

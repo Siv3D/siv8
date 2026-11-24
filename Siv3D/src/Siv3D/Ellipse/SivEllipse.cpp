@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
@@ -17,6 +18,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -25,7 +27,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static std::pair<float, float> AdjustEllipsePieAngles(const float rx, const float ry, const float startAngle, const float angle) noexcept
+		static std::pair<float, float> ToEllipseParametricAngles(const float rx, const float ry, const float startAngle, const float angle) noexcept
 		{
 			auto AngleToParam = [&](float theta)
 			{
@@ -268,6 +270,132 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintPie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipsePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwritePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwritePie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipsePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintRotated(Image& dst, const double rotation, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseRotated(dst, *this, rotation, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteRotated(Image& dst, const double rotation, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseRotated(dst, *this, rotation, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintFrameRotated(Image& dst, const double rotation, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrameRotated(dst, rotation, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintFrameRotated(Image& dst, const double rotation, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseFrameRotated(dst, *this, rotation, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteFrameRotated(Image& dst, const double rotation, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrameRotated(dst, rotation, thickness * 0.5, thickness * 0.5, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteFrameRotated(Image& dst, const double rotation, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseFrameRotated(dst, *this, rotation, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArc(dst, LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArc(dst, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArc(dst, LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArc(dst, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteArc(Image& dst, const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::EllipseArc(dst, *this, startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -457,6 +585,203 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::drawRotated(const double rotation, const ColorF& color) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseRotated(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(rotation),
+			color0,
+			color0,
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawRotated(const double rotation, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseRotated(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(rotation),
+			innerColor.toFloat4(),
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawRotated(const double rotation, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseRotated(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(rotation),
+			topColor->toFloat4(),
+			bottomColor->toFloat4(),
+			ColorFillDirection::TopBottom
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawRotated(const double rotation, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseRotated(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(rotation),
+			leftColor->toFloat4(),
+			rightColor->toFloat4(),
+			ColorFillDirection::LeftRight
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawRotated(const double rotation, const PatternParameters& pattern) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseRotated(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(rotation),
+			pattern
+		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double thickness, const ColorF& color) const
+	{
+		return drawFrameRotated(rotation, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double thickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawFrameRotated(rotation, (thickness * 0.5), (thickness * 0.5), innerColor, outerColor);
+	}
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseFrameRotated(
+			center,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(rotation),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
+			color0,
+			color0
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseFrameRotated(
+			center,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(rotation),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double thickness, const PatternParameters& pattern) const
+	{
+		return drawFrameRotated(rotation, (thickness * 0.5), (thickness * 0.5), pattern);
+	}
+
+	const Ellipse& Ellipse::drawFrameRotated(const double rotation, const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addEllipseFrameRotated(
+			center,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(rotation),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
+			pattern
+		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawDashedFrame
 	//
 	////////////////////////////////////////////////////////////////
@@ -502,6 +827,107 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::drawArc(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		return drawArc(LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, color);
+	}
+
+	const Ellipse& Ellipse::drawArc(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawArc(LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, innerColor, outerColor);
+	}
+
+	const Ellipse& Ellipse::drawArc(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor) const
+	{
+		return drawArc(LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, startColor, endColor);
+	}
+
+	const Ellipse& Ellipse::drawArc(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		return drawArc(LineCap::Flat, LineCap::Flat, startAngle, angle, innerThickness, outerThickness, pattern);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		return drawArc(lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, color);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawArc(lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, innerColor, outerColor);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor) const
+	{
+		return drawArc(lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, startColor, endColor);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		return drawArc(lineCap, lineCap, startAngle, angle, innerThickness, outerThickness, pattern);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		return drawArc(startCap, endCap, startAngle, angle, innerThickness, outerThickness, color, color);
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
+		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		if (Abs(sweep) >= Math::TwoPiF) return drawFrame(innerThickness, outerThickness, innerColor, outerColor);
+		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), innerColor.toFloat4(), outerColor.toFloat4(), ColorFillDirection::InOut);
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor) const
+	{
+		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
+		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		if (Abs(sweep) >= Math::TwoPiF) span = sweep;
+		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), startColor->toFloat4(), endColor->toFloat4(), ColorFillDirection::LeftRight);
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineCap startCap, const LineCap endCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
+		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		if (Abs(sweep) >= Math::TwoPiF) return drawFrame(innerThickness, outerThickness, pattern);
+		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		SIV3D_ENGINE(Renderer2D)->addEllipseArc(startCap, endCap, center, rx, ry, start, span,
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), pattern);
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawArc(const LineStyle& style, const double startAngle, const double angle,
+		const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (style.type == LinePattern::Solid) return drawArc(style.cap, startAngle, angle, innerThickness, outerThickness, color);
+		if ((a == 0.0) || (b == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return *this;
+		const float rx = Abs(static_cast<float>(a)), ry = Abs(static_cast<float>(b));
+		const float sweep = Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		auto [start, span] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), sweep);
+		if (Abs(sweep) >= Math::TwoPiF) span = sweep;
+		SIV3D_ENGINE(Renderer2D)->addArcStyled(style, center, rx, ry, start, span,
+			static_cast<float>(innerThickness), static_cast<float>(outerThickness), color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawPie
 	//
 	////////////////////////////////////////////////////////////////
@@ -513,9 +939,14 @@ namespace s3d
 			return *this;
 		}
 
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(color);
+		}
+
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 		const Float4 color0 = color.toFloat4();
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
@@ -537,9 +968,14 @@ namespace s3d
 			return *this;
 		}
 
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(innerColor, outerColor);
+		}
+
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
 			center,
@@ -560,9 +996,14 @@ namespace s3d
 			return *this;
 		}
 
+		if (Math::TwoPiF <= Abs(static_cast<float>(angle)))
+		{
+			return draw(pattern);
+		}
+
 		const float rx = Abs(static_cast<float>(a));
 		const float ry = Abs(static_cast<float>(b));
-		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const auto& [startAngleF, angleF] = ToEllipseParametricAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
 
 		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
 			center,

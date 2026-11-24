@@ -4,7 +4,7 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 
 Name | Version
 --- | ---
-[Abseil](https://github.com/abseil/abseil-cpp) | 20250814.1
+[Abseil](https://github.com/abseil/abseil-cpp) | 20260817.0
 [bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | v0.11.0
@@ -16,15 +16,15 @@ Name | Version
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.2.10
-[fmt](https://github.com/fmtlib/fmt) | 12.2.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.4.0
+[fmt](https://github.com/fmtlib/fmt) | 12.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
 [GLFW](https://github.com/glfw/glfw) | 3.5.1
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 12.3.2
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
-[libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
+[libcpprime](https://github.com/sortA0329/libcpprime) | v1.4.2
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.1.4.1
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.58
@@ -33,12 +33,12 @@ Name | Version
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [MikkTSpace](https://github.com/mmikk/MikkTSpace) | 
 [mimalloc](https://github.com/microsoft/mimalloc) | v3.4.5
-[miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
+[miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.26
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
-[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
+[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13.1
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.9.0
+[nanoflann](https://github.com/jlblancoc/nanoflann) | 2.0.2
 [Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.051
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
@@ -50,21 +50,21 @@ Name | Version
 [PFFFT](https://bitbucket.org/jpommier/pffft/src/master/) | 
 [PFFFT DOUBLE](https://github.com/marton78/pffft) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
-[polylabel](https://github.com/mapbox/polylabel) | v2.0.1
+[polylabel](https://github.com/mapbox/polylabel/tree/v2.0.1) | v2.0.1
 [r8brain-free-src](https://github.com/avaneev/r8brain-free-src) | 7.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
 [serial_cpp](https://github.com/gbionics/serial_cpp) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 9.0.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 9.4.0
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.18
+[stb_image_resize2.h](https://github.com/nothings/stb_image_resize/blob/main/stb_image_resize2.h) | 2.51
 [stduuid](https://github.com/mariusbancila/stduuid) | 
-[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
+[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.1.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [toml11](https://github.com/ToruNiina/toml11) | 
 [variant](https://github.com/mapbox/variant) | 
 [WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
-[Wuffs](https://github.com/google/wuffs) | v0.4.c
+[Wuffs](https://github.com/google/wuffs) | 0.4.0-alpha.12
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
@@ -77,4 +77,4 @@ These dependencies are used by the test executable only.
 
 Name | Version
 --- | ---
-[Catch2](https://github.com/catchorg/Catch2) | v3.16.0
+[Catch2](https://github.com/catchorg/Catch2) | v3.16.1

@@ -18,11 +18,14 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/LineString.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Renderer2D/RoundRectBalloon.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
@@ -518,6 +521,54 @@ namespace s3d
 	
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paintBalloon(Image& dst, const Vec2& target, const double tailWidth, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Balloon(dst, *this, target, tailWidth, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paintBalloonFrame(Image& dst, const Vec2& target, const double tailWidth, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::BalloonFrame(dst, *this, target, tailWidth, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwriteBalloon(Image& dst, const Vec2& target, const double tailWidth, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::Balloon(dst, *this, target, tailWidth, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwriteBalloonFrame(Image& dst, const Vec2& target, const double tailWidth, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::BalloonFrame(dst, *this, target, tailWidth, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -603,6 +654,34 @@ namespace s3d
 			);
 		}
 
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawBalloon / drawBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::drawBalloon(const Vec2& target, const double tailWidth, const ColorF& color) const
+	{
+		if ((w <= 0) || (h <= 0)) return *this;
+		if (const auto balloon = detail::RoundRectBalloon::Place(*this, target, tailWidth))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRectBalloon(*balloon, color.toFloat4());
+		}
+		else draw(color);
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawBalloonFrame(const Vec2& target, const double tailWidth, const double thickness, const ColorF& color) const
+	{
+		if ((w <= 0) || (h <= 0) || (thickness <= 0)) return *this;
+		if (const auto balloon = detail::RoundRectBalloon::Place(*this, target, tailWidth))
+		{
+			SIV3D_ENGINE(Renderer2D)->addRoundRectBalloonFrame(*balloon, static_cast<float>(thickness), color.toFloat4());
+		}
+		else drawFrame(thickness, color);
 		return *this;
 	}
 
@@ -755,6 +834,45 @@ namespace s3d
 			FloatRect{ outerRoundRect.rect },
 			static_cast<float>(outerRoundRect.r),
 			pattern
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		return drawFrame(style, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const LineStyle& style, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (style.type == LinePattern::Solid) return drawFrame(innerThickness, outerThickness, color);
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(color);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrameStyled(
+			style,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
+			static_cast<float>(innerThickness + outerThickness),
+			color.toFloat4()
 		);
 
 		return *this;

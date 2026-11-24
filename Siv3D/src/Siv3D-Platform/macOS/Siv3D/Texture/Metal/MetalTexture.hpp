@@ -17,7 +17,9 @@
 
 namespace s3d
 {
-	struct BCnData;
+	class Blob;
+
+	class MetalFrameContext;
 
 	class MetalTexture
 	{
@@ -25,9 +27,18 @@ namespace s3d
 		
 		struct Dynamic {};
 
-		struct NoMipmap {};
+		struct Render {};
 
-		struct GenerateMipmap {};
+		[[nodiscard]]
+		MetalTexture(Render, MTL::Device* device, MTL::CommandBuffer* commands, const Size& size,
+			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount = 1);
+
+		void clearRT(MTL::CommandBuffer* commands, const ColorF& color);
+
+		void resolveMSRT(MTL::CommandBuffer* commands);
+
+		[[nodiscard]]
+		MTL::Buffer* encodeReadRT(MTL::Device* device, MTL::CommandBuffer* commands, uint32 mipLevel, uint32 bytesPerRow);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -36,28 +47,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, std::span<const Image> mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const TextureFormat& format, std::span<const Blob> mipmaps);
 
 		[[nodiscard]]
-		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-
-		[[nodiscard]]
-		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-
-		[[nodiscard]]
-		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const BCnData& bcnData);
-
-		[[nodiscard]]
-		MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-
-		[[nodiscard]]
-		MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+		MetalTexture(Dynamic, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -92,13 +91,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, bool wait);
 
-		bool fill(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
-		bool fillRegion(MTL::CommandQueue* commandQueue, const ColorF& color, const Rect& rect);
+		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, const ColorF& color, const Rect& rect, bool wait);
 
-		bool fillRegion(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
+		bool fillRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -106,7 +105,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void generateMips(MTL::CommandQueue* commandQueue);
+		void generateMips(MTL::CommandBuffer* commands);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -117,7 +116,12 @@ namespace s3d
 		[[nodiscard]]
 		MTL::Texture* getTexture() const noexcept;
 
+		[[nodiscard]]
+		MTL::Texture* getRenderTargetTexture() const noexcept;
+
 	private:
+
+		NS::SharedPtr<MTL::Buffer> m_readbackBuffer;
 
 		[[nodiscard]]
 		bool prepareUpload(bool wait);
@@ -125,13 +129,15 @@ namespace s3d
 		[[nodiscard]]
 		bool isValidRegion(const Rect& rect) const noexcept;
 
-		bool uploadRegion(MTL::CommandQueue* commandQueue, uint32 bytesPerRow, const Rect& rect);
+		bool uploadRegion(MTL::CommandQueue* commandQueue, MetalFrameContext& frame, uint32 bytesPerRow, const Rect& rect);
 
 		MetalTexture2DDesc m_desc;
 
 		bool m_initialized = false;
 
 		NS::SharedPtr<MTL::Texture> m_texture;
+
+		NS::SharedPtr<MTL::Texture> m_multiSampleTexture;
 		
 		NS::SharedPtr<MTL::Buffer> m_uploadBuffer;
 

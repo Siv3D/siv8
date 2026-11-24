@@ -563,6 +563,10 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(g_patternBackgroundColorMul);
+	const float4 outlineColorPMA = (g_sdfOutlineColorPMA * colorMulPMA);
+
 	const float textThreshold = g_sdfParam.x;
 	const float outlineThreshold = g_sdfParam.y;
 
@@ -572,7 +576,7 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
 	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
 
-	float4 colorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, textAlpha);
+	float4 colorPMA = lerp(outlineColorPMA, input.colorPMA, textAlpha);
 	colorPMA *= outlineAlpha;
 	
 	return s3d_applyColorAdd(colorPMA, g_colorAdd);
@@ -580,6 +584,10 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(g_patternBackgroundColorMul);
+	const float4 shadowColorPMA = (g_sdfShadowColorPMA * colorMulPMA);
+
 	const float2 shadowOffsetTexels = g_sdfParam.zw;
 
 	const MSDFState state = MSDF_Init(input.uv);
@@ -591,7 +599,7 @@ float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 
 	const float shadowOnlyAlpha = (shadowAlpha * (1.0 - textAlpha));
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	const float4 shadowPMA = (g_sdfShadowColorPMA * shadowOnlyAlpha);
+	const float4 shadowPMA = (shadowColorPMA * shadowOnlyAlpha);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
 	return s3d_applyColorAdd(finalPMA, g_colorAdd);
@@ -599,6 +607,11 @@ float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 {
+	// The VS has already multiplied the text fill; tint only the style colors here.
+	const float4 colorMulPMA = s3d_premultiplyAlpha(g_patternBackgroundColorMul);
+	const float4 outlineColorPMA = (g_sdfOutlineColorPMA * colorMulPMA);
+	const float4 shadowColorPMA = (g_sdfShadowColorPMA * colorMulPMA);
+
 	const float textThreshold = g_sdfParam.x;
 	const float outlineThreshold = g_sdfParam.y;
 	const float2 shadowOffsetTexels = g_sdfParam.zw;
@@ -615,10 +628,10 @@ float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 	const float4 textPMA = (input.colorPMA * textAlpha);
 
 	const float outlineCoverage = saturate(outlineAlpha - textAlpha);
-	const float4 outlinePMA = g_sdfOutlineColorPMA * outlineCoverage;
+	const float4 outlinePMA = outlineColorPMA * outlineCoverage;
 
 	const float shadowCoverage = saturate(shadowAlpha * (1.0 - outlineAlpha));
-	const float4 shadowPMA = g_sdfShadowColorPMA * shadowCoverage;
+	const float4 shadowPMA = shadowColorPMA * shadowCoverage;
 
 	const float4 finalPMA = (textPMA + outlinePMA + shadowPMA);
 	return s3d_applyColorAdd(finalPMA, g_colorAdd);

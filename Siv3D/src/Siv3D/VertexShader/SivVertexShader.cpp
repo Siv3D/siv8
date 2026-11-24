@@ -119,41 +119,21 @@ namespace s3d
 
 	VertexShader VertexShader::HLSL(const FilePathView path, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
-		//{
-		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
-		//}
-
 		return VertexShader{ path, entryPoint };
 	}
 
 	VertexShader VertexShader::HLSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
-		//{
-		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
-		//}
-
 		return VertexShader{ std::move(reader), entryPoint };
 	}
 
 	VertexShader VertexShader::HLSL(const Blob& bytecode)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
-		//{
-		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
-		//}
-
 		return VertexShader{ bytecode };
 	}
 
 	VertexShader VertexShader::HLSL(const std::string& source, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
-		//{
-		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
-		//}
-
 		return VertexShader{ source, entryPoint };
 	}
 
@@ -165,41 +145,21 @@ namespace s3d
 
 	VertexShader VertexShader::MSL(const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
-		//{
-		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
-		//}
-
 		return VertexShader{ FilePathView{}, entryPoint };
 	}
 
 	VertexShader VertexShader::MSL(const FilePathView path, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
-		//{
-		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
-		//}
-
 		return VertexShader{ path, entryPoint };
 	}
 
 	VertexShader VertexShader::MSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
-		//{
-		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
-		//}
-
 		return VertexShader{ std::move(reader), entryPoint };
 	}
 
 	VertexShader VertexShader::MSL(const std::string& source, const StringView entryPoint)
 	{
-		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
-		//{
-		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
-		//}
-
 		return VertexShader{ source, entryPoint };
 	}
 }

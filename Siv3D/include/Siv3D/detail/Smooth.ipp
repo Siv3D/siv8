@@ -59,9 +59,10 @@ namespace s3d
 	template <class Type>
 	constexpr Smooth<Type>& Smooth<Type>::setState(const value_type& value, const value_type& velocity) noexcept
 	{
+		const value_type savedVelocity = velocity;
 		m_value		= value;
-		m_target	= value;
-		m_velocity	= velocity;
+		m_target	= m_value;
+		m_velocity	= savedVelocity;
 		return *this;
 	}
 

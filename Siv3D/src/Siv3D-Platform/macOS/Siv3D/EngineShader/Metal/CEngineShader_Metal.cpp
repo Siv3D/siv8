@@ -41,6 +41,7 @@ namespace s3d
 			m_vertexShaders << MSL{ U"VS_FullscreenTriangle" };
 			m_vertexShaders << MSL{ U"VS_Shape" };
 			m_vertexShaders << MSL{ U"VS_Pattern" };
+			m_vertexShaders << MSL{ U"VS_TextureProcessing" };
 			
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
@@ -74,6 +75,16 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_PatternRipple" };
 			m_pixelShaders << MSL{ U"PS_PatternWeave" };
 			m_pixelShaders << MSL{ U"PS_PatternTruchet" };
+			m_pixelShaders << MSL{ U"PS_ProcessingResample" };
+			m_pixelShaders << MSL{ U"PS_ProcessingResampleRegion" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDownsample" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDownsampleRegion" };
+			m_pixelShaders << MSL{ U"PS_ProcessingGaussian" };
+			m_pixelShaders << MSL{ U"PS_ProcessingGaussianRegion" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDualUp" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDualUpRegion" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDualBlend" };
+			m_pixelShaders << MSL{ U"PS_ProcessingDualBlendRegion" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

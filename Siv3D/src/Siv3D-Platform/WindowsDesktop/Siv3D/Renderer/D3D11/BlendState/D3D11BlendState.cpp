@@ -11,6 +11,7 @@
 
 # include "D3D11BlendState.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Error/InternalEngineError.hpp>
 
 namespace s3d
 {
@@ -33,30 +34,27 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11BlendState::set(const BlendState& state, const Float4& blendColor)
+	void D3D11BlendState::set(const BlendState& state, const Float4& blendColor, const uint8 colorWriteMask)
 	{
 		const auto newState = std::make_pair(state, blendColor);
 
-		if (newState == m_currentState)
+		if ((newState == m_currentState) && (colorWriteMask == m_currentColorWriteMask))
 		{
 			return;
 		}
 
-		auto it = m_states.find(state);
+		const uint64 key = (uint64(state.asValue()) | (uint64(colorWriteMask) << 32));
+		auto it = m_states.find(key);
 
 		if (it == m_states.end())
 		{
-			it = create(state);
-
-			if (it == m_states.end())
-			{
-				return;
-			}
+			it = create(state, colorWriteMask);
 		}
 
 		m_context->OMSetBlendState(it->second.Get(), blendColor.getPointer(), 0xffFFffFF);
 
 		m_currentState = newState;
+		m_currentColorWriteMask = colorWriteMask;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -65,12 +63,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	D3D11BlendState::StateTable::iterator D3D11BlendState::create(const BlendState& state)
+	D3D11BlendState::StateTable::iterator D3D11BlendState::create(const BlendState& state, const uint8 colorWriteMask)
 	{
-		const D3D11_BLEND_DESC desc
+		D3D11_BLEND_DESC desc
 		{
 			.AlphaToCoverageEnable	= state.alphaToCoverageEnabled,
-			.IndependentBlendEnable	= false,
+			.IndependentBlendEnable	= (colorWriteMask != 0xFF),
 			.RenderTarget
 			{
 				{
@@ -86,17 +84,31 @@ namespace s3d
 			}
 		};
 
+		for (uint32 i = 1; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+		{
+			desc.RenderTarget[i] = desc.RenderTarget[0];
+		}
+		for (uint32 i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+		{
+			if ((colorWriteMask & (1u << i)) == 0)
+			{
+				desc.RenderTarget[i].BlendEnable = false;
+				desc.RenderTarget[i].RenderTargetWriteMask = 0;
+			}
+		}
+
 		ComPtr<ID3D11BlendState> blendState;
 
 		LOG_TRACE("ID3D11Device::CreateBlendState()");
 
-		if (FAILED(m_device->CreateBlendState(&desc, &blendState)))
+		const HRESULT hr = m_device->CreateBlendState(&desc, &blendState);
+		if (FAILED(hr))
 		{
-			LOG_FAIL("✖ ID3D11Device::CreateBlendState() failed");
-			
-			return m_states.end();
+			throw InternalEngineError{ fmt::format("ID3D11Device::CreateBlendState() failed (blendState = {}, colorWriteMask = {}, HRESULT = {:#x})",
+				state.asValue(), colorWriteMask, static_cast<uint32>(hr)) };
 		}
 
-		return m_states.emplace(state, std::move(blendState)).first;
+		const uint64 key = (uint64(state.asValue()) | (uint64(colorWriteMask) << 32));
+		return m_states.emplace(key, std::move(blendState)).first;
 	}
 }

@@ -15,6 +15,10 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		struct TextureProcessingPass;
+	}
 	class SIV3D_NOVTABLE ISiv3DTexture
 	{
 	public:
@@ -29,8 +33,9 @@ namespace s3d
 		[[nodiscard]]
 		virtual Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) = 0;
 
+		// mipmaps contains the validated levels following the base image.
 		[[nodiscard]]
-		virtual Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) = 0;
+		virtual Texture::IDType create(const Image& image, std::span<const Image> mipmaps, TextureDesc desc) = 0;
 
 		[[nodiscard]]
 		virtual Texture::IDType create(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) = 0;
@@ -40,6 +45,23 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual Texture::IDType createDynamic(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType createRender(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) = 0;
+
+		virtual void processRenderTextures(std::span<const detail::TextureProcessingPass> passes) = 0;
+
+		virtual void resolveMSRT(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual uint32 getSampleCount(Texture::IDType handleID) = 0;
+
+		virtual void clearRT(Texture::IDType handleID, const ColorF& color) = 0;
+
+		virtual bool readRT(Texture::IDType handleID, std::span<Byte> destination, uint32 mipLevel) = 0;
 
 		virtual void release(Texture::IDType handleID) = 0;
 
@@ -62,7 +84,7 @@ namespace s3d
 
 		virtual bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) = 0;
 
-		virtual bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) = 0;
+		virtual bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect, bool wait) = 0;
 
 		virtual bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) = 0;
 

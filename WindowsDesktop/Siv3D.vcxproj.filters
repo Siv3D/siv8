@@ -673,8 +673,14 @@
     <Filter Include="src\Siv3D\Profiler">
       <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\ResizeMode">
-      <UniqueIdentifier>{e1b912b6-75cc-42af-9275-dcd202afc743}</UniqueIdentifier>
+    <Filter Include="src\Siv3D\SceneSizeMode">
+      <UniqueIdentifier>{0610d680-908c-4524-8ac1-6ee5a2d82a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\SceneResolution">
+      <UniqueIdentifier>{7c8796a1-d64c-4f8f-886c-4fa74a39ffb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FullscreenSceneMode">
+      <UniqueIdentifier>{909d09ed-5b89-4c19-9f61-41c4a9bdaae6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\TextureFilter">
       <UniqueIdentifier>{19bc6a87-791f-4531-a1f5-05c3f972ef6e}</UniqueIdentifier>
@@ -855,6 +861,9 @@
     </Filter>
     <Filter Include="src\Siv3D\ScopedViewport2D">
       <UniqueIdentifier>{b950ca6a-9cd6-4c7f-be49-5c5f94f8ff4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ScopedRenderTarget2D">
+      <UniqueIdentifier>{ac761dc3-ed63-4df7-a60c-e3eb09f3ffac}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\ScopedQuadWarp2D">
       <UniqueIdentifier>{2EDE2464-8306-4738-BB8C-2E73699A6E87}</UniqueIdentifier>
@@ -1041,6 +1050,18 @@
     </Filter>
     <Filter Include="src\Siv3D\DynamicTexture">
       <UniqueIdentifier>{3584d68e-3e62-41c8-8d7a-4e684658b622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\RenderTexture">
+      <UniqueIdentifier>{0D8FC55A-D040-4D3B-8E07-96807E78B48E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\RenderTextureOps">
+      <UniqueIdentifier>{a28a7fc5-fcee-5a25-957e-2d0eb977a9a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MSRenderTexture">
+      <UniqueIdentifier>{5b37a337-bcbd-458e-90fd-55f9a8dede4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ColorRenderTarget">
+      <UniqueIdentifier>{62e0b561-e5d1-4c01-a0dd-3d6980d38f99}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\ThirdParty\bc7enc_rdo">
       <UniqueIdentifier>{292bb396-1b44-4e78-9523-e4f585729366}</UniqueIdentifier>
@@ -1441,6 +1462,9 @@
     <Filter Include="src\Siv3D\Mesh2D">
       <UniqueIdentifier>{54df963e-fe04-4f37-80cf-e4c099ca287e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\NinePatch">
+      <UniqueIdentifier>{8c985792-5245-46db-9757-dc8ee51d155f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\Mesh3D">
       <UniqueIdentifier>{7a5296ba-b353-413a-a5c5-ea24657f9dc7}</UniqueIdentifier>
     </Filter>
@@ -1488,6 +1512,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\absl\random\mocking_access.h">
+      <Filter>include\ThirdParty</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
       <Filter>include</Filter>
     </ClInclude>
@@ -2295,6 +2322,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp">
       <Filter>src\Siv3D\Window</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Window\WindowUtility.hpp">
+      <Filter>src\Siv3D\Window</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D</Filter>
     </ClInclude>
@@ -2308,6 +2338,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowStateSync.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.hpp">
@@ -3426,7 +3459,13 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec3.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec2.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec3.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomColor.ipp">
@@ -3498,7 +3537,16 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\ResizeMode.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneConfig.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneSizeMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SceneResolution.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FullscreenSceneMode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp">
@@ -3774,6 +3822,21 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCommon.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DDrawSubmission.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DEngineShaders.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DStateUpdate.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DTransformState.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCustomShaders.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -3894,6 +3957,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedViewport2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedRenderTarget2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedQuadWarp2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -3984,6 +4050,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\SuperEllipseTessellation.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\CircleArcArrow.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RoundRectBalloon.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
@@ -4018,6 +4093,21 @@
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Weave.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Wave.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Truchet.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Ripple.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Halftone.ipp">
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp">
@@ -4147,6 +4237,15 @@
       <Filter>src\Siv3D\Polygon</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\EllipseGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\CircleArcArrowGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageDraw\ShapeExtensions.hpp">
+      <Filter>src\Siv3D\ImageDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\RectCornerGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierGeometry.hpp">
@@ -4332,6 +4431,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RenderTexture.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MSRenderTexture.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorRenderTarget.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RenderTargetState.hpp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4398,8 +4509,32 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RenderTexture.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RenderTextureOps.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MSRenderTexture.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorRenderTarget.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureClipping.hpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureCover.hpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\NinePatch\NinePatchGeometry.hpp">
+      <Filter>src\Siv3D\NinePatch</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp">
       <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\RenderTextureOps\TextureProcessing.hpp">
+      <Filter>src\Siv3D\RenderTextureOps</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BCnDecoder.hpp">
       <Filter>include\Siv3D\ImageFormat</Filter>
@@ -4446,10 +4581,13 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeNoTable.hpp">
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeCompact.hpp">
       <Filter>include\ThirdParty\libcpprime</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Environment.hpp">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb.h">
@@ -4684,6 +4822,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SceneConfig.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheManager.hpp">
@@ -5113,6 +5254,12 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3Walker.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline2DMeasure.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline2D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp">
@@ -6024,6 +6171,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NinePatch.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MaterialAlphaMode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -6034,6 +6184,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\NinePatch.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3D.hpp">
@@ -6399,6 +6552,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\SivWindow_Windows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp">
@@ -8090,8 +8246,14 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
       <Filter>src\Siv3D\Profiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp">
-      <Filter>src\Siv3D\ResizeMode</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneSizeMode\SivSceneSizeMode.cpp">
+      <Filter>src\Siv3D\SceneSizeMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SceneResolution\SivSceneResolution.cpp">
+      <Filter>src\Siv3D\SceneResolution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FullscreenSceneMode\SivFullscreenSceneMode.cpp">
+      <Filter>src\Siv3D\FullscreenSceneMode</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp">
       <Filter>src\Siv3D\TextureFilter</Filter>
@@ -8330,6 +8492,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedViewport2D\SivScopedViewport2D.cpp">
       <Filter>src\Siv3D\ScopedViewport2D</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedRenderTarget2D\SivScopedRenderTarget2D.cpp">
+      <Filter>src\Siv3D\ScopedRenderTarget2D</Filter>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedQuadWarp2D\SivScopedQuadWarp2D.cpp">
       <Filter>src\Siv3D\ScopedQuadWarp2D</Filter>
     </ClCompile>
@@ -8530,6 +8695,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp">
       <Filter>src\Siv3D\DynamicTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RenderTexture\SivRenderTexture.cpp">
+      <Filter>src\Siv3D\RenderTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RenderTextureOps\SivRenderTextureOps.cpp">
+      <Filter>src\Siv3D\RenderTextureOps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MSRenderTexture\SivMSRenderTexture.cpp">
+      <Filter>src\Siv3D\MSRenderTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorRenderTarget\SivColorRenderTarget.cpp">
+      <Filter>src\Siv3D\ColorRenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp">
       <Filter>src\Siv3D\Texture</Filter>
@@ -9281,6 +9458,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh2D\SivMesh2D.cpp">
       <Filter>src\Siv3D\Mesh2D</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NinePatch\SivNinePatch.cpp">
+      <Filter>src\Siv3D\NinePatch</Filter>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
@@ -9384,5 +9564,81 @@
     <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases32.txt">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </Text>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases64Compact.txt">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </Text>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\LICENSE">
+      <Filter>include\ThirdParty\libcpprime</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CatmullRomParameterization.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DistanceMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SplineLocation.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SplineClosestPoint2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline2DMeasure.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Bezier3\Bezier3ArcLength.hpp">
+      <Filter>src\Siv3D\Bezier3</Filter>
+    </ClInclude>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Spline2D\SivSpline2D.cpp">
+      <Filter>src\Siv3D\Spline2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Spline2DMeasure\SivSpline2DMeasure.cpp">
+      <Filter>src\Siv3D\Spline2DMeasure</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src\Siv3D\Spline2D">
+      <UniqueIdentifier>{65574824-711a-530d-9859-87979ac7a7af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Spline2DMeasure">
+      <UniqueIdentifier>{6fa47cb9-e72e-5b09-a4d2-3a47d2428e7e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3ArcLengthTable.hpp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierTessellation.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierArrowGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DashedPath.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DashPattern.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PathArrowGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\DoubleHeadedArrowGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\CircularShapes.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\CRenderer2D.cpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

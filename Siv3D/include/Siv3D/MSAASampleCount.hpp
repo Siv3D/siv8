@@ -22,11 +22,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief シーンのマルチサンプリングアンチエイリアス (MSAA) の設定
+	/// @brief マルチサンプリングアンチエイリアス (MSAA) の設定
 	enum class MSAASampleCount : uint8
 	{
-		/// @brief MSAA を使用しない
-		NoAA	= 1,
+		/// @brief MSAA を使用しない（1 サンプル）
+		NoMSAA	= 1,
 
 		/// @brief 2x MSAA を使用する
 		X2MSAA	= 2,

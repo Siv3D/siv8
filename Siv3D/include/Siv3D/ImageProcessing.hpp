@@ -26,6 +26,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr uint8 CalculateMipmapLevel(size_t width, size_t height) noexcept;
 
+		/// @brief 完全なミップマップ列の指定レベルのサイズを計算します。
+		/// @param baseSize レベル 0 のサイズ（ピクセル）
+		/// @param level ミップレベル（0 が元のサイズ）
+		/// @return 各辺を切り捨て半分にし、最低 1 としたサイズ。非正サイズ、列の範囲外のレベルでは { 0, 0 }
+		[[nodiscard]]
+		constexpr Size CalculateMipmapSize(Size baseSize, uint32 level) noexcept;
+
 		[[nodiscard]]
 		Image Resize(const Image& src, const Size& size);
 	}

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "LineStyle.hpp"
 # include "PointVector.hpp"
 # include "LineString.hpp"
 # include "ListUtility.hpp"
@@ -402,11 +403,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 誤差に応じて適応的に分割した LineString を返します。
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
-		/// @return LineString
-		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
+		/// @brief 曲線を適応分割した折れ線に変換します。
+		/// @param targetError 中心線と折れ線のずれの目標値。座標と同じ単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @return 始点と終点を含む折れ線。連続する同一点はまとめます。
+		/// @pre 制御点が有限で、計算結果を double で表現できること。
+		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。描画の変換状態は反映しません。
+		[[nodiscard]]
+		LineString toLineStringAdaptive(double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 曲線を適応分割し、既存の折れ線へ書き込みます。
+		/// @param destination 結果で置き換える折れ線。確保済みの領域を再利用します。
+		/// @param targetError 中心線と折れ線のずれの目標値。座標と同じ単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 品質、入力条件、端点と重複点の扱いは、値を返す overload と共通です。
+		void toLineStringAdaptive(LineString& destination, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -598,16 +609,22 @@ namespace s3d
 		/// @param dst 描き込み先の画像
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を指定した太さで Image に描き込みます。
 		/// @param dst 描き込み先の画像
 		/// @param thickness 太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を指定した線端と太さで Image に描き込みます。
 		/// @param dst 描き込み先の画像
@@ -615,8 +632,26 @@ namespace s3d
 		/// @param thickness 太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 曲線を指定した線端と太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
+		/// @remark 制御点がすべて同じ位置の場合は何も描きません。
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const Bezier2& paint(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -628,16 +663,22 @@ namespace s3d
 		/// @param dst 上書き先の画像
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を指定した太さで Image に上書きします。
 		/// @param dst 上書き先の画像
 		/// @param thickness 太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を指定した線端と太さで Image に上書きします。
 		/// @param dst 上書き先の画像
@@ -645,8 +686,127 @@ namespace s3d
 		/// @param thickness 太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
 		/// @return *this
-		const Bezier2& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Bezier2& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 曲線を指定した線端と太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @param targetError 中心線と折れ線のずれの目標値。画像ピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 分割の品質と入力条件は toLineStringAdaptive() と共通です。
+		/// @remark 制御点がすべて同じ位置の場合は何も描きません。
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const Bezier2& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier2& paintArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier2& paintArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintArrow()
+		const Bezier2& overwriteArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintArrow()
+		const Bezier2& overwriteArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Bezier2& paintDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param targetError 画像のピクセル単位の中心線の目標誤差。有限の正の値
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @return *this
+		/// @see paintDoubleHeadedArrow()
+		const Bezier2& overwriteDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -654,75 +814,155 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を描画します。
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier2& draw(const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を描画します。
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier2& draw(double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を描画します。
-		/// @param lineCap 線端の種類
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier2& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		/// @brief 曲線を指定した両端の線端と太さで描画します。
-		/// @param startCap 始点側の線端の種類
-		/// @param endCap 終点側の線端の種類
-		/// @param thickness 太さ
-		/// @param color 色
-		/// @param segments 分割数（最低 1）
-		/// @return *this
-		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	drawAdaptive
-		//
-		////////////////////////////////////////////////////////////////
-
 		/// @brief 曲線を適応分割で描画します。
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @see @ref bezier2_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier2& drawAdaptive(const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& draw(const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @see @ref bezier2_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier2& drawAdaptive(double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& draw(double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		/// @brief 曲線を適応分割で描画します。
 		/// @param lineCap 線端の種類
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @see @ref bezier2_draw "適応分割の品質と入力条件"
 		/// @return *this
-		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
+		/// @anchor bezier2_draw
 		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
 		/// @param startCap 始点側の線端の種類
 		/// @param endCap 終点側の線端の種類
 		/// @param thickness 太さ
 		/// @param color 色
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @pre 制御点と適用する変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 品質評価には Local、Camera とシーンの解像度倍率を反映します。QuadWarp とカスタム頂点シェーダは含みません。
+		/// @remark targetError は厳密な誤差上限ではありません。分割上限に達すると目標より粗くなります。線幅と線端形状の誤差は対象外です。
+		/// @remark 太さには絶対値を使用します。すべての制御点が同じ場合は、その点に線端を描画します。
 		/// @return *this
-		const Bezier2& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @anchor bezier2_draw_gradient
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier2_draw "適応分割の品質と入力条件"
+		/// @remark 色は線端を含む折れ線の長さに沿って補間します。
+		/// @return *this
+		const Bezier2& draw(Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier2_draw_gradient
+		/// @return *this
+		const Bezier2& draw(double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier2_draw_gradient
+		/// @return *this
+		const Bezier2& draw(LineCap lineCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 始点から終点へのグラデーションで曲線を適応分割して描きます。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param startColor 始点側の色
+		/// @param endColor 終点側の色
+		/// @param targetError 描画先のピクセル単位の目標誤差
+		/// @param maxSegments 分割数の上限（1～4096）
+		/// @see @ref bezier2_draw_gradient
+		/// @return *this
+		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @brief 指定した線のスタイルで曲線を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @param targetError 中心線と折れ線のずれの目標値。描画先のピクセル単位の有限の正の値
+		/// @param maxSegments 分割数の上限。1～4096
+		/// @remark 破線は適応分割した折れ線の距離で配置します。変換や分割設定により配置が変わることがあります。
+		/// @see draw(), @ref styled_path_drawing "破線描画の入力条件と制約"
+		/// @return *this
+		const Bezier2& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲線の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegments 軸の分割数の上限（1～4096）
+		/// @see @ref bezier2_draw_arrow
+		/// @return *this
+		const Bezier2& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		/// @anchor bezier2_draw_arrow
+		/// @brief 曲線上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegments 軸の分割数の上限（1～4096）
+		/// @pre headSize と thickness は有限であること。幾何・変換・品質の入力条件は draw() と共通です。
+		/// @remark 根元（底辺中央）は、終点との直線距離が headSize.y になる曲線上の点のうち、進行順で最後の点です。
+		/// @remark 長さが収まらない場合は終点から曲線までの最大距離に合わせて headSize を同率で縮小し、軸幅は維持します。
+		/// @remark 逆向きの接続や底辺に収まらない切り口では、矢じりを省略して終端 Flat の曲線全体を描きます。
+		/// @remark 形状が重なる部分は、半透明では濃くなる場合があります。
+		/// @remark 全制御点が同じ場合は描画しません。
+		/// @return *this
+		const Bezier2& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor curve_draw_double_headed_arrow
+		/// @brief 曲線の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param targetError 描画先のピクセル単位の中心線の目標誤差
+		/// @param maxSegments 軸の分割数の上限（1～4096）
+		/// @pre 幾何・変換・品質の入力条件は drawArrow() と共通です。
+		/// @remark 各矢じりは経路上の根元から端点へ向きます。根元の順序が逆転する場合は共通の根元に縮め、軸幅を維持して軸を省略します。
+		/// 接続が逆向き、または切り口が底辺に収まらない場合は両矢じりを省略し、両端 Flat の経路全体を描きます。重なる部分は半透明では濃くなる場合があります。
+		/// 全制御点が同じ場合は描画しません。
+		/// @return *this
+		const Bezier2& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White, double targetError = 0.5, int32 maxSegments = 256) const;
 
 		////////////////////////////////////////////////////////////////
 		//

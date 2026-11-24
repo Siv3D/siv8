@@ -39,6 +39,13 @@ namespace s3d
 
 		close();
 
+		// An input stream can open a directory on POSIX systems.
+		if (FileSystem::IsDirectory(path))
+		{
+			LOG_FAIL(fmt::format("❌ BinaryFileReader: Cannot open directory `{0}`", path.toUTF8()));
+			return false;
+		}
+
 		{
 			// ファイルのオープン
 			{

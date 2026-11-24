@@ -58,6 +58,12 @@
     <ClCompile Include="..\Test\Test_BigFloat.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ParseFloat.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Miniaudio.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Byte.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -65,6 +71,15 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Hash.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_KDTree.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_IsPrime.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ParallelHashmap.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Step.cpp">
@@ -106,6 +121,12 @@
     <ClCompile Include="..\Test\Test_FileSystem.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ShaderGroup.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Unicode.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -142,7 +163,40 @@
     <ClCompile Include="..\Test\Test_Image.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageProcessing.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageDraw.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_DirectoryWatcher.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_AssetHandleManager.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_RenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BCnDecoder.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BCnEncoder.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureMipmap.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureFormat.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_RenderTextureOps.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ScopedRenderTarget2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp">
@@ -157,13 +211,34 @@
     <ClCompile Include="..\Test\Test_MetalPresentation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalScreenCapture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_GLFW.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ScreenCoordinates.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Keyboard.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneMSAA.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MSRenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ColorRenderTarget.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MRT.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
@@ -181,6 +256,9 @@
     <ClCompile Include="..\Test\Test_Quaternion.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_RandomVec3.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Cylindrical.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -196,7 +274,61 @@
     <ClCompile Include="..\Test\Test_QuadWarp.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ScopedColor2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneHighResolution.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneConfig.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneBackground.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_macOS.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_Windows.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalTextureUpload.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTextureOps.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalConstantBuffer.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalMSRenderTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalDynamicTexture.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalScopedRenderTarget2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowMacOS.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowStateSync.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_CursorTransform.cpp">
@@ -229,16 +361,100 @@
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DPreparation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderPolyline.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DUpload.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderIndices.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderCircleShadow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderArc.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderEllipse.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderRoundRect.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_RectRoundedDrawing.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_RoundRectBalloon.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEllipseDashedFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEllipseExtensions.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DSuperEllipse.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DArcTessellation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureClipping.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextureCover.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_NinePatch.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DTexturedRoundRect.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DJoinStyle.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DDrawSubmission.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Graphics2DDrawTriangles.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEngineShaders.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DStateUpdate.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DResourceStateUpdate.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DTransformState.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp">
@@ -277,6 +493,9 @@
     <ClCompile Include="..\Test\Test_ArrayLike.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_DisjointSet.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Polygon.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -290,6 +509,12 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Blob.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MappedMemory.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MemoryReader.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Wave.cpp">
@@ -319,6 +544,48 @@
     <ClCompile Include="..\Test\Test_Bezier.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BezierTessellation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BezierDraw.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BezierArrow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_CircleArcArrow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_CircleTrimmedArc.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_PathArrow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_DoubleHeadedArrow.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_CircularShapes.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_DashedPath.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_StyledArc.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_StyledRoundRect.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_CurveAdaptive.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\Test\BezierTessellationStudy.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\BezierTessellationLegacy.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -478,7 +745,28 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImageDrawingTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowSceneTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\TextureMipmapTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp">
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp">
@@ -501,5 +789,25 @@
     <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp">
       <Filter>Test</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Test\Test_Spline2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Spline2DImage.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageShapeExtensions.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

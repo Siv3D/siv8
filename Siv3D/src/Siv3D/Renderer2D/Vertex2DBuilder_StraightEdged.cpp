@@ -11,6 +11,7 @@
 
 # include <array>
 # include <limits>
+# include <type_traits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -22,6 +23,28 @@ namespace s3d
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
 		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
+
+		template <class SourceIndex>
+		SIV3D_ALWAYS_INLINE
+		static inline void CopyIndicesWithOffset(Index2DWritePointer pIndex, const std::span<const SourceIndex> source,
+			const Vertex2D::IndexType indexOffset)
+		{
+			// Upload memory may be write-combined: add the offset before storing,
+			// without reading the destination or assuming a flat TriangleIndex layout.
+			for (const auto& index : source)
+			{
+				if constexpr (std::is_same_v<SourceIndex, TriangleIndex>)
+				{
+					*pIndex++ = (index.i0 + indexOffset);
+					*pIndex++ = (index.i1 + indexOffset);
+					*pIndex++ = (index.i2 + indexOffset);
+				}
+				else
+				{
+					*pIndex++ = (index + indexOffset);
+				}
+			}
+		}
 
 		struct RectFrameDashedQuad
 		{
@@ -337,6 +360,29 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildRoundDot
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRoundDot(const BufferCreatorFunc& bufferCreator, const Float2& start, const Float2& end,
+			const float thickness, const Float2& uRange, const Float4& color)
+		{
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(4, 6);
+			if (not pVertex) return 0;
+			const Float2 delta = (end - start);
+			const float length = delta.length();
+			const Float2 direction = (length ? (delta / length) : Float2{ 1, 0 });
+			const Float2 normal = (Float2{ -direction.y, direction.x } * (thickness * 0.5f));
+			pVertex[0].set((start + normal), Float2{ uRange.x, 1 }, color);
+			pVertex[1].set((start - normal), Float2{ uRange.x, 0 }, color);
+			pVertex[2].set((end + normal), Float2{ uRange.y, 1 }, color);
+			pVertex[3].set((end - normal), Float2{ uRange.y, 0 }, color);
+			for (const auto index : RectIndexTable) *pIndex++ = (indexOffset + index);
+			return 6;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildTriangle
 		//
 		////////////////////////////////////////////////////////////////
@@ -456,14 +502,14 @@ namespace s3d
 				return 0;
 			}
 
-			pVertex[0].pos.set((innerRect.left - thickness), (innerRect.top - thickness));
-			pVertex[1].pos.set(innerRect.left, innerRect.top);
-			pVertex[2].pos.set((innerRect.right + thickness), (innerRect.top - thickness));
-			pVertex[3].pos.set(innerRect.right, innerRect.top);
-			pVertex[4].pos.set((innerRect.right + thickness), (innerRect.bottom + thickness));
-			pVertex[5].pos.set(innerRect.right, innerRect.bottom);
-			pVertex[6].pos.set((innerRect.left - thickness), (innerRect.bottom + thickness));
-			pVertex[7].pos.set(innerRect.left, innerRect.bottom);
+			pVertex[0].setPosition((innerRect.left - thickness), (innerRect.top - thickness));
+			pVertex[1].setPosition(innerRect.left, innerRect.top);
+			pVertex[2].setPosition((innerRect.right + thickness), (innerRect.top - thickness));
+			pVertex[3].setPosition(innerRect.right, innerRect.top);
+			pVertex[4].setPosition((innerRect.right + thickness), (innerRect.bottom + thickness));
+			pVertex[5].setPosition(innerRect.right, innerRect.bottom);
+			pVertex[6].setPosition((innerRect.left - thickness), (innerRect.bottom + thickness));
+			pVertex[7].setPosition(innerRect.left, innerRect.bottom);
 
 			switch (colorType)
 			{
@@ -471,8 +517,8 @@ namespace s3d
 				{
 					for (size_t i = 0; i < 4; ++i)
 					{
-						(pVertex++)->color = color1;
-						(pVertex++)->color = color0;
+						(pVertex++)->setColor(color1);
+						(pVertex++)->setColor(color0);
 					}
 
 					break;
@@ -482,14 +528,14 @@ namespace s3d
 					const float v1 = (thickness / (innerRect.bottom - innerRect.top + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
 
-					pVertex[0].color = colors[0];
-					pVertex[1].color = colors[1];
-					pVertex[2].color = colors[0];
-					pVertex[3].color = colors[1];
-					pVertex[4].color = colors[3];
-					pVertex[5].color = colors[2];
-					pVertex[6].color = colors[3];
-					pVertex[7].color = colors[2];
+					pVertex[0].setColor(colors[0]);
+					pVertex[1].setColor(colors[1]);
+					pVertex[2].setColor(colors[0]);
+					pVertex[3].setColor(colors[1]);
+					pVertex[4].setColor(colors[3]);
+					pVertex[5].setColor(colors[2]);
+					pVertex[6].setColor(colors[3]);
+					pVertex[7].setColor(colors[2]);
 
 					break;
 				}
@@ -498,14 +544,14 @@ namespace s3d
 					const float v1 = (thickness / (innerRect.right - innerRect.left + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
 
-					pVertex[0].color = colors[0];
-					pVertex[1].color = colors[1];
-					pVertex[2].color = colors[3];
-					pVertex[3].color = colors[2];
-					pVertex[4].color = colors[3];
-					pVertex[5].color = colors[2];
-					pVertex[6].color = colors[0];
-					pVertex[7].color = colors[1];
+					pVertex[0].setColor(colors[0]);
+					pVertex[1].setColor(colors[1]);
+					pVertex[2].setColor(colors[3]);
+					pVertex[3].setColor(colors[2]);
+					pVertex[4].setColor(colors[3]);
+					pVertex[5].setColor(colors[2]);
+					pVertex[6].setColor(colors[0]);
+					pVertex[7].setColor(colors[1]);
 
 					break;
 				}
@@ -687,8 +733,8 @@ namespace s3d
 
 					while (pSrc != pSrcEnd)
 					{
-						pVertex->pos = (_offset + *pSrc++);
-						pVertex->color = color;
+						pVertex->setPosition((_offset + *pSrc++));
+						pVertex->setColor(color);
 						++pVertex;
 					}
 				}
@@ -696,22 +742,14 @@ namespace s3d
 				{
 					while (pSrc != pSrcEnd)
 					{
-						pVertex->pos = *pSrc++;
-						pVertex->color = color;
+						pVertex->setPosition(*pSrc++);
+						pVertex->setColor(color);
 						++pVertex;
 					}
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}
@@ -740,21 +778,13 @@ namespace s3d
 
 				while (pSrc != pSrcEnd)
 				{
-					pVertex->pos = *pSrc++;
-					pVertex->color = color;
+					pVertex->setPosition(*pSrc++);
+					pVertex->setColor(color);
 					++pVertex;
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, indices.data(), indices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, indices, indexOffset);
 
 			return IndexCount;
 		}
@@ -793,21 +823,13 @@ namespace s3d
 					const Float2 v = *pSrc++;
 					const float x = (v.x * c - v.y * s + _offset.x);
 					const float y = (v.x * s + v.y * c + _offset.y);
-					pVertex->pos.set(x, y);
-					pVertex->color = color;
+					pVertex->setPosition(x, y);
+					pVertex->setColor(color);
 					++pVertex;
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}
@@ -868,7 +890,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	BuildTexturedQuad
+		//	BuildMesh2D
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -890,28 +912,22 @@ namespace s3d
 
 			// 頂点バッファへの書き込み
 			{
-				std::memcpy(pVertex, vertices.data(), vertices.size_bytes());
-
 				if (offset)
 				{
 					const Float2 _offset = *offset;
 
-					for (Vertex2D::IndexType i = 0; i < VertexCount; ++i)
+					for (const auto& vertex : vertices)
 					{
-						pVertex[i].pos += _offset;
+						(pVertex++)->set((vertex.pos + _offset), vertex.tex, vertex.color);
 					}
+				}
+				else
+				{
+					pVertex.copyFrom(vertices);
 				}
 			}
 
-			// インデックスバッファへの書き込み
-			{
-				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
-				
-				for (size_t i = 0; i < IndexCount; ++i)
-				{
-					*(pIndex++) += indexOffset;
-				}
-			}
+			CopyIndicesWithOffset(pIndex, triangleIndices, indexOffset);
 
 			return IndexCount;
 		}

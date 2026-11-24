@@ -43,40 +43,32 @@ namespace s3d
 		if (++m_idCount == IDType::InvalidID)
 		{
 			m_idFilled = true;
-			m_idCount = 0;
+			m_idCount = 1; // Null and Invalid are never candidates.
 		}
 
-		if (not m_idFilled)
+		if (m_idFilled)
 		{
-			m_data.emplace(m_idCount, std::move(data));
-
-			LOG_DEBUG(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
-
-			return IDType(m_idCount);
-		}
-		else
-		{
-			if (m_data.size() == (IDType::InvalidID - 1))
+			// After the first wrap, search each valid ID at most once.
+			const auto firstCandidate = m_idCount;
+			while (m_data.find(IDType(m_idCount)) != m_data.end())
 			{
-				LOG_FAIL(fmt::format("❌ No more {0}s can be created", m_assetTypeName));
-
-				return IDType::Null();
-			}
-
-			while (++m_idCount < IDType::InvalidID)
-			{
-				if (m_data.find(IDType(++m_idCount)) == m_data.end())
+				if (++m_idCount == IDType::InvalidID)
 				{
-					m_data.emplace(m_idCount, std::move(data));
-
-					LOG_DEBUG(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
-
-					return IDType(m_idCount);
+					m_idCount = 1;
+				}
+				if (m_idCount == firstCandidate)
+				{
+					LOG_FAIL(fmt::format("❌ No more {0}s can be created", m_assetTypeName));
+					return IDType::Null();
 				}
 			}
-
-			return IDType::Null();
 		}
+
+		m_data.emplace(m_idCount, std::move(data));
+
+		LOG_DEBUG(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
+
+		return IDType(m_idCount);
 	}
 
 	template <class IDType, class Data>

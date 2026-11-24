@@ -20,6 +20,7 @@
 
 namespace s3d
 {
+	struct LineStyle;
 	struct PatternParameters;
 	struct TexturedRoundRect;
 
@@ -1186,6 +1187,72 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paintBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しを画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 尾の配置・省略条件は drawBalloon() と共通です。
+		const RoundRect& paintBalloon(Image& dst, const Vec2& target, double tailWidth, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しの枠を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 尾の配置・省略条件は drawBalloon() と共通です。枠は Image の閉じた折れ線と同じ丸い結合で描きます。
+		const RoundRect& paintBalloonFrame(Image& dst, const Vec2& target, double tailWidth, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しを画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintBalloon
+		const RoundRect& overwriteBalloon(Image& dst, const Vec2& target, double tailWidth, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸吹き出しの枠を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param target 尾の先端座標
+		/// @param tailWidth 付け根の全幅
+		/// @param thickness 中央配置の枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintBalloonFrame
+		const RoundRect& overwriteBalloonFrame(Image& dst, const Vec2& target, double tailWidth, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////
@@ -1211,6 +1278,33 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RoundRect& draw(const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawBalloon / drawBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor roundrect_balloon
+		/// @brief 角丸長方形に三角形の尾を付けた吹き出しを塗りつぶします。
+		/// @param target 尾の先端の座標
+		/// @param tailWidth 尾の付け根の全幅。選択した辺の直線部分に収まる幅に縮小します。
+		/// @param color 色
+		/// @return *this
+		/// @pre 引数が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 本体中心から target へ向かう辺に尾を付けます。対角方向での同点は左右の辺を優先します。
+		/// target が外接矩形の内部・境界、tailWidth が 0 以下、または選択辺に直線部分がない場合は本体だけを描きます。本体の幅・高さが 0 以下なら描画しません。
+		const RoundRect& drawBalloon(const Vec2& target, double tailWidth, const ColorF& color = Palette::White) const;
+
+		/// @brief 吹き出しの輪郭を中心とする枠を描きます。
+		/// @param target 基準輪郭の尾の先端。枠の外側の先端とは異なります。
+		/// @param tailWidth 尾の付け根の全幅
+		/// @param thickness 枠の全幅。0 以下なら描画しません。
+		/// @param color 色
+		/// @return *this
+		/// @see @ref roundrect_balloon "吹き出しの配置と入力条件"
+		/// @remark 尾がある場合は閉じた折れ線の枠として描きます。鋭角や太い枠では重なりが生じることがあります。尾を省略する場合は drawFrame() と同じです。
+		const RoundRect& drawBalloonFrame(const Vec2& target, double tailWidth, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1273,6 +1367,26 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 指定した線のスタイルで角丸長方形の枠を描きます。
+		/// @param style 線のスタイル。閉じた枠なので線端の指定は使いません。
+		/// @param thickness 枠の太さ。内側・外側に半分ずつ配置します。
+		/// @param color 色
+		/// @return *this
+		/// @see @ref styled_round_rect_frame
+		const RoundRect& drawFrame(const LineStyle& style, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 指定した線のスタイルと内外の太さで角丸長方形の枠を描きます。
+		/// @param style 線のスタイル。閉じた枠なので線端の指定は使いません。
+		/// @param innerThickness 基準の角丸長方形から内側への太さ
+		/// @param outerThickness 基準の角丸長方形から外側への太さ
+		/// @param color 色
+		/// @anchor styled_round_rect_frame
+		/// @pre 座標・寸法・太さ・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 非実線は内外輪郭の中央の全周長に整数個の周期が収まるよう調整します。位相は調整後の単位で、その輪郭の上辺と左上の角丸の接点から時計回りです。丸点の直径は太さの合計を保ち、狭い角などでは重なる場合があります。
+		/// @remark Solid・角半径の制限・内側が潰れた場合の外形の塗りつぶしは通常の drawFrame() と共通です。寸法が 0 以下、太さが負、または太さの合計が 0 の場合は描画しません。非実線の枠でパターン片が 4,096 個を超える場合も描画せず、継ぎ目の同じ丸点は 1 個と数えます。
+		/// @return *this
+		const RoundRect& drawFrame(const LineStyle& style, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

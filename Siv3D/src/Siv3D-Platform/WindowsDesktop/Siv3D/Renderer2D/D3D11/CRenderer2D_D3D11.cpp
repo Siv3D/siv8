@@ -12,13 +12,13 @@
 # include "CRenderer2D_D3D11.hpp"
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
-# include <Siv3D/Resource.hpp>
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Mat3x3.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
+# include <Siv3D/Renderer2D/Renderer2DDrawSubmission.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
@@ -52,37 +52,6 @@ namespace s3d
 		}
 	}
 
-	PixelShader::IDType CRenderer2D_D3D11::EngineShader::getPatternShader(const PatternType pattern) const noexcept
-	{
-		switch (pattern)
-		{
-		case PatternType::PolkaDot:
-			return psPatternPolkaDot;
-		case PatternType::Stripe:
-			return psPatternStripe;
-		case PatternType::Checker:
-			return psPatternChecker;
-		case PatternType::Grid:
-			return psPatternGrid;
-		case PatternType::Triangle:
-			return psPatternTriangle;
-		case PatternType::HexGrid:
-			return psPatternHexGrid;
-		case PatternType::Halftone:
-			return psPatternHalftone;
-		case PatternType::Wave:
-			return psPatternWave;
-		case PatternType::Ripple:
-			return psPatternRipple;
-		case PatternType::Weave:
-			return psPatternWeave;
-		case PatternType::Truchet:
-			return psPatternTruchet;
-		default:
-			return psShape;
-		}
-	}
-
 	struct CommandState
 	{
 		BatchInfo2D batchInfo;
@@ -100,6 +69,13 @@ namespace s3d
 	//
 	//	(destructor)
 	//
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	////////////////////////////////////////////////////////////////
 
 	CRenderer2D_D3D11::~CRenderer2D_D3D11()
@@ -149,47 +125,20 @@ namespace s3d
 			}
 		}
 
-		m_engineShader.vsShape				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.vsPattern			= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Pattern2D).id();
-		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
-		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
-		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
-		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
-		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
-		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
-		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
-		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
-		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
-		m_engineShader.psPatternGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternGrid).id();
-		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
-		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
-		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
-		m_engineShader.psPatternHalftone = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHalftone).id();
-		m_engineShader.psPatternWave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWave).id();
-		m_engineShader.psPatternRipple = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternRipple).id();
-		m_engineShader.psPatternWeave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWeave).id();
-		m_engineShader.psPatternTruchet = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTruchet).id();
+		m_engineShader.init(*SIV3D_ENGINE(EngineShader));
 
-		// シャドウ画像を作成
-		{
-			const Image boxShadowImage{ Resource(U"engine/texture/box-shadow/256.png") };
+		m_shadowTexture = CreateShadowTexture();
+	}
 
-			const Array<Image> boxShadowImageMips =
-			{
-				Image{ Resource(U"engine/texture/box-shadow/128.png") },
-				Image{ Resource(U"engine/texture/box-shadow/64.png") },
-				Image{ Resource(U"engine/texture/box-shadow/32.png") },
-				Image{ Resource(U"engine/texture/box-shadow/16.png") },
-				Image{ Resource(U"engine/texture/box-shadow/8.png") },
-			};
+	////////////////////////////////////////////////////////////////
+	//
+	//	addProceduralVertices
+	//
+	////////////////////////////////////////////////////////////////
 
-			m_shadowTexture = std::make_unique<Texture>(boxShadowImage, boxShadowImageMips);
-
-			if (m_shadowTexture->isEmpty())
-			{
-				throw InternalEngineError{ "Failed to create a box-shadow texture" };
-			}
-		}
+	void CRenderer2D_D3D11::addProceduralVertices(const uint32 vertexCount)
+	{
+		Renderer2DDrawSubmission::SubmitProcedural(m_commandManager, m_engineShader, m_currentCustomShader, vertexCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -200,57 +149,31 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addLine(const LineCap startCap, const LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, start, end, thickness, colors, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, start, end, thickness, colors, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), style, start, end, thickness, colors, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), style, start, end, thickness, colors, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
+			Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, style);
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				switch (style.type)
-				{
-				case LinePattern::Solid:
-					m_commandManager.pushEnginePS(m_engineShader.psShape);
-					break;
-				case LinePattern::Dotted:
-					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
-					break;
-				case LinePattern::Dashed:
-					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
-					break;
-				case LinePattern::LongDash:
-					m_commandManager.pushEnginePS(m_engineShader.psLineLongDash);
-					break;
-				case LinePattern::DashDot:
-					m_commandManager.pushEnginePS(m_engineShader.psLineDashDot);
-					break;
-				case LinePattern::RoundDot:
-					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
-					break;
-				}
-			}
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundDot
+	//
+	////////////////////////////////////////////////////////////////
 
-			m_commandManager.pushDraw(indexCount);
+	void CRenderer2D_D3D11::addRoundDot(const Float2& start, const Float2& end, const float thickness, const Float2& uRange, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundDot(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), start, end, thickness, uRange, color))
+		{
+			Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
 		}
 	}
 
@@ -262,19 +185,9 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildArrow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, start, end, thickness, headSize, colors, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildArrow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, start, end, thickness, headSize, colors, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -288,17 +201,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -306,17 +209,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, colors))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -324,19 +217,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -350,17 +231,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -368,17 +239,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, colors))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -386,19 +247,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -412,17 +261,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), innerRect, thickness, colorType, color0, color1))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -430,19 +269,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), innerRect, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -456,461 +283,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), innerRect, offset, thickness, dashRatio, dashCount, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircle
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, colorType, color0, color1, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircleFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircleFrame(const Float2& center, const float rInner, const float thickness, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, thickness, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addCircleFrame(const Float2& center, const float rInner, const float thickness, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, thickness, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircleDashedFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircleDashedFrame(const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-		
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCirclePie
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircleArc
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircleSegment
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, color, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addEllipse
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addEllipse(const Float2& center, const float a, const float b, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, colorType, color0, color1, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addEllipse(const Float2& center, const float a, const float b, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addEllipseFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-			
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addEllipseDashedFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addEllipseDashedFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const float offset, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, offset, dashRatio, dashCount, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addEllipsePie
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, startAngle, angle, innerColor, outerColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-			
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	addSuperEllipse
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, n, colorType, color0, color1, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const PatternParameters& pattern)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, n, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -924,17 +297,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -942,17 +305,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, colors))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -960,19 +313,377 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircle
+	//
+	////////////////////////////////////////////////////////////////
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
+	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
 
-			m_commandManager.pushDraw(indexCount);
+	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleFrame(const Float2& center, const float rInner, const float thickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, thickness, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleFrame(const Float2& center, const float rInner, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, thickness, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleDashedFrame(const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCirclePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleTrimmedArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleTrimmedArc(const Float2& center, const float rInner, const float rOuter, const double startAngle, const double angle, const double trim, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleTrimmedArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, rOuter, startAngle, angle, trim, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleCrescent
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleCrescent(const Circle& circle, const double openingAngle, const double width, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleCrescent(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			circle, openingAngle, width, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleTeardrop
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleTeardrop(const Circle& circle, const Vec2& tip, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleTeardrop(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			circle, tip, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipse
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipse(const Float2& center, const float a, const float b, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipse(const Float2& center, const float a, const float b, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseDashedFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const float offset, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, offset, dashRatio, dashCount, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, rotation, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipseRotated(const Float2& center, const float a, const float b, const float rotation, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseRotated(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, rotation, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseFrameRotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipseFrameRotated(const Float2& center, const float a, const float b, const float rotation, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrameRotated(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, rotation, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipsePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, startAngle, angle, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, startAngle, angle, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addEllipseArc(const LineCap startCap, const LineCap endCap, const Float2& center, const float a, const float b, const float startAngle, const float angle, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseArc(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, center, a, b, startAngle, angle, innerThickness, outerThickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addArcStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addArcStyled(const LineStyle& style, const Float2& center, const float a, const float b,
+		const float startAngle, const float angle, const float innerThickness, const float outerThickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildArcStyled(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			style, center, a, b, startAngle, angle, innerThickness, outerThickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			if (style.type == LinePattern::RoundDot)
+				Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
+			else Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addSuperEllipse
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, n, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, n, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -984,57 +695,33 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, color, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, colorType, color0, color1, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, pattern.primaryColor, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, radii, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1047,59 +734,54 @@ namespace s3d
 	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, color, getRMSScaling()))
+			innerRect, innerR, outerRect, outerR, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, colorType, color0, color1, getRMSScaling()))
+			innerRect, innerR, outerRect, outerR, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, pattern.primaryColor, getRMSScaling()))
+			innerRect, innerR, outerRect, outerR, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerRadii, outerRect, outerRadii, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectFrameStyled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectFrameStyled(const LineStyle& style, const FloatRect& innerRect, const float innerR,
+		const FloatRect& outerRect, const float outerR, const float thickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrameStyled(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			style, innerRect, innerR, outerRect, outerR, thickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			if (style.type == LinePattern::RoundDot)
+				Renderer2DDrawSubmission::SubmitStyledLine(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, LineStyle::RoundDotFlat);
+			else Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1112,19 +794,37 @@ namespace s3d
 	void CRenderer2D_D3D11::addRoundRectDashedFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const float offset, const float dashRatio, const uint32 dashCount, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, getRMSScaling()))
+			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectBalloon
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), balloon, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectBalloonFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, const float thickness, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectBalloonFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), balloon, thickness, color, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1138,17 +838,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, offset, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1156,19 +846,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, offset, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -1176,17 +854,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, indices, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1194,19 +862,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygon(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, indices, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -1220,17 +876,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygonTransformed(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, s, c, offset, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
@@ -1238,19 +884,7 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildPolygonTransformed(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, s, c, offset, pattern.primaryColor))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
@@ -1262,40 +896,46 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, color, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tryAddSmallConvexFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CRenderer2D_D3D11::tryAddSmallConvexFrame(const std::span<const Vec2> points, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const Float4& color)
+	{
+		const auto result = Vertex2DBuilder::TryBuildSmallConvexFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, innerThickness, outerThickness, color, m_commandManager.getCurrentRasterScaling());
+		if (not result) return false;
+		if (const auto indexCount = *result)
+		{
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+		return true;
+	}
+
+	bool CRenderer2D_D3D11::tryAddSmallConvexFrame(const std::span<const Vec2> points, const JoinStyle joinStyle, const double innerThickness, const double outerThickness, const PatternParameters& pattern)
+	{
+		const auto result = Vertex2DBuilder::TryBuildSmallConvexFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, joinStyle, innerThickness, outerThickness, pattern.primaryColor, m_commandManager.getCurrentRasterScaling());
+		if (not result) return false;
+		if (const auto indexCount = *result)
+		{
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
+		}
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1306,75 +946,89 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, color, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, colorStart, colorEnd, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, colorStart, colorEnd, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, pattern.primaryColor, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, pattern.primaryColor, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
-			}
-
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
-
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitPattern(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, pattern);
 		}
 	}
 
 	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colors, getRMSScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colors, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
+	////////////////////////////////////////////////////////////////
+	//
+	//	addLineStringArrow
+	//
+	////////////////////////////////////////////////////////////////
 
-			m_commandManager.pushDraw(indexCount);
+	bool CRenderer2D_D3D11::addLineStringArrow(const LineCap startCap, const std::span<const Vec2> points,
+		const Float2& tip, const float thickness, const float headWidth, const Float4& color)
+	{
+		const auto count = Vertex2DBuilder::BuildLineStringArrow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			startCap, points, tip, thickness, headWidth, color, m_commandManager.getCurrentRasterScaling());
+		if (not count) return false;
+		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addLineStringDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CRenderer2D_D3D11::addLineStringDoubleHeadedArrow(const std::span<const Vec2> points, const Float2& startTip,
+		const Float2& endTip, const float thickness, const float startHeadWidth, const float endHeadWidth, const Float4& color)
+	{
+		const auto count = Vertex2DBuilder::BuildLineStringDoubleHeadedArrow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			points, startTip, endTip, thickness, startHeadWidth, endHeadWidth, color, m_commandManager.getCurrentRasterScaling());
+		if (not count) return false;
+		if (*count) Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, *count);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTexturedQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
+	{
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
+		}
+	}
+
+	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
+	{
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, colors))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
@@ -1386,64 +1040,34 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, uv, color, getRMSScaling()))
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, uv, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
+	void CRenderer2D_D3D11::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, uv, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
+		{
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addTexturedQuad
+	//	addTexturedCirclePie
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
+	void CRenderer2D_D3D11::addTexturedCirclePie(const Texture& texture, const Float2& center, const float r, const float startAngle, const float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, uv, innerColor, outerColor, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, colors))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
@@ -1455,45 +1079,19 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, uvRect, color, getRMSScaling()))
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, uvRect, color, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	addCircleShadow
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_D3D11::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
+	void CRenderer2D_D3D11::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, blur, color, getRMSScaling(), fill))
+		checkRenderTargetFeedback(texture);
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, uvRect, colorType, color0, color1, m_commandManager.getCurrentRasterScaling()))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-
-			m_commandManager.pushPSTexture(0, getShadowTexture());
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
@@ -1507,18 +1105,21 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, blur, color, fill))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
+			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
+		}
+	}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleShadow
+	//
+	////////////////////////////////////////////////////////////////
 
-			m_commandManager.pushPSTexture(0, getShadowTexture());
-			m_commandManager.pushDraw(indexCount);
+	void CRenderer2D_D3D11::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, blur, color, m_commandManager.getCurrentRasterScaling(), fill))
+		{
+			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
 		}
 	}
 
@@ -1530,20 +1131,9 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), roundRect, blur, color, getRMSScaling(), fill))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), roundRect, blur, color, m_commandManager.getCurrentRasterScaling(), fill))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-			
-			m_commandManager.pushPSTexture(0, getShadowTexture());
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitTextureFrom(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, [this]() -> const Texture& { return getShadowTexture(); });
 		}
 	}
 
@@ -1557,36 +1147,16 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, indices, offset))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
-			
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitShape(m_commandManager, m_engineShader, m_currentCustomShader, indexCount);
 		}
 	}
 
 	void CRenderer2D_D3D11::addMesh2D(const Texture& texture, const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices, const Optional<Float2>& offset)
 	{
+		checkRenderTargetFeedback(texture);
 		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, indices, offset))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
-			}
-			
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psTexture);
-			}
-			
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
+			Renderer2DDrawSubmission::SubmitTexture(m_commandManager, m_engineShader, m_currentCustomShader, indexCount, texture);
 		}
 	}
 
@@ -1601,9 +1171,15 @@ namespace s3d
 		m_commandManager.pushConstantBuffer(stage, slot, data, size);
 	}
 
-	uint32 CRenderer2D_D3D11::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	////////////////////////////////////////////////////////////////
+	//
+	//	beginConstantBufferScope, endConstantBufferScope
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint32 CRenderer2D_D3D11::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
-		return m_commandManager.beginConstantBufferScope(stage, slot, data, size);
+		return m_commandManager.beginConstantBufferScope(stage, slot, data, size, capacity);
 	}
 
 	void CRenderer2D_D3D11::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
@@ -1621,6 +1197,11 @@ namespace s3d
 	{
 		ScopeExit cleanUp = [this]()
 		{
+			// End the native pass before clear/readback/mip generation or a new target.
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, Graphics::TextureSlotCount> empty{};
+			m_context->VSSetShaderResources(0, Graphics::TextureSlotCount, empty.data());
+			m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, empty.data());
 			m_vertexBufferManager2D.reset();
 			m_commandManager.reset();
 			// 次の実行でもカスタムシェーダを適用する。論理設定は変更しない。
@@ -1657,19 +1238,40 @@ namespace s3d
 		m_context->VSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, vsBuffers.data());
 		m_context->PSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, psBuffers.data());
 
-		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		const Size currentRenderTargetSize = m_renderTargets ? m_renderTargets.size() : m_pRenderer->getSceneBufferSize();
+		const Float2 sceneScale = m_commandManager.getSceneScale();
 		{
 			const D3D11_VIEWPORT viewport = MakeViewport(Point{ 0, 0 }, currentRenderTargetSize);
 			m_context->RSSetViewports(1, &viewport);
 		}
 
-		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
+		// A previous renderer may have left a shader view of this output bound.
+		const std::array<ID3D11ShaderResourceView*, Graphics::TextureSlotCount> emptyTextures{};
+		m_context->VSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
+		m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, emptyTextures.data());
+		if (m_renderTargets)
+		{
+			// The RTV selects the MSAA image for MSRenderTexture; its SRV selects the resolve result.
+			std::array<ID3D11RenderTargetView*, detail::RenderTargetState::MaxCount> targets{};
+			for (uint32 i = 0; i < m_renderTargets.count; ++i)
+			{
+				targets[i] = m_pTexture->getRTV(m_renderTargets.colors[i]->id());
+			}
+			m_context->OMSetRenderTargets(m_renderTargets.count, targets.data(), nullptr);
+		}
+		else
+		{
+			m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
+		}
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 
 		LOG_COMMAND("----");
 
 		CommandState commandState;
 		commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
+		BlendState currentBlend = BlendState::Default2D;
+		uint8 colorWriteMask = 1;
+		const uint32 colorCount = m_renderTargets ? m_renderTargets.count : 1;
 
 		for (const auto& command : m_commandManager.getCommands())
 		{
@@ -1711,6 +1313,22 @@ namespace s3d
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
 					break;
 				}
+			case D3D11Renderer2DCommandType::DrawProcedural:
+				{
+					m_vsConstants._update_if_dirty();
+					m_psConstants._update_if_dirty();
+					m_psEffectConstants._update_if_dirty();
+
+					const uint32 vertexCount = m_commandManager.getProceduralDraw(command.index);
+					m_context->IASetInputLayout(nullptr);
+					m_context->Draw(vertexCount, 0);
+					m_context->IASetInputLayout(m_inputLayout.Get());
+
+					++stat.drawCalls;
+					stat.triangleCount += (vertexCount / 3);
+					LOG_COMMAND(fmt::format("DrawProcedural[{}] vertexCount = {}", command.index, vertexCount));
+					break;
+				}
 			case D3D11Renderer2DCommandType::SetConstantBuffer:
 				{
 					const auto& buffers = m_commandManager.getConstantBuffers();
@@ -1729,9 +1347,9 @@ namespace s3d
 						break;
 					}
 					auto& destination = m_customConstantBuffers[FromEnum(cb.stage)][cb.slot];
-					if (destination.capacity < cb.size)
+					if (destination.capacity < cb.capacity)
 					{
-						const size_t capacity = std::bit_ceil(cb.size);
+						const size_t capacity = std::bit_ceil(cb.capacity);
 						destination.buffer = IConstantBuffer::Create(capacity);
 						destination.capacity = capacity;
 					}
@@ -1775,8 +1393,8 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::BlendState:
 				{
-					const auto& blendState = m_commandManager.getBlendState(command.index);
-					m_pRenderer->getBlendState().set(blendState);
+					currentBlend = m_commandManager.getBlendState(command.index);
+					m_pRenderer->getBlendState().set(currentBlend, Float4{ 0, 0, 0, 0 }, colorWriteMask);
 					LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 					break;
 				}
@@ -1894,6 +1512,11 @@ namespace s3d
 					else
 					{
 						m_pShader->setPS(psID);
+						if (colorCount > 1)
+						{
+							colorWriteMask = m_engineShader.isStandardPS(psID) ? uint8{ 1 } : static_cast<uint8>((1u << colorCount) - 1);
+							m_pRenderer->getBlendState().set(currentBlend, Float4{ 0, 0, 0, 0 }, colorWriteMask);
+						}
 						LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
 					}
 
@@ -1902,6 +1525,11 @@ namespace s3d
 			case D3D11Renderer2DCommandType::Transform:
 				{
 					commandState.transform = m_commandManager.getCombinedTransform(command.index);
+					// Resolve scene scaling with the target used by this execution, including pending draws.
+					if (sceneScale != Float2{ 1.0f, 1.0f })
+					{
+						commandState.transform = (commandState.transform * Mat3x3{ Mat3x2::Scale(sceneScale) });
+					}
 					m_vsConstants->setTransform(commandState.transform * Mat3x3{ commandState.screenMat });
 
 					LOG_COMMAND(fmt::format("Transform[{}] {}", command.index, commandState.transform));
@@ -2185,6 +1813,12 @@ namespace s3d
 		m_commandManager.pushCameraTransform(matrix);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getQuadWarpTransform, setQuadWarpTransform
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Mat3x3& CRenderer2D_D3D11::getQuadWarpTransform() const
 	{
 		return m_commandManager.getCurrentQuadWarpTransform();
@@ -2219,7 +1853,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	(private function)
+	//	createBuffer
 	//
 	////////////////////////////////////////////////////////////////
 

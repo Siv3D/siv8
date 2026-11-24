@@ -30,6 +30,8 @@ namespace s3d
 
 		void update() override;
 
+		void updateBaseWindowTransform() override;
+
 		void updateHighTemporalResolutionCursorPos(Point rawClientPos) override;
 
 		const CursorState& getState() const override;

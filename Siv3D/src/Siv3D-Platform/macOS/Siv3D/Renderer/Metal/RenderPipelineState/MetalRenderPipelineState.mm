@@ -107,9 +107,17 @@ namespace s3d
 			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(desc.vs));
 			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(desc.ps));
 			renderPipelineDescriptor->setSampleCount(desc.sampleCount);
-			MTL::RenderPipelineColorAttachmentDescriptor* cd = renderPipelineDescriptor->colorAttachments()->object(0);
-			cd->setPixelFormat(ToEnum<MTL::PixelFormat>(desc.pixelFormat));
-			SetBlendState(renderPipelineDescriptor.get(), cd, desc.blendState);
+			for (uint32 i = 0; i < desc.colorCount; ++i)
+			{
+				auto* cd = renderPipelineDescriptor->colorAttachments()->object(i);
+				cd->setPixelFormat(ToEnum<MTL::PixelFormat>(desc.pixelFormats[i]));
+				SetBlendState(renderPipelineDescriptor.get(), cd, desc.blendState);
+				if ((desc.colorWriteMask & (1u << i)) == 0)
+				{
+					cd->setBlendingEnabled(false);
+					cd->setWriteMask(MTL::ColorWriteMaskNone);
+				}
+			}
 			
 			NS::Error* error = nullptr;
 			NS::SharedPtr<MTL::RenderPipelineState> pipelineState = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
@@ -117,14 +125,14 @@ namespace s3d
 			{
 				const NS::String* description = (error ? error->localizedDescription() : nullptr);
 				const char* details = (description ? description->utf8String() : nullptr);
-				throw InternalEngineError{ fmt::format("MTL::Device::newRenderPipelineState() failed (vs = {}, ps = {}, pixelFormat = {}, sampleCount = {}, blendStateHash = {}): {}",
-					desc.vs.value(), desc.ps.value(), desc.pixelFormat, desc.sampleCount, std::hash<BlendState>{}(desc.blendState),
+				throw InternalEngineError{ fmt::format("MTL::Device::newRenderPipelineState() failed (vs = {}, ps = {}, pixelFormat = {}, sampleCount = {}, colorCount = {}, colorWriteMask = {}, blendStateHash = {}): {}",
+					desc.vs.value(), desc.ps.value(), desc.pixelFormats[0], desc.sampleCount, desc.colorCount, desc.colorWriteMask, std::hash<BlendState>{}(desc.blendState),
 					(details ? details : "No Metal error details")) };
 			}
 
 			it = m_pipelineStates.emplace(desc, std::move(pipelineState)).first;
 			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {}, {})",
-								  desc.vs.value(), desc.ps.value(), desc.pixelFormat, desc.sampleCount, std::hash<BlendState>{}(desc.blendState)));
+								  desc.vs.value(), desc.ps.value(), desc.pixelFormats[0], desc.sampleCount, std::hash<BlendState>{}(desc.blendState)));
 		}
 		
 		return it->second.get();

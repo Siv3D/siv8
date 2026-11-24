@@ -16,9 +16,9 @@
 namespace s3d
 {
 	template <ShaderStage Stage>
-	ScopedConstantBuffer2D<Stage>::ScopedConstantBuffer2D(const uint32 slot, const void* data, const size_t size)
+	ScopedConstantBuffer2D<Stage>::ScopedConstantBuffer2D(const uint32 slot, const void* data, const size_t size, const size_t capacity)
 		: m_slot{ slot }
-		, m_previous{ Graphics2D::Internal::BeginConstantBufferScope(Stage, slot, data, size) }
+		, m_previous{ Graphics2D::Internal::BeginConstantBufferScope(Stage, slot, data, size, capacity) }
 		, m_active{ true } {}
 
 	template <ShaderStage Stage>

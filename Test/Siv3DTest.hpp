@@ -31,6 +31,19 @@
 
 # include "Siv3DTestFramework.hpp"
 
+namespace Catch
+{
+	// Image is a range, but printing every pixel obscures assertion diagnostics.
+	template <>
+	struct StringMaker<s3d::Image>
+	{
+		static std::string convert(const s3d::Image& image)
+		{
+			return "Image(" + std::to_string(image.width()) + "x" + std::to_string(image.height()) + ")";
+		}
+	};
+}
+
 s3d::int32 RunTest();
 
 namespace s3d

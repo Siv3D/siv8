@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "TexturePixelFormat.hpp"
 # include "StringView.hpp"
+# include "PointVector.hpp"
 
 namespace s3d
 {
@@ -149,10 +150,45 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	isFloat32
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各成分が 32 ビット浮動小数点数の形式かを返します。
+		/// @return R32_Float、R32G32_Float、R32G32B32A32_Float なら true, それ以外は false
+		[[nodiscard]]
+		constexpr bool isFloat32() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	packedRowBytes, packedDataSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 行パディングを含まない 1 行のバイト数を返します。
+		/// @param width 幅（ピクセル）
+		/// @return バイト数。幅が 0、不明な形式、size_t で表現できない場合は 0
+		/// @remark BCn では幅をブロック単位に切り上げた 1 ブロック行のバイト数です。GPU 転送先のアライメントは含みません。
+		[[nodiscard]]
+		size_t packedRowBytes(uint32 width) const noexcept;
+
+		/// @brief 行パディングを含まない画像データのバイト数を返します。
+		/// @param size サイズ（ピクセル）
+		/// @return バイト数。非正サイズ、不明な形式、size_t で表現できない場合は 0
+		/// @remark BCn では幅と高さをブロック単位に切り上げます。GPU リソースの確保量ではありません。
+		[[nodiscard]]
+		size_t packedDataSize(Size size) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	bytesPerRow
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 非圧縮形式では 4 バイト境界に揃えた行サイズ、BCn では 1 ブロック行のバイト数を返します。
+		/// @param width 幅（ピクセル）
+		/// @return 行サイズ（バイト）
+		/// @see packedRowBytes()
 		[[nodiscard]]
 		uint32 bytesPerRow(uint32 width) const noexcept;
 

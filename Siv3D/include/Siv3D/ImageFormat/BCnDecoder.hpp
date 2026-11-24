@@ -22,6 +22,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief BCn 形式画像データのデコーダ
+	/// @remark decode() と decodeNative() は途中の段までのミップ列を受け付けます。宣言段数が 0 の場合は 1 段とみなし、画像の寸法から決まる最大段数を超える場合は失敗します。
 	class BCnDecoder : public IImageDecoder
 	{
 	public:
@@ -96,18 +97,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief BCn 形式の画像ファイルをデコードして Image を作成します。
+		/// @brief BCn 形式の画像ファイルの基底段をデコードして Image を作成します。
 		/// @param path 画像ファイルのパス
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか（BCn では無視されます）
-		/// @return 作成した Image
+		/// @return 基底段の画像。読み込みに失敗した場合は空の Image
 		[[nodiscard]]
 		Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const override;
 
-		/// @brief BCn 形式の画像データをデコードして Image を作成します。
+		/// @brief BCn 形式の画像データの基底段をデコードして Image を作成します。
 		/// @param reader Reader オブジェクト
 		/// @param pathHint ファイルパス（オプション）
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか（BCn では無視されます）
-		/// @return 作成した Image
+		/// @return 基底段の画像。読み込みに失敗した場合は空の Image
 		[[nodiscard]]
 		Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const override;
 
@@ -117,9 +118,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief DDS ファイルから宣言された全段の圧縮データを読み込みます。
+		/// @param path 画像ファイルのパス
+		/// @param sRGB 対応する形式を sRGB として扱うか
+		/// @return 圧縮データ。いずれかの段を最後まで読み込めない場合やヘッダが不正な場合は空の BCnData
 		[[nodiscard]]
 		BCnData decodeNative(FilePathView path, bool sRGB) const;
 
+		/// @brief DDS 形式の画像データから宣言された全段の圧縮データを読み込みます。
+		/// @param reader Reader オブジェクト
+		/// @param sRGB 対応する形式を sRGB として扱うか
+		/// @param pathHint ファイルパス（オプション）
+		/// @return 圧縮データ。読み込みに失敗した場合は空の BCnData
 		[[nodiscard]]
 		BCnData decodeNative(std::unique_ptr<IReader> reader, bool sRGB, FilePathView pathHint = {}) const;
 	};

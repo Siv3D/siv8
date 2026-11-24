@@ -13,8 +13,19 @@
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Shape2D.hpp>
 # include <Siv3D/LineString.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
+# include "../Geometry2D/EllipseGeometry.hpp"
+# include "../Geometry2D/PolygonGeometry.hpp"
+# include "../Geometry2D/RectCornerGeometry.hpp"
+# include "../Geometry2D/CircularShapes.hpp"
+# include "../Geometry2D/DoubleHeadedArrowGeometry.hpp"
+# include "../Geometry2D/CircleArcArrowGeometry.hpp"
+# include "../Geometry2D/BezierTessellation.hpp"
+# include "../Renderer2D/RoundRectBalloon.hpp"
+# include "ShapeExtensions.hpp"
+# include <numeric>
 
 namespace s3d
 {
@@ -43,9 +54,10 @@ namespace s3d
 			double dx = 0.0;
 		};
 
+		template <class PointType>
 		struct PolygonContourView
 		{
-			const Vec2* points = nullptr;
+			const PointType* points = nullptr;
 			size_t count = 0;
 		};
 
@@ -104,7 +116,7 @@ namespace s3d
 		{
 			return (dstAlpha == ImageDraw::DstAlpha::AssumeOpaque)
 				? ImagePixel::detail::DstAlphaMode::AssumeOpaque
-				: ImagePixel::detail::DstAlphaMode::Preserve;
+				: ImagePixel::detail::DstAlphaMode::UseStored;
 		}
 
 		[[nodiscard]]
@@ -189,11 +201,11 @@ namespace s3d
 			}
 		}
 
-		void SortAndMergeSpans(std::vector<SpanI>& spans)
+		std::span<SpanI> SortAndMergeSpans(const std::span<SpanI> spans)
 		{
 			if (spans.empty())
 			{
-				return;
+				return spans;
 			}
 
 			std::sort(spans.begin(), spans.end(), [](const SpanI& a, const SpanI& b)
@@ -219,7 +231,12 @@ namespace s3d
 				}
 			}
 
-			spans.resize(writeIndex + 1);
+			return spans.first(writeIndex + 1);
+		}
+
+		void SortAndMergeSpans(std::vector<SpanI>& spans)
+		{
+			spans.resize(SortAndMergeSpans(std::span<SpanI>{ spans }).size());
 		}
 
 		void WriteMergedSpans(
@@ -801,16 +818,6 @@ namespace s3d
 					writeSpan(y12, x11, x12);
 				}
 
-				if (dx != dy)
-				{
-					writeSpan(y21, x21, x22);
-
-					if (y22 != y21)
-					{
-						writeSpan(y22, x21, x22);
-					}
-				}
-
 				++dy;
 				err += plus;
 				plus += 2;
@@ -820,6 +827,17 @@ namespace s3d
 				err -= minus & mask;
 				dx += mask;
 				minus -= mask & 2;
+
+				// Emit the outer rows only when their widest span is known.
+				if ((mask != 0) && (y21 != y11))
+				{
+					writeSpan(y21, x21, x22);
+
+					if (y22 != y21)
+					{
+						writeSpan(y22, x21, x22);
+					}
+				}
 			}
 		}
 
@@ -873,6 +891,27 @@ namespace s3d
 			return (outX0 < outX1);
 		}
 
+		void FillRoundDiskNoAA(
+			ImageView view,
+			const Circle& circle,
+			ImagePixel::BlendMode blendMode,
+			ImageDraw::DstAlpha dstAlpha,
+			Color color)
+		{
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			const int32 y0 = ClampInt(CeilToInt(circle.y - circle.r - 0.5), 0, view.height);
+			const int32 y1 = ClampInt(FloorToInt(circle.y + circle.r - 0.5) + 1, 0, view.height);
+			for (int32 y = y0; y < y1; ++y)
+			{
+				int32 x0 = 0;
+				int32 x1 = 0;
+				if (GetCircleSpanAtY(circle.center, circle.r, y, x0, x1))
+				{
+					WriteSpanHalfOpenClipped(writer, view, y, x0, x1);
+				}
+			}
+		}
+
 		[[nodiscard]]
 		uint8 CircleCoverageAt(
 			double pixelCenterX,
@@ -895,72 +934,11 @@ namespace s3d
 			double radiusX,
 			double radiusY) noexcept
 		{
-			if (!(0.0 < radiusX) || !(0.0 < radiusY))
-			{
-				return 1.0;
-			}
-
-			const double x = std::abs(pixelCenterX - centerX);
-			const double y = std::abs(pixelCenterY - centerY);
-
-			if ((x == 0.0) && (y == 0.0))
-			{
-				return -Min(radiusX, radiusY);
-			}
-
-			constexpr double HalfPi = 1.57079632679489661923;
-
-			double t = std::atan2(y * radiusX, x * radiusY);
-			t = Min(HalfPi, Max(0.0, t));
-
-			for (int32 i = 0; i < 8; ++i)
-			{
-				const double cosT = std::cos(t);
-				const double sinT = std::sin(t);
-
-				const double ex = radiusX * cosT;
-				const double ey = radiusY * sinT;
-
-				const double qx = ex - x;
-				const double qy = ey - y;
-
-				const double dex = -radiusX * sinT;
-				const double dey = radiusY * cosT;
-				const double ddex = -radiusX * cosT;
-				const double ddey = -radiusY * sinT;
-
-				const double f = qx * dex + qy * dey;
-				const double df = dex * dex + qx * ddex + dey * dey + qy * ddey;
-
-				if (std::abs(df) <= 1.0e-12)
-				{
-					break;
-				}
-
-				const double nextT = t - (f / df);
-				const double clampedT = Min(HalfPi, Max(0.0, nextT));
-
-				if (std::abs(clampedT - t) <= 1.0e-12)
-				{
-					t = clampedT;
-					break;
-				}
-
-				t = clampedT;
-			}
-
-			const double closestX = radiusX * std::cos(t);
-			const double closestY = radiusY * std::sin(t);
-
-			const double dx = x - closestX;
-			const double dy = y - closestY;
-			const double distance = std::sqrt(dx * dx + dy * dy);
-
-			const double nx = x / radiusX;
-			const double ny = y / radiusY;
-			const double implicit = nx * nx + ny * ny - 1.0;
-
-			return (implicit <= 0.0) ? -distance : distance;
+			const Vec2 query{ Abs(pixelCenterX - centerX), Abs(pixelCenterY - centerY) };
+			const Vec2 axes{ radiusX, radiusY };
+			const Vec2 closest = detail::ClosestPointOnEllipseBoundaryInFirstQuadrant(query, axes);
+			const double distance = (query - closest).length();
+			return ((query / axes).lengthSq() <= 1.0) ? -distance : distance;
 		}
 
 		[[nodiscard]]
@@ -1257,6 +1235,13 @@ namespace s3d
 			}
 
 			const double supportR = outerR + 0.5;
+			const double holeR = innerR - 0.5;
+			const double fullOuterR = outerR - 0.5;
+			const double innerSupportR = innerR + 0.5;
+			// On tiny frames, splitting the row costs more than evaluating its few pixels.
+			const bool splitSpans = (8.0 < outerR);
+			const bool hasSolidBand = (innerSupportR < fullOuterR);
+			const Vec2 center = circle.center;
 
 			int32 y0 = FloorToInt(circle.y - supportR - 0.5);
 			int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
@@ -1282,7 +1267,7 @@ namespace s3d
 				int32 x0 = 0;
 				int32 x1 = 0;
 
-				if (!GetCircleSpanAtY(Vec2{ circle.x, circle.y }, supportR, y, x0, x1))
+				if (!GetCircleSpanAtY(center, supportR, y, x0, x1))
 				{
 					continue;
 				}
@@ -1295,31 +1280,83 @@ namespace s3d
 					continue;
 				}
 
-				const size_t count = static_cast<size_t>(x1 - x0);
-				coverage.assign(count, 0);
-
-				const double py = static_cast<double>(y) + 0.5;
-
-				for (size_t i = 0; i < count; ++i)
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				const double dy = (y + 0.5 - circle.y);
+				const double dySq = (dy * dy);
+				const auto writeCoverage = [&](const int32 begin, const int32 end)
 				{
-					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-
-					const uint8 outerCoverage = CoverageFromSignedDistance(
-						CircleSignedDistance(px, py, circle.x, circle.y, outerR)
-					);
-
-					const uint8 innerCoverage = CoverageFromSignedDistance(
-						CircleSignedDistance(px, py, circle.x, circle.y, innerR)
-					);
-
-					coverage[i] = static_cast<uint8>(
-						(innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-						);
+					if (begin >= end) return;
+					const size_t count = static_cast<size_t>(end - begin);
+					coverage.resize(count);
+					for (size_t i = 0; i < count; ++i)
+					{
+						const double dx = (static_cast<double>(begin) + static_cast<double>(i) + 0.5 - circle.x);
+						const double distance = std::sqrt(dx * dx + dySq);
+						// Keep the independent byte rounding of the two edge coverages.
+						const uint8 outerCoverage = CoverageFromSignedDistance(distance - outerR);
+						const uint8 innerCoverage = CoverageFromSignedDistance(distance - innerR);
+						coverage[i] = static_cast<uint8>((innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0);
+					}
+					WriteCoverageRow(writer, row, begin, coverage);
+				};
+				if (!splitSpans)
+				{
+					writeCoverage(x0, x1);
+					continue;
 				}
 
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				int32 hole0 = x1, hole1 = x1;
+				if (GetCircleSpanAtY(center, holeR, y, hole0, hole1))
+				{
+					hole0 = ClampInt(hole0, x0, x1);
+					hole1 = ClampInt(hole1, x0, x1);
+				}
+				else
+				{
+					hole0 = hole1 = x1;
+				}
+				if ((hole0 == x0) && (hole1 == x1))
+				{
+					continue;
+				}
 
-				WriteCoverageRow(writer, row, x0, coverage);
+				const auto writeOutsideHole = [&](const int32 begin, const int32 end)
+				{
+					writeCoverage(begin, ClampInt(hole0, begin, end));
+					writeCoverage(ClampInt(hole1, begin, end), end);
+				};
+				const auto writeFull = [&](const int32 begin, const int32 end)
+				{
+					if (begin < end) writer.write(row + begin, static_cast<size_t>(end - begin));
+				};
+
+				int32 full0 = 0, full1 = 0;
+				if (hasSolidBand && GetCircleSpanAtY(center, fullOuterR, y, full0, full1))
+				{
+					full0 = ClampInt(full0, x0, x1);
+					full1 = ClampInt(full1, x0, x1);
+					int32 inner0 = full1, inner1 = full1;
+					if (GetCircleSpanAtY(center, innerSupportR, y, inner0, inner1))
+					{
+						inner0 = ClampInt(inner0, full0, full1);
+						inner1 = ClampInt(inner1, full0, full1);
+					}
+					else
+					{
+						inner0 = inner1 = full1;
+					}
+					// Only the two one-pixel radial edge bands need distance evaluation.
+					writeCoverage(x0, full0);
+					writeFull(full0, inner0);
+					writeOutsideHole(inner0, inner1);
+					writeFull(inner1, full1);
+					writeCoverage(full1, x1);
+				}
+				else
+				{
+					// Thin frames can have overlapping inner and outer AA bands.
+					writeOutsideHole(x0, x1);
+				}
 			}
 		}
 
@@ -1482,35 +1519,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool GetCircleArcCoverageBounds(
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32& x0,
-			int32& y0,
-			int32& x1,
-			int32& y1,
-			int32 width,
-			int32 height) noexcept
-		{
-			BoundsD bounds;
-			IncludeCircleSectorOuterBounds(bounds, circle, sector, outerRadius);
-
-			if (0.0 < innerRadius)
-			{
-				IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
-				IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
-			}
-			else
-			{
-				bounds.include(Vec2{ circle.x, circle.y });
-			}
-
-			return ClipBoundsToImage(bounds, x0, y0, x1, y1, width, height);
-		}
-
-		[[nodiscard]]
 		double DistanceSqToSegment(
 			double px,
 			double py,
@@ -1594,32 +1602,6 @@ namespace s3d
 			return VectorInSector(Vec2{ dx, dy }, sector);
 		}
 
-		[[nodiscard]]
-		bool PointInCircleArc(
-			double px,
-			double py,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius) noexcept
-		{
-			const double dx = px - circle.x;
-			const double dy = py - circle.y;
-			const double d2 = dx * dx + dy * dy;
-
-			if ((outerRadius * outerRadius) < d2)
-			{
-				return false;
-			}
-
-			if ((0.0 < innerRadius) && (d2 < (innerRadius * innerRadius)))
-			{
-				return false;
-			}
-
-			return VectorInSector(Vec2{ dx, dy }, sector);
-		}
-
 		uint8 CirclePieCoverageBySupersampling(
 			int32 x,
 			int32 y,
@@ -1640,34 +1622,6 @@ namespace s3d
 					const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
 
 					covered += PointInCirclePie(px, py, circle, sector);
-				}
-			}
-
-			return static_cast<uint8>((covered * 255 + (total / 2)) / total);
-		}
-
-		uint8 CircleArcCoverageBySupersampling(
-			int32 x,
-			int32 y,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32 sampleCount) noexcept
-		{
-			uint32 covered = 0;
-			const uint32 total = static_cast<uint32>(sampleCount * sampleCount);
-			const double invSamples = (1.0 / static_cast<double>(sampleCount));
-
-			for (int32 sy = 0; sy < sampleCount; ++sy)
-			{
-				const double py = static_cast<double>(y) + (static_cast<double>(sy) + 0.5) * invSamples;
-
-				for (int32 sx = 0; sx < sampleCount; ++sx)
-				{
-					const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
-
-					covered += PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius);
 				}
 			}
 
@@ -1706,56 +1660,6 @@ namespace s3d
 			}
 
 			return CirclePieCoverageBySupersampling(x, y, circle, sector, sampleCount);
-		}
-
-		uint8 CircleArcCoverageAt(
-			int32 x,
-			int32 y,
-			const Circle& circle,
-			const CircleSectorData& sector,
-			double innerRadius,
-			double outerRadius,
-			int32 sampleCount) noexcept
-		{
-			const double px = static_cast<double>(x) + 0.5;
-			const double py = static_cast<double>(y) + 0.5;
-			const double dx = px - circle.x;
-			const double dy = py - circle.y;
-			const double d2 = dx * dx + dy * dy;
-
-			constexpr double PixelHalfDiagonal = 0.70710678118654752440;
-
-			const double outerSafeR = outerRadius + PixelHalfDiagonal;
-
-			if ((outerSafeR * outerSafeR) < d2)
-			{
-				return 0;
-			}
-
-			if (PixelHalfDiagonal < innerRadius)
-			{
-				const double innerEmptyR = innerRadius - PixelHalfDiagonal;
-
-				if (d2 < (innerEmptyR * innerEmptyR))
-				{
-					return 0;
-				}
-			}
-
-			const double outerFullR = Max(0.0, outerRadius - PixelHalfDiagonal);
-			const double innerMinR = Max(0.0, innerRadius - PixelHalfDiagonal);
-			const double innerMaxR = innerRadius + PixelHalfDiagonal;
-
-			const bool nearOuterCircle = ((outerFullR * outerFullR) <= d2);
-			const bool nearInnerCircle = ((0.0 < innerRadius) && ((innerMinR * innerMinR) <= d2) && (d2 <= (innerMaxR * innerMaxR)));
-			const bool nearRadialCut = NearRadialCut(px, py, circle, sector, innerRadius, outerRadius, PixelHalfDiagonal);
-
-			if ((sampleCount <= 1) || (!nearOuterCircle && !nearInnerCircle && !nearRadialCut))
-			{
-				return PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius) ? 255 : 0;
-			}
-
-			return CircleArcCoverageBySupersampling(x, y, circle, sector, innerRadius, outerRadius, sampleCount);
 		}
 
 		void FillCirclePieByCoverage(
@@ -1803,72 +1707,6 @@ namespace s3d
 						y,
 						circle,
 						sector,
-						sampleCount
-					);
-				}
-
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
-				WriteCoverageRow(writer, row, x0, coverage);
-			}
-		}
-
-		void FillCircleArcByCoverage(
-			ImageView view,
-			const Circle& circle,
-			double startAngle,
-			double angle,
-			double innerThickness,
-			double outerThickness,
-			ImagePixel::BlendMode blendMode,
-			ImageDraw::DstAlpha dstAlpha,
-			Color color,
-			int32 sampleCount)
-		{
-			if (!(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness) || !HasNonZeroSweep(angle))
-			{
-				return;
-			}
-
-			const double outerRadius = circle.r + outerThickness;
-
-			if (!(0.0 < outerRadius))
-			{
-				return;
-			}
-
-			const double innerRadius = circle.r - innerThickness;
-			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
-
-			int32 x0 = 0;
-			int32 y0 = 0;
-			int32 x1 = 0;
-			int32 y1 = 0;
-
-			if (!GetCircleArcCoverageBounds(circle, sector, innerRadius, outerRadius, x0, y0, x1, y1, view.width, view.height))
-			{
-				return;
-			}
-
-			ImagePixel::detail::SolidColorWriter writer{
-				blendMode,
-				color,
-				ToDstAlphaMode(dstAlpha)
-			};
-
-			const size_t rowLength = static_cast<size_t>(x1 - x0);
-			std::vector<uint8> coverage(rowLength);
-
-			for (int32 y = y0; y < y1; ++y)
-			{
-				for (size_t i = 0; i < rowLength; ++i)
-				{
-					coverage[i] = CircleArcCoverageAt(
-						x0 + static_cast<int32>(i),
-						y,
-						circle,
-						sector,
-						innerRadius,
-						outerRadius,
 						sampleCount
 					);
 				}
@@ -1995,131 +1833,34 @@ namespace s3d
 				ToDstAlphaMode(dstAlpha)
 			};
 
-			std::vector<uint8> coverage;
-
-			for (int32 y = y0; y < y1; ++y)
-			{
-				int32 x0 = FloorToInt(ellipse.x - ellipse.a - 1.0);
-				int32 x1 = CeilToInt(ellipse.x + ellipse.a + 1.0);
-
-				x0 = ClampInt(x0, 0, view.width);
-				x1 = ClampInt(x1, 0, view.width);
-
-				if (x0 >= x1)
-				{
-					continue;
-				}
-
-				const size_t count = static_cast<size_t>(x1 - x0);
-				coverage.assign(count, 0);
-
-				const double py = static_cast<double>(y) + 0.5;
-
-				for (size_t i = 0; i < count; ++i)
-				{
-					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-
-					coverage[i] = EllipseCoverageAt(
-						px,
-						py,
-						ellipse.x,
-						ellipse.y,
-						ellipse.a,
-						ellipse.b
-					);
-				}
-
-				Color* row = view.data + static_cast<size_t>(y) * view.stride;
-
-				WriteCoverageRow(writer, row, x0, coverage);
-			}
-		}
-
-		void FillEllipseFrameByDistance(
-			ImageView view,
-			const Ellipse& ellipse,
-			double innerThickness,
-			double outerThickness,
-			ImagePixel::BlendMode blendMode,
-			ImageDraw::DstAlpha dstAlpha,
-			Color color,
-			bool antialiased)
-		{
-			if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
-			{
-				return;
-			}
-
-			if (!(0.0 < ellipse.a) || !(0.0 < ellipse.b))
-			{
-				return;
-			}
-
-			if ((innerThickness == 0.0) && (outerThickness == 0.0))
-			{
-				return;
-			}
-
-			const bool hasInner = (innerThickness < Min(ellipse.a, ellipse.b));
-
-			const double support = outerThickness + (antialiased ? 0.5 : 0.0);
-
-			int32 y0 = FloorToInt(ellipse.y - ellipse.b - support - 0.5);
-			int32 y1 = CeilToInt(ellipse.y + ellipse.b + support - 0.5) + 1;
-
-			y0 = ClampInt(y0, 0, view.height);
-			y1 = ClampInt(y1, 0, view.height);
-
-			if (y0 >= y1)
-			{
-				return;
-			}
-
-			int32 x0 = FloorToInt(ellipse.x - ellipse.a - support - 0.5);
-			int32 x1 = CeilToInt(ellipse.x + ellipse.a + support - 0.5) + 1;
-
-			x0 = ClampInt(x0, 0, view.width);
-			x1 = ClampInt(x1, 0, view.width);
-
+			const int32 x0 = ClampInt(FloorToInt(ellipse.x - ellipse.a - 1.0), 0, view.width);
+			const int32 x1 = ClampInt(CeilToInt(ellipse.x + ellipse.a + 1.0), 0, view.width);
 			if (x0 >= x1)
 			{
 				return;
 			}
 
+			// The normalized radius is 1/min(a,b)-Lipschitz. Beyond these
+			// thresholds the distance coverage is provably zero or full.
+			const double band = 0.5 / Min(ellipse.a, ellipse.b);
+			const double inner = Max(0.0, 1.0 - band);
+			const double innerSq = inner * inner;
+			const double outerSq = (1.0 + band) * (1.0 + band);
 			const size_t count = static_cast<size_t>(x1 - x0);
-
-			ImagePixel::detail::SolidColorWriter writer{
-				blendMode,
-				color,
-				ToDstAlphaMode(dstAlpha)
-			};
-
 			std::vector<uint8> coverage(count);
-
 			for (int32 y = y0; y < y1; ++y)
 			{
 				const double py = static_cast<double>(y) + 0.5;
-
+				const double ny = (py - ellipse.y) / ellipse.b;
+				const double nySq = ny * ny;
 				for (size_t i = 0; i < count; ++i)
 				{
 					const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-					const double sd = EllipseSignedDistance(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
-
-					if (antialiased)
-					{
-						const uint8 outerCoverage = CoverageFromSignedDistance(sd - outerThickness);
-						const uint8 innerCoverage = hasInner
-							? CoverageFromSignedDistance(sd + innerThickness)
-							: 0;
-
-						coverage[i] = static_cast<uint8>(
-							(innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-							);
-					}
-					else
-					{
-						coverage[i] = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
-					}
+					const double nx = (px - ellipse.x) / ellipse.a;
+					const double normalizedSq = nx * nx + nySq;
+					coverage[i] = (normalizedSq < innerSq) ? 255
+						: (outerSq < normalizedSq) ? 0
+						: EllipseCoverageAt(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
 				}
 
 				Color* row = view.data + static_cast<size_t>(y) * view.stride;
@@ -2128,6 +1869,62 @@ namespace s3d
 			}
 		}
 
+		template <bool Rotated = false>
+		void FillEllipseFrameByDistance(const ImageView view, const Ellipse& ellipse,
+			const double innerThickness, const double outerThickness, const ImagePixel::BlendMode blendMode,
+			const ImageDraw::DstAlpha dstAlpha, const Color color, const bool antialiased, const double rotation = 0.0)
+		{
+			if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness) || !(0.0 < ellipse.a) || !(0.0 < ellipse.b)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))) return;
+			const double minor = Min(ellipse.a, ellipse.b), major = Max(ellipse.a, ellipse.b);
+			const bool hasInner = (innerThickness < minor);
+			const double edge = (antialiased ? 0.5 : 0.0), support = (outerThickness + edge);
+			const double c = (Rotated ? std::cos(rotation) : 1.0), s = (Rotated ? std::sin(rotation) : 0.0);
+			const double w = (Rotated ? std::hypot(ellipse.a * c, ellipse.b * s) : ellipse.a) + support;
+			const double h = (Rotated ? std::hypot(ellipse.a * s, ellipse.b * c) : ellipse.b) + support;
+			BoundsD bounds; bounds.include({ellipse.x - w, ellipse.y - h}); bounds.include({ellipse.x + w, ellipse.y + h});
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
+
+			// The ellipse is a linear image of the unit circle. For normalized radius rho,
+			// min(a,b)*abs(rho-1) <= distance to the boundary <= max(a,b)*abs(rho-1).
+			// Squared thresholds classify empty/solid pixels; only uncertain pixels solve
+			// the exact closest-point problem. Strict bounds leave boundary ties to it.
+			const auto square = [](double value) { return value * value; };
+			const double emptyInner = square(Max(0.0, 1 - (innerThickness + edge) / minor));
+			const double emptyOuter = square(1 + (outerThickness + edge) / minor);
+			const double solidInsideMin = square(hasInner ? Max(0.0, 1 + (edge - innerThickness) / major) : 0.0);
+			const double solidInsideMax = square(Max(0.0, Min(1.0, 1 + (outerThickness - edge) / minor)));
+			const double solidOutsideMin = square(hasInner ? Max(1.0, 1 + (edge - innerThickness) / minor) : 1.0);
+			const double solidOutsideMax = square(Max(0.0, 1 + (outerThickness - edge) / major));
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			std::vector<uint8> coverage(static_cast<size_t>(x1 - x0));
+			for (int32 y = y0; y < y1; ++y)
+			{
+				for (int32 x = x0; x < x1; ++x)
+				{
+					const double dx = (x + 0.5 - ellipse.x), dy = (y + 0.5 - ellipse.y);
+					const double px = (Rotated ? c * dx + s * dy : dx), py = (Rotated ? -s * dx + c * dy : dy);
+					const double rhoSq = square(px / ellipse.a) + square(py / ellipse.b);
+					uint8& value = coverage[x - x0];
+					if ((emptyOuter < rhoSq) || (hasInner && (rhoSq < emptyInner))) value = 0;
+					else if (((solidInsideMin < rhoSq) && (rhoSq < solidInsideMax))
+						|| ((solidOutsideMin < rhoSq) && (rhoSq < solidOutsideMax))) value = 255;
+					else
+					{
+						const double sd = EllipseSignedDistance(px, py, 0, 0, ellipse.a, ellipse.b);
+						if (antialiased)
+						{
+							const uint8 outer = CoverageFromSignedDistance(sd - outerThickness);
+							const uint8 inner = (hasInner ? CoverageFromSignedDistance(sd + innerThickness) : 0);
+							value = (outer - Min(outer, inner));
+						}
+						else value = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
+					}
+				}
+				WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
+			}
+		}
 
 		struct RoundRectDistanceParams
 		{
@@ -2196,9 +1993,15 @@ namespace s3d
 			int32& outX0,
 			int32& outX1) noexcept
 		{
+			const double dy = std::abs(py - params.centerY);
+			if (params.halfH + signedDistanceLimit < dy)
+			{
+				return false;
+			}
+
 			const double innerHalfW = params.halfW - params.radius;
 			const double innerHalfH = params.halfH - params.radius;
-			const double qy = std::abs(py - params.centerY) - innerHalfH;
+			const double qy = dy - innerHalfH;
 
 			double halfX = 0.0;
 
@@ -2546,6 +2349,10 @@ namespace s3d
 					{
 						fullX0 = ClampInt(fullX0, supportX0, supportX1);
 						fullX1 = ClampInt(fullX1, supportX0, supportX1);
+					}
+					else
+					{
+						fullX0 = fullX1 = supportX1;
 					}
 
 					Color* row = view.data + static_cast<size_t>(y) * view.stride;
@@ -3055,6 +2862,45 @@ namespace s3d
 			);
 		}
 
+		[[nodiscard]]
+		LineCap ZeroLengthLineCap(const LineCap startCap, const LineCap endCap) noexcept
+		{
+			if ((startCap == LineCap::Square) || (endCap == LineCap::Square)) return LineCap::Square;
+			if ((startCap == LineCap::Round) || (endCap == LineCap::Round)) return LineCap::Round;
+			return LineCap::Flat;
+		}
+
+		void ClipSpanAtLineEnd(const Vec2& point, const Vec2& outward, const int32 y, int32& x0, int32& x1) noexcept
+		{
+			const double dy = (y + 0.5 - point.y);
+			if (0.0 < outward.x)
+			{
+				// Use the same half-open boundary as the line body.
+				const double end = std::ceil(point.x - outward.y * dy / outward.x - 0.5);
+				x1 = static_cast<int32>(Clamp(end, static_cast<double>(x0), static_cast<double>(x1)));
+			}
+			else if (outward.x < 0.0)
+			{
+				const double begin = std::ceil(point.x - outward.y * dy / outward.x - 0.5);
+				x0 = static_cast<int32>(Clamp(begin, static_cast<double>(x0), static_cast<double>(x1)));
+			}
+			else if ((0.0 < outward.y) ? (0.0 <= dy) : (dy < 0.0))
+			{
+				x1 = x0;
+			}
+		}
+
+		void LimitCoverageAtLineEnd(const Vec2& point, const Vec2& outward,
+			const int32 y, const int32 x0, std::vector<uint8>& coverage)
+		{
+			const double dy = (y + 0.5 - point.y);
+			for (size_t i = 0; i < coverage.size(); ++i)
+			{
+				const double dx = (x0 + static_cast<double>(i) + 0.5 - point.x);
+				coverage[i] = Min(coverage[i], CoverageFromSignedDistance(dx * outward.x + dy * outward.y));
+			}
+		}
+
 		void DrawLineNoAA(
 			ImageView view,
 			const Vec2& from,
@@ -3062,7 +2908,8 @@ namespace s3d
 			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode,
-			LineCap lineCap,
+			LineCap startCap,
+			LineCap endCap,
 			ImageDraw::DstAlpha dstAlpha)
 		{
 			if (!(0.0 < thickness))
@@ -3077,10 +2924,11 @@ namespace s3d
 
 			if (!(0.0 < length))
 			{
+				const LineCap lineCap = ZeroLengthLineCap(startCap, endCap);
 				if (lineCap == LineCap::Round)
 				{
 					const Circle circle{ from.x, from.y, half };
-					FillCircleNoAAFast(view, circle, blendMode, dstAlpha, color);
+					FillRoundDiskNoAA(view, circle, blendMode, dstAlpha, color);
 				}
 				else if (lineCap == LineCap::Square)
 				{
@@ -3106,6 +2954,12 @@ namespace s3d
 
 			const double ux = dx / length;
 			const double uy = dy / length;
+			const bool clipRound = (length < half)
+				&& (((startCap == LineCap::Round) && (endCap == LineCap::Flat))
+					|| ((startCap == LineCap::Flat) && (endCap == LineCap::Round)));
+			const Vec2 clipPoint = (startCap == LineCap::Flat) ? from : to;
+			const Vec2 clipNormal = (startCap == LineCap::Flat) ? Vec2{ -ux, -uy } : Vec2{ ux, uy };
+
 
 			const double nx = -uy;
 			const double ny = ux;
@@ -3113,10 +2967,13 @@ namespace s3d
 			Vec2 body0 = from;
 			Vec2 body1 = to;
 
-			if (lineCap == LineCap::Square)
+			if (startCap == LineCap::Square)
 			{
 				body0.x -= ux * half;
 				body0.y -= uy * half;
+			}
+			if (endCap == LineCap::Square)
+			{
 				body1.x += ux * half;
 				body1.y += uy * half;
 			}
@@ -3135,7 +2992,7 @@ namespace s3d
 				ToDstAlphaMode(dstAlpha)
 			};
 
-			if (lineCap != LineCap::Round)
+			if ((startCap != LineCap::Round) && (endCap != LineCap::Round))
 			{
 				FillConvexPolygonNoAA(view, quad, 4, writer);
 				return;
@@ -3150,8 +3007,16 @@ namespace s3d
 				maxY = Max(maxY, quad[i].y);
 			}
 
-			minY = Min(minY, Min(from.y - half, to.y - half));
-			maxY = Max(maxY, Max(from.y + half, to.y + half));
+			if (startCap == LineCap::Round)
+			{
+				minY = Min(minY, from.y - half);
+				maxY = Max(maxY, from.y + half);
+			}
+			if (endCap == LineCap::Round)
+			{
+				minY = Min(minY, to.y - half);
+				maxY = Max(maxY, to.y + half);
+			}
 
 			int32 y0 = FloorToInt(minY - 0.5);
 			int32 y1 = CeilToInt(maxY - 0.5) + 1;
@@ -3179,13 +3044,15 @@ namespace s3d
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
-				if (GetCircleSpanAtY(from, half, y, x0, x1))
+				if ((startCap == LineCap::Round) && GetCircleSpanAtY(from, half, y, x0, x1))
 				{
+					if (clipRound) ClipSpanAtLineEnd(clipPoint, clipNormal, y, x0, x1);
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
-				if (GetCircleSpanAtY(to, half, y, x0, x1))
+				if ((endCap == LineCap::Round) && GetCircleSpanAtY(to, half, y, x0, x1))
 				{
+					if (clipRound) ClipSpanAtLineEnd(clipPoint, clipNormal, y, x0, x1);
 					AddSpanClipped(spans, x0, x1, view.width);
 				}
 
@@ -3200,7 +3067,8 @@ namespace s3d
 			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode,
-			LineCap lineCap,
+			LineCap startCap,
+			LineCap endCap,
 			ImageDraw::DstAlpha dstAlpha)
 		{
 			if (!(0.0 < thickness))
@@ -3215,6 +3083,7 @@ namespace s3d
 
 			if (!(0.0 < length))
 			{
+				const LineCap lineCap = ZeroLengthLineCap(startCap, endCap);
 				if (lineCap == LineCap::Flat)
 				{
 					return;
@@ -3290,19 +3159,32 @@ namespace s3d
 
 			const double ux = dx / length;
 			const double uy = dy / length;
+			const bool clipRound = (length < (half + 0.5))
+				&& (((startCap == LineCap::Round) && (endCap == LineCap::Flat))
+					|| ((startCap == LineCap::Flat) && (endCap == LineCap::Round)));
+			const Vec2 clipPoint = (startCap == LineCap::Flat) ? from : to;
+			const Vec2 clipNormal = (startCap == LineCap::Flat) ? Vec2{ -ux, -uy } : Vec2{ ux, uy };
+
 
 			const Vec2 dir{ ux, uy };
 			const Vec2 normal{ -uy, ux };
 
 			double halfLength = length * 0.5;
-
-			if (lineCap == LineCap::Square)
+			Vec2 bodyCenter{ (from.x + to.x) * 0.5, (from.y + to.y) * 0.5 };
+			const bool squareStart = (startCap == LineCap::Square);
+			const bool squareEnd = (endCap == LineCap::Square);
+			if (squareStart && squareEnd)
 			{
 				halfLength += half;
 			}
+			else if (squareStart || squareEnd)
+			{
+				halfLength += half * 0.5;
+				bodyCenter += dir * (squareStart ? (-half * 0.5) : (half * 0.5));
+			}
 
 			const OrientedRectBasis body{
-				Vec2{ (from.x + to.x) * 0.5, (from.y + to.y) * 0.5 },
+				bodyCenter,
 				dir,
 				normal,
 				halfLength,
@@ -3312,11 +3194,8 @@ namespace s3d
 			BoundsD bounds;
 			IncludeOrientedRectBounds(bounds, body, 0.5, 0.5);
 
-			if (lineCap == LineCap::Round)
-			{
-				bounds.includeCircle(from, half + 0.5);
-				bounds.includeCircle(to, half + 0.5);
-			}
+			if (startCap == LineCap::Round) bounds.includeCircle(from, half + 0.5);
+			if (endCap == LineCap::Round) bounds.includeCircle(to, half + 0.5);
 
 			if (!bounds.valid())
 			{
@@ -3357,17 +3236,13 @@ namespace s3d
 					AddSpanClipped(supportSpans, x0, x1, view.width);
 				}
 
-				if (lineCap == LineCap::Round)
+				if ((startCap == LineCap::Round) && GetCircleSpanAtY(from, half + 0.5, y, x0, x1))
 				{
-					if (GetCircleSpanAtY(from, half + 0.5, y, x0, x1))
-					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
-					}
-
-					if (GetCircleSpanAtY(to, half + 0.5, y, x0, x1))
-					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
-					}
+					AddSpanClipped(supportSpans, x0, x1, view.width);
+				}
+				if ((endCap == LineCap::Round) && GetCircleSpanAtY(to, half + 0.5, y, x0, x1))
+				{
+					AddSpanClipped(supportSpans, x0, x1, view.width);
 				}
 
 				if (supportSpans.empty())
@@ -3387,11 +3262,9 @@ namespace s3d
 
 					AddOrientedRectCoverageToRange(body, y, span.x0, coverage);
 
-					if (lineCap == LineCap::Round)
-					{
-						AddCircleCoverageToRange(from, half, y, span.x0, coverage);
-						AddCircleCoverageToRange(to, half, y, span.x0, coverage);
-					}
+					if (startCap == LineCap::Round) AddCircleCoverageToRange(from, half, y, span.x0, coverage);
+					if (endCap == LineCap::Round) AddCircleCoverageToRange(to, half, y, span.x0, coverage);
+					if (clipRound) LimitCoverageAtLineEnd(clipPoint, clipNormal, y, span.x0, coverage);
 
 					WriteCoverageRow(writer, row, span.x0, coverage);
 				}
@@ -3402,11 +3275,6 @@ namespace s3d
 		{
 			BodyRect,
 			RoundDisk,
-		};
-
-		enum class StrokeJoinStyle : uint8
-		{
-			Round,
 		};
 
 		struct StrokePrimitive
@@ -3426,6 +3294,12 @@ namespace s3d
 			bool enter = true;
 		};
 
+		struct StrokeRowSpan
+		{
+			SpanI span;
+			size_t primitiveIndex = 0;
+		};
+
 		[[nodiscard]]
 		bool IsSamePoint(const Vec2& a, const Vec2& b) noexcept
 		{
@@ -3438,7 +3312,7 @@ namespace s3d
 			StrokePrimitive primitive,
 			const BoundsD& bounds)
 		{
-			if (!bounds.valid())
+			if (!bounds.valid() || (bounds.maxX < 0.0) || (view.width < bounds.minX))
 			{
 				return;
 			}
@@ -3529,21 +3403,6 @@ namespace s3d
 			bounds.includeCircle(center, radius + 0.5);
 
 			AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
-		}
-
-		void AddStrokeJoinPrimitive(
-			ImageView view,
-			std::vector<StrokePrimitive>& primitives,
-			const Vec2& point,
-			const double halfThickness,
-			const StrokeJoinStyle joinStyle)
-		{
-			switch (joinStyle)
-			{
-			case StrokeJoinStyle::Round:
-				AddStrokeDiskPrimitive(view, primitives, point, halfThickness);
-				return;
-			}
 		}
 
 		[[nodiscard]]
@@ -3660,53 +3519,37 @@ namespace s3d
 			return false;
 		}
 
-		void AddStrokePrimitiveCoverageToRange(
+		template <bool TrimCovered>
+		void AddStrokePrimitiveCoverageToSpan(
 			const StrokePrimitive& primitive,
 			const int32 y,
-			const int32 rangeX0,
-			std::vector<uint8>& coverage)
+			const SpanI& span,
+			uint8* coverage)
 		{
-			int32 x0 = 0;
-			int32 x1 = 0;
-
-			if (!GetStrokePrimitiveSpanAtY(primitive, true, y, x0, x1))
+			// Max coverage cannot increase a full pixel. Keep short spans in the direct
+			// distance loop: searching them costs more than the work it removes.
+			size_t begin = 0;
+			size_t end = static_cast<size_t>(span.x1 - span.x0);
+			if constexpr (TrimCovered)
 			{
-				return;
+				if (8 <= end)
+				{
+					while ((begin < end) && (coverage[begin] == 255)) ++begin;
+					while ((begin < end) && (coverage[end - 1] == 255)) --end;
+					if (begin == end) return;
+				}
 			}
-
-			const int32 rangeX1 = rangeX0 + static_cast<int32>(coverage.size());
-			x0 = Max(x0, rangeX0);
-			x1 = Min(x1, rangeX1);
-
-			if (x0 >= x1)
-			{
-				return;
-			}
-
-			const size_t offset = static_cast<size_t>(x0 - rangeX0);
-			const size_t count = static_cast<size_t>(x1 - x0);
-
+			const int32 x0 = span.x0 + static_cast<int32>(begin);
+			coverage += begin;
+			const size_t count = end - begin;
 			switch (primitive.type)
 			{
 			case StrokePrimitiveType::BodyRect:
-				AddOrientedRectCoverageToRange(
-					primitive.rect,
-					y,
-					x0,
-					coverage.data() + offset,
-					count
-				);
+				AddOrientedRectCoverageToRange(primitive.rect, y, x0, coverage, count);
 				return;
 
 			case StrokePrimitiveType::RoundDisk:
-				AddCircleCoverageToRange(
-					primitive.center,
-					primitive.radius,
-					y,
-					x0,
-					coverage.data() + offset,
-					count
-				);
+				AddCircleCoverageToRange(primitive.center, primitive.radius, y, x0, coverage, count);
 				return;
 			}
 		}
@@ -3767,6 +3610,7 @@ namespace s3d
 			}
 		}
 
+		template <bool TrimCovered>
 		void DrawStrokePrimitivesAA(
 			ImageView view,
 			const std::vector<StrokePrimitive>& primitives,
@@ -3792,7 +3636,7 @@ namespace s3d
 			std::vector<size_t> active;
 			active.reserve(primitives.size());
 
-			std::vector<SpanI> supportSpans;
+			std::vector<StrokeRowSpan> supportSpans;
 			supportSpans.reserve(primitives.size());
 
 			std::vector<uint8> coverage;
@@ -3817,7 +3661,11 @@ namespace s3d
 
 					if (GetStrokePrimitiveSpanAtY(primitives[primitiveIndex], true, y, x0, x1))
 					{
-						AddSpanClipped(supportSpans, x0, x1, view.width);
+						ClipSpanToWidth(x0, x1, view.width);
+						if (x0 < x1)
+						{
+							supportSpans.push_back(StrokeRowSpan{ SpanI{ x0, x1 }, primitiveIndex });
+						}
 					}
 				}
 
@@ -3826,26 +3674,43 @@ namespace s3d
 					continue;
 				}
 
-				SortAndMergeSpans(supportSpans);
+				std::sort(supportSpans.begin(), supportSpans.end(), [](const StrokeRowSpan& a, const StrokeRowSpan& b)
+				{
+					return (a.span.x0 < b.span.x0) || ((a.span.x0 == b.span.x0) && (a.span.x1 < b.span.x1));
+				});
 
 				Color* row = view.data + static_cast<size_t>(y) * view.stride;
 
-				for (const SpanI& span : supportSpans)
+				// Each primitive contributes to exactly one merged interval. Keep its computed
+				// span so disjoint contours never re-scan one another's geometry.
+				for (size_t begin = 0; begin < supportSpans.size();)
 				{
-					const size_t count = static_cast<size_t>(span.x1 - span.x0);
-					coverage.assign(count, 0);
-
-					for (const size_t primitiveIndex : active)
+					const int32 x0 = supportSpans[begin].span.x0;
+					int32 x1 = supportSpans[begin].span.x1;
+					size_t end = begin + 1;
+					while ((end < supportSpans.size()) && (supportSpans[end].span.x0 <= x1))
 					{
-						AddStrokePrimitiveCoverageToRange(
-							primitives[primitiveIndex],
-							y,
-							span.x0,
-							coverage
-						);
+						x1 = Max(x1, supportSpans[end].span.x1);
+						++end;
 					}
 
-					WriteCoverageRow(writer, row, span.x0, coverage);
+					// Grow geometrically: libc++ assign alone can allocate for every
+					// slightly wider row. Unlike resize + fill, clear each pixel only once.
+					const size_t count = static_cast<size_t>(x1 - x0);
+					if (coverage.capacity() < count)
+					{
+						coverage.reserve(Max(count, coverage.capacity() * 2));
+					}
+					coverage.assign(count, 0);
+					for (size_t i = begin; i < end; ++i)
+					{
+						const StrokeRowSpan& item = supportSpans[i];
+						AddStrokePrimitiveCoverageToSpan<TrimCovered>(primitives[item.primitiveIndex], y, item.span,
+							coverage.data() + static_cast<size_t>(item.span.x0 - x0));
+					}
+
+					WriteCoverageRow(writer, row, x0, coverage);
+					begin = end;
 				}
 			}
 		}
@@ -3853,6 +3718,7 @@ namespace s3d
 		void DrawStrokePrimitives(
 			ImageView view,
 			const std::vector<StrokePrimitive>& primitives,
+			const double thickness,
 			const Color color,
 			const ImagePixel::BlendMode blendMode,
 			const EnableAntialiasing enableAntialiasing,
@@ -3862,9 +3728,14 @@ namespace s3d
 			{
 				DrawStrokePrimitivesNoAA(view, primitives, color, blendMode, dstAlpha);
 			}
+			else if (thickness < 2.0)
+			{
+				// Thin strokes have little full coverage to skip; avoid per-span searches.
+				DrawStrokePrimitivesAA<false>(view, primitives, color, blendMode, dstAlpha);
+			}
 			else
 			{
-				DrawStrokePrimitivesAA(view, primitives, color, blendMode, dstAlpha);
+				DrawStrokePrimitivesAA<true>(view, primitives, color, blendMode, dstAlpha);
 			}
 		}
 
@@ -3907,36 +3778,37 @@ namespace s3d
 			}
 		}
 
-		void BuildOpenStrokePrimitives(
-			ImageView view,
-			const Vec2* points,
-			const size_t count,
-			const Vec2& offset,
-			const double thickness,
-			const LineCap lineCap,
-			const StrokeJoinStyle joinStyle,
-			std::vector<StrokePrimitive>& primitives)
+		template <class PointType>
+		void CollectStrokePoints(const PointType* points, const size_t count, const Vec2& offset,
+			const bool closed, std::vector<Vec2>& effectivePoints)
 		{
-			primitives.clear();
-
-			if ((points == nullptr) || (count < 2) || !(0.0 < thickness))
-			{
-				return;
-			}
-
-			std::vector<Vec2> effectivePoints;
+			effectivePoints.clear();
 			effectivePoints.reserve(count);
 			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
-
 			for (size_t i = 1; i < count; ++i)
 			{
 				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
-
 				if (!IsSamePoint(p, effectivePoints.back()))
 				{
 					effectivePoints.push_back(p);
 				}
 			}
+			if (closed && (1 < effectivePoints.size()) && IsSamePoint(effectivePoints.front(), effectivePoints.back()))
+			{
+				effectivePoints.pop_back();
+			}
+		}
+
+		// Segment rectangles and round joins; only the two endpoint caps are selectable.
+		void BuildOpenStrokePrimitives(
+			ImageView view,
+			const std::vector<Vec2>& effectivePoints,
+			const double thickness,
+			const LineCap startCap,
+			const LineCap endCap,
+			std::vector<StrokePrimitive>& primitives)
+		{
+			primitives.clear();
 
 			const double half = thickness * 0.5;
 
@@ -3947,7 +3819,7 @@ namespace s3d
 					primitives,
 					effectivePoints.front(),
 					half,
-					lineCap
+					ZeroLengthLineCap(startCap, endCap)
 				);
 				return;
 			}
@@ -3957,8 +3829,8 @@ namespace s3d
 
 			for (size_t i = 0; i < segmentCount; ++i)
 			{
-				const double extendBegin = ((i == 0) && (lineCap == LineCap::Square)) ? half : 0.0;
-				const double extendEnd = (((i + 1) == segmentCount) && (lineCap == LineCap::Square)) ? half : 0.0;
+				const double extendBegin = ((i == 0) && (startCap == LineCap::Square)) ? half : 0.0;
+				const double extendEnd = (((i + 1) == segmentCount) && (endCap == LineCap::Square)) ? half : 0.0;
 
 				AddStrokeBodyPrimitive(
 					view,
@@ -3973,50 +3845,30 @@ namespace s3d
 
 			for (size_t i = 1; (i + 1) < effectivePoints.size(); ++i)
 			{
-				AddStrokeJoinPrimitive(view, primitives, effectivePoints[i], half, joinStyle);
+				AddStrokeDiskPrimitive(view, primitives, effectivePoints[i], half);
 			}
 
-			if (lineCap == LineCap::Round)
-			{
-				AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
-				AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
-			}
+			if (startCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
+			if (endCap == LineCap::Round) AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
 		}
 
-		void BuildClosedStrokePrimitives(
+		// Append one round-join contour to the shared union, including polygon holes.
+		template <class PointType>
+		void AppendClosedStrokePrimitives(
 			ImageView view,
-			const Vec2* points,
+			const PointType* points,
 			const size_t count,
 			const Vec2& offset,
 			const double thickness,
-			const StrokeJoinStyle joinStyle,
-			std::vector<StrokePrimitive>& primitives)
+			std::vector<StrokePrimitive>& primitives,
+			std::vector<Vec2>& effectivePoints)
 		{
-			primitives.clear();
-
 			if ((points == nullptr) || (count < 3) || !(0.0 < thickness))
 			{
 				return;
 			}
 
-			std::vector<Vec2> effectivePoints;
-			effectivePoints.reserve(count);
-			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
-
-			for (size_t i = 1; i < count; ++i)
-			{
-				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
-
-				if (!IsSamePoint(p, effectivePoints.back()))
-				{
-					effectivePoints.push_back(p);
-				}
-			}
-
-			while ((1 < effectivePoints.size()) && IsSamePoint(effectivePoints.front(), effectivePoints.back()))
-			{
-				effectivePoints.pop_back();
-			}
+			CollectStrokePoints(points, count, offset, true, effectivePoints);
 
 			if (effectivePoints.size() < 3)
 			{
@@ -4026,7 +3878,7 @@ namespace s3d
 			const double half = thickness * 0.5;
 			const size_t segmentCount = effectivePoints.size();
 
-			primitives.reserve(segmentCount * 2);
+			primitives.reserve(primitives.size() + segmentCount * 2);
 
 			for (size_t i = 0; i < segmentCount; ++i)
 			{
@@ -4046,7 +3898,7 @@ namespace s3d
 
 			for (const Vec2& p : effectivePoints)
 			{
-				AddStrokeJoinPrimitive(view, primitives, p, half, joinStyle);
+				AddStrokeDiskPrimitive(view, primitives, p, half);
 			}
 		}
 
@@ -4056,9 +3908,10 @@ namespace s3d
 			return Vec2{ p.x + offset.x, p.y + offset.y };
 		}
 
+		template <class PointType>
 		[[nodiscard]]
 		bool GetPolygonBounds(
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			BoundsD& bounds) noexcept
@@ -4067,7 +3920,7 @@ namespace s3d
 
 			for (size_t c = 0; c < contourCount; ++c)
 			{
-				const PolygonContourView& contour = contours[c];
+				const auto& contour = contours[c];
 
 				if ((contour.points == nullptr) || (contour.count == 0))
 				{
@@ -4084,8 +3937,9 @@ namespace s3d
 			return found && bounds.valid();
 		}
 
+		template <class PointType>
 		void CollectPolygonEdges(
-			const Vec2* points,
+			const PointType* points,
 			const size_t count,
 			const Vec2& offset,
 			std::vector<PolygonEdge>& edges)
@@ -4126,8 +3980,9 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void CollectPolygonEdges(
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			std::vector<PolygonEdge>& edges)
@@ -4138,9 +3993,10 @@ namespace s3d
 			}
 		}
 
+		template <class PointType>
 		void FillPolygonNoAA(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const ImagePixel::detail::SolidColorWriter& writer)
@@ -4253,74 +4109,935 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]]
-		bool IsPointInPolygonEvenOdd(
-			const Vec2& p,
-			const PolygonContourView* contours,
-			const size_t contourCount,
-			const Vec2& offset) noexcept
+		void AddSubpixelSamples4(std::vector<uint8>& samples, const int32 begin, const int32 end)
 		{
-			bool inside = false;
-
-			for (size_t c = 0; c < contourCount; ++c)
+			if (begin >= end)
 			{
-				const PolygonContourView& contour = contours[c];
+				return;
+			}
+			const size_t first = static_cast<size_t>(begin / 4);
+			const size_t last = static_cast<size_t>((end - 1) / 4);
+			if (first == last)
+			{
+				samples[first] += static_cast<uint8>(end - begin);
+				return;
+			}
+			samples[first] += static_cast<uint8>(4 - begin % 4);
+			// Interior pixels each receive four samples; keep this loop contiguous
+			// so it can be vectorized independently of the partial endpoint pixels.
+			for (size_t i = (first + 1); i < last; ++i)
+			{
+				samples[i] += 4;
+			}
+			samples[last] += static_cast<uint8>((end - 1) % 4 + 1);
+		}
 
-				if ((contour.points == nullptr) || (contour.count < 3))
+		// Add one horizontal subpixel row to a 4x4 sample-count row.
+		// Each interval owns its left boundary and excludes its right boundary.
+		void AddSubpixelSpan4(
+			std::vector<uint8>& samples, const int32 x0, const int32 x1,
+			const double left, const double right)
+		{
+			const int32 begin = CeilToInt(4.0 * Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
+			const int32 end = CeilToInt(4.0 * Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) - 0.5) - x0 * 4;
+			AddSubpixelSamples4(samples, begin, end);
+		}
+
+		// Counts are in [0, 16]; convert in place after all four subpixel rows.
+		template <class ByteRange>
+		void ConvertSampleCounts4x4ToCoverage(ByteRange&& values)
+		{
+			for (uint8& value : values)
+			{
+				value = static_cast<uint8>((value * 255 + 8) / 16);
+			}
+		}
+
+		// Touched spans use image X coordinates; samples[0] corresponds to x0.
+		// Merge them to composite each pixel once, then clear those counts for reuse.
+		void WriteAndClearSampleSpans4x4(
+			const ImagePixel::detail::SolidColorWriter& writer, Color* row, const int32 x0,
+			const std::span<uint8> samples, const std::span<SpanI> touchedSpans)
+		{
+			for (const SpanI& span : SortAndMergeSpans(touchedSpans))
+			{
+				uint8* values = (samples.data() + span.x0 - x0);
+				const size_t length = static_cast<size_t>(span.x1 - span.x0);
+				ConvertSampleCounts4x4ToCoverage(std::span<uint8>{ values, length });
+				WriteCoverageSpan(writer, row + span.x0, values, length);
+				std::fill_n(values, length, uint8{ 0 });
+			}
+		}
+
+		// One convex edge rectangle or corner polygon in a stroke union.
+		// Union sample intervals before compositing, including for crossed/wide frames.
+		struct ConvexStrokePiece
+		{
+			struct Edge
+			{
+				Vec2 from;
+				double endY;
+				double slope;
+			};
+			// Traversal state for one piece, used with monotonically increasing Y.
+			struct SpanCursor
+			{
+				const Edge* first;
+				const Edge* second;
+				double endY = -std::numeric_limits<double>::infinity();
+			};
+			Edge edges[5];
+			size_t count = 0;
+			double minY = std::numeric_limits<double>::infinity();
+			double maxY = -std::numeric_limits<double>::infinity();
+
+			void set(const std::span<const Vec2> points, BoundsD& bounds)
+			{
+				for (size_t i = 0; i < points.size(); ++i)
 				{
-					continue;
-				}
-
-				for (size_t i = 0, j = contour.count - 1; i < contour.count; j = i++)
-				{
-					const Vec2 pi = AddOffset(contour.points[i], offset);
-					const Vec2 pj = AddOffset(contour.points[j], offset);
-
-					const bool intersect =
-						((pi.y > p.y) != (pj.y > p.y))
-						&& (p.x < (pj.x - pi.x) * (p.y - pi.y) / (pj.y - pi.y) + pi.x);
-
-					if (intersect)
-					{
-						inside = !inside;
-					}
+					Vec2 a = points[i], b = points[(i + 1) % points.size()];
+					bounds.include(a);
+					minY = Min(minY, a.y);
+					maxY = Max(maxY, a.y);
+					if (a.y == b.y) continue;
+					if (b.y < a.y) std::swap(a, b);
+					edges[count++] = { a, b.y, (b.x - a.x) / (b.y - a.y) };
 				}
 			}
 
-			return inside;
+			[[nodiscard]]
+			bool spanAt(const double y, SpanCursor& cursor, double& left, double& right) const
+			{
+				if ((y < minY) || (maxY <= y)) return false;
+				// Rows advance monotonically. A convex piece keeps the same two
+				// crossing edges until the lower endpoint of either edge is reached.
+				if (cursor.endY <= y)
+				{
+					const Edge* first = nullptr;
+					for (size_t i = 0; i < count; ++i)
+					{
+						const Edge& e = edges[i];
+						if ((e.from.y <= y) && (y < e.endY))
+						{
+							if (first)
+							{
+								cursor = { first, &e, Min(first->endY, e.endY) };
+								break;
+							}
+							first = &e;
+						}
+					}
+					if (cursor.endY <= y) return false;
+				}
+				// Evaluate from the original endpoint rather than accumulating x,
+				// preserving subpixel ties even when the first rows are clipped.
+				const Edge& a = *cursor.first;
+				const Edge& b = *cursor.second;
+				const double x0 = (a.from.x + (y - a.from.y) * a.slope);
+				const double x1 = (b.from.x + (y - b.from.y) * b.slope);
+				left = Min(x0, x1);
+				right = Max(x0, x1);
+				return (left < right);
+			}
+		};
+
+		template <bool Antialias, bool Split = false>
+		void DrawJoinedFramePolygons(const ImageView view, const std::span<const ConvexStrokePiece> polygons,
+			const BoundsD& bounds, const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha,
+			const std::span<const Vec2> contour = {}, const size_t innerCount = 0)
+		{
+			// Clip in shape coordinates before converting unlimited miter bounds to pixels.
+			const int32 x0 = FloorToInt(Clamp(bounds.minX, 0.0, static_cast<double>(view.width)));
+			const int32 x1 = CeilToInt(Clamp(bounds.maxX, 0.0, static_cast<double>(view.width)));
+			const int32 y0 = FloorToInt(Clamp(bounds.minY, 0.0, static_cast<double>(view.height)));
+			const int32 y1 = CeilToInt(Clamp(bounds.maxY, 0.0, static_cast<double>(view.height)));
+			if ((x0 >= x1) || (y0 >= y1)) return;
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			ConvexStrokePiece::SpanCursor spanCursors[Split ? 16 : 8];
+			for (int32 y = y0; y < y1; ++y)
+			{
+				constexpr size_t maxSpans = (Split ? 40 : 8); // 8 inner parts x 2 intervals + 8 outer parts x 3 intervals.
+				SpanI pixelSpans[maxSpans * samples];
+				size_t pixelSpanCount = 0;
+				Color* row = (view.data + static_cast<size_t>(y) * view.stride);
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double py = (y + (sy + 0.5) / samples);
+					SpanI spans[maxSpans];
+					size_t count = 0;
+					int32 crossings[4];
+					size_t crossingCount = 0;
+					if constexpr (Split)
+					{
+						for (size_t i = 0; i < contour.size(); ++i)
+						{
+							Vec2 from = contour[i], to = contour[(i + 1) % contour.size()];
+							if (to.y < from.y) std::swap(from, to);
+							if ((from.y <= py) && (py < to.y))
+							{
+								const double x = from.x + (to.x - from.x) * (py - from.y) / (to.y - from.y);
+								crossings[crossingCount++] = CeilToInt(Clamp(x, double(x0), double(x1)) * samples - 0.5);
+							}
+						}
+						std::sort(crossings, crossings + crossingCount);
+					}
+					for (size_t part = 0; part < polygons.size(); ++part)
+					{
+						double left, right;
+						if (!polygons[part].spanAt(py, spanCursors[part], left, right)) continue;
+						const int32 begin = CeilToInt(Clamp(left, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
+						const int32 end = CeilToInt(Clamp(right, static_cast<double>(x0), static_cast<double>(x1)) * samples - 0.5);
+						if constexpr (Split)
+						{
+							const auto append = [&](const int32 l, const int32 r)
+							{
+								const int32 clippedBegin = Max(begin, l), clippedEnd = Min(end, r);
+								if (clippedBegin < clippedEnd) spans[count++] = {clippedBegin, clippedEnd};
+							};
+							if (part < innerCount)
+							{
+								for (size_t k = 0; k + 1 < crossingCount; k += 2) append(crossings[k], crossings[k + 1]);
+							}
+							else
+							{
+								int32 l = x0 * samples;
+								for (size_t k = 0; k + 1 < crossingCount; k += 2)
+								{
+									append(l, crossings[k]); l = crossings[k + 1];
+								}
+								append(l, x1 * samples);
+							}
+						}
+						else if (begin < end) spans[count++] = { begin, end };
+					}
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
+					{
+						if constexpr (Antialias)
+						{
+							AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+							pixelSpans[pixelSpanCount++] = { span.x0 / 4, (span.x1 + 3) / 4 };
+						}
+						else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
+				}
+			}
 		}
 
 		[[nodiscard]]
-		uint8 PolygonCoverage4x4(
-			const int32 x,
-			const int32 y,
-			const PolygonContourView* contours,
-			const size_t contourCount,
-			const Vec2& offset) noexcept
+		size_t MakeJoinedFramePolygons(const std::span<const Vec2> points, const JoinStyle joinStyle,
+			const double half, ConvexStrokePiece* polygons, BoundsD& bounds)
 		{
-			int32 covered = 0;
-
-			for (int32 sy = 0; sy < 4; ++sy)
+			const size_t count = points.size();
+			size_t polygonCount = 0;
+			const auto before = [](const Vec2 a, const Vec2 b) { return (a.y < b.y) || ((a.y == b.y) && (a.x < b.x)); };
+			for (size_t i = 0; i < count; ++i)
 			{
-				const double py = static_cast<double>(y) + (static_cast<double>(sy) * 2.0 + 1.0) * 0.125;
+				Vec2 from = points[i], to = points[(i + 1) % count];
+				// Canonical directions make winding reversal use identical arithmetic.
+				if (before(to, from)) std::swap(from, to);
+				const Vec2 d = (to - from).normalized();
+				const Vec2 side = (Vec2{ -d.y, d.x } * half);
+				const Vec2 rectangle[]{ from + side, to + side, to - side, from - side };
+				polygons[polygonCount++].set(rectangle, bounds);
 
-				for (int32 sx = 0; sx < 4; ++sx)
+				const Vec2 p = points[i];
+				Vec2 previous = points[(i + count - 1) % count], next = points[(i + 1) % count];
+				if (before(next, previous)) std::swap(previous, next);
+				const Vec2 previousEdge = (previous - p), nextEdge = (next - p);
+				const double cross = previousEdge.cross(nextEdge);
+				if (cross == 0.0) continue; // Test before normalization can introduce a spurious turn.
+				const double previousLength = previousEdge.length(), nextLength = nextEdge.length();
+				const Vec2 a = (previousEdge / previousLength), b = (nextEdge / nextLength);
+				const double turn = (cross / (previousLength * nextLength));
+				const double sign = ((turn > 0.0) ? 1.0 : -1.0);
+				const Vec2 n0 = (Vec2{ a.y, -a.x } * sign), n1 = (Vec2{ -b.y, b.x } * sign);
+				const double dot = a.dot(b);
+				if ((joinStyle == JoinStyle::Bevel) && ((0.5 + 1e-12) < dot))
 				{
-					const double px = static_cast<double>(x) + (static_cast<double>(sx) * 2.0 + 1.0) * 0.125;
-
-					if (IsPointInPolygonEvenOdd(Vec2{ px, py }, contours, contourCount, offset))
-					{
-						++covered;
-					}
+					const Vec2 bisector = -(a + b).normalized();
+					const Vec2 first = ((n0 + bisector) * (half / (1.0 + n0.dot(bisector))));
+					const Vec2 last = ((n1 + bisector) * (half / (1.0 + n1.dot(bisector))));
+					const Vec2 corner[]{ p, p + n0 * half, p + first, p + last, p + n1 * half };
+					polygons[polygonCount++].set(corner, bounds);
+				}
+				else
+				{
+					// Intersect offset lines without dividing by 1 - dot, which loses
+					// precision at acute corners where unlimited miters are longest.
+					const Vec2 miter = (n0 * half - a * (half * (1.0 + dot) / Abs(turn)));
+					const Vec2 corner[]{ p, p + n0 * half, p + miter, p + n1 * half };
+					polygons[polygonCount++].set(corner, bounds);
 				}
 			}
-
-			return static_cast<uint8>((covered * 255 + 8) / 16);
+			return polygonCount;
 		}
 
+		template <size_t N>
+		void DrawSmallJoinedFrame(Image& image, const Vec2 (&input)[N], const JoinStyle joinStyle,
+			const double thickness, const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
+		{
+			static_assert((N == 3) || (N == 4));
+			if (joinStyle == JoinStyle::Round)
+			{
+				ImageDraw::ClosedLineString(image, input, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			if (image.isEmpty() || !(0.0 < thickness)) return;
+
+			Vec2 points[N];
+			size_t count = 0;
+			for (const Vec2& p : input)
+			{
+				if ((count == 0) || !IsSamePoint(points[count - 1], p)) points[count++] = p;
+			}
+			if ((1 < count) && IsSamePoint(points[0], points[count - 1])) --count;
+			if (count < 3) return;
+
+			ConvexStrokePiece polygons[N * 2];
+			BoundsD bounds;
+			const size_t polygonCount = MakeJoinedFramePolygons({points, count}, joinStyle, thickness * 0.5, polygons, bounds);
+			const ImageView view = MakeImageView(image);
+			const std::span<const ConvexStrokePiece> parts{ polygons, polygonCount };
+			if (enableAntialiasing == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
+			else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
+		}
+
+		// Clip a horizontal interval to normal.x * x + normal.y * y >= 0.
+		// Coordinates are relative to the sector center; equality belongs to the sector.
+		[[nodiscard]]
+		bool ClipSectorSpan(double& left, double& right, const Vec2 normal, const double y) noexcept
+		{
+			if (normal.x > 0.0)
+			{
+				left = Max(left, (-normal.y / normal.x * y));
+			}
+			else if (normal.x < 0.0)
+			{
+				right = Min(right, (-normal.y / normal.x * y));
+			}
+			else if ((normal.y * y) < 0.0)
+			{
+				return false;
+			}
+			return (left <= right);
+		}
+
+		// Offset half-plane for trimmed sides: normal.dot(p) >= offset.
+		[[nodiscard]]
+		bool ClipOffsetSectorSpan(double& left, double& right, const Vec2 normal, const double y, const double offset) noexcept
+		{
+			if (normal.x > 0.0)
+			{
+				left = Max(left, ((offset - normal.y * y) / normal.x));
+			}
+			else if (normal.x < 0.0)
+			{
+				right = Min(right, ((offset - normal.y * y) / normal.x));
+			}
+			else if ((normal.y * y) < offset)
+			{
+				return false;
+			}
+			return (left <= right);
+		}
+
+		// Intersect a horizontal interval with |axis.dot(p)| <= halfExtent.
+		[[nodiscard]]
+		bool ClipSlabSpan(double& left, double& right, const Vec2 axis, const double y, const double halfExtent) noexcept
+		{
+			if (axis.x == 0.0)
+			{
+				return (Abs(axis.y * y) <= halfExtent);
+			}
+			const double a = ((-halfExtent - axis.y * y) / axis.x);
+			const double b = ((halfExtent - axis.y * y) / axis.x);
+			left = Max(left, Min(a, b));
+			right = Min(right, Max(a, b));
+			return (left <= right);
+		}
+
+		template <bool Antialias>
+		void FillCappedArrowBySpans(
+			const ImageView view, const Vec2& from, const Vec2& to, const double length,
+			const double width, const SizeF& headSize, const LineCap startCap,
+			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
+		{
+			const double half = (width * 0.5);
+			const Vec2 direction = ((to - from) / length);
+			const Vec2 normal{ direction.y, -direction.x };
+			const double ratio = (Min(headSize.y, length) / headSize.y);
+			const Vec2 base = (to - direction * (headSize.y * ratio));
+			const Vec2 tail = ((startCap == LineCap::Square) ? (from - direction * half) : from);
+			const Vec2 side = (normal * half);
+			const Vec2 headSide = (normal * (half + headSize.x * ratio * 0.5));
+			const Vec2 points[]{ tail + side, base + side, base + headSide, to,
+				base - headSide, base - side, tail - side };
+			BoundsD bounds;
+			for (const Vec2& point : points) bounds.include(point);
+			if (startCap == LineCap::Round) bounds.includeCircle(from, half);
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				// A seven-edge contour has at most three spans; the cap adds one.
+				SpanI pixelSpans[16];
+				size_t pixelSpanCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double py = (y + (sy + 0.5) / samples);
+					SpanI spans[4];
+					size_t spanCount = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const double l = Clamp(left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = CeilToInt(r * samples - 0.5);
+						if (begin < end) spans[spanCount++] = { begin, end };
+					};
+					double intersections[7];
+					size_t intersectionCount = 0;
+					for (size_t i = 0, j = 6; i < 7; j = i++)
+					{
+						const Vec2& p = points[i];
+						const Vec2& q = points[j];
+						if ((p.y > py) != (q.y > py))
+						{
+							intersections[intersectionCount++] = ((q.x - p.x) * (py - p.y) / (q.y - p.y) + p.x);
+						}
+					}
+					std::sort(intersections, intersections + intersectionCount);
+					for (size_t i = 0; (i + 1) < intersectionCount; i += 2)
+					{
+						add(intersections[i], intersections[i + 1]);
+					}
+					if (startCap == LineCap::Round)
+					{
+						const double dy = (py - from.y);
+						const double dxSq = (half * half - dy * dy);
+						if (0.0 <= dxSq)
+						{
+							const double dx = std::sqrt(dxSq);
+							double left = -dx, right = dx;
+							// Only the outward semicircle belongs to the tail, even for very short arrows.
+							if (ClipSectorSpan(left, right, -direction, dy)) add(from.x + left, from.x + right);
+						}
+					}
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, spanCount }))
+					{
+						if constexpr (Antialias)
+						{
+							AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+							pixelSpans[pixelSpanCount++] = { span.x0 / 4, (span.x1 + 3) / 4 };
+						}
+						else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
+				}
+			}
+		}
+
+		template <bool Antialias>
+		void FillCircleArcBySpans(
+			const ImageView view, const Circle& circle, const CircleSectorData& sector,
+			const double innerRadius, const double outerRadius, const LineCap startCap, const LineCap endCap,
+			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
+		{
+			const bool hasBody = (0.0 < sector.sweep);
+			const bool major = (Math::Pi < sector.sweep);
+			const double half = ((outerRadius - innerRadius) * 0.5);
+			const double mid = ((outerRadius + innerRadius) * 0.5);
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const Vec2 directions[]{ sector.startDir, sector.endDir };
+			const Vec2 outward[]{ -startNormal, -endNormal };
+			const LineCap styles[]{ startCap, endCap };
+			OrientedRectBasis caps[2];
+			BoundsD bounds;
+			if (hasBody)
+			{
+				IncludeCircleSectorOuterBounds(bounds, circle, sector, outerRadius);
+				IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
+				IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
+			}
+			for (int32 i = 0; i < 2; ++i)
+			{
+				if (styles[i] == LineCap::Flat) continue;
+				const Vec2 center = (circle.center + directions[i] * mid);
+				caps[i] = { center, outward[i], directions[i], half * 0.5, half };
+				if (styles[i] == LineCap::Round)
+				{
+					bounds.includeCircle(center, half);
+				}
+				else
+				{
+					caps[i].center += (outward[i] * half * 0.5);
+					IncludeOrientedRectBounds(bounds, caps[i], 0.0, 0.0);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			const double innerSq = (innerRadius * innerRadius), outerSq = (outerRadius * outerRadius);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				// Four sample rows can touch up to six intervals each; skip the empty interior.
+				SpanI pixelSpans[24];
+				size_t pixelSpanCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double py = (y + (sy + 0.5) / samples), dy = (py - circle.y);
+					// Two ring intervals, each clipped to at most two sector intervals, plus two caps.
+					SpanI spans[6];
+					size_t count = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const double l = Clamp(left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+						if (begin < end) spans[count++] = { begin, end };
+					};
+					const auto addSector = [&](double left, double right)
+					{
+						double left2 = left, right2 = right;
+						const bool valid = ClipSectorSpan(left, right, startNormal, dy);
+						if (!major)
+						{
+							if (valid && ClipSectorSpan(left, right, endNormal, dy)) add(circle.x + left, circle.x + right);
+						}
+						else
+						{
+							if (valid) add(circle.x + left, circle.x + right);
+							if (ClipSectorSpan(left2, right2, endNormal, dy)) add(circle.x + left2, circle.x + right2);
+						}
+					};
+					const double dySq = (dy * dy);
+					if (hasBody && (dySq <= outerSq))
+					{
+						const double outerDx = std::sqrt(outerSq - dySq);
+						if (dySq < innerSq)
+						{
+							const double innerDx = std::sqrt(innerSq - dySq);
+							addSector(-outerDx, -innerDx);
+							addSector(innerDx, outerDx);
+						}
+						else addSector(-outerDx, outerDx);
+					}
+					for (int32 i = 0; i < 2; ++i)
+					{
+						if (styles[i] == LineCap::Flat) continue;
+						const OrientedRectBasis& cap = caps[i];
+						const double cy = (py - cap.center.y);
+						if (styles[i] == LineCap::Round)
+						{
+							const double dxSq = (half * half - cy * cy);
+							if (0.0 <= dxSq)
+							{
+								const double dx = std::sqrt(dxSq);
+								add(cap.center.x - dx, cap.center.x + dx);
+							}
+						}
+						else
+						{
+							double left = (x0 - cap.center.x), right = (x1 - cap.center.x);
+							if (ClipSlabSpan(left, right, cap.dir, cy, cap.halfLength)
+								&& ClipSlabSpan(left, right, cap.normal, cy, cap.halfThickness))
+							{
+								add(cap.center.x + left, cap.center.x + right);
+							}
+						}
+					}
+					for (const SpanI& merged : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
+					{
+						if constexpr (Antialias)
+						{
+							AddSubpixelSamples4(coverage, merged.x0 - x0 * 4, merged.x1 - x0 * 4);
+							pixelSpans[pixelSpanCount++] = { merged.x0 / 4, (merged.x1 + 3) / 4 };
+						}
+						else writer.write(row + merged.x0, static_cast<size_t>(merged.x1 - merged.x0));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelSpanCount });
+				}
+			}
+		}
+
+		template <bool Antialias>
+		void FillCircleSegmentBySpans(
+			const ImageView view, const Circle& circle, const double arcMidpointAngle, const double height,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			const Vec2 normal = DirectionFromSiv3DAngle(arcMidpointAngle);
+			const double offset = (circle.r - height);
+			const double chordHalfWidth = std::sqrt(height * (2.0 * circle.r - height));
+			const Vec2 chordCenter = (circle.center + normal * offset);
+			const Vec2 tangent{ -normal.y, normal.x };
+			BoundsD bounds;
+			bounds.include(chordCenter + tangent * chordHalfWidth);
+			bounds.include(chordCenter - tangent * chordHalfWidth);
+			for (const Vec2 direction : { Vec2{ 0, -1 }, Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ -1, 0 } })
+			{
+				if (offset <= normal.dot(direction) * circle.r)
+				{
+					bounds.include(circle.center + direction * circle.r);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			constexpr int32 samples = (Antialias ? 4 : 1);
+			const double radiusSq = (circle.r * circle.r);
+			std::vector<uint8> coverage(Antialias ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double dy = (y + (sy + 0.5) / samples - circle.y);
+					const double widthSq = (radiusSq - dy * dy);
+					if (widthSq < 0.0)
+					{
+						continue;
+					}
+					const double halfWidth = std::sqrt(widthSq);
+					double left = -halfWidth, right = halfWidth;
+					// Intersect the disk span with normal.dot(p - center) >= radius - height.
+					if (normal.x > 0.0)
+					{
+						left = Max(left, ((offset - normal.y * dy) / normal.x));
+					}
+					else if (normal.x < 0.0)
+					{
+						right = Min(right, ((offset - normal.y * dy) / normal.x));
+					}
+					else if ((normal.y * dy) < offset)
+					{
+						continue;
+					}
+					if (right < left)
+					{
+						continue;
+					}
+					const double l = Clamp(circle.x + left, static_cast<double>(x0), static_cast<double>(x1));
+					const double r = Clamp(circle.x + right, static_cast<double>(x0), static_cast<double>(x1));
+					const int32 begin = CeilToInt(l * samples - 0.5);
+					const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+					if constexpr (Antialias)
+					{
+						AddSubpixelSamples4(coverage, begin - x0 * 4, end - x0 * 4);
+					}
+					else if (begin < end)
+					{
+						Color* row = view.data + static_cast<size_t>(y) * view.stride;
+						writer.write(row + begin, static_cast<size_t>(end - begin));
+					}
+				}
+				if constexpr (Antialias)
+				{
+					ConvertSampleCounts4x4ToCoverage(coverage);
+					Color* row = view.data + static_cast<size_t>(y) * view.stride;
+					WriteCoverageRow(writer, row, x0, coverage);
+				}
+			}
+		}
+
+		void FillEllipsePieBySpans(
+			const ImageView view, const Ellipse& ellipse, const CircleSectorData& sector,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
+		{
+			BoundsD bounds;
+			bounds.include(ellipse.center);
+			for (const Vec2 direction : { sector.startDir, sector.endDir })
+			{
+				const Vec2 normalized = (direction / ellipse.axes);
+				bounds.include(ellipse.center + direction / normalized.length());
+			}
+			for (const Vec2 direction : { Vec2{ 0, -1 }, Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ -1, 0 } })
+			{
+				if (VectorInSector(direction, sector))
+				{
+					bounds.include(ellipse.center + direction * ellipse.axes);
+				}
+			}
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const bool major = (Math::Pi < sector.sweep);
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const int32 samples = (aa ? 4 : 1);
+			std::vector<uint8> coverage(aa ? static_cast<size_t>(x1 - x0) : 0);
+			ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					const double dy = (y + (sy + 0.5) / samples - ellipse.y);
+					const double ny = (dy / ellipse.b);
+					if (1.0 < (ny * ny))
+					{
+						continue;
+					}
+					const double halfWidth = (ellipse.a * std::sqrt(1.0 - ny * ny));
+					const auto write = [&](const double left, const double right)
+					{
+						// Convert closed intervals to half-open sample-index ranges after clipping.
+						const double l = Clamp(ellipse.x + left, static_cast<double>(x0), static_cast<double>(x1));
+						const double r = Clamp(ellipse.x + right, static_cast<double>(x0), static_cast<double>(x1));
+						const int32 begin = CeilToInt(l * samples - 0.5);
+						const int32 end = (FloorToInt(r * samples - 0.5) + 1);
+						if (aa)
+						{
+							AddSubpixelSamples4(coverage, begin - x0 * 4, end - x0 * 4);
+						}
+						else
+						{
+							WriteSpanHalfOpenClipped(writer, view, y, begin, end);
+						}
+					};
+					double left = -halfWidth, right = halfWidth;
+					const bool startValid = ClipSectorSpan(left, right, startNormal, dy);
+					if (!major)
+					{
+						if (startValid && ClipSectorSpan(left, right, endNormal, dy))
+						{
+							write(left, right);
+						}
+					}
+					else
+					{
+						double left2 = -halfWidth, right2 = halfWidth;
+						const bool endValid = ClipSectorSpan(left2, right2, endNormal, dy);
+						if (startValid && endValid && (Max(left, left2) <= Min(right, right2)))
+						{
+							write(Min(left, left2), Max(right, right2));
+						}
+						else
+						{
+							if (startValid) write(left, right);
+							if (endValid) write(left2, right2);
+						}
+					}
+				}
+				if (aa)
+				{
+					ConvertSampleCounts4x4ToCoverage(coverage);
+					Color* row = view.data + static_cast<size_t>(y) * view.stride;
+					WriteCoverageRow(writer, row, x0, coverage);
+				}
+			}
+		}
+
+		template <size_t N>
+		void DrawSmallPolygonFrameByDistance(const ImageView view, const Vec2 (&input)[N], double innerThickness,
+			double outerThickness, Color color, ImagePixel::BlendMode blendMode,
+			EnableAntialiasing enableAntialiasing, ImageDraw::DstAlpha dstAlpha);
+
+		template <size_t N>
+		void DrawSmallJoinedPolygonFrame(Image& image, const Vec2 (&input)[N], const JoinStyle joinStyle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing aa, const ImageDraw::DstAlpha dstAlpha)
+		{
+			if (joinStyle == JoinStyle::Round)
+			{
+				DrawSmallPolygonFrameByDistance(MakeImageView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
+				return;
+			}
+			if (image.isEmpty() || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((blendMode == ImagePixel::BlendMode::SourceOver) && (color.a == 0))) return;
+			Vec2 points[N];
+			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
+			if (count == 0) return;
+			const std::span<const Vec2> contour{points, count};
+			ConvexStrokePiece polygons[N * 4];
+			BoundsD bounds;
+			if (innerThickness == outerThickness)
+			{
+				const size_t polygonCount = MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
+				const std::span<const ConvexStrokePiece> parts{polygons, polygonCount};
+				const ImageView view = MakeImageView(image);
+				if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
+				else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
+				return;
+			}
+			const size_t innerCount = (innerThickness == 0.0) ? 0
+				: MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
+			const size_t outerCount = (outerThickness == 0.0) ? 0
+				: MakeJoinedFramePolygons(contour, joinStyle, outerThickness, polygons + innerCount, bounds);
+			const std::span<const ConvexStrokePiece> parts{polygons, innerCount + outerCount};
+			const ImageView view = MakeImageView(image);
+			if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
+			else DrawJoinedFramePolygons<false, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
+		}
+
+		// Triangle / Quad offsets use the original even-odd interior. Moving vertices
+		// first cannot preserve concave corners, crossings, or a collapsing inner hole.
+		template <size_t N>
+		void DrawSmallPolygonFrameByDistance(
+			const ImageView view,
+			const Vec2 (&input)[N],
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			static_assert((N == 3) || (N == 4));
+			if ((view.data == nullptr) || (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| ((blendMode == ImagePixel::BlendMode::SourceOver) && (color.a == 0)))
+			{
+				return;
+			}
+
+			Vec2 points[N];
+			const size_t count = detail::NormalizeSmallPolygonRing(input, points);
+			if (count == 0) return;
+
+			struct Edge
+			{
+				Vec2 from, to, delta;
+				double lengthSq, inverseLengthSq;
+				Vec2 support[4];
+			};
+			Edge edges[N];
+			BoundsD bounds;
+			for (size_t i = 0; i < count; ++i)
+			{
+				Vec2 from = points[i], to = points[(i + 1) % count];
+				// Canonical edge direction keeps rounding independent of contour winding.
+				if ((to.y < from.y) || ((to.y == from.y) && (to.x < from.x))) std::swap(from, to);
+				const Vec2 delta = to - from;
+				edges[i] = { from, to, delta, delta.lengthSq(), (1.0 / delta.lengthSq()), {} };
+				const double length = delta.length();
+				const Vec2 dir = delta / length;
+				const double radius = Max(innerThickness, outerThickness) + 0.5;
+				const OrientedRectBasis basis{ (from + to) * 0.5, dir, Vec2{ -dir.y, dir.x }, length * 0.5, radius };
+				MakeOrientedRectPoints(basis, radius, 0.0, edges[i].support);
+				bounds.include(points[i]);
+			}
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const double support = outerThickness + (aa ? 0.5 : 0.0);
+			int32 x0 = FloorToInt(bounds.minX - support), x1 = CeilToInt(bounds.maxX + support);
+			int32 y0 = FloorToInt(bounds.minY - support), y1 = CeilToInt(bounds.maxY + support);
+			if (!ClipRectI(x0, y0, x1, y1, view.width, view.height)) return;
+
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			std::vector<uint8> coverage(static_cast<size_t>(x1 - x0));
+			for (int32 y = y0; y < y1; ++y)
+			{
+				const double py = y + 0.5;
+				double crossings[N];
+				size_t crossingCount = 0;
+				for (size_t i = 0; i < count; ++i)
+				{
+					const Vec2 from = edges[i].from, to = edges[i].to;
+					if ((from.y <= py) && (py < to.y))
+					{
+						crossings[crossingCount++] = from.x + (to.x - from.x) * (py - from.y) / (to.y - from.y);
+					}
+				}
+				std::sort(crossings, crossings + crossingCount);
+				// A union of conservative edge rectangles bounds the distance band.
+				// Skip the empty center and merge overlaps before any color is applied.
+				SpanI spans[N];
+				size_t spanCount = 0;
+				for (size_t i = 0; i < count; ++i)
+				{
+					int32 begin, end;
+					if (GetConvexPolygonSpanAtY(edges[i].support, 4, y, begin, end))
+					{
+						begin = Max(begin, x0); end = Min(end, x1);
+						if (begin < end) spans[spanCount++] = { begin, end };
+					}
+				}
+				std::sort(spans, spans + spanCount, [](const SpanI& a, const SpanI& b) { return a.x0 < b.x0; });
+				size_t crossing = 0;
+				for (size_t span = 0; span < spanCount;)
+				{
+					const int32 begin = spans[span].x0;
+					int32 end = spans[span++].x1;
+					while ((span < spanCount) && (spans[span].x0 <= end)) end = Max(end, spans[span++].x1);
+					for (int32 x = begin; x < end; ++x)
+					{
+						const Vec2 p{ x + 0.5, py };
+						while ((crossing < crossingCount) && (crossings[crossing] <= p.x)) ++crossing;
+						const bool inside = ((crossing % 2) != 0);
+						double distanceSq = std::numeric_limits<double>::infinity();
+						for (size_t i = 0; i < count; ++i)
+						{
+							const Edge& edge = edges[i];
+							const Vec2 v = p - edge.from;
+							const double along = v.dot(edge.delta);
+							const double beyond = Max(Max(-along, along - edge.lengthSq), 0.0);
+							const double across = v.cross(edge.delta);
+							distanceSq = Min(distanceSq, (across * across + beyond * beyond) * edge.inverseLengthSq);
+						}
+						uint8 value;
+						if (aa)
+						{
+							const double sd = std::sqrt(distanceSq) * (inside ? -1.0 : 1.0);
+							// Equivalent to outer minus inner coverage, with an exact plateau
+							// for subpixel widths instead of cancellation between two ramps.
+							value = ToCoverage(Min(innerThickness + outerThickness,
+								Min(outerThickness + 0.5 - sd, innerThickness + 0.5 + sd)));
+						}
+						else
+						{
+							const double width = (inside ? innerThickness : outerThickness);
+							value = ((distanceSq <= width * width) ? 255 : 0);
+						}
+						coverage[static_cast<size_t>(x - begin)] = value;
+					}
+					WriteCoverageSpan(writer, view.data + static_cast<size_t>(y) * view.stride + begin,
+						coverage.data(), static_cast<size_t>(end - begin));
+				}
+			}
+		}
+
+		template <class PointType>
 		void FillPolygonAA4x4InBounds(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const RectF& boundingRect,
@@ -4353,24 +5070,55 @@ namespace s3d
 
 			const size_t rowLength = static_cast<size_t>(x1 - x0);
 			std::vector<uint8> coverage(rowLength);
+			std::vector<double> intersections;
+			size_t edgeCount = 0;
+			for (size_t c = 0; c < contourCount; ++c)
+			{
+				edgeCount += contours[c].count;
+			}
+			intersections.reserve(edgeCount);
 
 			for (int32 y = y0; y < y1; ++y)
 			{
-				for (size_t i = 0; i < rowLength; ++i)
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < 4; ++sy)
 				{
-					const int32 x = x0 + static_cast<int32>(i);
-					coverage[i] = PolygonCoverage4x4(x, y, contours, contourCount, offset);
+					const double py = y + (sy * 2.0 + 1.0) * 0.125;
+					intersections.clear();
+					for (size_t c = 0; c < contourCount; ++c)
+					{
+						const auto& contour = contours[c];
+						if ((contour.points == nullptr) || (contour.count < 3))
+						{
+							continue;
+						}
+						for (size_t i = 0, j = contour.count - 1; i < contour.count; j = i++)
+						{
+							const Vec2 pi = AddOffset(contour.points[i], offset);
+							const Vec2 pj = AddOffset(contour.points[j], offset);
+							if ((pi.y > py) != (pj.y > py))
+							{
+								// Keep the point-sampling expression's rounding at boundary ties.
+								intersections.push_back((pj.x - pi.x) * (py - pi.y) / (pj.y - pi.y) + pi.x);
+							}
+						}
+					}
+					std::sort(intersections.begin(), intersections.end());
+					for (size_t i = 0; i + 1 < intersections.size(); i += 2)
+					{
+						AddSubpixelSpan4(coverage, x0, x1, intersections[i], intersections[i + 1]);
+					}
 				}
-
+				ConvertSampleCounts4x4ToCoverage(coverage);
 				Color* row = view.data + static_cast<size_t>(y) * view.stride + static_cast<size_t>(x0);
-
 				WriteCoverageSpan(writer, row, coverage.data(), rowLength);
 			}
 		}
 
+		template <class PointType>
 		void FillPolygonAA4x4(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const ImagePixel::detail::SolidColorWriter& writer)
@@ -4392,9 +5140,10 @@ namespace s3d
 			);
 		}
 
+		template <class PointType>
 		void FillPolygonInternal(
 			const ImageView view,
-			const PolygonContourView* contours,
+			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
 			const RectF* boundingRect,
@@ -4436,26 +5185,866 @@ namespace s3d
 			}
 		}
 
+		// Approximate one quadrant in local coordinates, then reflect it exactly.
+		// On a convex or concave quadrant the largest chord deviation occurs where
+		// its normal is parallel to the boundary normal. Split at that point.
 		[[nodiscard]]
-		std::vector<PolygonContourView> MakePolygonContourViews(const Polygon& polygon)
+		Array<Vec2> MakeSuperEllipseFrameContour(const double a, const double b, const double n)
 		{
-			std::vector<PolygonContourView> contours;
+			if (n == 1.0)
+			{
+				return { Vec2{ 0, -b }, Vec2{ a, 0 }, Vec2{ 0, b }, Vec2{ -a, 0 } };
+			}
+
+			Array<Vec2> points;
+			points.reserve(64);
+			points.push_back(Vec2{ 0, b });
+			const double inverseN = (1.0 / n);
+			const double normalExponent = (n / Abs(n - 1.0));
+			const auto append = [&](auto&& self, const Vec2 from, const Vec2 to, const int32 depth) -> void
+			{
+				const Vec2 chord = (to - from);
+				const double nx = (a * Abs(chord.y)), ny = (b * Abs(chord.x));
+				const double ratio = std::pow((Min(nx, ny) / Max(nx, ny)), normalExponent);
+				const double large = std::pow((1.0 / (1.0 + ratio)), inverseN);
+				const double small = std::pow((ratio / (1.0 + ratio)), inverseN);
+				const bool smallX = ((nx < ny) == (1.0 < n));
+				const Vec2 middle{ (a * (smallX ? small : large)), (b * (smallX ? large : small)) };
+				const double cross = chord.cross(middle - from);
+				constexpr double MaxError = 0.125;
+				if ((depth < 16) && ((MaxError * MaxError * chord.lengthSq()) < (cross * cross)))
+				{
+					self(self, from, middle, (depth + 1));
+					self(self, middle, to, (depth + 1));
+				}
+				else
+				{
+					points.push_back(to);
+				}
+			};
+			append(append, Vec2{ 0, b }, Vec2{ a, 0 }, 0);
+
+			const size_t quarter = (points.size() - 1);
+			points.resize(quarter * 4);
+			for (size_t i = 0; i <= quarter; ++i)
+			{
+				const Vec2 p = points[i];
+				points[i] = Vec2{ p.x, -p.y };
+				if (i < quarter) points[quarter * 2 - i] = p;
+				if (i > 0) points[quarter * 4 - i] = Vec2{ -p.x, -p.y };
+				if ((0 < i) && (i < quarter)) points[quarter * 2 + i] = Vec2{ -p.x, p.y };
+			}
+			return points;
+		}
+
+		// A small analytic shape produces a bounded number of intervals per sample row.
+		// Union before counting coverage keeps joins and overlapping parts single-covered.
+		template <size_t MaxSpans, class Scan>
+		void DrawSampledSpans(const ImageView view, const BoundsD& bounds, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing aa, Scan&& scan)
+		{
+			int32 x0, y0, x1, y1;
+			if (!ClipBoundsToImage(bounds, x0, y0, x1, y1, view.width, view.height)) return;
+			const int32 samples = (aa == EnableAntialiasing::Yes ? 4 : 1);
+			std::vector<uint8> coverage(samples == 4 ? static_cast<size_t>(x1 - x0) : 0);
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(ImageDraw::DstAlpha::UseStored) };
+			for (int32 y = y0; y < y1; ++y)
+			{
+				SpanI pixelSpans[MaxSpans * 4];
+				size_t pixelCount = 0;
+				Color* row = view.data + static_cast<size_t>(y) * view.stride;
+				for (int32 sy = 0; sy < samples; ++sy)
+				{
+					SpanI spans[MaxSpans];
+					size_t count = 0;
+					const auto add = [&](const double left, const double right)
+					{
+						const int32 begin = CeilToInt(Clamp(left, double(x0), double(x1)) * samples - 0.5);
+						const int32 end = CeilToInt(Clamp(right, double(x0), double(x1)) * samples - 0.5);
+						if (begin < end) spans[count++] = { begin, end };
+					};
+					scan(y + (sy + 0.5) / samples, add);
+					for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans, count }))
+					{
+						if (samples == 4)
+						{
+							AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+							pixelSpans[pixelCount++] = { span.x0 / 4, (span.x1 + 3) / 4 };
+						}
+						else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+					}
+				}
+				if (samples == 4) WriteAndClearSampleSpans4x4(writer, row, x0, coverage, { pixelSpans, pixelCount });
+			}
+		}
+
+		// Convex parts and disks are rasterized as a union, with row-local active parts.
+		// This avoids both geometric Boolean operations and repeated alpha composition.
+		class SampledShape
+		{
+			struct Piece
+			{
+				ConvexStrokePiece polygon;
+				Circle disk{ 0, 0, 0 };
+				double minY, maxY;
+			};
+			ImageView m_view;
+			BoundsD m_bounds;
+			std::vector<Piece> m_pieces;
+
+			bool visible(const BoundsD& b) const
+			{
+				return ((0 < b.maxX) && (b.minX < m_view.width) && (0 < b.maxY) && (b.minY < m_view.height));
+			}
+
+		public:
+
+			explicit SampledShape(const ImageView view) : m_view{ view } {}
+
+			void polygon(const std::span<const Vec2> points)
+			{
+				Piece piece;
+				BoundsD bounds;
+				piece.polygon.set(points, bounds);
+				if (!visible(bounds)) return;
+				piece.minY = bounds.minY; piece.maxY = bounds.maxY;
+				m_bounds.include({ bounds.minX, bounds.minY });
+				m_bounds.include({ bounds.maxX, bounds.maxY });
+				m_pieces.push_back(std::move(piece));
+			}
+
+			void triangle(const Vec2 a, const Vec2 b, const Vec2 c)
+			{
+				const Vec2 points[]{ a, b, c };
+				polygon(points);
+			}
+
+			void disk(const Vec2 center, const double radius)
+			{
+				if (radius <= 0) return;
+				BoundsD bounds; bounds.includeCircle(center, radius);
+				if (!visible(bounds)) return;
+				Piece piece;
+				piece.disk = Circle{ center, radius };
+				piece.minY = bounds.minY; piece.maxY = bounds.maxY;
+				m_bounds.include({ bounds.minX, bounds.minY });
+				m_bounds.include({ bounds.maxX, bounds.maxY });
+				m_pieces.push_back(std::move(piece));
+			}
+
+			void cap(const Vec2 center, const Vec2 outward, const double half, const LineCap style)
+			{
+				if (style == LineCap::Round) disk(center, half);
+				else if (style == LineCap::Square)
+				{
+					const Vec2 across = (Vec2{ -outward.y, outward.x } * half), along = (outward * half);
+					const Vec2 points[]{ center + across, center + across + along, center - across + along, center - across };
+					polygon(points);
+				}
+			}
+
+			void stroke(const std::span<const Vec2> points, const double thickness, const LineCap startCap, const LineCap endCap,
+				const Vec2* startCut = nullptr, const Vec2* endCut = nullptr)
+			{
+				if (points.size() < 2) return;
+				const double half = (thickness * 0.5);
+				Vec2 lastDirection{ 0, 0 };
+				bool first = true;
+				for (size_t i = 1; i < points.size(); ++i)
+				{
+					const Vec2 delta = (points[i] - points[i - 1]);
+					const double length = delta.length();
+					if (length == 0) continue;
+					const Vec2 direction = (delta / length), across = (Vec2{ -direction.y, direction.x } * half);
+					Vec2 vertices[]{ points[i - 1] + across, points[i] + across, points[i] - across, points[i - 1] - across };
+					if (startCut && (i == 1)) { vertices[0] = startCut[0]; vertices[3] = startCut[1]; }
+					if (endCut && (i + 1 == points.size())) { vertices[1] = endCut[0]; vertices[2] = endCut[1]; }
+					polygon(vertices);
+					if (first) cap(points[i - 1], -direction, half, startCap);
+					else disk(points[i - 1], half);
+					first = false;
+					lastDirection = direction;
+				}
+				if (!first) cap(points.back(), lastDirection, half, endCap);
+			}
+
+			void draw(const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa) const
+			{
+				if (m_pieces.empty()) return;
+				int32 x0, y0, x1, y1;
+				if (!ClipBoundsToImage(m_bounds, x0, y0, x1, y1, m_view.width, m_view.height)) return;
+				const int32 samples = (aa == EnableAntialiasing::Yes ? 4 : 1);
+				std::vector<size_t> order(m_pieces.size()), active;
+				std::iota(order.begin(), order.end(), size_t{0});
+				std::sort(order.begin(), order.end(), [&](size_t a, size_t b) { return m_pieces[a].minY < m_pieces[b].minY; });
+				std::vector<ConvexStrokePiece::SpanCursor> cursors(m_pieces.size());
+				std::vector<SpanI> spans, touched;
+				std::vector<uint8> coverage(samples == 4 ? static_cast<size_t>(x1 - x0) : 0);
+				size_t next = 0;
+				const ImagePixel::detail::SolidColorWriter writer{ mode, color, ToDstAlphaMode(ImageDraw::DstAlpha::UseStored) };
+				for (int32 y = y0; y < y1; ++y)
+				{
+					Color* row = (m_view.data + static_cast<size_t>(y) * m_view.stride);
+					touched.clear();
+					for (int32 sy = 0; sy < samples; ++sy)
+					{
+						const double py = (y + (sy + 0.5) / samples);
+						std::erase_if(active, [&](size_t i) { return m_pieces[i].maxY <= py; });
+						while ((next < order.size()) && (m_pieces[order[next]].minY <= py))
+						{
+							const size_t i = order[next++];
+							if (py < m_pieces[i].maxY) active.push_back(i);
+						}
+						spans.clear();
+						for (const size_t i : active)
+						{
+							const Piece& piece = m_pieces[i];
+							double left, right;
+							if (0 < piece.disk.r)
+							{
+								const double dy = (py - piece.disk.y), r = piece.disk.r;
+								const double half = std::sqrt(Max(0.0, (r - dy) * (r + dy)));
+								left = piece.disk.x - half; right = piece.disk.x + half;
+							}
+							else if (!piece.polygon.spanAt(py, cursors[i], left, right)) continue;
+							const int32 begin = CeilToInt(Clamp(left, double(x0), double(x1)) * samples - 0.5);
+							const int32 end = CeilToInt(Clamp(right, double(x0), double(x1)) * samples - 0.5);
+							if (begin < end) spans.push_back({ begin, end });
+						}
+						for (const SpanI& span : SortAndMergeSpans(std::span<SpanI>{ spans }))
+						{
+							if (samples == 4)
+							{
+								AddSubpixelSamples4(coverage, span.x0 - x0 * 4, span.x1 - x0 * 4);
+								touched.push_back({ span.x0 / 4, (span.x1 + 3) / 4 });
+							}
+							else writer.write(row + span.x0, static_cast<size_t>(span.x1 - span.x0));
+						}
+					}
+					if (samples == 4) WriteAndClearSampleSpans4x4(writer, row, x0, coverage, touched);
+				}
+			}
+		};
+
+		struct ImageArrowTerminal
+		{
+			Vec2 base, tip, normal, shaftNormal;
+			Vec2 join[2], head[2];
+			bool project = true;
+		};
+
+		Optional<ImageArrowTerminal> MakeImageArrowTerminal(const std::span<const Vec2> points, const bool start,
+			const Vec2 tip, const double thickness, const double width)
+		{
+			const Vec2 base = (start ? points.front() : points.back()), delta = (tip - base);
+			const double length = delta.length();
+			if (length == 0) return none;
+			const Vec2 direction = (delta / length), normal{ -direction.y, direction.x };
+			ImageArrowTerminal result{ base, tip, normal, {}, {}, {base + normal * (width * 0.5), base - normal * (width * 0.5)}, true };
+			if (points.size() == 1) return result;
+			const Vec2 previous = (start ? points[1] : points[points.size() - 2]);
+			const Vec2 shaft = (base - previous).normalized();
+			const double cosine = shaft.dot(direction);
+			if ((cosine <= 0) || (width * cosine < thickness)) return none;
+			result.shaftNormal = (Vec2{ -shaft.y, shaft.x } * (thickness * 0.5));
+			result.join[0] = base + normal * (thickness * 0.5 / cosine);
+			result.join[1] = base - normal * (thickness * 0.5 / cosine);
+			result.project = (((previous + result.shaftNormal - base).dot(direction) <= 0)
+				&& ((previous - result.shaftNormal - base).dot(direction) <= 0));
+			return result;
+		}
+
+		bool DrawImageArrow(Image& image, Array<Vec2>& points, const Vec2 endTip, const double thickness,
+			const double endWidth, const Optional<std::pair<Vec2, double>>& startHead, const LineCap startCap,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			points.erase(std::unique(points.begin(), points.end()), points.end());
+			if (points.empty()) return false;
+			auto end = MakeImageArrowTerminal(points, false, endTip, thickness, endWidth);
+			if (!end) return false;
+			Optional<ImageArrowTerminal> start;
+			if (startHead)
+			{
+				start = MakeImageArrowTerminal(points, true, startHead->first, thickness, startHead->second);
+				if (!start) return false;
+				if ((points.size() == 2) && start->project && end->project)
+				{
+					const auto behind = [](const ImageArrowTerminal& a, const ImageArrowTerminal& b)
+					{
+						return (((b.join[0] - a.base).dot(a.tip - a.base) <= 0) && ((b.join[1] - a.base).dot(a.tip - a.base) <= 0));
+					};
+					if (!behind(*start, *end) || !behind(*end, *start)) start->project = end->project = false;
+				}
+			}
+			SampledShape shape{ MakeImageView(image) };
+			Vec2 startCut[2];
+			if (start) { startCut[0] = start->join[1]; startCut[1] = start->join[0]; }
+			shape.stroke(points, thickness, startCap, LineCap::Flat,
+				(start && start->project ? startCut : nullptr), (end->project ? end->join : nullptr));
+			const auto head = [&](const ImageArrowTerminal& terminal)
+			{
+				shape.triangle(terminal.tip, terminal.head[0], terminal.head[1]);
+				if ((1 < points.size()) && !terminal.project)
+				{
+					shape.triangle(terminal.base, terminal.base + terminal.shaftNormal, terminal.join[0]);
+					shape.triangle(terminal.base, terminal.join[1], terminal.base - terminal.shaftNormal);
+				}
+			};
+			head(*end);
+			if (start) head(*start);
+			else if (points.size() == 1) shape.cap(end->base, (end->base - end->tip).normalized(), thickness * 0.5, startCap);
+			shape.draw(color, mode, aa);
+			return true;
+		}
+
+		template <bool Double, class Bezier>
+		void PaintBezierArrow(Image& image, const Bezier& curve, const LineCap cap, const double thickness,
+			const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa,
+			const double error, const int32 budget)
+		{
+			assert(0 < error);
+			assert(1 <= budget && budget <= 4096);
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			Array<Vec2> points;
+			detail::BezierTessellation::Workspace work;
+			const auto flatten = [&](const Bezier& source)
+			{
+				const detail::BezierTessellation::Curve c{ source };
+				detail::BezierTessellation::Flatten(points, work, c, c, error, static_cast<uint32>(budget));
+			};
+			bool drawn;
+			if constexpr (Double)
+			{
+				const auto heads = detail::FindBezierDoubleArrowHeads(curve, size.y);
+				if (!heads) return;
+				flatten(curve.subcurve(heads->start.parameter, heads->end.parameter));
+				points.front() = heads->start.base; points.back() = heads->end.base;
+				drawn = DrawImageArrow(image, points, heads->end.tip, thickness, thickness + size.x * heads->end.sizeScale,
+					std::pair{heads->start.tip, thickness + size.x * heads->start.sizeScale}, cap, color, mode, aa);
+			}
+			else
+			{
+				const auto head = detail::FindBezierArrowHead(curve, size.y);
+				if (!head) return;
+				flatten(curve.split(head->parameter).first); points.back() = head->base;
+				drawn = DrawImageArrow(image, points, head->tip, thickness, thickness + size.x * head->sizeScale, none, cap, color, mode, aa);
+			}
+			if (!drawn)
+			{
+				flatten(curve);
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		template <bool Double>
+		void PaintSplineArrow(Image& image, const std::span<const Bezier3> curves, const LineCap cap, const double thickness,
+			const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa,
+			const double error, const int32 budget)
+		{
+			if (image.isEmpty() || curves.empty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			detail::DoubleArrowHeads<detail::PathArrowHead> heads;
+			if constexpr (Double)
+			{
+				const auto result = detail::FindSplineDoubleArrowHeads(curves, size.y);
+				if (!result) return;
+				heads = *result;
+			}
+			else
+			{
+				const auto result = detail::FindSplineArrowHead(curves, size.y);
+				if (!result) return;
+				heads = { {0, 0, curves.front().p0, curves.front().p0, 1}, *result };
+			}
+			Array<Vec2> points;
+			detail::BezierTessellation::Workspace work;
+			for (size_t i = heads.start.segment; i <= heads.end.segment; ++i)
+			{
+				const double from = (i == heads.start.segment ? heads.start.parameter : 0);
+				const double to = (i == heads.end.segment ? heads.end.parameter : 1);
+				const detail::BezierTessellation::Curve curve{ curves[i].subcurve(from, to) };
+				detail::BezierTessellation::Append(points, work, curve, curve, error, static_cast<uint32>(budget));
+			}
+			points.front() = heads.start.base; points.back() = heads.end.base;
+			Optional<std::pair<Vec2, double>> startHead;
+			if constexpr (Double) startHead = std::pair{ heads.start.tip, thickness + size.x * heads.start.sizeScale };
+			if (!DrawImageArrow(image, points, heads.end.tip, thickness, thickness + size.x * heads.end.sizeScale, startHead, cap, color, mode, aa))
+			{
+				detail::BezierTessellation::FlattenPath(points, work, curves, false, error, static_cast<uint32>(budget), [](const auto& c) { return c; });
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		void ImageArcPoints(Array<Vec2>& points, const detail::CircleArcArrow::Placement& arc, const double thickness)
+		{
+			points.clear(); points.push_back(arc.start);
+			if (arc.shaftSweep == 0) return;
+			const double step = (4 * std::asin(std::sqrt(Min(1.0, 0.125 / (2 * (arc.radius + thickness * 0.5))))));
+			const int32 segments = static_cast<int32>(Clamp(std::ceil(Abs(arc.shaftSweep) / step), 1.0, 4096.0));
+			points.reserve(static_cast<size_t>(segments) + 1);
+			for (int32 i = 1; i < segments; ++i)
+			{
+				const double a = (arc.startAngle + arc.shaftSweep * i / segments);
+				points.push_back(arc.center + Vec2{ std::sin(a), -std::cos(a) } * arc.radius);
+			}
+			points.push_back(arc.base);
+		}
+
+		template <bool Double>
+		void PaintArcArrow(Image& image, const Circle& circle, const LineCap cap, const double startAngle, const double angle,
+			const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			detail::CircleArcArrow::Placement arc, shaft;
+			Optional<std::pair<Vec2, double>> startHead;
+			double width;
+			if constexpr (Double)
+			{
+				const auto p = detail::CircleArcArrow::PlaceDouble(circle, startAngle, angle, size.y);
+				if (!p) return;
+				arc = shaft = p->arc;
+				shaft.start = p->startBase; shaft.base = p->endBase;
+				shaft.startAngle += p->headSweep; shaft.shaftSweep = arc.sweep - 2 * p->headSweep;
+				width = thickness + size.x * p->sizeScale;
+				startHead = std::pair{ arc.start, width };
+			}
+			else
+			{
+				const auto p = detail::CircleArcArrow::Place(circle, startAngle, angle, size.y);
+				if (!p) return;
+				arc = shaft = *p; width = thickness + size.x * p->sizeScale;
+			}
+			Array<Vec2> points; ImageArcPoints(points, shaft, thickness);
+			if (!DrawImageArrow(image, points, arc.tip, thickness, width, startHead, cap, color, mode, aa))
+			{
+				arc.base = arc.tip; arc.shaftSweep = arc.sweep;
+				ImageArcPoints(points, arc, thickness);
+				ImageDraw::LineString(image, points, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		struct RoundedImageOutline
+		{
+			RectF rect;
+			std::array<double, 4> radii;
+
+			bool spanAt(const double y, double& left, double& right) const
+			{
+				if ((y < rect.y) || (rect.y + rect.h <= y)) return false;
+				const auto inset = [](const double r, const double distance)
+				{
+					return (distance < r) ? (r - std::sqrt(Max(0.0, distance * (2 * r - distance)))) : 0.0;
+				};
+				const double top = y - rect.y, bottom = rect.y + rect.h - y;
+				left = rect.x + Max(inset(radii[0], top), inset(radii[3], bottom));
+				right = rect.x + rect.w - Max(inset(radii[1], top), inset(radii[2], bottom));
+				return (left < right);
+			}
+		};
+
+		[[nodiscard]]
+		std::vector<PolygonContourView<Vec2>> MakePolygonContourViews(const Polygon& polygon)
+		{
+			std::vector<PolygonContourView<Vec2>> contours;
 
 			const auto& outer = polygon.outer();
 			if (outer.size() >= 3)
 			{
-				contours.push_back(PolygonContourView{ outer.data(), outer.size() });
+				contours.push_back(PolygonContourView<Vec2>{ outer.data(), outer.size() });
 			}
 
 			for (const auto& inner : polygon.inners())
 			{
 				if (inner.size() >= 3)
 				{
-					contours.push_back(PolygonContourView{ inner.data(), inner.size() });
+					contours.push_back(PolygonContourView<Vec2>{ inner.data(), inner.size() });
 				}
 			}
 
 			return contours;
+		}
+
+	}
+
+	namespace detail::ImageShape
+	{
+		void Rounded(Image& image, const RectF& rect, std::array<double, 4> radii, const Color color,
+			const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (rect.w <= 0) || (rect.h <= 0)) return;
+			RectCornerGeometry::NormalizeCornerRadii(radii[0], radii[1], radii[2], radii[3], rect.w, rect.h);
+			if ((radii[0] == radii[1]) && (radii[0] == radii[2]) && (radii[0] == radii[3]))
+			{
+				ImageDraw::Fill(image, RoundRect{ rect, radii[0] }, color, mode, aa);
+				return;
+			}
+			const RoundedImageOutline outline{ rect, radii };
+			BoundsD bounds; bounds.include(rect.pos); bounds.include(rect.br());
+			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add) { double l, r; if (outline.spanAt(y, l, r)) add(l, r); });
+		}
+
+		void RoundedFrame(Image& image, const RectF& rect, std::array<double, 4> radii, const double inner, const double outer,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (rect.w <= 0) || (rect.h <= 0) || (inner < 0) || (outer < 0) || (inner + outer == 0)) return;
+			RectCornerGeometry::NormalizeCornerRadii(radii[0], radii[1], radii[2], radii[3], rect.w, rect.h);
+			if ((radii[0] == radii[1]) && (radii[0] == radii[2]) && (radii[0] == radii[3]))
+			{
+				ImageDraw::RoundRectFrame(image, RoundRect{ rect, radii[0] }, inner, outer, color, mode, aa);
+				return;
+			}
+			RoundedImageOutline outside{ rect.stretched(outer), radii }, inside{ rect.stretched(-inner), radii };
+			for (size_t i = 0; i < 4; ++i) { outside.radii[i] += outer; inside.radii[i] -= inner; }
+			const bool hole = ((inside.rect.w > 0) && (inside.rect.h > 0));
+			if (hole) RectCornerGeometry::NormalizeCornerRadii(inside.radii[0], inside.radii[1], inside.radii[2], inside.radii[3], inside.rect.w, inside.rect.h);
+			BoundsD bounds; bounds.include(outside.rect.pos); bounds.include(outside.rect.br());
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add)
+				{
+					double l, r, il, ir;
+					if (!outside.spanAt(y, l, r)) return;
+					if (hole && inside.spanAt(y, il, ir)) { add(l, Min(r, il)); add(Max(l, ir), r); }
+					else add(l, r);
+				});
+		}
+
+		void Balloon(Image& image, const RoundRect& shape, const Vec2& target, const double tailWidth,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (shape.w <= 0) || (shape.h <= 0)) return;
+			const RoundRect normalized{ shape.rect, Min(Abs(shape.r), Min(shape.w, shape.h) * 0.5) };
+			const auto placement = RoundRectBalloon::Place(normalized, target, tailWidth);
+			if (!placement) { ImageDraw::Fill(image, normalized, color, mode, aa); return; }
+			const auto& p = *placement;
+			const double r = p.body.r;
+			const RoundedImageOutline body{ p.body.rect, { r, r, r, r } };
+			BoundsD bounds; bounds.include(p.body.rect.pos); bounds.include(p.body.rect.br());
+			const Vec2 vertices[]{ p.base0, p.tip, p.base1 };
+			ConvexStrokePiece triangle; triangle.set(vertices, bounds);
+			ConvexStrokePiece::SpanCursor cursor;
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, auto&& add)
+				{
+					double l, right;
+					if (body.spanAt(y, l, right)) add(l, right);
+					if (triangle.spanAt(y, cursor, l, right)) add(l, right);
+				});
+		}
+
+		void BalloonFrame(Image& image, const RoundRect& shape, const Vec2& target, const double tailWidth, const double thickness,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (shape.w <= 0) || (shape.h <= 0) || (thickness <= 0)) return;
+			const RoundRect normalized{ shape.rect, Min(Abs(shape.r), Min(shape.w, shape.h) * 0.5) };
+			const auto placement = RoundRectBalloon::Place(normalized, target, tailWidth);
+			if (!placement) { ImageDraw::RoundRectFrame(image, normalized, thickness * 0.5, thickness * 0.5, color, mode, aa); return; }
+			RoundRectBalloon::Contour contour;
+			RoundRectBalloon::MakeContour(contour, *placement, 1.0f);
+			ImageDraw::ClosedLineString(image, contour.points(), thickness, color, mode, aa);
+		}
+		void Crescent(Image& image, const Circle& circle, const double openingAngle, const double width,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			const auto shape = detail::CircularShapes::PlaceCrescent(circle, openingAngle, width);
+			if (!shape) return;
+			if (shape->circleOnly) { ImageDraw::Fill(image, shape->circle, color, mode, aa); return; }
+			const Vec2 cutCenter = (circle.center + shape->axis * width);
+			const double r = shape->circle.r;
+			BoundsD bounds; bounds.includeCircle(circle.center, r);
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y);
+					if (r <= Abs(dy)) return;
+					const double half = std::sqrt((r - dy) * (r + dy));
+					const double left = (circle.x - half), right = (circle.x + half);
+					const double cutY = (y - cutCenter.y);
+					if (r <= Abs(cutY)) { add(left, right); return; }
+					const double cutHalf = std::sqrt((r - cutY) * (r + cutY));
+					add(left, Min(right, cutCenter.x - cutHalf));
+					add(Max(left, cutCenter.x + cutHalf), right);
+				});
+		}
+
+		void Teardrop(Image& image, const Circle& circle, const Vec2& tip,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			const auto shape = detail::CircularShapes::PlaceTeardrop(circle, tip);
+			if (!shape) return;
+			if (shape->circleOnly) { ImageDraw::Fill(image, shape->circle, color, mode, aa); return; }
+			const double r = shape->circle.r;
+			const Vec2 along = (shape->axis * (r * shape->tangentCos));
+			const Vec2 across = (Vec2{ -shape->axis.y, shape->axis.x } * (r * shape->tangentSin));
+			const Vec2 points[]{ circle.center + along + across, tip, circle.center + along - across };
+			BoundsD bounds; bounds.includeCircle(circle.center, r);
+			ConvexStrokePiece triangle; triangle.set(points, bounds);
+			ConvexStrokePiece::SpanCursor cursor;
+			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y);
+					if (Abs(dy) < r)
+					{
+						const double half = std::sqrt((r - dy) * (r + dy));
+						add(circle.x - half, circle.x + half);
+					}
+					double left, right;
+					if (triangle.spanAt(y, cursor, left, right)) add(left, right);
+				});
+		}
+		void CircleArc(Image& image, const Circle& circle, const LineCap startCap, const LineCap endCap,
+			const double startAngle, const double angle, const double innerThickness, const double outerThickness,
+			const Color color, const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing,
+			const ImageDraw::DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0))
+				|| (((startCap == LineCap::Flat) && (endCap == LineCap::Flat)) && !HasNonZeroSweep(angle)))
+			{
+				return;
+			}
+			if (IsFullCircleSweep(angle))
+			{
+				ImageDraw::CircleFrame(image, circle, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			const double innerRadius = Max(0.0, circle.r - innerThickness), outerRadius = (circle.r + outerThickness);
+			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCircleArcBySpans<true>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+			}
+		}
+		void CircleTrimmedArc(Image& image, const Circle& circle, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const double trim,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (angle == 0.0) || ((innerThickness + outerThickness) <= 0.0)) return;
+			const double radius = Abs(circle.r);
+			const double inner = Max(radius - innerThickness, 0.0), outer = (radius + outerThickness);
+			if (outer <= inner) return;
+			if ((trim <= 0.0) || IsFullCircleSweep(angle))
+			{
+				// Normalize the visible band before using the ordinary Image arc/frame path.
+				CircleArc(image, Circle{ circle.center, outer }, LineCap::Flat, LineCap::Flat,
+					startAngle, angle, (outer - inner), 0.0, color, mode, aa);
+				return;
+			}
+			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+			const bool major = (Math::Pi < sector.sweep);
+			if ((outer <= trim) || (!major && (outer * std::sin(sector.sweep * 0.5) <= trim))) return;
+			const Vec2 startNormal{ -sector.startDir.y, sector.startDir.x };
+			const Vec2 endNormal{ sector.endDir.y, -sector.endDir.x };
+			const double innerRadius = Max(inner, trim);
+			const double innerSq = (innerRadius * innerRadius), outerSq = (outer * outer);
+			BoundsD bounds;
+			IncludeCircleSectorOuterBounds(bounds, circle, sector, outer);
+			IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
+			IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
+			// Each of two ring spans intersects at most three convex angular regions.
+			DrawSampledSpans<6>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - circle.y), dySq = (dy * dy);
+					if (outerSq <= dySq) return;
+					const auto addTrimmed = [&](const double left, const double right)
+					{
+						double l = left, r = right;
+						if (!major)
+						{
+							if (ClipOffsetSectorSpan(l, r, startNormal, dy, trim)
+								&& ClipOffsetSectorSpan(l, r, endNormal, dy, trim)) add(circle.x + l, circle.x + r);
+							return;
+						}
+						// Beyond a boundary ray's forward quadrant its nearest point is the
+						// center. The middle region therefore joins the sides with radius trim.
+						if (ClipOffsetSectorSpan(l, r, startNormal, dy, trim)
+							&& ClipSectorSpan(l, r, sector.startDir, dy)) add(circle.x + l, circle.x + r);
+						l = left; r = right;
+						if (ClipOffsetSectorSpan(l, r, endNormal, dy, trim)
+							&& ClipSectorSpan(l, r, sector.endDir, dy)) add(circle.x + l, circle.x + r);
+						l = left; r = right;
+						if (ClipSectorSpan(l, r, -sector.startDir, dy)
+							&& ClipSectorSpan(l, r, -sector.endDir, dy)) add(circle.x + l, circle.x + r);
+					};
+					const double outerDx = std::sqrt(outerSq - dySq);
+					if (dySq < innerSq)
+					{
+						const double innerDx = std::sqrt(innerSq - dySq);
+						addTrimmed(-outerDx, -innerDx);
+						addTrimmed(innerDx, outerDx);
+					}
+					else addTrimmed(-outerDx, outerDx);
+				});
+		}
+
+		void EllipseRotated(Image& image, const Ellipse& ellipse, const double rotation,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (ellipse.a <= 0) || (ellipse.b <= 0)) return;
+			if ((rotation == 0) || (ellipse.a == ellipse.b)) { ImageDraw::Fill(image, ellipse, color, mode, aa); return; }
+			const double c = std::cos(rotation), s = std::sin(rotation);
+			const double a2 = ellipse.a * ellipse.a, b2 = ellipse.b * ellipse.b;
+			const double h2 = (a2 * s * s + b2 * c * c), h = std::sqrt(h2);
+			const double w = std::sqrt(a2 * c * c + b2 * s * s);
+			const double skew = ((a2 - b2) * c * s / h2), width = (ellipse.a * ellipse.b / h);
+			BoundsD bounds; bounds.include({ellipse.x - w, ellipse.y - h}); bounds.include({ellipse.x + w, ellipse.y + h});
+			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+				[&](const double y, const auto& add)
+				{
+					const double dy = (y - ellipse.y);
+					if (h <= Abs(dy)) return;
+					const double center = (ellipse.x + skew * dy);
+					const double half = (width * std::sqrt((h - dy) * (h + dy) / h2));
+					add(center - half, center + half);
+				});
+		}
+
+		void EllipseFrameRotated(Image& image, const Ellipse& ellipse, const double rotation,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty()) return;
+			if ((rotation == 0) || (ellipse.a == ellipse.b))
+			{
+				ImageDraw::EllipseFrame(image, ellipse, innerThickness, outerThickness, color, mode, aa);
+				return;
+			}
+			FillEllipseFrameByDistance<true>(MakeImageView(image), ellipse, innerThickness, outerThickness,
+				mode, ImageDraw::DstAlpha::UseStored, color, (aa == EnableAntialiasing::Yes), rotation);
+		}
+
+		void EllipseArc(Image& image, const Ellipse& ellipse, LineCap startCap, LineCap endCap,
+			const double startAngle, const double angle, const double innerThickness, const double outerThickness,
+			const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (ellipse.a <= 0) || (ellipse.b <= 0) || (innerThickness < 0) || (outerThickness < 0)
+				|| (innerThickness + outerThickness == 0)) return;
+			if (ellipse.a == ellipse.b)
+			{
+				CircleArc(image, Circle{ ellipse.center, ellipse.a }, startCap, endCap, startAngle, angle,
+					innerThickness, outerThickness, color, mode, aa);
+				return;
+			}
+			if (IsFullCircleSweep(angle)) { ImageDraw::EllipseFrame(image, ellipse, innerThickness, outerThickness, color, mode, aa); return; }
+			if ((angle == 0) && (startCap == LineCap::Flat) && (endCap == LineCap::Flat)) return;
+			const double start = std::remainder(startAngle + (angle < 0 ? angle : 0), Math::TwoPi), sweep = Abs(angle);
+			if (angle < 0) std::swap(startCap, endCap);
+			struct Section { Vec2 inner, outer, normal; };
+			const auto at = [&](const double t)
+			{
+				const double s = std::sin(t), c = std::cos(t);
+				const Vec2 base{ ellipse.x + ellipse.a * s, ellipse.y - ellipse.b * c };
+				const Vec2 raw{ ellipse.b * s, -ellipse.a * c };
+				const double length = raw.length();
+				const Vec2 normal = (raw / length);
+				// The inward normal reaches the medial axis here; avoid folded inner offsets.
+				const double inward = Min(innerThickness, length * Min(ellipse.a / ellipse.b, ellipse.b / ellipse.a));
+				return Section{ base - normal * inward, base + normal * outerThickness, normal };
+			};
+			SampledShape shape{ MakeImageView(image) };
+			const auto append = [&](auto&& self, double from, double to, const Section& a, const Section& b, int32 depth) -> void
+			{
+				const double mid = ((from + to) * 0.5);
+				const Section m = at(mid);
+				constexpr double ErrorSq = (0.125 * 0.125);
+				if ((depth < 10) && ((ErrorSq < m.inner.distanceFromSq(a.inner.lerp(b.inner, 0.5)))
+					|| (ErrorSq < m.outer.distanceFromSq(a.outer.lerp(b.outer, 0.5)))))
+				{
+					self(self, from, mid, a, m, depth + 1); self(self, mid, to, m, b, depth + 1);
+				}
+				else
+				{
+					shape.triangle(a.inner, a.outer, b.inner);
+					shape.triangle(a.outer, b.outer, b.inner);
+				}
+			};
+			const Section first = at(start), last = at(start + sweep);
+			if (0 < sweep)
+			{
+				const int32 parts = static_cast<int32>(std::ceil(sweep / Math::HalfPi));
+				double previousAngle = start; Section previous = first;
+				for (int32 i = 1; i <= parts; ++i)
+				{
+					const double next = (start + sweep * i / parts); const Section section = (i == parts ? last : at(next));
+					append(append, previousAngle, next, previous, section, 0);
+					previousAngle = next; previous = section;
+				}
+			}
+			shape.cap(first.inner.lerp(first.outer, 0.5), {first.normal.y, -first.normal.x}, first.inner.distanceFrom(first.outer) * 0.5, startCap);
+			shape.cap(last.inner.lerp(last.outer, 0.5), {-last.normal.y, last.normal.x}, last.inner.distanceFrom(last.outer) * 0.5, endCap);
+			shape.draw(color, mode, aa);
+		}
+		void BezierArrow(Image& image, const Bezier2& curve, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<false>(image, curve, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierDoubleArrow(Image& image, const Bezier2& curve, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<true>(image, curve, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierArrow(Image& image, const Bezier3& curve, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<false>(image, curve, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void BezierDoubleArrow(Image& image, const Bezier3& curve, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintBezierArrow<true>(image, curve, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void SplineArrow(Image& image, std::span<const Bezier3> curves, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintSplineArrow<false>(image, curves, cap, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void SplineDoubleArrow(Image& image, std::span<const Bezier3> curves, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa, const double error, const int32 budget)
+		{
+			PaintSplineArrow<true>(image, curves, LineCap::Flat, thickness, size, color, mode, aa, error, budget);
+		}
+
+		void PolylineArrow(Image& image, std::span<const Vec2> source, const LineCap cap, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			const auto head = detail::FindLineStringArrowHead(source, size.y);
+			if (!head) return;
+			Array<Vec2> points;
+			detail::WriteLineStringArrowShaft(points, source, *head);
+			if (!DrawImageArrow(image, points, head->tip, thickness, thickness + size.x * head->sizeScale, none, cap, color, mode, aa))
+			{
+				ImageDraw::LineString(image, source, thickness, color, mode, aa, cap, LineCap::Flat);
+			}
+		}
+
+		void PolylineDoubleArrow(Image& image, std::span<const Vec2> source, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			if (image.isEmpty() || (thickness <= 0) || (size.x <= 0) || (size.y <= 0)) return;
+			const auto head = detail::FindLineStringDoubleArrowHeads(source, size.y);
+			if (!head) return;
+			Array<Vec2> points;
+			detail::WriteLineStringDoubleArrowShaft(points, source, *head);
+			if (!DrawImageArrow(image, points, head->end.tip, thickness, thickness + size.x * head->end.sizeScale, std::pair{head->start.tip, thickness + size.x * head->start.sizeScale}, LineCap::Flat, color, mode, aa))
+			{
+				ImageDraw::LineString(image, source, thickness, color, mode, aa, LineCap::Flat, LineCap::Flat);
+			}
+		}
+
+		void CircleArcArrow(Image& image, const Circle& circle, const LineCap cap, const double startAngle, const double angle, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			PaintArcArrow<false>(image, circle, cap, startAngle, angle, thickness, size, color, mode, aa);
+		}
+
+		void CircleArcDoubleArrow(Image& image, const Circle& circle, const double startAngle, const double angle, const double thickness, const SizeF& size, const Color color, const ImagePixel::BlendMode mode, const EnableAntialiasing aa)
+		{
+			PaintArcArrow<true>(image, circle, LineCap::Flat, startAngle, angle, thickness, size, color, mode, aa);
 		}
 
 	}
@@ -4648,52 +6237,65 @@ namespace s3d
 		}
 
 		void CircleArc(
-			Image& image,
-			const Circle& circle,
-			const double startAngle,
-			const double angle,
-			const double innerThickness,
-			const double outerThickness,
-			const Color color,
-			const ImagePixel::BlendMode blendMode,
-			const EnableAntialiasing enableAntialiasing,
-			const DstAlpha dstAlpha)
+			Image& image, const Circle& circle, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			CircleArc(image, circle, LineCap::Flat, startAngle, angle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
+		}
 
-			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !HasNonZeroSweep(angle))
+		void CircleArc(
+			Image& image, const Circle& circle, const LineCap lineCap, const double startAngle, const double angle,
+			const double innerThickness, const double outerThickness, const Color color,
+			const ImagePixel::BlendMode blendMode, const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			detail::ImageShape::CircleArc(image, circle, lineCap, lineCap, startAngle, angle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void CircleSegment(
+			Image& image, const Circle& circle, const double arcMidpointAngle, const double height,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !(0.0 < height))
 			{
 				return;
 			}
+			if ((2.0 * circle.r) <= height)
+			{
+				Fill(image, circle, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCircleSegmentBySpans<true>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCircleSegmentBySpans<false>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+			}
+		}
 
+		void CircleSegmentFromAngles(
+			Image& image, const Circle& circle, const double startAngle, const double angle,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < circle.r) || !HasNonZeroSweep(angle))
+			{
+				return;
+			}
 			if (IsFullCircleSweep(angle))
 			{
-				if (enableAntialiasing == EnableAntialiasing::Yes)
-				{
-					FillCircleFrameAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
-				}
-				else
-				{
-					FillCircleFrameNoAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
-				}
-
+				Fill(image, circle, color, blendMode, enableAntialiasing, dstAlpha);
 				return;
 			}
-
-			const int32 sampleCount = (enableAntialiasing == EnableAntialiasing::Yes) ? 4 : 1;
-
-			FillCircleArcByCoverage(
-				view,
-				circle,
-				startAngle,
-				angle,
-				innerThickness,
-				outerThickness,
-				blendMode,
-				dstAlpha,
-				color,
-				sampleCount
-			);
+			// 1 - cos(angle / 2) loses the height of small segments through cancellation.
+			const double s = std::sin(angle * 0.25);
+			CircleSegment(image, circle, (startAngle + angle * 0.5), (2.0 * circle.r * s * s),
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Fill(
@@ -4719,6 +6321,115 @@ namespace s3d
 			{
 				FillEllipseNoAA(view, ellipse, blendMode, dstAlpha, color);
 			}
+		}
+
+		void EllipsePie(
+			Image& image,
+			const Ellipse& ellipse,
+			const double startAngle,
+			const double angle,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			if (image.isEmpty() || !(0.0 < ellipse.a) || !(0.0 < ellipse.b) || !HasNonZeroSweep(angle))
+			{
+				return;
+			}
+			if (IsFullCircleSweep(angle))
+			{
+				Fill(image, ellipse, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			FillEllipsePieBySpans(MakeImageView(image), ellipse, MakeCircleSectorData(startAngle, angle),
+				color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void Fill(
+			Image& image,
+			const SuperEllipse& superEllipse,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const double a = Abs(superEllipse.a), b = Abs(superEllipse.b);
+			if ((a == 0.0) || (b == 0.0) || (superEllipse.n <= 0.0) || image.isEmpty())
+			{
+				return;
+			}
+			if (superEllipse.n == 2.0)
+			{
+				Fill(image, Ellipse{ superEllipse.center, a, b }, color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+
+			const ImageView view = MakeImageView(image);
+			int32 x0 = FloorToInt(superEllipse.x - a), x1 = CeilToInt(superEllipse.x + a);
+			int32 y0 = FloorToInt(superEllipse.y - b), y1 = CeilToInt(superEllipse.y + b);
+			if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+			{
+				return;
+			}
+
+			const ImagePixel::detail::SolidColorWriter writer{ blendMode, color, ToDstAlphaMode(dstAlpha) };
+			const bool aa = (enableAntialiasing == EnableAntialiasing::Yes);
+			const int32 sampleRows = aa ? 4 : 1;
+			const double inverseN = (1.0 / superEllipse.n);
+			std::vector<uint8> coverage(aa ? static_cast<size_t>(x1 - x0) : 0);
+			for (int32 y = y0; y < y1; ++y)
+			{
+				std::fill(coverage.begin(), coverage.end(), uint8{ 0 });
+				for (int32 sy = 0; sy < sampleRows; ++sy)
+				{
+					const double py = y + (sy + 0.5) / sampleRows;
+					const double ny = Abs(py - superEllipse.y) / b;
+					if (1.0 <= ny)
+					{
+						continue;
+					}
+					const double halfWidth = a * std::pow(1.0 - std::pow(ny, superEllipse.n), inverseN);
+					const double left = superEllipse.x - halfWidth, right = superEllipse.x + halfWidth;
+					if (aa)
+					{
+						AddSubpixelSpan4(coverage, x0, x1, left, right);
+					}
+					else
+					{
+						WriteSpanHalfOpenClipped(writer, view, y, CeilToInt(left - 0.5), CeilToInt(right - 0.5));
+					}
+				}
+				if (aa)
+				{
+					ConvertSampleCounts4x4ToCoverage(coverage);
+					WriteCoverageRow(writer, view.data + static_cast<size_t>(y) * view.stride, x0, coverage);
+				}
+			}
+		}
+
+		void SuperEllipseFrame(
+			Image& image,
+			const SuperEllipse& superEllipse,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const double a = Abs(superEllipse.a), b = Abs(superEllipse.b);
+			if (image.isEmpty() || (a == 0.0) || (b == 0.0) || (superEllipse.n <= 0.0) || (thickness <= 0.0))
+			{
+				return;
+			}
+			const double margin = (thickness * 0.5 + 0.5);
+			if (((superEllipse.x + a + margin) <= 0.0) || (image.width() <= (superEllipse.x - a - margin))
+				|| ((superEllipse.y + b + margin) <= 0.0) || (image.height() <= (superEllipse.y - b - margin)))
+			{
+				return;
+			}
+			const Array<Vec2> points = MakeSuperEllipseFrameContour(a, b, superEllipse.n);
+			ClosedLineString(image, points, superEllipse.center, thickness, color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void EllipseFrame(
@@ -4822,7 +6533,7 @@ namespace s3d
 			}
 
 			const Vec2 points[3]{ triangle.p0, triangle.p1, triangle.p2 };
-			const PolygonContourView contour{ points, 3 };
+			const PolygonContourView<Vec2> contour{ points, 3 };
 
 			if (enableAntialiasing == EnableAntialiasing::No)
 			{
@@ -4837,6 +6548,49 @@ namespace s3d
 			}
 
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			const JoinStyle joinStyle,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ triangle.p0, triangle.p1, triangle.p2 };
+			DrawSmallJoinedFrame(image, points, joinStyle, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			TriangleFrame(image, triangle, JoinStyle::Bevel, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void TriangleFrame(
+			Image& image,
+			const Triangle& triangle,
+			const JoinStyle joinStyle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ triangle.p0, triangle.p1, triangle.p2 };
+			DrawSmallJoinedPolygonFrame(image, points, joinStyle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void Fill(
@@ -4855,9 +6609,9 @@ namespace s3d
 			}
 
 			const Vec2 points[4]{ quad.p0, quad.p1, quad.p2, quad.p3 };
-			const PolygonContourView contour{ points, 4 };
+			const PolygonContourView<Vec2> contour{ points, 4 };
 
-			if (enableAntialiasing == EnableAntialiasing::No)
+			if ((enableAntialiasing == EnableAntialiasing::No) && quad.isConvex())
 			{
 				ImagePixel::detail::SolidColorWriter writer{
 					blendMode,
@@ -4870,6 +6624,49 @@ namespace s3d
 			}
 
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			const JoinStyle joinStyle,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ quad.p0, quad.p1, quad.p2, quad.p3 };
+			DrawSmallJoinedFrame(image, points, joinStyle, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			QuadFrame(image, quad, JoinStyle::Bevel, innerThickness, outerThickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void QuadFrame(
+			Image& image,
+			const Quad& quad,
+			const JoinStyle joinStyle,
+			const double innerThickness,
+			const double outerThickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const Vec2 points[]{ quad.p0, quad.p1, quad.p2, quad.p3 };
+			DrawSmallJoinedPolygonFrame(image, points, joinStyle, innerThickness, outerThickness,
+				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
 		void FillPolygon(
@@ -4887,7 +6684,7 @@ namespace s3d
 				return;
 			}
 
-			const PolygonContourView contour{ points.data(), points.size() };
+			const PolygonContourView<Vec2> contour{ points.data(), points.size() };
 			FillPolygonInternal(view, &contour, 1, Vec2{ 0.0, 0.0 }, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
 		}
 
@@ -4923,7 +6720,7 @@ namespace s3d
 				return;
 			}
 
-			std::vector<PolygonContourView> contours = MakePolygonContourViews(polygon);
+			std::vector<PolygonContourView<Vec2>> contours = MakePolygonContourViews(polygon);
 
 			if (contours.empty())
 			{
@@ -4941,6 +6738,122 @@ namespace s3d
 			FillPolygonInternal(view, contours.data(), contours.size(), offset, &offsetRect, blendMode, enableAntialiasing, dstAlpha, color);
 		}
 
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			Fill(image, shape, Vec2{ 0, 0 }, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void Fill(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			const auto& points = shape.vertices();
+			if ((view.data == nullptr) || (points.size() < 3))
+			{
+				return;
+			}
+
+			const PolygonContourView<Float2> contour{ points.data(), points.size() };
+			FillPolygonInternal(view, &contour, 1, offset, nullptr, blendMode, enableAntialiasing, dstAlpha, color);
+		}
+
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			Shape2DFrame(image, shape, Vec2{ 0, 0 }, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void Shape2DFrame(
+			Image& image,
+			const Shape2D& shape,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			const auto& points = shape.vertices();
+			if ((view.data == nullptr) || (points.size() < 3) || !(0.0 < thickness))
+			{
+				return;
+			}
+
+			std::vector<StrokePrimitive> primitives;
+			std::vector<Vec2> effectivePoints;
+			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness,
+				primitives, effectivePoints);
+			DrawStrokePrimitives(view, primitives, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			PolygonFrame(image, polygon, Vec2{ 0, 0 }, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
+		void PolygonFrame(
+			Image& image,
+			const Polygon& polygon,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
+			const ImageView view = MakeImageView(image);
+			if ((view.data == nullptr) || polygon.isEmpty() || !(0.0 < thickness))
+			{
+				return;
+			}
+
+			size_t pointCount = polygon.outer().size();
+			for (const auto& hole : polygon.inners())
+			{
+				pointCount += hole.size();
+			}
+			std::vector<StrokePrimitive> primitives;
+			primitives.reserve(pointCount * 2);
+			std::vector<Vec2> effectivePoints;
+			const auto append = [&](const Array<Vec2>& contour)
+			{
+				AppendClosedStrokePrimitives(view, contour.data(), contour.size(), offset, thickness,
+					primitives, effectivePoints);
+			};
+			append(polygon.outer());
+			for (const auto& hole : polygon.inners())
+			{
+				append(hole);
+			}
+			DrawStrokePrimitives(view, primitives, thickness, color, blendMode, enableAntialiasing, dstAlpha);
+		}
+
 		void Line(
 			Image& image,
 			const Vec2& from,
@@ -4952,6 +6865,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
+			Line(image, from, to, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void Line(
+			Image& image,
+			const Vec2& from,
+			const Vec2& to,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < thickness))
@@ -4961,11 +6889,35 @@ namespace s3d
 
 			if (enableAntialiasing == EnableAntialiasing::No)
 			{
-				DrawLineNoAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
+				DrawLineNoAA(view, from, to, thickness, color, blendMode, startCap, endCap, dstAlpha);
 			}
 			else
 			{
-				DrawLineAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
+				DrawLineAA(view, from, to, thickness, color, blendMode, startCap, endCap, dstAlpha);
+			}
+		}
+
+		void Arrow(
+			Image& image, const Vec2& from, const Vec2& to, const double width, const SizeF& headSize,
+			const Color color, const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing, const LineCap startCap, const DstAlpha dstAlpha)
+		{
+			if (startCap == LineCap::Flat)
+			{
+				Fill(image, Shape2D::Arrow(from, to, width, headSize), color, blendMode, enableAntialiasing, dstAlpha);
+				return;
+			}
+			const ImageView view = MakeImageView(image);
+			if ((view.data == nullptr) || (width <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return;
+			const double length = from.distanceFrom(to);
+			if (length == 0.0) return;
+			if (enableAntialiasing == EnableAntialiasing::Yes)
+			{
+				FillCappedArrowBySpans<true>(view, from, to, length, width, headSize, startCap, color, blendMode, dstAlpha);
+			}
+			else
+			{
+				FillCappedArrowBySpans<false>(view, from, to, length, width, headSize, startCap, color, blendMode, dstAlpha);
 			}
 		}
 
@@ -4979,17 +6931,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
-			LineString(
-				image,
-				points,
-				Vec2{ 0.0, 0.0 },
-				thickness,
-				color,
-				blendMode,
-				enableAntialiasing,
-				lineCap,
-				dstAlpha
-			);
+			LineString(image, points, Vec2{ 0.0, 0.0 }, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void LineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
+			LineString(image, points, Vec2{ 0.0, 0.0 }, thickness, color, blendMode, enableAntialiasing, startCap, endCap, dstAlpha);
 		}
 
 		void LineString(
@@ -5003,6 +6959,21 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
+			LineString(image, points, offset, thickness, color, blendMode, enableAntialiasing, lineCap, lineCap, dstAlpha);
+		}
+
+		void LineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap startCap,
+			const LineCap endCap,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 2) || !(0.0 < thickness))
@@ -5010,12 +6981,22 @@ namespace s3d
 				return;
 			}
 
+			std::vector<Vec2> effectivePoints;
+			CollectStrokePoints(points.data(), points.size(), offset, false, effectivePoints);
+
+			if ((effectivePoints.size() == 2) && (startCap != endCap))
+			{
+				Line(image, effectivePoints.front(), effectivePoints.back(), thickness, color, blendMode, enableAntialiasing, startCap, endCap, dstAlpha);
+				return;
+			}
+
 			std::vector<StrokePrimitive> primitives;
-			BuildOpenStrokePrimitives(view, points.data(), points.size(), offset, thickness, lineCap, StrokeJoinStyle::Round, primitives);
+			BuildOpenStrokePrimitives(view, effectivePoints, thickness, startCap, endCap, primitives);
 
 			DrawStrokePrimitives(
 				view,
 				primitives,
+				thickness,
 				color,
 				blendMode,
 				enableAntialiasing,
@@ -5062,11 +7043,13 @@ namespace s3d
 			}
 
 			std::vector<StrokePrimitive> primitives;
-			BuildClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, StrokeJoinStyle::Round, primitives);
+			std::vector<Vec2> effectivePoints;
+			AppendClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, primitives, effectivePoints);
 
 			DrawStrokePrimitives(
 				view,
 				primitives,
+				thickness,
 				color,
 				blendMode,
 				enableAntialiasing,

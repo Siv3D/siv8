@@ -32,6 +32,8 @@
     <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp" />
     <ClCompile Include="..\Test\Test_BigInt.cpp" />
     <ClCompile Include="..\Test\Test_BigFloat.cpp" />
+    <ClCompile Include="..\Test\Test_ParseFloat.cpp" />
+    <ClCompile Include="..\Test\Test_Miniaudio.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_ChildProcess.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
@@ -42,6 +44,10 @@
     <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_EnumFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
+    <ClCompile Include="..\Test\Test_ShaderGroup.cpp" />
+    <ClCompile Include="..\Test\Test_ScreenCapture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp" />
@@ -68,27 +74,60 @@
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp" />
+    <ClCompile Include="..\Test\Test_DirectoryWatcher.cpp" />
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
+    <ClCompile Include="..\Test\Test_AssetHandleManager.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_RenderTexture.cpp" />
+    <ClCompile Include="..\Test\Test_BCnDecoder.cpp" />
+    <ClCompile Include="..\Test\Test_BCnEncoder.cpp" />
+    <ClCompile Include="..\Test\Test_TextureMipmap.cpp" />
+    <ClCompile Include="..\Test\Test_TextureFormat.cpp" />
+    <ClCompile Include="..\Test\Test_RenderTextureOps.cpp" />
+    <ClCompile Include="..\Test\Test_ScopedRenderTarget2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp" />
     <ClCompile Include="..\Test\Test_MetalShader.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
     <ClCompile Include="..\Test\Test_MetalPresentation.cpp" />
+    <ClCompile Include="..\Test\Test_MetalScreenCapture.cpp" />
     <ClCompile Include="..\Test\Test_GLFW.cpp" />
+    <ClCompile Include="..\Test\Test_ScreenCoordinates.cpp" />
     <ClCompile Include="..\Test\Test_Keyboard.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp" />
+    <ClCompile Include="..\Test\Test_ScenePresentation.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneMSAA.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MSRenderTexture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ColorRenderTarget.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MRT.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
+    <ClCompile Include="..\Test\Test_ImageProcessing.cpp" />
+    <ClCompile Include="..\Test\Test_ImageDraw.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
     <ClCompile Include="..\Test\Test_ArrayLike.cpp" />
+    <ClCompile Include="..\Test\Test_DisjointSet.cpp" />
     <ClCompile Include="..\Test\Test_Polygon.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Polygon.cpp" />
     <ClCompile Include="..\Test\Test_LineBufferPolygon.cpp" />
     <ClCompile Include="..\Test\Test_MultiPolygon.cpp" />
     <ClCompile Include="..\Test\Test_Blob.cpp" />
+    <ClCompile Include="..\Test\Test_MappedMemory.cpp" />
+    <ClCompile Include="..\Test\Test_MemoryReader.cpp" />
     <ClCompile Include="..\Test\Test_Wave.cpp" />
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
@@ -121,15 +160,74 @@
     <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_Bezier.cpp" />
+    <ClCompile Include="..\Test\Test_BezierTessellation.cpp" />
+    <ClCompile Include="..\Test\Test_BezierDraw.cpp" />
+    <ClCompile Include="..\Test\Test_BezierArrow.cpp" />
+    <ClCompile Include="..\Test\Test_CircleArcArrow.cpp" />
+    <ClCompile Include="..\Test\Test_CircleTrimmedArc.cpp" />
+    <ClCompile Include="..\Test\Test_PathArrow.cpp" />
+    <ClCompile Include="..\Test\Test_DoubleHeadedArrow.cpp" />
+    <ClCompile Include="..\Test\Test_CircularShapes.cpp" />
+    <ClCompile Include="..\Test\Test_DashedPath.cpp" />
+    <ClCompile Include="..\Test\Test_StyledArc.cpp" />
+    <ClCompile Include="..\Test\Test_StyledRoundRect.cpp" />
+    <ClCompile Include="..\Test\Test_CurveAdaptive.cpp" />
+    <ClInclude Include="..\Test\BezierTessellationStudy.hpp" />
+    <ClInclude Include="..\Test\BezierTessellationLegacy.hpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
     <ClCompile Include="..\Test\Test_Quaternion.cpp" />
+    <ClCompile Include="..\Test\Test_RandomVec3.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
     <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
+    <ClCompile Include="..\Test\Test_ScopedColor2D.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
+    <ClCompile Include="..\Test\Test_SceneHighResolution.cpp" />
+    <ClCompile Include="..\Test\Test_SceneConfig.cpp" />
+    <ClCompile Include="..\Test\Test_SceneBackground.cpp" />
+    <ClCompile Include="..\Test\Test_WindowMacOS.cpp" />
+    <ClCompile Include="..\Test\Test_WindowFullscreen.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_macOS.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowFullscreen_Windows.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SceneAllocationFailure.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalTextureUpload.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTexture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderTextureOps.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalConstantBuffer.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalMSRenderTexture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalDynamicTexture.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalScopedRenderTarget2D.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowSceneSync.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_WindowStateSync.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_CursorTransform.cpp" />
     <ClCompile Include="..\Test\Test_Transformer2D.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />
@@ -148,10 +246,48 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DPreparation.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderPolyline.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DUpload.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderIndices.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderCircleShadow.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderArc.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderEllipse.cpp" />
+    <ClCompile Include="..\Test\Test_Vertex2DBuilderRoundRect.cpp" />
+    <ClCompile Include="..\Test\Test_RectRoundedDrawing.cpp" />
+    <ClCompile Include="..\Test\Test_RoundRectBalloon.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DEllipseDashedFrame.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DEllipsePie.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DEllipseExtensions.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DSuperEllipse.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DArcTessellation.cpp" />
+    <ClCompile Include="..\Test\Test_TextureClipping.cpp" />
+    <ClCompile Include="..\Test\Test_TextureCover.cpp" />
+    <ClCompile Include="..\Test\Test_NinePatch.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DTexturedCircle.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DTexturedRoundRect.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DCircleArc.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DJoinStyle.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DPipelineState.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DDrawSubmission.cpp" />
+    <ClCompile Include="..\Test\Test_Graphics2DDrawTriangles.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DEngineShaders.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ConstantBuffer.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DStateUpdate.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DResourceStateUpdate.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DTransformState.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp" />
@@ -160,6 +296,9 @@
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
+    <ClCompile Include="..\Test\Test_KDTree.cpp" />
+    <ClCompile Include="..\Test\Test_IsPrime.cpp" />
+    <ClCompile Include="..\Test\Test_ParallelHashmap.cpp" />
     <ClCompile Include="..\Test\Test_Indexed.cpp" />
     <ClCompile Include="..\Test\Test_Memory.cpp" />
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />
@@ -184,7 +323,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImageDrawingTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowSceneTestHelper.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_macOS.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper_Windows.hpp" />
+    <ClInclude Include="..\Test\WindowFullscreenTestHelper.hpp" />
+    <ClInclude Include="..\Test\TextureMipmapTestHelper.hpp" />
+    <ClInclude Include="..\Test\MetalTextureAllocationFailure.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />
@@ -215,7 +361,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -311,5 +457,13 @@
   </ImportGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Test\Test_Spline2D.cpp" />
+    <ClCompile Include="..\Test\Test_Spline2DImage.cpp" />
+    <ClCompile Include="..\Test\Test_ImagePolygonFrame.cpp" />
+    <ClCompile Include="..\Test\Test_ImageShapeExtensions.cpp" />
+    <ClCompile Include="..\Test\Test_ImageDrawingTestHelper.cpp" />
+    <ClCompile Include="..\Test\Test_ImageJoinStyle.cpp" />
   </ItemGroup>
 </Project>

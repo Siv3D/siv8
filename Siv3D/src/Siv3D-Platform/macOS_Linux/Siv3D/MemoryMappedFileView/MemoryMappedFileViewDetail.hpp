@@ -22,7 +22,7 @@ namespace s3d
 
 		~MemoryMappedFileViewDetail();
 
-		bool open(FilePathView path);
+		bool open(FilePath path);
 
 		void close();
 

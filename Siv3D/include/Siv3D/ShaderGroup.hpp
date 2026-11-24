@@ -23,6 +23,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief プラットフォームごとのシェーダをまとめます。
+	/// @remark Windows では HLSL、macOS では MSL を使用します。
+	/// @remark VertexShader または PixelShader への変換には、対象プラットフォーム用のシェーダが設定されている必要があります。作成に失敗した場合は空のシェーダを返します。
 	class ShaderGroup
 	{
 	public:

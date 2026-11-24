@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "MetalRenderer2DCommandManager.hpp"
+# include <Siv3D/Renderer2D/Renderer2DStateUpdate.hpp>
 
 namespace s3d
 {
@@ -30,9 +31,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
-		m_constantBuffers.push(stage, slot, data, size);
+		m_constantBuffers.push(stage, slot, data, size, capacity);
 		if (m_constantBuffers.hasStateChange())
 		{
 			m_stateTracker.set(MetalRenderer2DCommandType::SetConstantBuffer);
@@ -44,12 +45,12 @@ namespace s3d
 	}
 
 
-	uint32 MetalRenderer2DCommandManager::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	uint32 MetalRenderer2DCommandManager::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 	{
 		const uint32 previous = m_constantBuffers.save(stage, slot);
 		try
 		{
-			pushConstantBuffer(stage, slot, data, size);
+			pushConstantBuffer(stage, slot, data, size, capacity);
 		}
 		catch (...)
 		{
@@ -92,7 +93,7 @@ namespace s3d
 		// clear buffers
 		{
 			m_buffer.draws.clear();
-			//m_nullDraws.clear();
+			m_buffer.proceduralDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
 			m_buffer.patternParameters	= { m_buffer.patternParameters.back() };
@@ -180,7 +181,7 @@ namespace s3d
 			m_current.pixelShader = PixelShader::IDType::Invalid();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, 0);
-			m_current.combinedTransform = m_buffer.combinedTransforms.front();
+			m_current.transform.combinedTransform = m_buffer.combinedTransforms.front();
 
 			{
 				for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
@@ -322,7 +323,7 @@ namespace s3d
 		if (m_stateTracker.has(MetalRenderer2DCommandType::Transform))
 		{
 			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
-			m_buffer.combinedTransforms.push_back(m_current.combinedTransform);
+			m_buffer.combinedTransforms.push_back(m_current.transform.combinedTransform);
 		}
 
 		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
@@ -369,6 +370,29 @@ namespace s3d
 	const Array<MetalRenderer2DCommand>& MetalRenderer2DCommandManager::getCommands() const noexcept
 	{
 		return m_commands;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushProceduralDraw, getProceduralDraw
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushProceduralDraw(const uint32 vertexCount)
+	{
+		// 通常の保留 Draw も確定し、同じ状態でも専用 Draw の前後で結合しない。
+		if (m_current.draw.indexCount || m_stateTracker.hasStateChange())
+		{
+			flush();
+		}
+
+		m_commands.emplace_back(MetalRenderer2DCommandType::DrawProcedural, static_cast<uint32>(m_buffer.proceduralDraws.size()));
+		m_buffer.proceduralDraws.push_back(vertexCount);
+	}
+
+	uint32 MetalRenderer2DCommandManager::getProceduralDraw(const uint32 index) const noexcept
+	{
+		return m_buffer.proceduralDraws[index];
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -423,27 +447,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushColorMul(const Float4& color)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::ColorMul;
-		auto& current = m_current.colorMul;
-		auto& buffer = m_buffer.colorMuls;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (color != current)
-			{
-				current = color;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (color == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = color;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::ColorMul, color,
+			m_current.colorMul, m_buffer.colorMuls);
 	}
 
 	const Float4& MetalRenderer2DCommandManager::getColorMul(const uint32 index) const
@@ -464,27 +469,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushColorAdd(const Float3& color)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::ColorAdd;
-		auto& current = m_current.colorAdd;
-		auto& buffer = m_buffer.colorAdds;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (color != current)
-			{
-				current = color;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (color == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = color;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::ColorAdd, color,
+			m_current.colorAdd, m_buffer.colorAdds);
 	}
 
 	const Float3& MetalRenderer2DCommandManager::getColorAdd(const uint32 index) const
@@ -505,27 +491,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushPatternParameter(const std::array<Float4, 4>& patternParameter)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::PatternParameters;
-		auto& current = m_current.patternParameter;
-		auto& buffer = m_buffer.patternParameters;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (patternParameter != current)
-			{
-				current = patternParameter;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (patternParameter == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = patternParameter;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::PatternParameters, patternParameter,
+			m_current.patternParameter, m_buffer.patternParameters);
 	}
 	
 	const std::array<Float4, 4>& MetalRenderer2DCommandManager::getPatternParameter(const uint32 index) const
@@ -546,27 +513,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushBlendState(const BlendState& state)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::BlendState;
-		auto& current = m_current.blendState;
-		auto& buffer = m_buffer.blendStates;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::BlendState, state,
+			m_current.blendState, m_buffer.blendStates);
 	}
 
 	const BlendState& MetalRenderer2DCommandManager::getBlendState(const uint32 index) const
@@ -587,27 +535,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushRasterizerState(const RasterizerState& state)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::RasterizerState;
-		auto& current = m_current.rasterizerState;
-		auto& buffer = m_buffer.rasterizerStates;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::RasterizerState, state,
+			m_current.rasterizerState, m_buffer.rasterizerStates);
 	}
 
 	const RasterizerState& MetalRenderer2DCommandManager::getRasterizerState(const uint32 index) const
@@ -631,26 +560,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::VSSamplerState0) + slot);
-		auto& current = m_current.vsSamplerStates[slot];
-		auto& buffer = m_buffer.vsSamplerStates[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, state,
+			m_current.vsSamplerStates[slot], m_buffer.vsSamplerStates[slot]);
 	}
 	
 	const SamplerState& MetalRenderer2DCommandManager::getVSSamplerState(const uint32 slot, const uint32 index) const
@@ -676,28 +587,10 @@ namespace s3d
 	void MetalRenderer2DCommandManager::pushPSSamplerState(const SamplerState& state, const uint32 slot)
 	{
 		assert(slot < Graphics::TextureSlotCount);
-		
+
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::PSSamplerState0) + slot);
-		auto& current = m_current.psSamplerStates[slot];
-		auto& buffer = m_buffer.psSamplerStates[slot];
-		
-		if (not m_stateTracker.has(command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-			
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, state,
+			m_current.psSamplerStates[slot], m_buffer.psSamplerStates[slot]);
 	}
 
 	const SamplerState& MetalRenderer2DCommandManager::getPSSamplerState(const uint32 slot, const uint32 index) const
@@ -722,27 +615,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushScissorRect(const Optional<Rect>& state)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::ScissorRect;
-		auto& current = m_current.scissorRect;
-		auto& buffer = m_buffer.scissorRects;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::ScissorRect, state,
+			m_current.scissorRect, m_buffer.scissorRects);
 	}
 
 	const Optional<Rect>& MetalRenderer2DCommandManager::getScissorRect(const uint32 index) const
@@ -763,27 +637,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushViewport(const Optional<Rect>& state)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::Viewport;
-		auto& current = m_current.viewport;
-		auto& buffer = m_buffer.viewports;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::Viewport, state,
+			m_current.viewport, m_buffer.viewports);
 	}
 	
 	const Optional<Rect>& MetalRenderer2DCommandManager::getViewport(const uint32 index) const
@@ -804,27 +659,8 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushSDFParameters(const std::array<Float4, 3>& state)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::SDFParams;
-		auto& current = m_current.sdfParameter;
-		auto& buffer = m_buffer.sdfParameters;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (state != current)
-			{
-				current = state;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (state == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = state;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::SDFParams, state,
+			m_current.sdfParameter, m_buffer.sdfParameters);
 	}
 
 	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getSDFParameters(const uint32 index) const
@@ -845,55 +681,14 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushEngineVS(const VertexShader::IDType id)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::SetVS;
-		auto& current = m_current.vertexShader;
-		auto& buffer = m_buffer.vertexShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-		
-			current = id;
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::SetVS, id,
+			m_current.vertexShader, m_buffer.vertexShaders);
 	}
 
 	void MetalRenderer2DCommandManager::pushCustomVS(const VertexShader& vs)
 	{
-		const auto id = vs.id();
-		constexpr auto Command = MetalRenderer2DCommandType::SetVS;
-		auto& current = m_current.vertexShader;
-		auto& buffer = m_buffer.vertexShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-				m_reserved.vertexShaders.try_emplace(id, vs);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = id;
-			m_reserved.vertexShaders.try_emplace(id, vs);
-		}
+		UpdateRenderer2DCustomShaderState(m_stateTracker, MetalRenderer2DCommandType::SetVS, vs,
+			m_current.vertexShader, m_buffer.vertexShaders, m_reserved.vertexShaders);
 	}
 
 	VertexShader::IDType MetalRenderer2DCommandManager::getVS(const uint32 index) const
@@ -909,57 +704,14 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushEnginePS(const PixelShader::IDType id)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::SetPS;
-		auto& current = m_current.pixelShader;
-		auto& buffer = m_buffer.pixelShaders;
-
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				current = id;
-				m_stateTracker.clear(Command);
-			}
-			else
-			{
-				current = id;
-			}
-		}
+		UpdateRenderer2DState(m_stateTracker, MetalRenderer2DCommandType::SetPS, id,
+			m_current.pixelShader, m_buffer.pixelShaders);
 	}
 
 	void MetalRenderer2DCommandManager::pushCustomPS(const PixelShader& ps)
 	{
-		const auto id = ps.id();
-		constexpr auto Command = MetalRenderer2DCommandType::SetPS;
-		auto& current = m_current.pixelShader;
-		auto& buffer = m_buffer.pixelShaders;
-		
-		if (not m_stateTracker.has(Command))
-		{
-			if (id != current)
-			{
-				current = id;
-				m_stateTracker.set(Command);
-				m_reserved.pixelShaders.try_emplace(id, ps);
-			}
-		}
-		else
-		{
-			if (id == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-			current = id;
-			m_reserved.pixelShaders.try_emplace(id, ps);
-		}
+		UpdateRenderer2DCustomShaderState(m_stateTracker, MetalRenderer2DCommandType::SetPS, ps,
+			m_current.pixelShader, m_buffer.pixelShaders, m_reserved.pixelShaders);
 	}
 
 	PixelShader::IDType MetalRenderer2DCommandManager::getPS(const uint32 index) const
@@ -975,17 +727,17 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushLocalTransform(const Mat3x2& local)
 	{
-		if (local == m_current.localTransform)
+		if (local == m_current.transform.localTransform)
 		{
 			return;
 		}
-		m_current.localTransform = local;
+		m_current.transform.localTransform = local;
 		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentLocalTransform() const
 	{
-		return m_current.localTransform;
+		return m_current.transform.localTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -996,17 +748,17 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushCameraTransform(const Mat3x2& camera)
 	{
-		if (camera == m_current.cameraTransform)
+		if (camera == m_current.transform.cameraTransform)
 		{
 			return;
 		}
-		m_current.cameraTransform = camera;
+		m_current.transform.cameraTransform = camera;
 		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentCameraTransform() const
 	{
-		return m_current.cameraTransform;
+		return m_current.transform.cameraTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1017,31 +769,46 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushQuadWarpTransform(const Mat3x3& warp)
 	{
-		if (warp == m_current.quadWarpTransform)
+		if (warp == m_current.transform.quadWarpTransform)
 		{
 			return;
 		}
-		m_current.quadWarpTransform = warp;
+		m_current.transform.quadWarpTransform = warp;
 		updateTransform();
 	}
 
 	const Mat3x3& MetalRenderer2DCommandManager::getCurrentQuadWarpTransform() const
 	{
-		return m_current.quadWarpTransform;
+		return m_current.transform.quadWarpTransform;
+	}
+
+	void MetalRenderer2DCommandManager::setSceneScale(const Float2 scale)
+	{
+		if (scale == m_current.transform.sceneScale)
+		{
+			return;
+		}
+		m_current.transform.sceneScale = scale;
+		updateRasterScaling();
+	}
+
+	void MetalRenderer2DCommandManager::updateRasterScaling()
+	{
+		m_current.transform.updateRasterScaling();
 	}
 
 	void MetalRenderer2DCommandManager::updateAffineTransform()
 	{
-		m_current.affineTransform = (m_current.localTransform * m_current.cameraTransform);
-		m_current.rmsScaling = m_current.affineTransform.rmsScaling();
+		m_current.transform.updateAffineTransform();
+		updateRasterScaling();
 		updateTransform();
 	}
 
 	void MetalRenderer2DCommandManager::updateTransform()
 	{
 		constexpr auto Command = MetalRenderer2DCommandType::Transform;
-		m_current.combinedTransform = (Mat3x3{ m_current.affineTransform } * m_current.quadWarpTransform);
-		if (m_current.combinedTransform == m_buffer.combinedTransforms.back())
+		m_current.transform.updateCombinedTransform();
+		if (m_current.transform.combinedTransform == m_buffer.combinedTransforms.back())
 		{
 			m_stateTracker.clear(Command);
 		}
@@ -1058,7 +825,7 @@ namespace s3d
 
 	const Mat3x3& MetalRenderer2DCommandManager::getCurrentCombinedTransform() const
 	{
-		return m_current.combinedTransform;
+		return m_current.transform.combinedTransform;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1069,7 +836,7 @@ namespace s3d
 
 	float MetalRenderer2DCommandManager::getCurrentRMSScaling() const noexcept
 	{
-		return m_current.rmsScaling;
+		return m_current.transform.rmsScaling;
 	}
 	
 	////////////////////////////////////////////////////////////////
@@ -1084,26 +851,8 @@ namespace s3d
 
 		static constexpr auto InvalidID = Texture::IDType::Invalid();
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::VSTexture0) + slot);
-		auto& current = m_current.vsTextures[slot];
-		auto& buffer = m_buffer.vsTextures[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (InvalidID != current)
-			{
-				current = InvalidID;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (InvalidID == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = InvalidID;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, InvalidID,
+			m_current.vsTextures[slot], m_buffer.vsTextures[slot]);
 	}
 
 	void MetalRenderer2DCommandManager::pushVSTexture(const uint32 slot, const Texture& texture)
@@ -1111,27 +860,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::VSTexture0) + slot);
-		auto& current = m_current.vsTextures[slot];
-		auto& buffer = m_buffer.vsTextures[slot];
-		const auto id = texture.id();
-
-		if (id == current)
-		{
-			return;
-		}
-
-		m_reserved.textures.try_emplace(id, texture);
-
-		if (not m_stateTracker.has(command))
-		{
-			m_stateTracker.set(command);
-		}
-		else if (id == buffer.back())
-		{
-			m_stateTracker.clear(command);
-		}
-
-		current = id;
+		UpdateRenderer2DTextureState(m_stateTracker, command, texture,
+			m_current.vsTextures[slot], m_buffer.vsTextures[slot], m_reserved.textures);
 	}
 	
 	const Texture::IDType& MetalRenderer2DCommandManager::getVSTexture(const uint32 slot, const uint32 index) const
@@ -1158,26 +888,8 @@ namespace s3d
 
 		static constexpr auto InvalidID = Texture::IDType::Invalid();
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::PSTexture0) + slot);
-		auto& current = m_current.psTextures[slot];
-		auto& buffer = m_buffer.psTextures[slot];
-
-		if (not m_stateTracker.has(command))
-		{
-			if (InvalidID != current)
-			{
-				current = InvalidID;
-				m_stateTracker.set(command);
-			}
-		}
-		else
-		{
-			if (InvalidID == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = InvalidID;
-		}
+		UpdateRenderer2DState(m_stateTracker, command, InvalidID,
+			m_current.psTextures[slot], m_buffer.psTextures[slot]);
 	}
 
 	void MetalRenderer2DCommandManager::pushPSTexture(const uint32 slot, const Texture& texture)
@@ -1185,27 +897,8 @@ namespace s3d
 		assert(slot < Graphics::TextureSlotCount);
 
 		const auto command = ToEnum<MetalRenderer2DCommandType>(FromEnum(MetalRenderer2DCommandType::PSTexture0) + slot);
-		auto& current = m_current.psTextures[slot];
-		auto& buffer = m_buffer.psTextures[slot];
-		const auto id = texture.id();
-
-		if (id == current)
-		{
-			return;
-		}
-
-		m_reserved.textures.try_emplace(id, texture);
-
-		if (not m_stateTracker.has(command))
-		{
-			m_stateTracker.set(command);
-		}
-		else if (id == buffer.back())
-		{
-			m_stateTracker.clear(command);
-		}
-
-		current = id;
+		UpdateRenderer2DTextureState(m_stateTracker, command, texture,
+			m_current.psTextures[slot], m_buffer.psTextures[slot], m_reserved.textures);
 	}
 
 	const Texture::IDType& MetalRenderer2DCommandManager::getPSTexture(const uint32 slot, const uint32 index) const

@@ -29,6 +29,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多角形作成ユーティリティ
+	/// @remark Image への描き込みには、頂点を順に結んだ輪郭を使います。三角形インデックスは使いません。
 	class Shape2D
 	{
 	public:
@@ -249,6 +250,54 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D Stairs(const Vec2& base, double w, double h, uint32 steps, bool upStairs = true);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Crescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月の形状を作成します。
+		/// @param circle 元の円
+		/// @param openingAngle 開く方向（ラジアン）。12 時方向が 0、時計回りが正です。
+		/// @param width 円中心を通る開口方向の線で測った厚み
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 作成した形状。半径が 0、または width が 0 以下なら空の形状
+		/// @see @ref circle_crescent "三日月の定義と入力条件"
+		[[nodiscard]]
+		static Shape2D Crescent(const Circle& circle, double openingAngle, double width, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Lens
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 二つの端点を共有する対称な二円弧で囲まれたレンズ形状を作成します。
+		/// @param from 一方の端点
+		/// @param to もう一方の端点
+		/// @param halfWidth 端点を結ぶ軸から輪郭までの中央の距離
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @pre 入力と計算結果が有限で、double と保存用 float で表現できること。
+		/// @remark halfWidth が端点間距離の半分なら円になります。品質係数の既定値は描画状態に依存しません。
+		/// @return 作成した形状。同一点、halfWidth が 0 以下、または端点間距離の半分を超える場合は空の形状
+		[[nodiscard]]
+		static Shape2D Lens(const Vec2& from, const Vec2& to, double halfWidth, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Teardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円と先端の凸包である、しずくの形状を作成します。
+		/// @param circle 丸い膨らみの円
+		/// @param tip 先端の座標
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 作成した形状。半径が 0 なら空の形状
+		/// @see @ref circle_teardrop "しずくの定義と入力条件"
+		[[nodiscard]]
+		static Shape2D Teardrop(const Circle& circle, const Vec2& tip, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		////////////////////////////////////////////////////////////////
 		//

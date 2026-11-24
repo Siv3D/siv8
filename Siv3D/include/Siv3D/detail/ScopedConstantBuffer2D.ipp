@@ -16,5 +16,5 @@ namespace s3d
 	template <ShaderStage Stage>
 	template <class Type>
 	ScopedConstantBuffer2D<Stage>::ScopedConstantBuffer2D(const uint32 slot, const ConstantBuffer<Type>& buffer)
-		: ScopedConstantBuffer2D{ slot, buffer._data(), buffer.size() } {}
+		: ScopedConstantBuffer2D{ slot, buffer._data(), buffer.activeSize(), buffer.size() } {}
 }

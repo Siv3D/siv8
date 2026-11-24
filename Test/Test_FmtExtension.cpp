@@ -10,6 +10,30 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <limits>
+# include <new>
+
+TEST_CASE("FmtExtension.nullptr")
+{
+	CHECK(fmt::to_string(nullptr) == "0x0");
+	CHECK(fmt::format("{}", nullptr) == "0x0");
+	CHECK(U"{}"_fmt(nullptr) == U"0x0");
+}
+
+TEST_CASE("FmtExtension.utf32_buffer_growth")
+{
+	fmt::basic_memory_buffer<char32, 4> buffer;
+	fmt::format_to(std::back_inserter(buffer), U"{}", U"日本語");
+	const size_t capacity = buffer.capacity();
+	// The byte count would wrap to a small nonzero value on either 32- or 64-bit hosts.
+	const size_t overflowingSize = (std::numeric_limits<size_t>::max() / sizeof(char32) + 2);
+	CHECK_THROWS_AS(buffer.reserve(overflowingSize), std::bad_alloc);
+	CHECK(buffer.capacity() == capacity);
+	CHECK(std::u32string(buffer.data(), buffer.size()) == U"日本語");
+	// A rejected allocation must leave the buffer usable, including normal growth.
+	fmt::format_to(std::back_inserter(buffer), U"{}", U"とSiv3D");
+	CHECK(std::u32string(buffer.data(), buffer.size()) == U"日本語とSiv3D");
+}
 
 TEST_CASE("FmtExtension.fmt::format")
 {

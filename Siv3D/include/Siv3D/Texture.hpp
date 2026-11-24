@@ -61,9 +61,10 @@ namespace s3d
 		explicit Texture(const Image& image, TextureDesc desc = TextureDesc::Default2D);
 
 		/// @brief 画像とミップマップからテクスチャを作成します。
-		/// @param image 基本画像
-		/// @param mipmaps ミップマップ
-		/// @param desc テクスチャの設定
+		/// @param image レベル 0 の画像。空の場合は空のテクスチャになります。
+		/// @param mipmaps レベル 1 から順に並べた画像。各辺は前段の半分（端数切り捨て、最小 1）で、途中の段まで指定できます。
+		/// @param desc テクスチャの設定。ミップマップが無効の場合は基本画像だけを使います。
+		/// @remark ミップマップが有効なとき、規定のサイズに合わない画像や 1×1 より後の画像があれば、警告を 1 回出し、その直前の段までを使います。
 		[[nodiscard]]
 		Texture(const Image& image, const Array<Image>& mipmaps, TextureDesc desc = TextureDesc::Default2D);
 
@@ -136,6 +137,10 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief BCn 圧縮データからテクスチャを作成します。
+		/// @param bcnData レベル 0 から順に並べた BCn 圧縮データ。基底の幅・高さは各 4～16384 の 4 の倍数で、ミップは途中の段まで指定できます。
+		/// @remark 形式または基底サイズが条件外の場合、レベル 0 がない場合、またはそのバイト数が TextureFormat::packedDataSize() と異なる場合は、空のテクスチャになります。
+		/// @remark レベル 1 以降でバイト数が合わない段や 1×1 より後の段があれば、警告を 1 回出し、その直前の段までを使います。
 		[[nodiscard]]
 		explicit Texture(const BCnData& bcnData);
 
@@ -242,6 +247,18 @@ namespace s3d
 		/// @return テクスチャのミップマップレベル数。ミップマップを持たない場合は 1
 		[[nodiscard]]
 		uint32 mipLevels() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mipSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 確保されているミップレベルのサイズを返します。
+		/// @param level ミップレベル（0 が元のサイズ）
+		/// @return サイズ（ピクセル）。空のテクスチャ、存在しないレベルでは { 0, 0 }
+		[[nodiscard]]
+		Size mipSize(uint32 level) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -559,13 +576,51 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawCover
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor texture_draw_cover
+		/// @brief 縦横比を保って矩形全体を覆うように拡大縮小し、中央を残して描画します。
+		/// @param rect 描画先の矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return rect。描画しない場合は rect.pos を左上とする幅・高さ 0 の矩形
+		/// @remark はみ出す部分は切り落とします。rect は draw() と同じ変換前の座標系で指定し、切り抜き後の矩形に描画時の座標変換が適用されます。
+		/// @remark 描画元の幅または高さが 0、または rect の幅または高さが 0 以下の場合は描画しません。
+		RectF drawCover(const RectF& rect, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 縦横比を保って矩形全体を覆うように拡大縮小し、指定した基準位置を残して描画します。
+		/// @param rect 描画先の矩形
+		/// @param anchor 切り抜き後の画像で残す基準位置。TopCenter は上端中央、Center は中央、BottomRight は右下を揃えます。
+		/// @param diffuse 描画時に乗算する色
+		/// @return rect。描画しない場合は rect.pos を左上とする幅・高さ 0 の矩形
+		/// @see @ref texture_draw_cover "座標系と空の領域の扱い"
+		RectF drawCover(const RectF& rect, Anchor anchor, const ColorF& diffuse = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawClipped
 		//
 		////////////////////////////////////////////////////////////////
 
-		//RectF drawClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @anchor texture_draw_clipped
+		/// @brief 指定した位置にテクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @remark 描画位置と clipRect は draw() と同じ、描画変換前の座標系です。クリップ後の領域に描画時の座標変換が適用されます。
+		/// @remark 描画幅または高さが 0、clipRect の幅または高さが 0 以下、または交差部分に面積がない場合は描画しません。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域。幅と高さは非負で、描画領域がない場合はともに 0
+		RectF drawClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
-		//RectF drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置にテクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -573,9 +628,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//RectF drawAtClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置を中心にテクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawAtClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
-		//RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+		/// @brief 指定した位置を中心にテクスチャを描画し、指定矩形の外側を切り落とします。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @param clipRect 描画を残す矩形
+		/// @param diffuse 描画時に乗算する色
+		/// @return 変換前のクリップ後の領域
+		/// @see @ref texture_draw_clipped "座標系と空の領域の扱い"
+		RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -996,7 +1064,16 @@ namespace s3d
 
 		struct Render {};
 
+		[[nodiscard]]
+		Texture(Render, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		Texture(Render, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);
+
 		struct MSRender {};
+
+		[[nodiscard]]
+		Texture(MSRender, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc, uint32 sampleCount);
 
 		[[nodiscard]]
 		Texture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);

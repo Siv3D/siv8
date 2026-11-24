@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	struct BCnData;
+	class Blob;
 	struct Rect;
 
 	class D3D11Texture
@@ -25,12 +25,24 @@ namespace s3d
 
 		struct Dynamic {};
 
+		struct Render {};
+
+		[[nodiscard]]
+		D3D11Texture(Render, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size,
+			std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount = 1);
+
+		void clearRT(ID3D11DeviceContext* context, const ColorF& color);
+
+		void resolveMSRT(ID3D11DeviceContext* context);
+
+		bool readRT(ID3D11Device* device, ID3D11DeviceContext* context, std::span<Byte> destination, uint32 mipLevel);
+
 		struct NoMipmap {};
 
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
-		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+		D3D11Texture(ID3D11Device* device, const Image& image, std::span<const Image> mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
 		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
@@ -39,7 +51,7 @@ namespace s3d
 		D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
+		D3D11Texture(ID3D11Device* device, const Size& size, const TextureFormat& format, std::span<const Blob> mipmaps);
 
 		[[nodiscard]]
 		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
@@ -60,7 +72,7 @@ namespace s3d
 
 		bool fill(ID3D11DeviceContext* context, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
-		bool fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect);
+		bool fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect, bool wait);
 
 		bool fillRegion(ID3D11DeviceContext* context, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
 
@@ -71,6 +83,9 @@ namespace s3d
 
 		[[nodiscard]]
 		ID3D11ShaderResourceView** getSRVPtr();
+
+		[[nodiscard]]
+		ID3D11RenderTargetView* getRTV() const noexcept { return m_renderTargetView.Get(); }
 
 	private:
 

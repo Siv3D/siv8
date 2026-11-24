@@ -79,26 +79,31 @@ namespace s3d
 			LOG_INFO(fmt::format("📤 BinaryFileWriter: File `{0}` opened", m_info.fullPath.toUTF8()));
 		}
 
+		m_hasError = false;
 		return true;
 	}
 
-	void BinaryFileWriter::BinaryFileWriterDetail::close()
+	bool BinaryFileWriter::BinaryFileWriterDetail::close()
 	{
 		if (not m_info.isOpen)
 		{
-			return;
+			return (not m_hasError);
 		}
 
 		flush();
 
 		m_buffer = {};
 
-		std::fclose(m_file.file);
+		if (std::fclose(m_file.file) != 0)
+		{
+			m_hasError = true;
+		}
 		m_file = {};
 
 		LOG_INFO(fmt::format("📥 BinaryFileWriter: File `{0}` closed", m_info.fullPath.toUTF8()));
 
 		m_info = {};
+		return (not m_hasError);
 	}
 
 	bool BinaryFileWriter::BinaryFileWriterDetail::isOpen() const noexcept
@@ -106,36 +111,52 @@ namespace s3d
 		return m_info.isOpen;
 	}
 
-	void BinaryFileWriter::BinaryFileWriterDetail::flush()
+	bool BinaryFileWriter::BinaryFileWriterDetail::flush()
 	{
-		if (m_buffer.currentWritePos == 0)
+		if ((not m_info.isOpen) || m_hasError)
 		{
-			return;
+			return (not m_hasError);
 		}
 
-		std::fwrite(m_buffer.data.get(), 1, m_buffer.currentWritePos, m_file.file);
+		if (m_buffer.currentWritePos > 0)
+		{
+			const size_t written = std::fwrite(m_buffer.data.get(), 1, m_buffer.currentWritePos, m_file.file);
+			m_hasError = (written != m_buffer.currentWritePos);
+			m_buffer.currentWritePos = 0;
+		}
 
-		std::fflush(m_file.file);
-
-		m_buffer.currentWritePos = 0;
+		// Direct writes may still be buffered by stdio, even when our buffer is empty.
+		if (std::fflush(m_file.file) != 0)
+		{
+			m_hasError = true;
+		}
+		return (not m_hasError);
 	}
 
 	void BinaryFileWriter::BinaryFileWriterDetail::clear()
 	{
-		if (not m_info.isOpen)
+		if ((not m_info.isOpen) || m_hasError)
 		{
 			return;
 		}
 
 		m_buffer.currentWritePos = 0;
 
-		std::fclose(m_file.file);
+		const int closed = std::fclose(m_file.file);
+		m_file.file = nullptr;
+		if (closed != 0)
+		{
+			m_hasError = true;
+			m_info = {};
+			return;
+		}
 		
 		m_file.file = std::fopen(Unicode::ToUTF8(m_info.fullPath).c_str(), "w");
 		
 		if (not m_file.file)
 		{
-			close();
+			m_hasError = true;
+			m_info = {};
 		}
 	}
 
@@ -158,9 +179,15 @@ namespace s3d
 			return 0;
 		}
 		
-		flush();
+		if (not flush())
+		{
+			return -1;
+		}
 		
-		std::fseek(m_file.file, clampedPos, SEEK_SET);
+		if (std::fseek(m_file.file, clampedPos, SEEK_SET) != 0)
+		{
+			return -1;
+		}
 		
 		return std::ftell(m_file.file);
 	}
@@ -179,7 +206,7 @@ namespace s3d
 
 	int64 BinaryFileWriter::BinaryFileWriterDetail::write(const NonNull<const void*> src, const size_t size)
 	{
-		if (not m_info.isOpen)
+		if ((not m_info.isOpen) || m_hasError)
 		{
 			return 0;
 		}
@@ -190,9 +217,14 @@ namespace s3d
 			return fillBuffer(src, size);
 		}
 		
-		flush();
+		if (not flush())
+		{
+			return 0;
+		}
 
-		return std::fwrite(src.get(), 1, size, m_file.file);
+		const size_t written = std::fwrite(src.get(), 1, size, m_file.file);
+		m_hasError = (written != size);
+		return written;
 	}
 
 	const FilePath& BinaryFileWriter::BinaryFileWriterDetail::path() const noexcept

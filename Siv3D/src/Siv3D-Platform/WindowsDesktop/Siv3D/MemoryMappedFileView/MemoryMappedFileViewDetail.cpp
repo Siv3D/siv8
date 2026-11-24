@@ -44,11 +44,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(const FilePathView path)
+	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(FilePath path)
 	{
 		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
+
+		if (path.isEmpty())
+		{
+			return false;
+		}
 
 		if (FileSystem::IsResourcePath(path))
 		{
@@ -76,14 +81,20 @@ namespace s3d
 				return false;
 			}
 
+			const auto pointer = static_cast<const Byte*>(::LockResource(pResource));
+			if (pointer == nullptr)
+			{
+				return false;
+			}
+
 			m_resource =
 			{
-				.pointer	= static_cast<const Byte*>(::LockResource(pResource)),
+				.pointer	= pointer,
 			};
 
 			m_info =
 			{
-				.fullPath	= FilePath{ path },
+				.fullPath	= std::move(path),
 				.fileSize	= ::SizeofResource(hModule, hrs),
 				.isOpen		= true,
 			};
@@ -103,7 +114,12 @@ namespace s3d
 			}
 
 			LARGE_INTEGER size{};
-			::GetFileSizeEx(fileHandle, &size);
+			if ((::GetFileType(fileHandle) != FILE_TYPE_DISK)
+				|| (not ::GetFileSizeEx(fileHandle, &size)) || (size.QuadPart < 0))
+			{
+				::CloseHandle(fileHandle);
+				return false;
+			}
 			const int64 fileSize = size.QuadPart;
 
 			m_file =
@@ -115,7 +131,7 @@ namespace s3d
 
 			m_info =
 			{
-				.fullPath	= FileSystem::FullPath(path),
+				.fullPath	= std::move(path),
 				.fileSize	= fileSize,
 				.isOpen		= true,
 			};
@@ -183,18 +199,18 @@ namespace s3d
 		}
 
 		// すでにファイルがマップされている場合は何もしない
-		if (m_file.fileMapping)
+		if (m_file.fileMapping || m_resource.isMapped)
 		{
 			return{};
 		}
 
 		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
-		if (m_info.fileSize <= static_cast<int64>(offset))
+		if (static_cast<uint64>(m_info.fileSize) <= offset)
 		{
 			return{};
 		}
 
-		const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
+		const size_t mapSize = Min(requestSize, (static_cast<size_t>(m_info.fileSize) - offset));
 
 		if (mapSize == 0)
 		{
@@ -203,31 +219,35 @@ namespace s3d
 
 		if (isResource())
 		{
+			m_resource.isMapped = true;
 			return{ .data = (m_resource.pointer + offset), .size = mapSize };
 		}
 		else
 		{
 			const size_t internalOffset = (offset / g_granularity * g_granularity);
 
-			m_file.fileMapping = ::CreateFileMappingW(
+			const HANDLE fileMapping = ::CreateFileMappingW(
 				m_file.fileHandle, 0, PAGE_READONLY,
-				(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
+				static_cast<DWORD>(static_cast<uint64>(offset + mapSize) >> 32), static_cast<DWORD>(offset + mapSize), nullptr);
 
-			if (m_file.fileMapping == nullptr)
+			if (fileMapping == nullptr)
 			{
 				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
 				return{};
 			}
 
 			m_file.baseAddress = static_cast<const Byte*>(::MapViewOfFile(
-				m_file.fileMapping, FILE_MAP_READ, (static_cast<uint64>(internalOffset) >> 32),
-				(internalOffset & 0xffFFffFF), (offset - internalOffset + mapSize)));
+				fileMapping, FILE_MAP_READ, static_cast<DWORD>(static_cast<uint64>(internalOffset) >> 32),
+				static_cast<DWORD>(internalOffset), (offset - internalOffset + mapSize)));
 
 			if (m_file.baseAddress == nullptr)
 			{
+				::CloseHandle(fileMapping);
 				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: MapViewOfFile() failed. offset: {0}, size: {1}", offset, mapSize));
 				return{};
 			}
+
+			m_file.fileMapping = fileMapping;
 
 			return{ .data = (m_file.baseAddress + (offset - internalOffset)), .size = mapSize };
 		}
@@ -241,6 +261,8 @@ namespace s3d
 
 	void MemoryMappedFileView::MemoryMappedFileViewDetail::unmap()
 	{
+		m_resource.isMapped = false;
+
 		// ファイルがマップされていなければ何もしない
 		if (not m_file.fileMapping)
 		{

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "LineStyle.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
 # include "Array.hpp"
@@ -19,6 +20,7 @@
 # include "2DShapes.hpp"
 # include "Optional.hpp"
 # include "PredefinedYesNo.hpp"
+# include "CatmullRomParameterization.hpp"
 # include "RangeFormatter.hpp"
 # include "StringView.hpp"
 
@@ -2628,8 +2630,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-//		[[nodiscard]]
-//		Spline2D toSpline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 点列を通過する Catmull-Rom スプラインを作成します。
+		/// @param closeRing 最後の点から最初の点へ曲線をつなぐ場合は Yes
+		/// @param parameterization 点の間隔に応じた曲げ方
+		/// @return 作成した曲線。開いた経路で、連続する同一点を除いた点が 2 個未満なら空です。
+		/// @throws std::invalid_argument 閉じた経路で、重複を整理した通過点が 3 個未満の場合
+		/// @remark 点列の入力条件、重複点と端点の扱いは Spline2D::FromCatmullRom() と同じです。
+		[[nodiscard]]
+		Spline2D toSpline(CloseRing closeRing = CloseRing::No,
+			CatmullRomParameterization parameterization = CatmullRomParameterization::Centripetal) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2717,6 +2726,17 @@ namespace s3d
 		/// @return *this
 		const LineString& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const LineString& paint(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwrite
@@ -2746,6 +2766,17 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const LineString& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param startCap 始点の線端の形状
+		/// @param endCap 終点の線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @see ImageDraw::LineString()
+		/// @return *this
+		const LineString& overwrite(Image& dst, LineCap startCap, LineCap endCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2788,6 +2819,95 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const LineString& overwriteClosed(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const LineString& paintArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const LineString& paintArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArrow()
+		const LineString& overwriteArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArrow()
+		const LineString& overwriteArrow(Image& dst, LineCap startCap, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const LineString& paintDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintDoubleHeadedArrow()
+		const LineString& overwriteDoubleHeadedArrow(Image& dst, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2903,6 +3023,60 @@ namespace s3d
 		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, std::span<const ColorF> colors) const;
 
+		/// @anchor styled_path_drawing
+		/// @brief 指定した線のスタイルで経路を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @pre 座標・太さ・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark Solid の線端は通常の draw() と共通です。非実線では長さが 0、太さが 0、または連結前の破線・点が 4096 個を超える場合は描画しません。
+		/// @remark 非実線の cap は経路全体の端に適用し、Round は Square と同じ扱いです。各破線の切り口は Flat、RoundDot は経路上の丸い点です。角や急な曲がりでは輪郭が歪み、重なる部分は複数回合成されます。
+		/// @return *this
+		const LineString& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @see @ref linestring_draw_arrow
+		/// @return *this
+		const LineString& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		/// @anchor linestring_draw_arrow
+		/// @brief 折れ線上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 座標と引数は有限で、幾何・変換の中間計算は表現可能であること。
+		/// @see @ref bezier2_draw_arrow "矢じりの配置・縮小・省略と半透明描画"
+		/// @remark 空、1 点、または全点が同じ場合は描画しません。
+		/// @remark 閉じる線分は追加しません。末尾に始点を置くと一周の矢印になります。
+		/// @return *this
+		const LineString& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 経路の両端を先端とする矢印を描きます。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 幾何・変換の入力条件は drawArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @remark 点が 2 個未満、またはすべて同じ位置なら描画しません。端点を結ぶ閉じる線分は追加しません。
+		/// @return *this
+		const LineString& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawClosed
@@ -2941,6 +3115,15 @@ namespace s3d
 		/// @param colors 頂点ごとの色
 		/// @return *this
 		const LineString& drawClosed(double thickness, std::span<const ColorF> colors) const;
+
+		/// @brief 指定した線のスタイルで終点と始点を結んだ経路を描画します。
+		/// @param style 線のスタイル。パターンと位相の単位は Line と共通です。
+		/// @param thickness 太さ。絶対値を使用します。
+		/// @param color 色
+		/// @remark cap は無視し、周期は周長に合わせて調整しません。閉じ目をまたぐ破線は連結し、RoundDot は中心が一周内にある点を描きます。
+		/// @see @ref styled_path_drawing "破線描画の入力条件と制約"
+		/// @return *this
+		const LineString& drawClosed(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

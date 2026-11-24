@@ -12,7 +12,6 @@
 # include <Siv3D/System.hpp>
 # include <Siv3D/System/ISystem.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
-# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "ExitCode.hpp"
 
@@ -81,17 +80,6 @@ namespace s3d
 			const int32 milliSec = static_cast<int32>(duration.count() * 1000);
 
 			Sleep(milliSec);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetRendererType
-		//
-		////////////////////////////////////////////////////////////////
-
-		EngineOption::Renderer GetRendererType()
-		{
-			return SIV3D_ENGINE(Renderer)->getRendererType();
 		}
 	}
 }

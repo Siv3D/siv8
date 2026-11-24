@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Graphics2D.hpp>
+# include <cassert>
+# include <limits>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/TextStyle.hpp>
@@ -53,6 +55,23 @@ namespace s3d
 		{
 			SIV3D_ENGINE(Renderer2D)->flush();
 		}
+		////////////////////////////////////////////////////////////////
+		//
+		//	DrawTriangles
+		//
+		////////////////////////////////////////////////////////////////
+
+		void DrawTriangles(const uint32 triangleCount)
+		{
+			if (triangleCount == 0)
+			{
+				return;
+			}
+
+			assert(triangleCount <= (std::numeric_limits<uint32>::max() / 3));
+			SIV3D_ENGINE(Renderer2D)->addProceduralVertices(triangleCount * 3);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetColorMul
@@ -231,21 +250,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	GetRenderTargetSize
+		//	GetDrawingSize, GetRenderTargetSize
 		//
 		////////////////////////////////////////////////////////////////
 
+		Size GetDrawingSize() noexcept
+		{
+			const auto& target = SIV3D_ENGINE(Renderer2D)->getRenderTarget();
+			return target ? target->size() : Scene::Size();
+		}
+
 		Size GetRenderTargetSize() noexcept
 		{
-			// [Siv3D ToDo]
-			//if (const auto rt = SIV3D_ENGINE(Renderer2D)->getRenderTarget())
-			//{
-			//	return rt->size();
-			//}
-			//else
-			{
-				return Scene::Size();
-			}
+			const auto& target = SIV3D_ENGINE(Renderer2D)->getRenderTarget();
+			return target ? target->size() : Scene::RenderResolution();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -268,10 +286,10 @@ namespace s3d
 				SIV3D_ENGINE(Renderer2D)->setConstantBuffer(stage, slot, data, size);
 			}
 
-			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size, const size_t capacity)
 			{
 				ValidateConstantBufferSlot(slot);
-				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size);
+				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size, capacity);
 			}
 
 			void EndConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)

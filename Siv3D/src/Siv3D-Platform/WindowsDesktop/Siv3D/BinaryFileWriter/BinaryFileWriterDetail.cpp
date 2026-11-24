@@ -110,6 +110,7 @@ namespace s3d
 			LOG_INFO(fmt::format("📤 BinaryFileWriter: File `{0}` opened", m_info.fullPath));
 		}
 
+		m_hasError = false;
 		return true;
 	}
 
@@ -119,22 +120,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryFileWriter::BinaryFileWriterDetail::close()
+	bool BinaryFileWriter::BinaryFileWriterDetail::close()
 	{
 		if (not m_info.isOpen)
 		{
-			return;
+			return (not m_hasError);
 		}
 
 		flush();
 
 		m_buffer = {};
 
-		m_file.close();
+		if (not m_file.close())
+		{
+			m_hasError = true;
+		}
 
 		LOG_INFO(fmt::format("📥 BinaryFileWriter: File `{0}` closed", m_info.fullPath));
 
 		m_info = {};
+		return (not m_hasError);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -154,17 +159,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryFileWriter::BinaryFileWriterDetail::flush()
+	bool BinaryFileWriter::BinaryFileWriterDetail::flush()
 	{
-		if (m_buffer.writePos == 0)
+		if ((m_buffer.writePos == 0) || m_hasError)
 		{
-			return;
+			return (not m_hasError);
 		}
 
 		DWORD written = 0;
-		::WriteFile(m_file.handle, m_buffer.data.get(), static_cast<uint32>(m_buffer.writePos), &written, nullptr);
+		const bool succeeded = (::WriteFile(m_file.handle, m_buffer.data.get(), static_cast<uint32>(m_buffer.writePos), &written, nullptr) != 0);
+		m_hasError = ((not succeeded) || (written != m_buffer.writePos));
 
 		m_buffer.writePos = 0;
+		return (not m_hasError);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -175,16 +182,17 @@ namespace s3d
 
 	void BinaryFileWriter::BinaryFileWriterDetail::clear()
 	{
-		if (not m_info.isOpen)
+		if ((not m_info.isOpen) || m_hasError)
 		{
 			return;
 		}
 
 		m_buffer.writePos = 0;
 
-		setPos(0);
-
-		::SetEndOfFile(m_file.handle);
+		if ((setPos(0) != 0) || (not ::SetEndOfFile(m_file.handle)))
+		{
+			m_hasError = true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -219,11 +227,17 @@ namespace s3d
 			return 0;
 		}
 
-		flush();
+		if (not flush())
+		{
+			return -1;
+		}
 
 		const LARGE_INTEGER distance{ .QuadPart = clampedPos };
-		LARGE_INTEGER newPos;
-		::SetFilePointerEx(m_file.handle, distance, &newPos, FILE_BEGIN);
+		LARGE_INTEGER newPos{};
+		if (not ::SetFilePointerEx(m_file.handle, distance, &newPos, FILE_BEGIN))
+		{
+			return -1;
+		}
 
 		return newPos.QuadPart;
 	}
@@ -256,7 +270,7 @@ namespace s3d
 
 	int64 BinaryFileWriter::BinaryFileWriterDetail::write(const NonNull<const void*> src, const size_t writeSize)
 	{
-		if (not m_info.isOpen)
+		if ((not m_info.isOpen) || m_hasError)
 		{
 			return 0;
 		}
@@ -266,10 +280,14 @@ namespace s3d
 			return fillBuffer(src, writeSize);
 		}
 
-		flush();
+		if (not flush())
+		{
+			return 0;
+		}
 
-		DWORD writtenBytes;
-		::WriteFile(m_file.handle, src.get(), static_cast<uint32>(writeSize), &writtenBytes, nullptr);
+		DWORD writtenBytes = 0;
+		const bool succeeded = (::WriteFile(m_file.handle, src.get(), static_cast<uint32>(writeSize), &writtenBytes, nullptr) != 0);
+		m_hasError = ((not succeeded) || (writtenBytes != writeSize));
 
 		return writtenBytes;
 	}
@@ -305,10 +323,11 @@ namespace s3d
 		return writeSize;
 	}
 
-	void BinaryFileWriter::BinaryFileWriterDetail::File::close()
+	bool BinaryFileWriter::BinaryFileWriterDetail::File::close()
 	{
-		::CloseHandle(handle);
+		const bool succeeded = (::CloseHandle(handle) != 0);
 		handle = INVALID_HANDLE_VALUE;
+		return succeeded;
 	}
 
 	size_t BinaryFileWriter::BinaryFileWriterDetail::Buffer::available() const noexcept

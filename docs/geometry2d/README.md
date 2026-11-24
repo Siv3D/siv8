@@ -5,6 +5,56 @@ API contracts live in the public headers, including
 [distance queries](../../Siv3D/include/Siv3D/Geometry2D/Distance.hpp), and
 [boundary distance queries](../../Siv3D/include/Siv3D/Geometry2D/SignedDistance.hpp).
 
+## Image writing
+
+[Writing 2D shapes to Image](image-writing.md) covers compositing, the CPU/GPU
+API inventory, validation, and reproducible performance measurements.
+
+## Drawing extension proposals
+
+[Drawing extensions](proposals/drawing-extensions.md) describes potential style,
+arrow, shape-generation and path APIs, their uses, design questions and evaluation
+criteria. Variable-width strokes depend on experience from Trail development.
+These proposals are unadopted; their release scope and implementation schedule are undecided.
+
+## Dashed curves, paths and arcs
+
+[Dashed drawing](dashed-drawing.md) covers `draw(LineStyle, ...)` and Circle/Ellipse
+`drawArc(LineStyle, ...)`, `RoundRect::drawFrame(LineStyle, ...)`, fitted closed
+contours, phase settings, and the
+accepted corner/overlap limits. It links the
+public-API manual program, tests, and submission benchmark.
+
+## Spline paths
+
+[Spline paths](splines.md) explains reusable curves, distance-based movement,
+ownership, drawing buffers, and the interactive gallery for `Spline2D` and
+`Spline2DMeasure`.
+
+## Bezier drawing
+
+[Curve drawing](bezier-drawing.md) explains single-ended and double-headed arrows for Bezier, circle arcs, LineString,
+and Spline2D, quality units, segment
+budgets, transform handling, and the density placement shared by Bezier2,
+Bezier3, Spline2D, and Bezier Image writing. It
+records the comparison with recursive subdivision and Wang's formula and links
+to the reproducible renderer gallery and benchmarks.
+
+## Rounded shape drawing
+
+[Drawing tessellation budgets](rounded-drawing.md) compares circle, ellipse,
+rounded-rectangle, cap, join, texture, and shadow paths against Circle's bounded
+drawing cost. It distinguishes GPU subdivision from arc-length calculations,
+records short-dash findings, and explains SuperEllipse's private tessellator.
+It also covers [direct independent-corner fills and frames](rounded-drawing.md#independent-corner-rectangles)
+and [rounded speech balloons](rounded-drawing.md#rounded-speech-balloons).
+
+## Crescents, lenses and teardrops
+
+[Circular shape drawing](circular-shapes.md) covers direct Circle fills, stored
+Shape2D geometry including symmetric lenses, Polygon conversion, shared construction
+and the visual gallery.
+
 ## Continuing a ray after contact
 
 Use `Raycast(ray, shape, minDistance, maxDistance)` to continue searching the same

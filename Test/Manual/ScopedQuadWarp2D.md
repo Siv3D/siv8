@@ -28,7 +28,7 @@ and the shader interface.
 5. Check that the background and keyboard hint remain stationary while the
    entire card, including its shadow, tilts.
 
-The underline uses 64 subdivisions. Adjust drawing quality explicitly if changing
+The underline uses `toLineString(64)` for uniform subdivisions. Adjust sampling explicitly if changing
 this demo to use much larger magnifications. The dotted route samples `pointAt()`
 and uses `tangentAt()` to orient the plane. Shadow geometry extends outside the
 source rectangle; that rectangle does not clip the drawing. Keep all drawn
@@ -70,9 +70,9 @@ For new retained captures, call
 `ScreenCapture::SetScreenshotDirectory(U"quad-warp-captures/")` before the loop
 and use the default F12 screenshot shortcut. Output remains under
 `quad-warp-captures/` in the application's working directory until removed.
-When calling `SaveCurrentFrame()` directly, pass a file name, not an absolute
-path: the current implementation prepends the configured screenshot directory.
-The unresolved path contract is tracked in [TODO.md](../../TODO.md).
+Use `ScreenCapture::SaveCurrentFrame(U"front.png")` to name a capture in that
+directory. Use `ScreenCapture::SaveCurrentFrameTo(path)` to specify a different
+relative or absolute output path.
 
 Automated scope, draw-state, and rendering checks live in
 [Test_QuadWarp.cpp](../Test_QuadWarp.cpp); matrix checks live in
@@ -89,7 +89,6 @@ in [TODO.md](../../TODO.md).
 void Main()
 {
 	Window::Resize(1280, 720);
-	Scene::Resize(1280, 720);
 	Scene::SetBackground(ColorF{ 0.86, 0.83, 0.78 });
 	const Texture photo{ U"example/bay.jpg" };
 	const Font heavy{ FontMethod::MSDF, 48, Typeface::Heavy }, medium{ FontMethod::MSDF, 48, Typeface::Medium };
@@ -121,7 +120,7 @@ void Main()
 
 			medium(U"Greetings from").draw(24, 44, 44, sea);
 			heavy(U"川平湾").draw(88, 40, 62, ink);
-			Bezier3{ { 46, 178 }, { 120, 196 }, { 220, 160 }, { 300, 176 } }.draw(LineCap::Round, 5, sun, 64);
+			Bezier3{ { 46, 178 }, { 120, 196 }, { 220, 160 }, { 300, 176 } }.toLineString(64).draw(LineCap::Round, 5, sun);
 			RectF{ Arg::center(215, 320), 346, 206 }.rotated(-3_deg).draw(ColorF{ 1.0 });
 			photo.resized(330, 186).rotated(-3_deg).drawAt(215, 320);
 

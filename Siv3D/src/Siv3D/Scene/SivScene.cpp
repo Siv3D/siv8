@@ -11,6 +11,7 @@
 
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Error.hpp>
 # include "IScene.hpp"
 # include "SceneTime.hpp"
 # include "SceneStyle.hpp"
@@ -21,20 +22,19 @@ namespace s3d
 {
 	namespace Scene
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Resize
-		//
-		////////////////////////////////////////////////////////////////
-
-		void Resize(const s3d::Size size)
+		void Configure(const SceneConfig& config)
 		{
-			SIV3D_ENGINE(Renderer)->resizeSceneBuffer(size);
+			SIV3D_ENGINE(Renderer)->configureScene(config);
 		}
 
-		void Resize(const int32 width, const int32 height)
+		SceneConfig GetConfig() noexcept
 		{
-			Resize(s3d::Size{ width, height });
+			return SIV3D_ENGINE(Renderer)->getSceneConfig();
+		}
+
+		s3d::Size RenderResolution() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ namespace s3d
 
 		s3d::Size Size() noexcept
 		{
-			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+			return SIV3D_ENGINE(Renderer)->getSceneSize();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -99,28 +99,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		void SetResizeMode(const ResizeMode resizeMode)
-		{
-			return SIV3D_ENGINE(Renderer)->setSceneResizeMode(resizeMode);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetResizeMode
-		//
-		////////////////////////////////////////////////////////////////
-
-		ResizeMode GetResizeMode() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->getSceneResizeMode();
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	SetBackground
 		//
 		////////////////////////////////////////////////////////////////
@@ -165,36 +143,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		void SetTextureFilter(const TextureFilter textureFilter)
-		{
-			SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter = textureFilter;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	GetTextureFilter
-		//
-		////////////////////////////////////////////////////////////////
-
-		TextureFilter GetTextureFilter() noexcept
-		{
-			return SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	SetMSAASampleCount
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetMSAASampleCount(const MSAASampleCount sampleCount)
-		//{
-
-		//}
+		void SetMSAASampleCount(const MSAASampleCount sampleCount)
+		{
+			switch (sampleCount)
+			{
+			case MSAASampleCount::NoMSAA:
+			case MSAASampleCount::X2MSAA:
+			case MSAASampleCount::X4MSAA:
+				break;
+			default:
+				throw Error{ "Scene::SetMSAASampleCount(): Invalid sample count" };
+			}
+			SIV3D_ENGINE(Renderer)->setSceneSampleCount(FromEnum(sampleCount));
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -202,11 +167,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//MSAASampleCount GetMSAASampleCount() noexcept
-		//{
-
-		//}
+		MSAASampleCount GetMSAASampleCount() noexcept
+		{
+			return static_cast<MSAASampleCount>(SIV3D_ENGINE(Renderer)->getSceneSampleCount());
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

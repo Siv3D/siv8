@@ -55,9 +55,10 @@ namespace s3d
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC D3D11Texture2DDesc::makeD3D11_SHADER_RESOURCE_VIEW_DESC() const noexcept
 	{
+		// Sampling always uses the single-sample resource, including MSRenderTexture resolve results.
 		return{
 			.Format			= DXGIFormat(),
-			.ViewDimension	= (isMSAA() ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D),
+			.ViewDimension	= D3D11_SRV_DIMENSION_TEXTURE2D,
 			.Texture2D		= { 0, mipLevels }
 		};
 	}

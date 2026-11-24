@@ -7,10 +7,11 @@ Test. Unfinished work is tracked in [TODO](../TODO.md).
 - [Development](development/README.md): repository workflow, documentation ownership, and validation.
 - [Array](array/README.md): sequence operations, Array-like owners and views, allocators, and migration.
 - [FileSystem](filesystem/README.md): filesystem behavior, diagnostics, and foundation design review.
-- [Geometry2D](geometry2d/README.md): boundary queries and continued-ray usage.
+- [Geometry2D](geometry2d/README.md): boundary queries, continued rays, and spline paths.
 - [JSON](json/README.md): JSON data handling, ownership, representation limits, and validation.
 - [Mesh3D](mesh3d/README.md): CPU modeling, assembly, export, and implementation guidance.
 - [Renderer2D](renderer2d/README.md): pattern coordinates, transforms, and rendering checks.
+- [Window](window/README.md): desktop coordinates, mixed-DPI placement, and macOS coordinate migration.
 
 For documentation changes, follow the [documentation rules](AGENTS.md) and run
 `python3 tools/check_docs.py` from the repository root. Add a subject when needed;

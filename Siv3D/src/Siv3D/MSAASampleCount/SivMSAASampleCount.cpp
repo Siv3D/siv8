@@ -20,9 +20,11 @@ namespace s3d
 	{
 		static constexpr std::array MSAASampleCountStrings =
 		{
-			U"NoAA",
-			U"X2MSAA",
-			U"X4MSAA",
+			U""_sv,
+			U"NoMSAA"_sv,
+			U"X2MSAA"_sv,
+			U""_sv,
+			U"X4MSAA"_sv,
 		};
 	}
 

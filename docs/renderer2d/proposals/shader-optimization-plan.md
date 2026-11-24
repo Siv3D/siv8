@@ -281,7 +281,7 @@ const float2 s4 = center - offset2;
 ### A4. 影なし MSDF の除算をまとめる
 
 HLSL / MSL ソースの `MSDF_Init` へ適用済み。式と責務の説明、アトラス寸法の
-回帰テストは [MSDF font scale](../msdf-font.md) を参照する。
+回帰テストは [MSDF font rendering](../msdf-font.md) を参照する。
 バッファやフォント描画側の状態を増やさず、成分ごとの 2 回の除算を 1 回へ集約した。
 縮小時のフィルタ品質を変更する案とは分けて扱う。
 Metal のソース適用時には実フォントの文字サイズ、回転、非等方変換、小数位置を変えて

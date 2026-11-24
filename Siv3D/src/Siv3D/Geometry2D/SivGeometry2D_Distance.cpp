@@ -675,12 +675,20 @@ namespace s3d
 				std::swap(upperB.x, upperB.y);
 			}
 			Vec2 lowerA{ p.axes.x, 0.0 }, lowerB{ q.axes.x, 0.0 };
-			Vec2 bestA, bestB;
+			const auto Finish = [&](Vec2 bestA, Vec2 bestB) noexcept
+			{
+				if (transpose)
+				{
+					std::swap(bestA.x, bestA.y);
+					std::swap(bestB.x, bestB.y);
+				}
+				UpdateCandidate(result, (a.center + sign * bestA), (centerB - sign * bestB));
+				return result;
+			};
 			double lower = 0.0, upper = 1.0, previousStep = 1.0;
 			double t = std::pow(Min((delta.y / delta.x), 1.0), (1.0 / power));
 			const double tolerance = ((IsPoint ? 4.0 : 16.0) * std::numeric_limits<double>::epsilon()
 				* Max({ delta.x, delta.y, a.a, a.b, axesB.x, axesB.y }));
-			bool converged = false;
 			for (int32 iteration = 0; iteration < 32; ++iteration)
 			{
 				const double normalY = std::pow(t, power);
@@ -690,10 +698,7 @@ namespace s3d
 				const double f = (gap.y - normalY * gap.x);
 				if (Abs(f) <= tolerance)
 				{
-					bestA = pointA;
-					bestB = pointB;
-					converged = true;
-					break;
+					return Finish(pointA, pointB);
 				}
 				if (0.0 < f)
 				{
@@ -721,19 +726,8 @@ namespace s3d
 			}
 			// Interpolate the bracket's support pairs together. These witnesses
 			// stay in the convex shapes even when a nearly flat face limits convergence.
-			if (not converged)
-			{
-				const auto segment = ClosestPointOnSegment(Vec2{ 0, 0 }, (delta - lowerA - lowerB), (delta - upperA - upperB));
-				bestA = (lowerA + (upperA - lowerA) * segment.parameterB);
-				bestB = (lowerB + (upperB - lowerB) * segment.parameterB);
-			}
-			if (transpose)
-			{
-				std::swap(bestA.x, bestA.y);
-				std::swap(bestB.x, bestB.y);
-			}
-			UpdateCandidate(result, (a.center + sign * bestA), (centerB - sign * bestB));
-			return result;
+			const auto segment = ClosestPointOnSegment(Vec2{ 0, 0 }, (delta - lowerA - lowerB), (delta - upperA - upperB));
+			return Finish((lowerA + (upperA - lowerA) * segment.parameterB), (lowerB + (upperB - lowerB) * segment.parameterB));
 		}
 
 		// Positive axes and 0 < n < 1. Parameterize each half arc by its larger

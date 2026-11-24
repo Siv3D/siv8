@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/EngineLog.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
@@ -22,6 +24,8 @@
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "TextureUtility.hpp"
+# include "TextureClipping.hpp"
+# include "TextureCover.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS)
 #	include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
@@ -38,6 +42,34 @@ namespace s3d
 				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, type);
 				std::exit(EXIT_FAILURE);
 			}
+		}
+
+		static std::span<const Image> GetValidMipmaps(const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
+		{
+			if ((not desc.hasMipmap) || (not image))
+			{
+				return{};
+			}
+
+			for (uint32 i = 0; i < mipmaps.size(); ++i)
+			{
+				const uint32 level = (i + 1);
+				const Size expected = ImageProcessing::CalculateMipmapSize(image.size(), level);
+				if (expected.isZero())
+				{
+					LOG_WARN(fmt::format("Texture mip level {} follows the 1x1 level. Keeping {} level(s).", level, level));
+					return mipmaps.first(i);
+				}
+
+				const Size actual = mipmaps[i].size();
+				if (actual != expected)
+				{
+					LOG_WARN(fmt::format("Texture mip level {} expected {}x{}, got {}x{}. Keeping {} level(s).",
+						level, expected.x, expected.y, actual.x, actual.y, level));
+					return mipmaps.first(i);
+				}
+			}
+			return mipmaps;
 		}
 	}
 
@@ -73,7 +105,7 @@ namespace s3d
 	}
 
 	Texture::Texture(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, mipmaps, desc))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, GetValidMipmaps(image, mipmaps, desc), desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -131,6 +163,24 @@ namespace s3d
 
 	Texture::Texture(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(size, data, format, desc))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Texture::Texture(Render, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"RenderTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createRender(size, data, format, desc, ColorF{ 0.0, 0.0 }))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Texture::Texture(Render, const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"RenderTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createRender(size, {}, format, desc, color))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Texture::Texture(MSRender, const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc, const uint32 sampleCount)
+		: AssetHandle{ (CheckEngine(U"MSRenderTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createMSRender(size, format, desc, color, sampleCount))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -235,6 +285,21 @@ namespace s3d
 	uint32 Texture::mipLevels() const
 	{
 		return SIV3D_ENGINE(Texture)->getMipLevels(m_handle->id());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mipSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	Size Texture::mipSize(const uint32 level) const
+	{
+		if (isEmpty() || (mipLevels() <= level))
+		{
+			return{ 0, 0 };
+		}
+		return ImageProcessing::CalculateMipmapSize(size(), level);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -511,6 +576,58 @@ namespace s3d
 	{
 		const Vec2 topLeft = pos.movedBy(size() * -0.5);
 		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawCover
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawCover(const RectF& rect, const ColorF& diffuse) const
+	{
+		return drawCover(rect, Anchor::Center, diffuse);
+	}
+
+	RectF Texture::drawCover(const RectF& rect, const Anchor anchor, const ColorF& diffuse) const
+	{
+		const Size baseSize = size();
+		return detail::DrawTextureCover(*this, baseSize.x, baseSize.y, FloatRect{ 0, 0, 1, 1 }, rect, anchor, diffuse);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawClipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawClipped(const double x, const double y, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		return detail::DrawTextureClipped(*this, x, y, size.x, size.y, FloatRect{ 0, 0, 1, 1 }, clipRect, diffuse);
+	}
+
+	RectF Texture::drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		return drawClipped(pos.x, pos.y, clipRect, diffuse);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawAtClipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::drawAtClipped(const double x, const double y, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		return detail::DrawTextureClipped(*this, (x - size.x * 0.5), (y - size.y * 0.5),
+			size.x, size.y, FloatRect{ 0, 0, 1, 1 }, clipRect, diffuse);
+	}
+
+	RectF Texture::drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse) const
+	{
+		return drawAtClipped(pos.x, pos.y, clipRect, diffuse);
 	}
 
 	////////////////////////////////////////////////////////////////

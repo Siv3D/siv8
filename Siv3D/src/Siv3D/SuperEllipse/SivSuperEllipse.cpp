@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
-# include <Siv3D/LineCap.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
@@ -254,6 +254,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::SuperEllipseFrame(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::SuperEllipseFrame(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -371,13 +419,7 @@ namespace s3d
 			return *this;
 		}
 
-		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
-
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
-			Abs(static_cast<float>(thickness)), false,
-			CloseRing::Yes,
-			color.toFloat4());
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipseFrame(*this, static_cast<float>(thickness), color.toFloat4());
 
 		return *this;
 	}
@@ -389,13 +431,7 @@ namespace s3d
 			return *this;
 		}
 
-		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
-
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
-			Abs(static_cast<float>(thickness)), false,
-			CloseRing::Yes,
-			pattern);
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipseFrame(*this, static_cast<float>(thickness), pattern);
 
 		return *this;
 	}

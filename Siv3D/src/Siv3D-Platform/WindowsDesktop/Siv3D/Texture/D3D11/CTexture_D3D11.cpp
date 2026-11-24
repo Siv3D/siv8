@@ -14,6 +14,11 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/Texture/TextureUtility.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
+# include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/ScopeExit.hpp>
 
 namespace s3d
 {
@@ -105,6 +110,13 @@ namespace s3d
 
 		// 4x MSAA サポート状況を取得
 		m_multiSampleSupportTable = CheckMultiSampleSupport(m_device);
+		for (size_t i = 1; i < m_filteringSupport.size(); ++i)
+		{
+			const TextureFormat format{ static_cast<TexturePixelFormat>(i) };
+			UINT support = 0;
+			m_filteringSupport[i] = SUCCEEDED(m_device->CheckFormatSupport(static_cast<DXGI_FORMAT>(format.DXGIFormat()), &support))
+				&& ((support & D3D11_FORMAT_SUPPORT_SHADER_SAMPLE) != 0);
+		}
 
 		// null Texture を管理に登録
 		{
@@ -159,7 +171,7 @@ namespace s3d
 		}
 	}
 
-	Texture::IDType CTexture_D3D11::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::create(const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -168,7 +180,7 @@ namespace s3d
 
 		std::unique_ptr<D3D11Texture> texture;
 
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
+		if (mipmaps.empty())
 		{
 			const TextureFormat format = (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm);
 			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image.size(), std::as_bytes(std::span{ image }), format, desc);
@@ -216,12 +228,13 @@ namespace s3d
 
 	Texture::IDType CTexture_D3D11::create(const BCnData& bcnData)
 	{
-		if (not bcnData)
+		const auto mipmaps = GetValidBCnMipmaps(bcnData);
+		if (mipmaps.empty())
 		{
 			return Texture::IDType::Null();
 		}
 
-		std::unique_ptr<D3D11Texture> texture = std::make_unique<D3D11Texture>(m_device, bcnData);
+		std::unique_ptr<D3D11Texture> texture = std::make_unique<D3D11Texture>(m_device, bcnData.size, bcnData.format, mipmaps);
 
 		if (not texture->isInitialized())
 		{
@@ -257,6 +270,188 @@ namespace s3d
 
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RenderTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture::IDType CTexture_D3D11::createRender(const Size& size, const std::span<const Byte> data,
+		const TextureFormat& format, TextureDesc desc, const ColorF& color)
+	{
+		if (not IsValidRenderTexture(size, data, format))
+		{
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, m_context, size, data, format, desc, color);
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	Texture::IDType CTexture_D3D11::createMSRender(const Size& size, const TextureFormat& format,
+		TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+	{
+		if (((sampleCount != 2) && (sampleCount != 4)) || not IsValidRenderTexture(size, {}, format))
+		{
+			LOG_FAIL("MSRenderTexture: Invalid size, format, or sample count");
+			return Texture::IDType::Null();
+		}
+		desc.sRGB = format.isSRGB();
+		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, m_context, size, std::span<const Byte>{}, format, desc, color, sampleCount);
+		if (not texture->isInitialized())
+		{
+			LOG_FAIL(fmt::format("MSRenderTexture: Unsupported settings or allocation failure (size = {}x{}, format = {}, samples = {}, mipmaps = {})",
+				size.x, size.y, format.name().toUTF8(), sampleCount, desc.hasMipmap));
+			return Texture::IDType::Null();
+		}
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	processRenderTextures
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_D3D11::processRenderTextures(const std::span<const detail::TextureProcessingPass> passes)
+	{
+		using Kernel = detail::TextureProcessingKernel;
+		std::array<detail::TextureProcessingBinding, detail::MaxProcessingPasses> bindings;
+		bool draws = false;
+		bool usesGaussian = false;
+		const auto validateFiltering = [this](const Texture::IDType id)
+		{
+			if (not m_filteringSupport[static_cast<size_t>(getFormat(id).value())])
+			{
+				throw Error{ U"RenderTextureOps: this device cannot linearly filter the texture format" };
+			}
+		};
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			if (pass.kernel == Kernel::Copy)
+			{
+				continue;
+			}
+			draws = true;
+			usesGaussian |= (pass.kernel == Kernel::Gaussian);
+			if (pass.filter == TextureFilter::Linear)
+			{
+				validateFiltering(pass.source);
+				if (pass.secondary != Texture::IDType::Null())
+				{
+					validateFiltering(pass.secondary);
+				}
+			}
+			bindings[i] = detail::MakeTextureProcessingBinding(pass, getSize(pass.source),
+				(pass.secondary == Texture::IDType::Null()) ? Size{ 1, 1 } : getSize(pass.secondary));
+		}
+		auto* constants = draws ? m_processingConstants._base() : nullptr;
+		auto* samples = usesGaussian ? m_gaussianSamples._base() : nullptr;
+		if ((draws && not constants) || (usesGaussian && not samples))
+		{
+			throw InternalEngineError{ "RenderTextureOps: constant buffer creation failed" };
+		}
+		// flush() ends output and SRV bindings; logical Renderer2D settings stay untouched.
+		SIV3D_ENGINE(Renderer2D)->flush();
+		const ScopeExit unbind{ [&]
+		{
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, 2> empty{};
+			m_context->PSSetShaderResources(0, 2, empty.data());
+		} };
+		auto* shaders = SIV3D_ENGINE(EngineShader);
+		auto* shader = SIV3D_ENGINE(Shader);
+		if (draws)
+		{
+			// Use the renderer's state caches so the following normal flush restores them correctly.
+			m_pRenderer->getBlendState().set(BlendState::Opaque, Float4{ 0, 0, 0, 0 }, 1);
+			m_pRenderer->getRasterizerState().set(RasterizerState::SolidCullNone, false);
+			m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+			m_context->IASetInputLayout(nullptr);
+			m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			shader->setConstantBufferVS(0, constants);
+			shader->setConstantBufferPS(0, constants);
+			if (usesGaussian)
+			{
+				shader->setConstantBufferPS(1, samples);
+			}
+			shader->setVS(shaders->getVS(EngineVS::TextureProcessing).id());
+		}
+		for (size_t i = 0; i < passes.size(); ++i)
+		{
+			const auto& pass = passes[i];
+			m_context->OMSetRenderTargets(0, nullptr, nullptr);
+			const std::array<ID3D11ShaderResourceView*, 2> empty{};
+			m_context->PSSetShaderResources(0, 2, empty.data());
+			if (pass.kernel == Kernel::Copy)
+			{
+				const D3D11_BOX box{ static_cast<UINT>(pass.sourceRect.x), static_cast<UINT>(pass.sourceRect.y), 0,
+					static_cast<UINT>(pass.sourceRect.x + pass.sourceRect.w), static_cast<UINT>(pass.sourceRect.y + pass.sourceRect.h), 1 };
+				m_context->CopySubresourceRegion(getTexture(pass.destination), 0, pass.destinationRect.x, pass.destinationRect.y, 0,
+					getTexture(pass.source), 0, &box);
+				continue;
+			}
+			auto* target = getRTV(pass.destination);
+			m_context->OMSetRenderTargets(1, &target, nullptr);
+			const D3D11_VIEWPORT viewport{ static_cast<float>(pass.destinationRect.x), static_cast<float>(pass.destinationRect.y),
+				static_cast<float>(pass.destinationRect.w), static_cast<float>(pass.destinationRect.h), 0.0f, 1.0f };
+			m_context->RSSetViewports(1, &viewport);
+			m_processingConstants = bindings[i].constants;
+			if (pass.kernel == Kernel::Gaussian)
+			{
+				std::copy(pass.samples.begin(), pass.samples.end(), m_gaussianSamples->begin());
+				m_gaussianSamples.setActiveSize(pass.samples.size_bytes());
+			}
+			if (not m_processingConstants._update_if_dirty()
+				|| ((pass.kernel == Kernel::Gaussian) && not m_gaussianSamples._update_if_dirty()))
+			{
+				throw InternalEngineError{ "RenderTextureOps: constant buffer update failed" };
+			}
+			shader->setPS(shaders->getPS(bindings[i].shader).id());
+			m_context->PSSetShaderResources(0, 1, getSRVPtr(pass.source));
+			if (pass.secondary != Texture::IDType::Null())
+			{
+				m_context->PSSetShaderResources(1, 1, getSRVPtr(pass.secondary));
+			}
+			m_pRenderer->getSamplerState().setPS(0, (pass.filter == TextureFilter::Nearest) ? SamplerState::ClampNearest : SamplerState::ClampLinear);
+			m_context->Draw(3, 0);
+		}
+	}
+
+	void CTexture_D3D11::resolveMSRT(const Texture::IDType handleID)
+	{
+		auto* texture = m_textures[handleID];
+		if (texture->getDesc().type != TextureType::MSRender)
+		{
+			return;
+		}
+		texture->resolveMSRT(m_context);
+	}
+
+	uint32 CTexture_D3D11::getSampleCount(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getDesc().multiSampleCount;
+	}
+
+	void CTexture_D3D11::clearRT(const Texture::IDType handleID, const ColorF& color)
+	{
+		SIV3D_ENGINE(Renderer2D)->flush();
+		m_textures[handleID]->clearRT(m_context, color);
+	}
+
+	bool CTexture_D3D11::readRT(const Texture::IDType handleID, const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		SIV3D_ENGINE(Renderer2D)->flush();
+		return m_textures[handleID]->readRT(m_device, m_context, destination, mipLevel);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -348,9 +543,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
+	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect, const bool wait)
 	{
-		return m_textures[handleID]->fillRegion(m_context, color, rect);
+		return m_textures[handleID]->fillRegion(m_context, color, rect, wait);
 	}
 
 	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
@@ -366,7 +561,12 @@ namespace s3d
 
 	void CTexture_D3D11::generateMips(const Texture::IDType handleID)
 	{
-		m_textures[handleID]->generateMipmaps(m_context);
+		auto* texture = m_textures[handleID];
+		if ((texture->getDesc().type == TextureType::Render) || (texture->getDesc().type == TextureType::MSRender))
+		{
+			SIV3D_ENGINE(Renderer2D)->flush();
+		}
+		texture->generateMipmaps(m_context);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -389,5 +589,10 @@ namespace s3d
 	ID3D11ShaderResourceView** CTexture_D3D11::getSRVPtr(const Texture::IDType handleID)
 	{
 		return m_textures[handleID]->getSRVPtr();
+	}
+
+	ID3D11RenderTargetView* CTexture_D3D11::getRTV(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getRTV();
 	}
 }

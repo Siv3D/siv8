@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -12,8 +12,10 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Spline.hpp>
+# include <Siv3D/Spline2D.hpp>
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include "../ImageDraw/ShapeExtensions.hpp"
 # include <Siv3D/Polygon/LineStringBuffer.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -843,7 +845,12 @@ namespace s3d
 
 	const LineString& LineString::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return paint(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 
@@ -881,6 +888,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	toSpline
+	//
+	////////////////////////////////////////////////////////////////
+
+	Spline2D LineString::toSpline(const CloseRing closeRing, const CatmullRomParameterization parameterization) const
+	{
+		return Spline2D::FromCatmullRom(m_vertices, closeRing, parameterization);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	overwrite
 	//
 	////////////////////////////////////////////////////////////////
@@ -897,7 +915,12 @@ namespace s3d
 
 	const LineString& LineString::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return overwrite(dst, lineCap, lineCap, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const LineCap startCap, const LineCap endCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, startCap, endCap);
 		return *this;
 	}
 
@@ -932,6 +955,64 @@ namespace s3d
 	const LineString& LineString::overwriteClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paintArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineArrow(dst, std::span<const Vec2>{ data(), size() }, startCap, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArrow(dst, LineCap::Flat, thickness, headSize, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwriteArrow(Image& dst, const LineCap startCap, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineArrow(dst, std::span<const Vec2>{ data(), size() }, startCap, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineDoubleArrow(dst, std::span<const Vec2>{ data(), size() }, thickness, headSize, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteDoubleHeadedArrow(Image& dst, const double thickness, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		detail::ImageShape::PolylineDoubleArrow(dst, std::span<const Vec2>{ data(), size() }, thickness, headSize, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -1045,6 +1126,44 @@ namespace s3d
 		return *this;
 	}
 
+	const LineString& LineString::draw(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineStyled(m_vertices, CloseRing::No, static_cast<float>(thickness), style, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, color);
+	}
+
+	const LineString& LineString::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineArrow(*this, startCap, static_cast<float>(thickness), headSize, color.toFloat4());
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::drawDoubleHeadedArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if ((thickness <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineDoubleHeadedArrow(*this, static_cast<float>(thickness), headSize, color.toFloat4());
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawClosed
@@ -1098,6 +1217,14 @@ namespace s3d
 		
 		return *this;
 	}
+
+	const LineString& LineString::drawClosed(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		if (thickness == 0.0) return *this;
+		SIV3D_ENGINE(Renderer2D)->addPolylineStyled(m_vertices, CloseRing::Yes, static_cast<float>(thickness), style, color.toFloat4());
+		return *this;
+	}
+
 
 	////////////////////////////////////////////////////////////////
 	//

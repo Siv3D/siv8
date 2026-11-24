@@ -2,10 +2,17 @@
 
 [AGENTS.md](../../AGENTS.md) defines repository-wide rules;
 [docs/AGENTS.md](../AGENTS.md) defines documentation ownership and organization.
-This page describes the existing validation workflows.
+This page describes the existing validation workflows. For public-header
+Doxygen changes, follow [API documentation](api-documentation.md).
 
-For the vendored window library and its local integration changes, see
-[GLFW maintenance](glfw.md).
+For vendored library integration and updates, see
+[GLFW maintenance](glfw.md), [fast_float maintenance](fast-float.md),
+[fmt maintenance](fmt.md), [miniaudio maintenance](miniaudio.md),
+[simdutf maintenance](simdutf.md),
+[Parallel Hashmap maintenance](parallel-hashmap.md),
+[Wuffs maintenance](wuffs.md), [nanoflann maintenance](nanoflann.md),
+[stb_image_resize2 maintenance](stb-image-resize2.md),
+[libcpprime maintenance](libcpprime.md), and [polylabel maintenance](polylabel.md).
 
 ## Build and test
 
@@ -42,18 +49,20 @@ immediately. This lock does not coordinate manually launched tests or IDE builds
 Console (`.txt`) and XML reports are retained in
 `WindowsDesktop/Intermediate/TestReports/` and can be
 removed when no longer needed. After reading a complete XML report from a
-zero-exit run, the runner appends captured test stdout/stderr to the console
-report and prints it, including benchmark tables. The empty `runner.lock` file may remain after a
-run; its existence does not indicate a held lock. The early-exit block in
+zero-exit run, the runner appends captured test stdout/stderr from
+`TestCase/OverallResult` to the console report and prints it, including benchmark
+tables. The empty `runner.lock` file may remain after a run; its existence does
+not indicate a held lock. The early-exit block in
 `WindowsDesktop/Main.cpp` is required by this workflow. Windows registration
 validation checks the Visual Studio project and its filters; it does not
 validate the Xcode project.
 
 After changing the runner, use `python tools/test_windows_runner.py` to check its
-success/failure handling, argument forwarding, lock release and timeout cleanup
-in a disposable checkout. This requires Windows' .NET Framework C# compiler and
+success/failure handling, captured output, argument forwarding, lock release and
+timeout cleanup in a disposable checkout. This requires Windows' .NET Framework C# compiler and
 PowerShell 7; it uses a small fake application and does not build or launch Siv3D.
-Also run the real suite to verify the build and application integration.
+The fixture must match the vendored XML reporter's structure. Also run the real
+suite to verify the build and application integration.
 
 On macOS, run from the repository root, outside the sandbox:
 
@@ -70,6 +79,8 @@ The runner checks test registration, then builds and launches the application.
 `CONFIGURATION` selects the build configuration (default `Debug`); other arguments
 are passed to the shared Catch2 runner. `--test-only` and `--test-verbose` are
 application options; the latter enables the normal engine logs.
+Preserve the `--test-only` early-exit block in `macOS/Main.cpp`; keep test-only
+logging and configuration in `Test/`.
 On macOS, the shared runner also consumes Xcode's automatically supplied
 `-NSDocumentRevisionsDebugMode YES` (or `NO`) preference before parsing test
 options. Running from Xcode with no user arguments executes the default suite.
@@ -81,23 +92,251 @@ when launching the macOS runner or the executable to list cases. Windows' runner
 reserves listing options because it requires actual test execution. Unknown
 options fail instead of being ignored.
 
-Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.0/docs/command-line.md):
+Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.1/docs/command-line.md):
 `Array*`, `*Mesh3D*`, exact names, and tags are supported. This alias does not
 emulate the former framework's full filter syntax. The `[.benchmark]` tag hides
 the opt-in TextFileReader benchmark from the default suite. An explicit matching
-name, wildcard, or tag runs it; there is no `--no-skip` option. Use
-`~[.benchmark]` alongside a broad positive filter to exclude it.
+name, wildcard, or tag runs it; there is no `--no-skip` option. Put
+`~[benchmark]` before a name pattern to exclude benchmark cases.
+
+### Windows Release test optimization
+
+The [Windows test application](../../WindowsDesktop/Siv3D-Test.vcxproj) defaults
+to `/O2` with `WholeProgramOptimization=false` for Release x64. MSVC 14.52
+(v145) can crash during link-time code generation (LTCG) when linking the full
+test executable. The engine static library already compiles without `/GL`.
+The test setting keeps optimization within each translation unit and moves
+code generation from the link back to the compilation of each test source.
+In curve benchmarks, caching spline distance queries gave a large speedup
+with either setting, while two nearly tied methods could change order.
+
+Build both sides of a performance comparison with the same toolset and LTCG
+setting. For a close result, a comparison with a historical LTCG build, or a
+performance claim about an application that ships with LTCG, repeat the
+measurement with LTCG enabled on the target that contains the timed caller.
+Record the flags and target alongside the timings.
+
+Check the [Visual Studio Stable release history](https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-history)
+monthly for a new MSVC toolset or relevant compiler or linker fixes. When
+MSBuild selects such a version, record the compiler and linker versions and
+compare both settings in separate build trees using the same sources and
+Release engine library. To enable LTCG for the
+test application, append `/p:WholeProgramOptimization=true` to the
+[application-only rebuild command](#windows-incremental-build-failures).
+Repeat clean builds of the full test target, then edit one representative test
+source and build again with the same setting to measure a developer relink.
+Record compile, link and total times. Run the full suite with `-SkipBuild`
+on each configuration's verified executable and check the complete XML reports.
+Consider restoring LTCG when the full target links reliably, the suite passes,
+and the measured benefit justifies its cost during development.
+
+### Draw submission benchmark
+
+The opt-in [draw submission benchmark](../../Test/Test_Renderer2DDrawSubmission.cpp)
+measures the CPU work inside public drawing calls, including vertex generation
+and command registration. It excludes `System::Update()`, command replay and
+presentation; the existing pipeline benchmark measures a different interval.
+Run it alone in Release, with other builds and benchmarks stopped:
+
+```sh
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=Renderer2D.draw_submission_cpu_benchmark'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -Configuration Release -TestArguments '--test-case=Renderer2D.draw_submission_cpu_benchmark'
+```
+
+The benchmark uses offscreen geometry, disables VSync for its duration, warms
+the CPU before each sample, and restores the scene and shader settings. On
+macOS, it temporarily requests interactive thread QoS to reduce scheduling
+variation. Each material is measured with stable state, alternating color/blend state, custom
+VS, custom PS, and both custom stages. The custom stages use the corresponding
+engine shaders so the same workload is available on both backends. Triangle
+and draw counts are checked outside the timed region.
+
+Output reports elapsed median/p10/p90 (`ns`, `p10`, `p90`) and median thread CPU
+time (`cpu_ns`), all in nanoseconds per draw. Thread CPU timer resolution depends
+on the OS; retain the elapsed distribution as well. Compare repeated runs of
+saved before/after Release builds in alternating order under the same conditions.
+Inspect optimized code for additional calls, branches or allocations if a result
+is unclear. Timing differences within run-to-run variation do not establish a
+speedup, and these CPU measurements do not measure GPU time or application FPS.
+
+### Window UI tests
+
+Tests that enter fullscreen, maximize/minimize, move between monitors, or warp
+the desktop pointer use `[.window-ui]`. They are excluded when no filter is
+specified. Pure scene-policy calculations, rendering, and local window resize
+checks remain in the default suite; the default suite still opens a test window.
+Keep the existing test bodies, restoration order, and 500 ms transition pauses
+when assigning this tag. Do not skip individual assertions based on the run mode.
+
+Use the shared tag to run these native UI checks across all test files:
+
+```sh
+./macOS/run-tests.sh '--test-case=[window-ui]'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=[window-ui]'
+```
+
+The existing `[.fullscreen]` and `[.screen-coordinates]` tags remain available:
+select `[fullscreen]` for fullscreen transitions across all suites, or
+`[screen-coordinates]` for monitor placement and pointer checks. Selecting
+`WindowFullscreen.*` only runs cases in that suite, not fullscreen cases in
+`WindowSceneSync` or `WindowMacOS`.
+
+A matching name or wildcard also selects hidden tests. For focused runs without
+the UI group, put its exclusion before each name pattern:
+
+```sh
+./macOS/run-tests.sh '--test-case=~[window-ui]Scene*,~[window-ui]WindowSceneSync.*'
+```
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=~[window-ui]Scene*,~[window-ui]WindowSceneSync.*'
+```
+
+Commas separate alternative filters. Repeat the exclusion in each alternative;
+a standalone comma-separated exclusion is not a global exclusion. An explicit
+`*` also includes other hidden groups such as benchmarks. Prefer no filter for
+the normal full suite. To inspect selection without executing UI tests, launch
+the built executable with `--test-only --list-tests` and the intended filter;
+the Windows wrapper reserves listing options for direct executable use.
+
+For tag-only changes, confirm that test bodies are unchanged, inspect case names
+and tags, and run the normal suite. Check selection as sets: the default contains
+all non-hidden cases, no hidden cases, and the UI group contains the intended
+native scenarios. Avoid fixed expected counts across platforms. Retagging alone
+does not require replaying fullscreen transitions.
+
+Run the Windows initial-placement check in a fresh process on its own so that
+`SetPos()` runs on the initially hidden HWND before the first `System::Update()`:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ScreenCoordinates.Windows.initial_placement'
+```
+
+The same case can run later in the full suite; its report records initial
+visibility. See [window validation](../window/README.md#validation) for native
+coverage and required monitor conditions.
+
+### Validation evidence
+
+Record the host, backend, configuration, selected cases, report outcome, and any
+conditions that were unavailable or skipped. Keep logs and detailed results with
+the runner's artifacts; durable guides describe procedures, and `TODO.md` holds
+remaining work. Distinguish injected inputs, real native API paths, physical
+key/mouse observation, and OS setting changes or monitor unplugging. One does
+not establish the results of another. Concurrency tests supplement ownership and
+lock-scope review; passing tests alone does not establish freedom from data races.
+
+### Inspecting D3D11 upload code generation
+
+When a change affects how the CPU writes to a mapped D3D11 buffer or texture,
+inspect the affected upload paths and any shared copy or fill helper they use.
+The same procedure can help compare MSVC versions when investigating an upload
+regression. Build and test in Release x64 with the [Windows runner](#build-and-test).
+Use the linked `Siv3D-Test.exe` beside its matching PDB so the disassembler
+can resolve names.
+
+From the repository root, use PowerShell 7 with the matching Visual Studio x64
+tools and `rg` on `PATH`. Locate the affected write mappings, including calls that
+select the map mode through a variable. Skip intentional `D3D11_MAP_READ`
+paths such as screen capture. Locate the upload functions and CRT entry points
+in this build. Their addresses can change at every link.
+
+```powershell
+rg -n -- '->Map\(|D3D11_MAP_WRITE' Siv3D/src/Siv3D-Platform/WindowsDesktop
+$exe = 'WindowsDesktop/Intermediate/Siv3D-Test/Release/Siv3D-Test.exe'
+$out = 'WindowsDesktop/Intermediate/TestReports/d3d11-upload-' + (Get-Date -Format yyyyMMdd-HHmmss)
+New-Item -ItemType Directory -Path $out | Out-Null
+git rev-parse HEAD | Set-Content "$out/build.txt"
+(Get-Item (Get-Command cl.exe).Source).VersionInfo.FileVersion | Add-Content "$out/build.txt"
+$hash = (Get-FileHash $exe -Algorithm SHA256).Hash
+if ($hash -ne (Get-FileHash 'WindowsDesktop/App/Siv3D-Test.exe').Hash) { throw 'Test executable differs from linked image.' }
+$hash | Add-Content "$out/build.txt"
+dumpbin /pdbpath:verbose $exe
+$symbols = '^\?(commitBuffers@D3D11VertexBufferManager2D|_internal_update@ConstantBuffer_D3D11|fill(Region)?@D3D11Texture|FillWith(Color|Image)@s3d)|^(memcpy|memset)\w*:'
+dumpbin /disasm:nobytes $exe | rg -A 1 $symbols | Tee-Object "$out/entries.txt"
+```
+
+Use the address on the instruction line below a label to save a disassembly
+excerpt. Follow reachable instructions, extending the range for loops, branch
+targets and callees as needed. If a helper was inlined, follow its code in the
+caller. Add the enclosing function of any new write mapping to `$symbols`.
+
+```powershell
+$va = Read-Host 'First instruction address in hex'
+$start = [Convert]::ToUInt64($va, 16)
+$range = '/range:0x{0:X},0x{1:X}' -f $start, ($start + 0x7FF)
+dumpbin /disasm:nobytes $range $exe | Tee-Object "$out/$va.asm"
+```
+
+Trace the successful `Map` through `Unmap`. Loading the `pData` field obtains
+the pointer. Check each access to the **bytes it points to**, including aliases
+formed by adding a buffer offset or row pitch.
+
+| Upload path | What to trace in Release code |
+| --- | --- |
+| `D3D11VertexBufferManager2D::commitBuffers` | For both vertex and index copies, follow `WRITE_DISCARD` and `WRITE_NO_OVERWRITE`. The source is the corresponding CPU array and the destination is the mapped buffer plus its write offset. |
+| `ConstantBuffer_D3D11::_internal_update` | The source is the caller's data for the active byte count. The mapped constant buffer receives the stores. |
+| `D3D11Texture::fill` and `fillRegion` with image data | In `FillWithImage`, trace the contiguous copy and the pitched row loop. Source rows advance from the input span and destination rows from the mapping. |
+| `D3D11Texture::fill` and `fillRegion` with a color | In `FillWithColor` and its helpers, check the byte fill, repeated color blocks, and short tails for each pixel width, both contiguous and pitched. Color bytes must come from registers or the CPU color block throughout. |
+
+Follow calls into the linked `memcpy` and `memset`, including their size and
+CPU dispatch branches. At a Windows x64 `memcpy` call, `RCX` is the destination,
+`RDX` the source and `R8` the byte count. For `rep movs`, trace where `RSI`
+(source) and `RDI` (destination) came from. Copying from CPU memory to the mapping
+passes. Seeding a mapped block and then using it as the source for later blocks
+is a readback. Also flag explicit loads and read-modify-write instructions such
+as `and dword ptr [dst], 0`. Microsoft describes the cost of these reads in the
+[D3D11 Map remarks](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-map#dont-read-from-a-subresource-mapped-for-writing).
+
+Record the verdict for each inspected mapping alongside the excerpts and the runner's
+report. For a readback, retain the instructions that establish the source
+address and the instruction that reads it. After a fix, repeat the inspection
+and [measure the affected upload on the backend](../renderer2d/README.md#measuring-cpu-writes-to-upload-buffers).
+
+### Catch2
 
 The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
 and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the
 unmodified amalgamated distribution from the pinned
-[v3.16.0 release](https://github.com/catchorg/Catch2/releases/tag/v3.16.0), under the
+[v3.16.1 release](https://github.com/catchorg/Catch2/releases/tag/v3.16.1), under the
 [Boost Software License](../../Test/ThirdParty/Catch2/LICENSE.txt). Both test
 projects compile the implementation directly with `CATCH_AMALGAMATED_CUSTOM_MAIN`;
 `RunTest()` owns the session. Updating Catch2 requires replacing both distribution
-files together and validating both platform projects. The Windows test target
-uses its normal Release optimization settings, including LTCG. The external
-implementation opts out of the application's PCH and forced includes.
+files together and validating both platform projects. The Catch2 implementation
+uses the test target's optimization settings and opts out of the application's
+PCH and forced includes.
+
+Catch2 3.16.0 left MSVC optimization disabled for functions defined after its
+benchmarking header, including benchmark code in the test translation unit.
+The guard before `#pragma optimize("", on)` used `_MSVC_VER` in place of
+`_MSC_VER`. For a historical engine comparison, check the header used by each
+test build and rebuild its PCH and test objects with the corrected guard.
+Release flags such as `/O2` and `/LTCG` alone cannot establish that the timed
+code was optimized. To measure the effect of the guard itself, link both test
+variants to the same engine library and change only that line in an isolated
+copy of 3.16.0. Record the header patch with the results since both variants
+still report 3.16.0 in the XML.
+
+When updating, compare the existing files with their recorded release and verify
+the downloaded release assets against upstream's SHA-256 digests. Keep the
+distribution files unmodified; project settings and the shared adapter own local
+configuration. Catch2 is a test-only dependency, so its license is retained here
+and its version is listed under test dependencies in `ThirdParty.md`.
+
+Run `Test::*`, `ImageDrawingTestHelper.*`, and `MetalFrameErrors.*` with both
+console and XML reporters before the full host suite. The image-helper tests
+also check the custom `Image` stringifier and matcher diagnostics. Verify the
+XML totals and captured-output paths used by the Windows runner, including
+failure, skip-only, and unmatched-filter runs.
+Passing macOS reporter checks does not validate the Windows process runner or
+MSVC-specific compilation behavior. Catch2 reporter callbacks must not throw;
+keep fallible setup in reporter constructors if custom reporters are added.
 
 [Siv3DTestFramework.hpp](../../Test/Siv3DTestFramework.hpp) supplies the shared
 framework include, argument adapter and `Test::Approx`. The comparison helper
@@ -110,6 +349,27 @@ Xcode's `Siv3D-Test` Sources, Visual Studio's test project, and its filters.
 Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
+
+### Log assertions
+
+Keep `std::clog` redirection inside dedicated test helpers that return the captured
+text before assertions run. Catch2's capturing reporters, including XML, retarget
+the stream while processing assertions, so a capture must not span `CHECK`,
+`REQUIRE`, or other Catch2 reporting calls, including those in called helpers.
+[Test_MetalFrameErrors.cpp](../../Test/Test_MetalFrameErrors.cpp) separates capture
+of error reporting, completion callbacks, draining, and concurrent completion.
+Each helper restores the previous stream buffer through RAII and joins its workers
+before reading the captured text. Stream redirection is process-wide; tests using
+it must not run concurrently with other tests that write to or redirect that stream.
+
+After changing log capture, validate the focused tests with both reporters on
+macOS, then run the full suite once:
+
+```sh
+./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter console
+./macOS/run-tests.sh '--test-case=MetalFrameErrors.*' --reporter xml --out /tmp/metal-frame-errors.xml
+./macOS/run-tests.sh --reporter xml --out /tmp/siv3d-tests.xml
+```
 
 ### Isolated Image checks on macOS
 
@@ -145,12 +405,37 @@ when the script supplies `SIV3D_IMAGE_ALLOCATION_TEST`; the engine and its norma
 test application contain no allocation override. These checks supplement the full
 engine suite and do not verify the Windows allocator or MemorySanitizer behavior.
 
+### Clang warnings on macOS
+
+Audit both Debug and Release with the existing warning settings. For a complete
+rebuild, clean with a temporary product directory, then run the normal runner
+without that override:
+
+```sh
+xcodebuild -quiet -project macOS/OpenSiv3D.xcodeproj -scheme Siv3D-Test \
+    -configuration Release -destination "platform=macOS,arch=$(uname -m)" \
+    CONFIGURATION_BUILD_DIR=/tmp/siv8-warning-clean CODE_SIGNING_ALLOWED=NO clean
+CONFIGURATION=Release ./macOS/run-tests.sh > /tmp/siv8-warnings-release.log 2>&1
+```
+
+Repeat with `Debug`. The temporary product path keeps `clean` away from tracked
+resources in `macOS/App/`; do not mark that directory as build-system-deletable.
+The build and test log remains at the explicit `/tmp/` path for inspection.
+Classify diagnostics by source ownership and instantiation traces: the embedded
+AGG headers under `Font/GlyphRenderer/agg/` are also vendored code.
+
+For `-Wdangling` on a `FunctionRef`, keep the callable itself alive for every use
+of the reference. A named `auto` lambda can be passed to functions taking a
+`FunctionRef`; assigning a temporary lambda directly to a stored `FunctionRef`
+does not extend the lambda's lifetime. For `-Wswitch`, explicitly handle enum
+sentinels and intentionally unsupported values while preserving existing behavior.
+
 ### MSVC warnings in tests
 
-Compare clean test-application builds in both Release and Debug with the existing
-`/W4` settings. When the engine library already matches the sources, configuration
-and toolchain, the application-only `Rebuild` command below regenerates every test
-translation unit without rebuilding the engine. Keep the build logs and follow
+For warning cleanup, compare clean test-application builds in Release and Debug
+with the existing `/W4` settings. When the engine library already matches the
+sources, configuration and toolchain, the application-only `Rebuild` command below
+regenerates every test translation unit without rebuilding the engine. Keep the build logs and follow
 template instantiation traces: a warning reported in a standard-library header
 can originate in either an expected test value or an engine template.
 
@@ -172,39 +457,44 @@ exercises. If the warning originates in an engine implementation, keep its test
 coverage and handle the implementation separately from test-only cleanup. Avoid
 blanket warning suppression or edits to vendored Catch2 sources.
 
+For engine warning cleanup, first rebuild the solution so diagnostics include
+every engine translation unit. Retain the existing warning levels and separate
+vendored diagnostics by their instantiation traces, not just the header named
+in the first diagnostic. Then rebuild and run the full suite in both Release
+and Debug; their macros and optimization can expose different warnings.
+Use `[[maybe_unused]]` for parameters used only by some template or platform
+branches, and omit names of intentionally unused implementation parameters.
+Keep parameter names and unused warnings for planned engine functionality;
+do not silence these by adding `[[maybe_unused]]` or omitting their names.
+For possibly uninitialized locals, check every assignment and use before
+choosing explicit initialization or simpler control flow; do not introduce
+fallback geometry or exceptional-input checks just to silence a diagnostic.
+
 ### Windows incremental build failures
 
-If a test run displays `EXCEPTION_ILLEGAL_INSTRUCTION`, inspect the build and
-runner reports before rerunning it. An incomplete Catch2 XML report is a failed
-run even when the application exits with code zero. Repeatedly running the same
-executable can repeatedly display exception dialogs without improving the diagnosis.
-
-A texture-lifetime regression investigation encountered this in
-`TOML.getOpt_getOr_get`: the focused texture tests passed, while the full suite
-and an isolated TOML run terminated. Restoring the renderer source and rebuilding
-incrementally produced the same termination. The engine had been recompiled, but
-the test application still reused compilation/link-time artifacts. Rebuilding the
-test application, including its PCH, object files and LTCG artifacts, made the
-full suite pass without changing TOML code. This supports stale or inconsistent
-incremental artifacts as the cause; it does not identify the exact faulty artifact
-or establish that every illegal-instruction exception has this cause.
-
-Use this order when investigating a recurrence:
+Distinguish compiler/linker failures from runtime failures. Treat MSVC `C1001`
+as a likely toolchain issue and preserve its build log before changing source.
+Document reusable workarounds; retain incident-specific evidence in reports.
+For an exception such as `EXCEPTION_ILLEGAL_INSTRUCTION` or an incomplete test
+report after an incremental build, use the diagnosis below. Missing or incomplete
+XML is a failed run even if the process exits with zero. Clean rebuilding is a
+diagnostic step, not a requirement for every change.
 
 1. Preserve the console/XML reports under `WindowsDesktop/Intermediate/TestReports/`.
-   Record the last test started, the exception, configuration, toolchain and whether
-   the build reused object files or LTCG output. The last test name is a starting
-   point for investigation, not proof that its implementation is faulty.
+   Keep the build log too. Record the last test started, the exception, configuration,
+   toolchain, LTCG setting and whether the build reused intermediate files. The last test
+   name is a starting point for investigation, not proof that its implementation is faulty.
 2. Stop repeated runs of the same binary. Before comparing current and reverted
-   source, establish a clean build. An engine rebuild alone does not ensure that
-   the test application's PCH, objects or LTCG artifacts have been regenerated.
+   source, establish a clean build of the test application, including its PCH,
+   object files and any enabled LTCG output.
 3. With no other runner or IDE build active in this checkout, rebuild the matching
-   configuration using MSBuild `Rebuild`, then run the full suite. Use the commands
+   configuration using MSBuild `Rebuild`, then repeat the failing selection and
+   required regression suite under the same conditions. Use the commands
    below from the repository root in PowerShell 7. Do not manually delete broad
    build directories or alter unrelated source to work around the exception.
-4. Confirm a complete XML report with no failures. If the cleanly rebuilt suite passes,
-   describe the artifact explanation as supported by the result, without claiming
-   a source fix. If the exception persists, preserve the new evidence and investigate
+4. Require complete XML with no failures and inspect the selected cases and skips.
+   A pass after rebuilding alone is not a source fix or proof of the exact faulty artifact.
+   If the exception persists, preserve the new evidence and investigate
    the faulting instruction, call stack and CPU instruction requirements instead
    of continuing blind retries.
 
@@ -234,7 +524,46 @@ For a Debug failure, use `Debug` consistently for the rebuild and runner.
 source or build settings have changed. These manual MSBuild commands do not acquire
 the runner's lock; never run them concurrently with another build or test session.
 
+If a `C1001` diagnostic identifies the compiler under `HostX86/x64/`
+(`CL.exe` or `c2.dll` during code generation), try the matching clean
+rebuild above with `/p:PreferredToolArchitecture=x64` to select the 64-bit host
+compiler. Keep the same target, toolset, configuration, and optimization settings.
+Preserve both build logs and run the full suite after a successful rebuild.
+Changing the host compiler and regenerating build artifacts together does not
+isolate which change avoided the failure.
+
+The 64-bit host is a workaround, not a guarantee: `C1001` can also occur under
+`HostX64/x64/`, including during PCH compilation. Before rebuilding, preserve the
+failed PCH, compiler command line and build state along with the build log and
+any matching Windows Application events or WER report. A diagnostic source
+location alone does not establish a source defect, and success on an otherwise
+identical rebuild does not identify the root cause.
+
+Use `-SkipBuild` for subsequent runner invocations while the sources and build
+settings remain unchanged. The runner does not forward `PreferredToolArchitecture`;
+omitting `-SkipBuild` can switch back to the default host compiler and rebuild
+the application. After a source change, build explicitly with the same host
+compiler choice before using `-SkipBuild` again.
+
+If MSBuild itself exits with an access violation before producing compiler
+diagnostics, preserve its log and the Windows Application error events separately
+from the test application's reports. On a 64-bit host, select the 64-bit MSBuild
+executable explicitly before running the same recovery commands:
+
+```powershell
+$siv3dMSBuild = Join-Path $siv3dVs 'MSBuild/Current/Bin/amd64/MSBuild.exe'
+```
+
+Add `/p:PreferredToolArchitecture=x64` to select the 64-bit compiler host as well;
+the target configuration and toolset stay unchanged. Require a successful build
+and complete full-suite reports before accepting the recovery. A successful run
+with different tool hosts does not establish the cause of the original crash.
+
 ## Performance experiments
+
+The [Renderer2D JoinStyle benchmark](renderer2d-join-benchmark.md) separates
+polygon buffering, triangulation, vertex conversion, and direct mesh emission
+for Triangle and Quad GPU drawing. It measures CPU work and temporary allocations.
 
 The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compares
 the current Win32 reader with the historical `ifstream` implementation and
@@ -244,7 +573,22 @@ The [TextFileReader benchmark](text-file-reader-benchmark.md) measures UTF-8
 whole-file and line reading with generated application workloads, memory/file
 inputs, reusable destinations, and the JSON loading path. It is an opt-in test.
 
+## Test authoring
+
+Keep tests focused on the feature they exercise. Do not force new cases into an
+unrelated test file; add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
+
+Store visual or interactive programs under `Test/Manual/` as self-contained
+Markdown with an English description, execution steps, expected results, and
+complete sample code. Do not leave temporary programs in a platform `Main.cpp`.
+
 ## Test output and configuration
+
+Prefer in-memory checks unless file I/O is under test. Let the runner own output
+setup and cleanup, and restore any process state changed by a test. Configure
+tests with explicit arguments, not ambient environment variables. Use environment
+variables only for platform/tool requirements or environment-handling tests,
+scoped to the relevant process or restored afterward.
 
 [RunTest](../../Test/Siv3DTest.cpp) verifies the platform `App/` working directory
 and clears `Test/output/` before and after the suite. Cleanup failure fails the
@@ -257,9 +601,9 @@ path beneath that root, independent of later working-directory changes.
 Retained output is documented with its producer:
 [Array instrumentation](../array/testing.md#isolated-instrumentation-on-macos),
 [Mesh3D preview](../mesh3d/preview.md), and the complete programs in
-[Test/Manual](../../Test/Manual/). Temporary Python self-test fixtures are removed
-on scope exit. The test configuration policy is in
-[AGENTS.md](../../AGENTS.md#test-output-and-configuration).
+[Test/Manual](../../Test/Manual/). Keep retained artifacts in manual tests or tools
+with documented output locations. Temporary Python self-test fixtures are removed
+on scope exit.
 
 The [RemoveContents Trash check](../../Test/Manual/FileSystemRemoveContentsTrash.md)
 uses a separate macOS application to verify native Trash behavior and documents

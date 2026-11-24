@@ -22,6 +22,8 @@
 
 namespace s3d
 {
+	struct LineStyle;
+
 	enum class LineCap : uint8;
 	struct PatternParameters;
 	struct TexturedCircle;
@@ -839,6 +841,7 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark アンチエイリアスを無効にすると、中心座標と半径を整数に丸めて描画します。
 		const Circle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -852,6 +855,7 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark アンチエイリアスを無効にすると、中心座標と半径を整数に丸めて描画します。
 		const Circle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -945,7 +949,36 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark 線端は LineCap::Flat です。
+		/// @see @ref image_draw_circle_arc
 		const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線端を指定して円弧を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 線端の形状
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& paintArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 両端の線端を指定した円弧を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& paintArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -962,7 +995,303 @@ namespace s3d
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
+		/// @remark 線端は LineCap::Flat です。
+		/// @see @ref image_draw_circle_arc
 		const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 線端を指定して円弧を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param lineCap 線端の形状
+		/// @param startAngle 開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 円弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param innerThickness 基準の円周から内側方向への太さ
+		/// @param outerThickness 基準の円周から外側方向への太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_arc
+		const Circle& overwriteArc(Image& dst, LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 両端の線端を指定した円弧を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param endCap 終点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 角度の大きさ（ラジアン、負は反時計回り）
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArc()
+		const Circle& overwriteArc(Image& dst, LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両側辺を内側へ平行移動して切り詰めた円弧を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 切り詰める前の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 切り詰める前の弧の角度（ラジアン）。負なら反時計回りです。
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param trim 各側辺を垂直方向へ移す距離。0 以下なら切り詰めません。
+		/// @param color 弧の色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @remark 形状と入力条件は drawTrimmedArc() と共通です。
+		/// @return *this
+		/// @see ImagePixel::SourceOverWithCoverage()
+		const Circle& paintTrimmedArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, double trim, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両側辺を内側へ平行移動して切り詰めた円弧を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 切り詰める前の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 切り詰める前の弧の角度（ラジアン）。負なら反時計回りです。
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param trim 各側辺を垂直方向へ移す距離。0 以下なら切り詰めません。
+		/// @param color 弧の色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see paintTrimmedArc()
+		/// @see ImagePixel::OverwriteWithCoverage()
+		const Circle& overwriteTrimmedArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, double trim, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param arcMidpointAngle 弧の中央の方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param height 弦から弧の中央までの高さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment
+		const Circle& paintSegment(Image& dst, double arcMidpointAngle, double height, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param arcMidpointAngle 弧の中央の方向（ラジアン、12 時方向を 0 として時計回り）
+		/// @param height 弦から弧の中央までの高さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment
+		const Circle& overwriteSegment(Image& dst, double arcMidpointAngle, double height, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintSegmentFromAngles
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param startAngle 弧の開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment_angles
+		const Circle& paintSegmentFromAngles(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteSegmentFromAngles
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弓形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param startAngle 弧の開始角度（ラジアン、12 時方向を 0 として時計回り）
+		/// @param angle 弧の角度（ラジアン、正は時計回り、負は反時計回り）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		/// @see @ref image_draw_circle_segment_angles
+		const Circle& overwriteSegmentFromAngles(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param openingAngle 開口方向（12 時方向を 0 とする時計回りのラジアン）
+		/// @param width 三日月の最大幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 形状の調整・省略条件は drawCrescent() と共通です。
+		const Circle& paintCrescent(Image& dst, double openingAngle, double width, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三日月を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param openingAngle 開口方向（12 時方向を 0 とする時計回りのラジアン）
+		/// @param width 三日月の最大幅
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintCrescent()
+		const Circle& overwriteCrescent(Image& dst, double openingAngle, double width, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief しずく形を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param tip 先端の座標
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 形状の調整・省略条件は drawTeardrop() と共通です。
+		const Circle& paintTeardrop(Image& dst, const Vec2& tip, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief しずく形を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param tip 先端の座標
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintTeardrop()
+		const Circle& overwriteTeardrop(Image& dst, const Vec2& tip, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 始端は LineCap::Flat です。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArcArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcArrow(Image& dst, LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcArrow()
+		const Circle& overwriteArcArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startCap 始点の線端
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcArrow()
+		const Circle& overwriteArcArrow(Image& dst, LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に描き込みます。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @remark 矢じりの配置・縮小・省略は drawArcDoubleHeadedArrow() と共通です。結合は丸く、軸と矢じりはまとめて一度だけ合成します。
+		/// @pre 幾何入力と計算途中の値は有限で表現可能であること。
+		const Circle& paintArcDoubleHeadedArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両端矢印を画像に上書きします。
+		/// @param dst 書き込み先の画像
+		/// @param startAngle 開始角度（12 時方向を 0 とする時計回りのラジアン）
+		/// @param angle 円弧の角度（ラジアン、負は反時計回り）
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @return *this
+		/// @see paintArcDoubleHeadedArrow()
+		const Circle& overwriteArcDoubleHeadedArrow(Image& dst, double startAngle, double angle, double thickness, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1113,11 +1442,60 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawArcArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円弧の終点を先端とする矢印を描きます。始端は LineCap::Flat です。
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。
+		/// @param thickness 円周を中心線とする軸の全幅。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @see @ref circle_draw_arc_arrow
+		/// @return *this
+		const Circle& drawArcArrow(double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		/// @anchor circle_draw_arc_arrow
+		/// @brief 円弧上の根元から終点へ向けた矢印を描きます。
+		/// @param startCap 始端の線端形状
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。負なら反時計回りです。
+		/// @param thickness 円周を中心線とする軸の全幅。0 以下なら描画しません。
+		/// @param headSize 軸幅への追加幅と、矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 引数と円の成分は有限で、幾何・変換の中間計算は表現可能であること。
+		/// @see @ref bezier2_draw_arrow "矢じりの配置・縮小・省略と半透明描画"
+		/// @remark 半径は絶対値を使います。半径または角度が 0 なら描画しません。
+		/// @remark 一周では先端と始点が一致し、Flat 始端の切り口中央に先端が重なります。
+		/// @return *this
+		const Circle& drawArcArrow(LineCap startCap, double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArcDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円弧の両端を先端とする矢印を描きます。
+		/// @param startAngle 開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）。-2π～2π に制限します。
+		/// @param thickness 軸の太さ。0 以下なら描画しません。
+		/// @param headSize 両端に共通の、軸幅への追加幅と矢じりの長さ。いずれかが 0 以下なら描画しません。
+		/// @param color 色
+		/// @pre 幾何・変換の入力条件は drawArcArrow() と共通です。
+		/// @see @ref curve_draw_double_headed_arrow "両端矢印の配置・縮小・省略"
+		/// @remark 半径は絶対値を使い、半径または角度が 0 なら描画しません。一周では両先端が一致します。
+		/// @return *this
+		const Circle& drawArcDoubleHeadedArrow(double startAngle, double angle, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawArc
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1126,7 +1504,7 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1136,16 +1514,17 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param startColor 弧の開始部分の色
 		/// @param endColor 弧の終了部分の色
-		/// @return 
+		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
+		/// @anchor circle_draw_arc_caps
 		/// @brief 円の弧を描きます。
 		/// @param lineCap 線端のスタイル
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
@@ -1154,6 +1533,9 @@ namespace s3d
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param color 弧の色
 		/// @return *this
+		/// @remark Square は両端を接線方向へ線幅の半分だけ延長します。
+		/// @remark angle が 0 の場合、Square は線端位置に線幅を一辺とする正方形を描きます。
+		/// @remark |angle| が 2π 以上の場合、Square は線端を付けずに描きます。
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の弧を描きます。
@@ -1165,6 +1547,7 @@ namespace s3d
 		/// @param innerColor 内側部分の弧の色
 		/// @param outerColor 外側部分の弧の色
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 円の弧を描きます。
@@ -1176,9 +1559,10 @@ namespace s3d
 		/// @param startColor 弧の開始部分の色
 		/// @param endColor 弧の終了部分の色
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
-		/// @brief 円の弧を描きます。
+		/// @brief 平らな線端（Flat）で円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -1195,7 +1579,127 @@ namespace s3d
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
+		/// @see @ref circle_draw_arc_caps
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @anchor circle_draw_arc_independent_caps
+		/// @brief 円の弧を描きます。
+		/// @param startCap 開始角側の線端のスタイル
+		/// @param endCap 終了角側の線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param color 弧の色
+		/// @remark 角度 0 では指定した線端だけを描きます。全周では Square の延長を省きます。
+		/// @see @ref circle_draw_arc_caps
+		/// @return *this
+		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param startCap 開始角側の線端のスタイル
+		/// @param endCap 終了角側の線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param innerColor 内側部分の弧の色
+		/// @param outerColor 外側部分の弧の色
+		/// @return *this
+		/// @see @ref circle_draw_arc_independent_caps
+		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param startCap 開始角側の線端のスタイル
+		/// @param endCap 終了角側の線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param startColor 弧の開始部分の色
+		/// @param endColor 弧の終了部分の色
+		/// @return *this
+		/// @see @ref circle_draw_arc_independent_caps
+		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param startCap 開始角側の線端のスタイル
+		/// @param endCap 終了角側の線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		/// @see @ref circle_draw_arc_independent_caps
+		const Circle& drawArc(LineCap startCap, LineCap endCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 指定した線のスタイルで弧を描きます。
+		/// @param style 線のスタイル
+		/// @param startAngle 中心から見た開始方向（ラジアン、上方向から時計回り）
+		/// @param angle 弧の角度（ラジアン、負は反時計回り）
+		/// @param innerThickness 基準の図形から内側への太さ
+		/// @param outerThickness 基準の図形から外側への太さ
+		/// @param color 色
+		/// @anchor styled_arc_drawing
+		/// @pre 座標・寸法・太さ・角度・dotOffset・変換が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark Solid は通常の drawArc() と同じ線端です。非実線は内外の輪郭の中央に配置し、全ての角度で全周長に整数個の周期が収まるよう調整します。位相は調整後の単位で、開始方向が原点です。丸点の直径は太さの合計を保ちます。
+		/// @remark 非実線の Flat は端で切り、他の線端は太さの半分だけ延長します。未描画の長さが太さ未満なら、その半分まで延長を縮めます。角度の絶対値が全周以上なら一周を描きます。太い線や近接する丸点は重なる場合があります。
+		/// @remark 長さまたは太さの合計が 0 以下、または描画するパターン片が 4,096 個を超える場合は描画しません。継ぎ目で分割される同じ丸点は 1 個と数えます。
+		/// @return *this
+		const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 両側辺を内側へ平行移動して切り詰めた円弧を描きます。
+		/// @param startAngle 切り詰める前の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 切り詰める前の弧の角度（ラジアン）。負なら反時計回りです。
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param trim 各側辺を垂直方向へ移す距離。0 以下なら切り詰めません。
+		/// @param color 弧の色
+		/// @pre 入力は有限で、幾何・変換の計算結果は表現可能であること。
+		/// @remark 半径は絶対値を使い、内半径は 0 以上に制限します。元の内外の円で囲まれた範囲から切り詰めます。
+		/// @remark 同じ trim で隣接する区画を描くと、側辺間の隙間は 2 * trim になります。
+		/// @remark 内周に届かない側辺どうしは、180° 以下の区画では交点、180° を超える区画では半径 trim の円弧でつなぎます。
+		/// @remark 角度が 0、太さの合計が 0 以下、または切り詰め後に面積が残らない場合は描画しません。全周以上の角度では切り詰めずに一周を描きます。
+		/// @return *this
+		const Circle& drawTrimmedArc(double startAngle, double angle, double innerThickness, double outerThickness, double trim, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor circle_crescent
+		/// @brief 同じ半径の円をずらして差し引いた三日月を塗りつぶします。
+		/// @param openingAngle 開く方向（ラジアン）。12 時方向が 0、時計回りが正です。
+		/// @param width 円中心を通る開口方向の線で測った厚み。0 以下なら描画せず、直径以上なら円を描きます。
+		/// @param color 色
+		/// @pre 入力が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 半径は絶対値を使い、0 なら描画しません。差し引く円の中心を openingAngle 方向へ width だけ移動します。
+		/// @return *this
+		const Circle& drawCrescent(double openingAngle, double width, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @anchor circle_teardrop
+		/// @brief 円と先端の凸包である、しずくの外形を塗りつぶします。
+		/// @param tip 先端の座標。円の内部・境界なら円を描きます。
+		/// @param color 色
+		/// @pre 入力が有限で、計算結果を double と描画用 float で表現できること。
+		/// @remark 半径は絶対値を使い、0 なら描画しません。円の外部の先端とは二本の接線で接続します。
+		/// @return *this
+		const Circle& drawTeardrop(const Vec2& tip, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

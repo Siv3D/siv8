@@ -31,16 +31,18 @@ namespace s3d
 	/// @brief ウィンドウの状態 | Window state
 	struct WindowState
 	{
-		/// @brief スクリーン座標におけるウィンドウの長方形
+		/// @brief スクリーン座標におけるウィンドウ外枠の長方形
+		/// @remark Window::SetPos() と同じ座標系です。位置・サイズともに Windows ではピクセル、macOS では point です。
 		Rect bounds = Rect::Empty();
 
-		/// @brief フレームの幅
+		/// @brief フレームの幅（Windows ではピクセル、macOS では point）
 		Size frameThickness{ 0, 0 };
 
-		/// @brief フレームバッファのサイズ
+		/// @brief フレームバッファのサイズ（ピクセル）
 		Size frameBufferSize = Window::DefaultClientSize;
 
 		/// @brief クライアントの仮想サイズ
+		/// @remark macOS ではクライアント領域の point 単位のサイズです。
 		Size virtualSize = Window::DefaultClientSize;
 
 		/// @brief 最小のフレームバッファのサイズ
@@ -49,7 +51,7 @@ namespace s3d
 		/// @brief ユーザが設定しているデスクトップのスケーリング
 		double scaling = 1.0;
 
-		/// @brief タイトルバーの高さ
+		/// @brief タイトルバーの高さ（Windows ではピクセル、macOS では point）
 		int32 titleBarHeight = 0;
 
 		/// @brief スタイル

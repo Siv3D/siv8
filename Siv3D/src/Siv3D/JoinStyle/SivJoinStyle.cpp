@@ -20,7 +20,6 @@ namespace s3d
 	{
 		static constexpr std::array JoinStyleStrings =
 		{
-			U"Default"_sv,
 			U"Bevel"_sv,
 			U"Round"_sv,
 			U"Miter"_sv,

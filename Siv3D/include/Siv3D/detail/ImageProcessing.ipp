@@ -10,11 +10,24 @@
 //-----------------------------------------------
 
 # pragma once
+# include <bit>
 
 namespace s3d
 {
 	namespace ImageProcessing
 	{
+		constexpr Size CalculateMipmapSize(const Size baseSize, const uint32 level) noexcept
+		{
+			if ((baseSize.x <= 0) || (baseSize.y <= 0)
+				|| (static_cast<uint32>(std::bit_width(static_cast<uint32>((baseSize.x < baseSize.y) ? baseSize.y : baseSize.x))) <= level))
+			{
+				return{ 0, 0 };
+			}
+			const int32 width = (baseSize.x >> level);
+			const int32 height = (baseSize.y >> level);
+			return{ (width ? width : 1), (height ? height : 1) };
+		}
+
 		constexpr uint8 CalculateMipmapLevel(const size_t width, const size_t height) noexcept
 		{
 			if ((width == 0) || (height == 0))

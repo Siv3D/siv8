@@ -15,13 +15,13 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
+# include <Siv3D/Renderer2D/Renderer2DEngineShaders.hpp>
+# include <Siv3D/Renderer2D/Renderer2DCustomShaders.hpp>
 # include "D3D11VertexBufferManager2D.hpp"
 # include "D3D11Renderer2DCommandManager.hpp"
 
 namespace s3d
 {
-	enum class PatternType : uint8;
-
 	class CRenderer2D_D3D11 final : public ISiv3DRenderer2D
 	{
 	public:
@@ -44,6 +44,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addProceduralVertices
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addProceduralVertices(uint32 vertexCount) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addLine
 		//
 		////////////////////////////////////////////////////////////////
@@ -51,6 +59,14 @@ namespace s3d
 		void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
 
 		void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundDot
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRoundDot(const Float2& start, const Float2& end, float thickness, const Float2& uRange, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -104,6 +120,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addQuad
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addQuad(const FloatQuad& quad, const Float4& color) override;
+
+		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;
+
+		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addCircle
 		//
 		////////////////////////////////////////////////////////////////
@@ -150,6 +178,18 @@ namespace s3d
 
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
+		void addCircleArc(LineCap startCap, LineCap endCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addCircleArc(LineCap startCap, LineCap endCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCircleTrimmedArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addCircleTrimmedArc(const Float2& center, float rInner, float rOuter, double startAngle, double angle, double trim, const Float4& color) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addCircleSegment
@@ -159,6 +199,22 @@ namespace s3d
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) override;
 
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCircleCrescent
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addCircleCrescent(const Circle& circle, double openingAngle, double width, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCircleTeardrop
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addCircleTeardrop(const Circle& circle, const Vec2& tip, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -190,6 +246,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addEllipseRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipseRotated(const Float2& center, float a, float b, float rotation, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipseRotated(const Float2& center, float a, float b, float rotation, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addEllipseFrameRotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipseFrameRotated(const Float2& center, float a, float b, float rotation, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addEllipseFrameRotated(const Float2& center, float a, float b, float rotation, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addEllipsePie
 		//
 		////////////////////////////////////////////////////////////////
@@ -197,6 +273,24 @@ namespace s3d
 		void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
 
 		void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addEllipseArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipseArc(LineCap startCap, LineCap endCap, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipseArc(LineCap startCap, LineCap endCap, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addArcStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addArcStyled(const LineStyle& style, const Float2& center, float a, float b, float startAngle, float angle, float innerThickness, float outerThickness, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -210,18 +304,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	addQuad
-		//
-		////////////////////////////////////////////////////////////////
-
-		void addQuad(const FloatQuad& quad, const Float4& color) override;
-
-		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;
-
-		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	addRoundRect
 		//
 		////////////////////////////////////////////////////////////////
@@ -231,6 +313,8 @@ namespace s3d
 		void addRoundRect(const FloatRect& rect, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
 
 		void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) override;
+
+		void addRoundRect(const FloatRect& rect, const std::array<float, 4>& radii, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -244,6 +328,16 @@ namespace s3d
 
 		void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) override;
 
+		void addRoundRectFrame(const FloatRect& innerRect, const std::array<float, 4>& innerRadii, const FloatRect& outerRect, const std::array<float, 4>& outerRadii, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundRectFrameStyled
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRoundRectFrameStyled(const LineStyle& style, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, float thickness, const Float4& color) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addRoundRectDashedFrame
@@ -251,6 +345,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addRoundRectDashedFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, float offset, float dashRatio, uint32 dashCount, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundRectBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRoundRectBalloon(const detail::RoundRectBalloon::Placement& balloon, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundRectBalloonFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRoundRectBalloonFrame(const detail::RoundRectBalloon::Placement& balloon, float thickness, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -288,6 +398,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	tryAddSmallConvexFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool tryAddSmallConvexFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const Float4& color) override;
+
+		bool tryAddSmallConvexFrame(std::span<const Vec2> points, JoinStyle joinStyle, double innerThickness, double outerThickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addLineString
 		//
 		////////////////////////////////////////////////////////////////
@@ -300,21 +420,21 @@ namespace s3d
 
 		void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors) override;
 
-
-
-
-
-
-
-
-
 		////////////////////////////////////////////////////////////////
 		//
-		//	addTexturedCircle
+		//	addLineStringArrow
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) override;
+		bool addLineStringArrow(LineCap startCap, std::span<const Vec2> points, const Float2& tip, float thickness, float headWidth, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addLineStringDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool addLineStringDoubleHeadedArrow(std::span<const Vec2> points, const Float2& startTip, const Float2& endTip, float thickness, float startHeadWidth, float endHeadWidth, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -328,19 +448,31 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addTexturedCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) override;
+
+		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addTexturedCirclePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addTexturedCirclePie(const Texture& texture, const Float2& center, float r, float startAngle, float angle, const FloatRect& uv, const Float4& innerColor, const Float4& outerColor) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addTexturedRoundRect
 		//
 		////////////////////////////////////////////////////////////////
 
 		void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) override;
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	addCircleShadow
-		//
-		////////////////////////////////////////////////////////////////
-
-		void addCircleShadow(const Circle& circle, float blur, const Float4& color, bool fill) override;
+		void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -349,6 +481,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addRectShadow(const FloatRect& rect, float blur, const Float4& color, bool fill) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCircleShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addCircleShadow(const Circle& circle, float blur, const Float4& color, bool fill) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -370,17 +510,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	flush
+		//	setConstantBuffer
 		//
 		////////////////////////////////////////////////////////////////
 
 		void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
 
-		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+		////////////////////////////////////////////////////////////////
+		//
+		//	beginConstantBufferScope, endConstantBufferScope
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0) override;
 
 		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	flush
+		//
+		////////////////////////////////////////////////////////////////
+
 		void flush() override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getSceneScale, setSceneScale
+		//
+		////////////////////////////////////////////////////////////////
+
+		Float2 getSceneScale() const noexcept override { return m_commandManager.getSceneScale(); }
+
+		void setSceneScale(Float2 scale) override
+		{
+			m_sceneScale = scale;
+			m_commandManager.setSceneScale(m_renderTargets ? Float2{ 1.0f, 1.0f } : scale);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -510,7 +676,14 @@ namespace s3d
 
 		void setCameraTransform(const Mat3x2& matrix) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getQuadWarpTransform, setQuadWarpTransform
+		//
+		////////////////////////////////////////////////////////////////
+
 		const Mat3x3& getQuadWarpTransform() const override;
+
 		void setQuadWarpTransform(const Mat3x3& matrix) override;
 
 		////////////////////////////////////////////////////////////////
@@ -520,6 +693,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		float getRMSScaling() const noexcept override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getRasterScaling
+		//
+		////////////////////////////////////////////////////////////////
+
+		float getRasterScaling() const noexcept override { return m_commandManager.getCurrentRasterScaling(); }
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -556,61 +737,9 @@ namespace s3d
 		// 各スロットが独立した値を保持し、転送先はフレームをまたいで再利用する。
 		std::array<std::array<CustomConstantBuffer, Graphics::ConstantBufferSlotCount>, 2> m_customConstantBuffers;
 
+		Renderer2DEngineShaders m_engineShader;
 
-		struct EngineShader
-		{
-			VertexShader::IDType vsShape;
-
-			VertexShader::IDType vsPattern;
-
-			PixelShader::IDType psShape;
-
-			PixelShader::IDType psTexture;
-
-			PixelShader::IDType psLineDot;
-
-			PixelShader::IDType psLineDash;
-
-			PixelShader::IDType psLineLongDash;
-
-			PixelShader::IDType psLineDashDot;
-
-			PixelShader::IDType psLineRoundDot;
-
-			PixelShader::IDType psPatternPolkaDot;
-
-			PixelShader::IDType psPatternStripe;
-
-			PixelShader::IDType psPatternGrid;
-
-			PixelShader::IDType psPatternChecker;
-
-			PixelShader::IDType psPatternTriangle;
-
-			PixelShader::IDType psPatternHexGrid;
-
-			PixelShader::IDType psPatternHalftone;
-
-			PixelShader::IDType psPatternWave;
-
-			PixelShader::IDType psPatternRipple;
-
-			PixelShader::IDType psPatternWeave;
-
-			PixelShader::IDType psPatternTruchet;
-
-			[[nodiscard]]
-			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
-
-		} m_engineShader;
-
-		struct CurrentCustomShader
-		{
-			Optional<VertexShader> vs;
-
-			Optional<PixelShader> ps;
-
-		} m_currentCustomShader;
+		Renderer2DCustomShaders m_currentCustomShader;
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
 
@@ -619,6 +748,12 @@ namespace s3d
 		ConstantBuffer<PSEffectConstants2D> m_psEffectConstants;
 
 		std::unique_ptr<Texture> m_shadowTexture;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	createBuffer
+		//
+		////////////////////////////////////////////////////////////////
 
 		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};

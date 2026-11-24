@@ -17,18 +17,6 @@ namespace s3d
 	/// @brief エンジンの設定
 	struct EngineOption
 	{
-		/// @brief レンダラー
-		enum class Renderer : uint8
-		{
-			/// @brief Direct3D 11
-			/// @remark 対応: Windows
-			Direct3D11 = 1,
-
-			/// @brief Metal
-			/// @remark 対応: macOS
-			Metal = 2,
-		};
-
 		/// @brief Direct3D 11 ドライバーの種類 (Windows 版)
 		enum class D3D11Driver : uint8
 		{
@@ -49,14 +37,11 @@ namespace s3d
 
 	struct EngineOptions
 	{
-		//EngineOption::Renderer renderer			= EngineOption::Renderer::PlatformDefault;
-
 		EngineOption::D3D11Driver d3d11Driver	= EngineOption::D3D11Driver::Hardware;
 	};
 
 	namespace Internal
 	{
-		//int SetEngineOption(EngineOption::Renderer) noexcept;
 		int SetEngineOption(EngineOption::D3D11Driver) noexcept;
 	}
 

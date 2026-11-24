@@ -45,6 +45,49 @@ namespace
 		write(input, dst);
 		CHECK(dst.empty());
 	}
+
+	void CheckUTF16Validation(Result<void, size_t> (*validate)(std::u16string_view), const bool bigEndian)
+	{
+		const auto check = [validate, bigEndian](std::u16string input)
+			{
+				if (bigEndian)
+				{
+					for (auto& ch : input)
+					{
+						ch = static_cast<char16>(std::byteswap(static_cast<uint16>(ch)));
+					}
+				}
+				return validate(input);
+			};
+
+		CHECK(validate(std::u16string_view{}));
+		constexpr char16 valid[] = u"\0A\x7F\x80\x7FF\x800\xD7FF\xE000\xFDD0\xFFFF\U00010000\U0010FFFF\0";
+		CHECK(check(std::u16string{ valid, (std::size(valid) - 1) }));
+
+		for (const size_t position : { 0, 15, 16, 31, 32, 63, 64 })
+		{
+			CAPTURE(position);
+			std::u16string prefix(position, u'A');
+			if (2 <= position)
+			{
+				// Distinguish code-unit error offsets from scalar offsets.
+				prefix.replace(0, 2, u"\U0001F600");
+			}
+
+			// A pair beginning at 15, 31, or 63 crosses a SIMD block boundary.
+			CHECK(check(prefix + u"\U0010FFFF"));
+			CHECK(check(prefix + u"\U0010FFFF" u"B"));
+
+			for (const std::u16string_view invalid : { u"\xD800", u"\xDC00", u"\xD800" u"A", u"\xD800\xD800" })
+			{
+				CAPTURE(invalid.size());
+				CAPTURE(static_cast<uint16>(invalid.front()));
+				const auto result = check(prefix + std::u16string{ invalid });
+				REQUIRE_FALSE(result);
+				CHECK(result.error() == position);
+			}
+		}
+	}
 }
 
 TEST_CASE("Unicode.Destination.NormalAndReuse")
@@ -372,5 +415,39 @@ TEST_CASE("Unicode.ValidateUTF8")
 	{
 		const std::string s = "あいうえお";
 		CHECK((Unicode::ValidateUTF8(s).has_value()) == (true));
+	}
+}
+
+TEST_CASE("Unicode.ValidateUTF16")
+{
+	CheckUTF16Validation(Unicode::ValidateUTF16, false);
+}
+
+TEST_CASE("Unicode.ValidateUTF16BE")
+{
+	CheckUTF16Validation(Unicode::ValidateUTF16BE, true);
+}
+
+TEST_CASE("Unicode.ValidateUTF32")
+{
+	CHECK(Unicode::ValidateUTF32(std::u32string_view{}));
+	constexpr char32 valid[] = U"\0A\x7F\x80\x7FF\x800\xD7FF\xE000\xFDD0\xFFFF\U00010000\U0010FFFF\0";
+	CHECK(Unicode::ValidateUTF32(std::u32string_view{ valid, (std::size(valid) - 1) }));
+
+	for (const size_t position : { 0, 15, 16, 31, 32, 63, 64 })
+	{
+		CAPTURE(position);
+		std::u32string input(position + 1, U'A');
+		input[position] = U'\U0010FFFF';
+		CHECK(Unicode::ValidateUTF32(input));
+
+		for (const char32 invalid : { char32{ 0xD800 }, char32{ 0xDFFF }, char32{ 0x110000 }, char32{ 0xFFFFFFFF } })
+		{
+			CAPTURE(static_cast<uint32>(invalid));
+			input[position] = invalid;
+			const auto result = Unicode::ValidateUTF32(input);
+			REQUIRE_FALSE(result);
+			CHECK(result.error() == position);
+		}
 	}
 }

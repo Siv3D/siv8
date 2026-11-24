@@ -12,7 +12,7 @@
 # include "D3D11Texture.hpp"
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
-# include <Siv3D/BCnData.hpp>
+# include <Siv3D/Blob.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Anchor.hpp>
 # include <Siv3D/Rect.hpp>
@@ -67,7 +67,148 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(Render, ID3D11Device* device, ID3D11DeviceContext* context,
+		const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc, const ColorF& color, const uint32 sampleCount)
+		: m_desc{ desc, ((sampleCount == 1) ? TextureType::Render : TextureType::MSRender), size,
+			(desc.hasMipmap ? ImageProcessing::CalculateMipmapLevel(size.x, size.y) : uint8{ 1 }), static_cast<uint8>(sampleCount), 0, format, false }
+	{
+		UINT support = 0;
+		const UINT required = (D3D11_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE
+			| D3D11_FORMAT_SUPPORT_RENDER_TARGET | ((1 < m_desc.mipLevels) ? D3D11_FORMAT_SUPPORT_MIP_AUTOGEN : 0u)
+			| ((1 < sampleCount) ? (D3D11_FORMAT_SUPPORT_MULTISAMPLE_RENDERTARGET | D3D11_FORMAT_SUPPORT_MULTISAMPLE_RESOLVE) : 0u));
+		if (FAILED(device->CheckFormatSupport(m_desc.DXGIFormat(), &support)) || ((support & required) != required))
+		{
+			return;
+		}
+		if (sampleCount > 1)
+		{
+			UINT qualityLevels = 0;
+			if (((sampleCount != 2) && (sampleCount != 4))
+				|| FAILED(device->CheckMultisampleQualityLevels(m_desc.DXGIFormat(), sampleCount, &qualityLevels))
+				|| (qualityLevels == 0))
+			{
+				return;
+			}
+		}
+		const auto textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(
+			(D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET), D3D11_USAGE_DEFAULT, 0, { 1, 0 },
+			((1 < m_desc.mipLevels) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0u));
+		if (const HRESULT hr = device->CreateTexture2D(&textureDesc, nullptr, &m_texture); FAILED(hr))
+		{
+			Error_Texture2D(hr);
+			return;
+		}
+		const auto srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+		if (const HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView); FAILED(hr))
+		{
+			Error_ShaderResourceView(hr);
+			return;
+		}
+		if (sampleCount > 1)
+		{
+			auto multisampleDesc = textureDesc;
+			multisampleDesc.MipLevels = 1;
+			multisampleDesc.SampleDesc = { sampleCount, 0 };
+			multisampleDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+			multisampleDesc.MiscFlags = 0;
+			if (const HRESULT hr = device->CreateTexture2D(&multisampleDesc, nullptr, &m_multiSampleTexture); FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+		if (FAILED(device->CreateRenderTargetView((sampleCount > 1) ? m_multiSampleTexture.Get() : m_texture.Get(), nullptr, &m_renderTargetView)))
+		{
+			LOG_FAIL("RenderTexture: CreateRenderTargetView() failed");
+			return;
+		}
+		if (not data.empty())
+		{
+			context->UpdateSubresource(m_texture.Get(), 0, nullptr, data.data(), (size.x * format.pixelSize()), 0);
+		}
+		else
+		{
+			clearRT(context, color);
+			if (sampleCount > 1)
+			{
+				resolveMSRT(context);
+			}
+		}
+		if (1 < m_desc.mipLevels)
+		{
+			context->GenerateMips(m_shaderResourceView.Get());
+		}
+		m_initialized = true;
+	}
+
+	void D3D11Texture::clearRT(ID3D11DeviceContext* context, const ColorF& color)
+	{
+		if ((m_desc.type != TextureType::Render) && (m_desc.type != TextureType::MSRender))
+		{
+			return;
+		}
+		const Float4 clearColor = color.toFloat4();
+		context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor.getPointer());
+	}
+
+	void D3D11Texture::resolveMSRT(ID3D11DeviceContext* context)
+	{
+		if (m_desc.type == TextureType::MSRender)
+		{
+			context->ResolveSubresource(m_texture.Get(), 0, m_multiSampleTexture.Get(), 0, m_desc.DXGIFormat());
+		}
+	}
+
+	bool D3D11Texture::readRT(ID3D11Device* device, ID3D11DeviceContext* context,
+		const std::span<Byte> destination, const uint32 mipLevel)
+	{
+		if (((m_desc.type != TextureType::Render) && (m_desc.type != TextureType::MSRender)) || (m_desc.mipLevels <= mipLevel))
+		{
+			return false;
+		}
+		const Size levelSize = ImageProcessing::CalculateMipmapSize(m_desc.size, mipLevel);
+		const uint32 width = levelSize.x;
+		const uint32 height = levelSize.y;
+		const uint32 rowBytes = static_cast<uint32>(m_desc.format.packedRowBytes(width));
+		if (destination.size_bytes() != (static_cast<size_t>(rowBytes) * height))
+		{
+			return false;
+		}
+		// 同じレベルの繰り返し読み戻しでステージング領域を再利用する。
+		D3D11_TEXTURE2D_DESC stagingDesc{};
+		if (m_stagingTexture)
+		{
+			m_stagingTexture->GetDesc(&stagingDesc);
+		}
+		if ((stagingDesc.Width != width) || (stagingDesc.Height != height))
+		{
+			stagingDesc = {
+				.Width = width, .Height = height, .MipLevels = 1, .ArraySize = 1,
+				.Format = m_desc.DXGIFormat(), .SampleDesc = { 1, 0 },
+				.Usage = D3D11_USAGE_STAGING, .BindFlags = 0, .CPUAccessFlags = D3D11_CPU_ACCESS_READ, .MiscFlags = 0 };
+			ComPtr<ID3D11Texture2D> staging;
+			if (FAILED(device->CreateTexture2D(&stagingDesc, nullptr, &staging)))
+			{
+				return false;
+			}
+			m_stagingTexture = std::move(staging);
+		}
+		context->CopySubresourceRegion(m_stagingTexture.Get(), 0, 0, 0, 0, m_texture.Get(), mipLevel, nullptr);
+		D3D11_MAPPED_SUBRESOURCE mapped{};
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped)))
+		{
+			return false;
+		}
+		const auto* source = static_cast<const Byte*>(mapped.pData);
+		for (uint32 y = 0; y < height; ++y)
+		{
+			std::memcpy((destination.data() + static_cast<size_t>(y) * rowBytes), (source + static_cast<size_t>(y) * mapped.RowPitch), rowBytes);
+		}
+		context->Unmap(m_stagingTexture.Get(), 0);
+		return true;
+	}
+
+	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const std::span<const Image> mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,
 			image.size(),
@@ -126,7 +267,7 @@ namespace s3d
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		
-		if (const size_t expectedSize = (bytesPerRow * size.y); 
+		if (const uint64 expectedSize = GetTextureUploadSize(bytesPerRow, size.y);
 			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
@@ -174,7 +315,7 @@ namespace s3d
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		
-		if (const size_t expectedSize = (bytesPerRow * size.y); 
+		if (const uint64 expectedSize = GetTextureUploadSize(bytesPerRow, size.y);
 			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
@@ -213,30 +354,26 @@ namespace s3d
 		generateMipmaps(context);
 	}
 
-	D3D11Texture::D3D11Texture(ID3D11Device* device, const BCnData& bcnData)
-		: m_desc{ ((1 < bcnData.textures.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
+	D3D11Texture::D3D11Texture(ID3D11Device* device, const Size& size, const TextureFormat& format, const std::span<const Blob> mipmaps)
+		: m_desc{ ((1 < mipmaps.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
 			TextureType::Default,
-			bcnData.size,
-			static_cast<uint8>(bcnData.textures.size()),
+			size,
+			static_cast<uint8>(mipmaps.size()),
 			1, 0,
-			bcnData.format,
+			format,
 			false
 		}
 	{
-		const uint32 blockSize = bcnData.format.blockSize();
-
 		Array<D3D11_SUBRESOURCE_DATA> initDataList(m_desc.mipLevels);
 
-		for (uint32 i = 0; i < bcnData.textures.size(); ++i)
+		for (uint32 i = 0; i < mipmaps.size(); ++i)
 		{
-			const uint32 mipWidth = Max<uint32>((bcnData.size.x >> i), 1);
-			const uint32 paddedWidth = ((mipWidth + 3) & ~3);
-			const uint32 xBlocks = (paddedWidth / 4);
+			const Size levelSize = ImageProcessing::CalculateMipmapSize(size, i);
 
 			initDataList[i] =
 			{
-				.pSysMem = bcnData.textures[i].data(),
-				.SysMemPitch = (xBlocks * blockSize),
+				.pSysMem = mipmaps[i].data(),
+				.SysMemPitch = static_cast<uint32>(format.packedRowBytes(levelSize.x)),
 				.SysMemSlicePitch = 0
 			};
 		}
@@ -458,13 +595,7 @@ namespace s3d
 				return false;
 			}
 
-			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-
-			for (int32 y = 0; y < m_desc.size.y; ++y)
-			{
-				FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
-				pDstRow += mapped.RowPitch;
-			}
+			FillWithColor(mapped.pData, m_desc.size, mapped.RowPitch, color, m_desc.format);
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -488,11 +619,8 @@ namespace s3d
 			return false;
 		}
 
-		const uint32 copyBytesPerRow = (m_desc.size.x * m_desc.format.pixelSize());
-		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * m_desc.size.y);
-
-		if ((srcBytesPerRow < copyBytesPerRow)
-			|| (data.size_bytes() < requiredSourceBytes))
+		const size_t copyBytesPerRow = GetTextureUploadRowBytes(m_desc.size, m_desc.format, data, srcBytesPerRow);
+		if (copyBytesPerRow == 0)
 		{
 			return false;
 		}
@@ -518,15 +646,7 @@ namespace s3d
 				return false;
 			}
 
-			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-			const Byte* pSrcRow = data.data();
-
-			for (int32 y = 0; y < m_desc.size.y; ++y)
-			{
-				std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
-				pDstRow += mapped.RowPitch;
-				pSrcRow += srcBytesPerRow;
-			}
+			FillWithImage(mapped.pData, m_desc.size, mapped.RowPitch, data, srcBytesPerRow, copyBytesPerRow);
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -549,7 +669,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect)
+	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect, const bool wait)
 	{
 		if ((m_desc.type != TextureType::Dynamic)
 			|| (not IsValidRegion(m_desc.size, rect)))
@@ -559,8 +679,9 @@ namespace s3d
 
 		const uint32 bytesPerRow = (rect.w * m_desc.format.pixelSize());
 		D3D11_MAPPED_SUBRESOURCE mapped;
+		const UINT mapFlag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
 
-		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, 0, &mapped)))
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, mapFlag, &mapped)))
 		{
 			return false;
 		}
@@ -572,13 +693,7 @@ namespace s3d
 			return false;
 		}
 
-		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-
-		for (int32 y = 0; y < rect.h; ++y)
-		{
-			FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
-			pDstRow += mapped.RowPitch;
-		}
+		FillWithColor(mapped.pData, rect.size, mapped.RowPitch, color, m_desc.format);
 
 		context->Unmap(m_stagingTexture.Get(), 0);
 
@@ -605,11 +720,8 @@ namespace s3d
 			return false;
 		}
 
-		const uint32 copyBytesPerRow = (rect.w * m_desc.format.pixelSize());
-		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * rect.h);
-
-		if ((srcBytesPerRow < copyBytesPerRow)
-			|| (data.size_bytes() < requiredSourceBytes))
+		const size_t copyBytesPerRow = GetTextureUploadRowBytes(rect.size, m_desc.format, data, srcBytesPerRow);
+		if (copyBytesPerRow == 0)
 		{
 			return false;
 		}
@@ -629,15 +741,7 @@ namespace s3d
 			return false;
 		}
 
-		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
-		const Byte* pSrcRow = data.data();
-
-		for (int32 y = 0; y < rect.h; ++y)
-		{
-			std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
-			pDstRow += mapped.RowPitch;
-			pSrcRow += srcBytesPerRow;
-		}
+		FillWithImage(mapped.pData, rect.size, mapped.RowPitch, data, srcBytesPerRow, copyBytesPerRow);
 
 		context->Unmap(m_stagingTexture.Get(), 0);
 

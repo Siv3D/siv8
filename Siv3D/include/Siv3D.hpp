@@ -799,8 +799,8 @@
 // ランダムな Vec2 の作成 | Random Vec2 generation
 # include <Siv3D/RandomVec2.hpp>
 
-//// ランダムな Vec3 の作成 | Random Vec3 generation
-//# include <Siv3D/RandomVec3.hpp>
+// ランダムな Vec3 の作成 | Random Vec3 generation
+# include <Siv3D/RandomVec3.hpp>
 
 // ランダムな Vec4 の作成 | Random Vec4 generation
 # include <Siv3D/RandomVec4.hpp>
@@ -940,8 +940,13 @@
 
 # include <Siv3D/Spline.hpp>
 
-//// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
-//# include <Siv3D/Spline2D.hpp>
+// 複数区間の曲線と距離による検索 | Spline paths and distance queries
+# include <Siv3D/CatmullRomParameterization.hpp>
+# include <Siv3D/DistanceMode.hpp>
+# include <Siv3D/SplineLocation.hpp>
+# include <Siv3D/SplineClosestPoint2D.hpp>
+# include <Siv3D/Spline2D.hpp>
+# include <Siv3D/Spline2DMeasure.hpp>
 
 // float 型の長方形 | Rectangle (float)
 # include <Siv3D/FloatRect.hpp>
@@ -1532,9 +1537,16 @@
 # include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
+# include <Siv3D/NinePatch.hpp>
 
 // 動的テクスチャ | Dynamic texture
 # include <Siv3D/DynamicTexture.hpp>
+# include <Siv3D/RenderTexture.hpp>
+# include <Siv3D/RenderTextureOps.hpp>
+# include <Siv3D/MSRenderTexture.hpp>
+
+// 色描画先の共有ハンドル | Shared color render target
+# include <Siv3D/ColorRenderTarget.hpp>
 
 
 
@@ -1589,8 +1601,17 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// リサイズモード | Resize mode
-# include <Siv3D/ResizeMode.hpp>
+// シーンサイズの決め方 | Scene size mode
+# include <Siv3D/SceneSizeMode.hpp>
+
+// 描画解像度の決め方 | Scene resolution
+# include <Siv3D/SceneResolution.hpp>
+
+// 全画面中のシーンサイズの扱い | Fullscreen scene mode
+# include <Siv3D/FullscreenSceneMode.hpp>
+
+// シーンの表示設定 | Scene configuration
+# include <Siv3D/SceneConfig.hpp>
 
 // MSAA サンプル数 | MSAA sample count
 # include <Siv3D/MSAASampleCount.hpp>
@@ -1676,6 +1697,7 @@
 
 // 2D 描画のビューポートスコープ | Viewport scope for 2D rendering
 # include <Siv3D/ScopedViewport2D.hpp>
+# include <Siv3D/ScopedRenderTarget2D.hpp>
 # include <Siv3D/ScopedQuadWarp2D.hpp>
 
 // 2D 描画の座標変換スコープ | Coordinate transformation scope for 2D rendering

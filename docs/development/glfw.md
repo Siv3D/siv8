@@ -23,7 +23,9 @@ establish behavioral compatibility.
 | `input.c` | `glfwGetKeysSiv3D` exposes the existing key-state buffer used by `CKeyboard`. |
 | `cocoa_init.m` | Secure restorable-state support; context backend termination calls are disabled to match the Metal-only integration. |
 | `cocoa_monitor.m` | Siv3D monitor rectangle, display ID, unit number, work area and current-monitor queries. |
-| `cocoa_window.m` | Window positions use outer-frame backing pixels; cursor positions use client backing pixels. Move callbacks carry `(1, 0)` at move start and `(0, 0)` at completion, as consumed by `CWindow::OnMove`. |
+| `cocoa_window.m` | Window position and size getters use outer-frame backing pixels; size callbacks use client points, and cursor positions use client backing pixels. Move callbacks carry `(1, 0)` at move start and `(0, 0)` at completion, as consumed by `CWindow::OnMove`. |
+| `cocoa_platform.h`, `cocoa_window.m` | A per-window `preserveVideoMode` policy bypasses video-mode selection and restoration while retaining fullscreen placement and monitor ownership. `CWindow` enables it once through `glfwPreserveVideoMode_Siv3D`. |
+| `cocoa_platform.h`, `cocoa_window.m` | Engine windows redirect Control+Command+F and fullscreen menu actions into a per-window toggle request. Native fullscreen Spaces are disabled. `CWindow::update()` consumes requests after polling events. |
 | `cocoa_window.m` | File/text drag acceptance, drag-over state, inbound drops and outbound dragging use `GLFW_Siv3D_DragDropBridge.h` and the macOS `CDragDropBridge.mm`. |
 | `cocoa_window.m` | Pointer/tablet events forward proximity, pressure and tilt to `CPentablet`. |
 | `cocoa_window.m` | NSGL/EGL/OSMesa context creation is disabled; Siv3D creates `GLFW_NO_API` windows and attaches its Metal layer. |
@@ -38,6 +40,38 @@ upstream position callbacks would pass coordinates where Siv3D expects movement
 flags, and restoring upstream point coordinates would change Retina behavior.
 The context restrictions are intentional integration changes, not full GLFW
 OpenGL support.
+
+The engine's public [desktop coordinates](../window/README.md) use points on
+macOS. `WindowMisc` reads native outer-frame/client geometry and sets the native
+frame's top-left in points, bypassing GLFW's customized backing-pixel position
+and size APIs. `MonitorInfo` uses the custom query's point-based display rectangle
+and the standard `glfwGetMonitorWorkarea` point-based work area. `CCursor` reads
+desktop points separately from GLFW's client backing-pixel cursor query.
+
+`glfwSetWindowMonitor` retains GLFW's content-origin and content-size coordinates
+in screen points when restoring a window. `CWindow` saves its point-based outer
+position plus the title-bar offset, without applying a monitor scale. Do not use
+the customized GLFW size getter as a virtual client size; `WindowMisc` reads the
+native content view instead. The vendor compatibility tests intentionally keep
+checking GLFW's own coordinate contract, separately from the public API tests.
+
+The engine enables desktop-mode preservation before the first fullscreen
+transition. Both monitor acquisition and release honor it, including the
+minimize/restore callbacks. Passing the current mode to ordinary GLFW fullscreen
+selection alone is insufficient: macOS can omit a current scaled Retina mode
+from the enumerated list, and GLFW chooses a listed mode before comparing it
+with the current mode. The policy bypasses that selection entirely. Do not
+replace it with restoring the desktop layout after changing modes.
+
+Fullscreen UI state lives in the Cocoa window data and is accessed on the main
+thread. Disabling clears a pending request; reapplying enabled preserves it.
+Shortcut repeats are consumed, including menu key-equivalent dispatch through
+`NSApplication::currentEvent`. Replace the native fullscreen menu item with an
+engine action: AppKit otherwise rewrites its key equivalent. Reapply collection
+behavior after style and monitor changes to keep native fullscreen Spaces
+disabled. Title-bar controls and Zoom actions retain their native implementation;
+fullscreen enablement does not affect maximization. Unconfigured GLFW windows
+retain their native behavior.
 
 ## Keyboard integration
 
@@ -81,6 +115,7 @@ Outstanding input work and layout decisions are tracked in [TODO.md](../../TODO.
 
 [Test_GLFW.cpp](../../Test/Test_GLFW.cpp) exercises the linked version and timer,
 JIS scancode mappings, Cocoa shortcut press/release and the shared key buffer,
+fullscreen request coalescing/cancellation and repeat suppression without transitions,
 move notifications, monitor queries, backing-pixel window coordinates and the
 Metal window configuration. It is compiled as Objective-C++ on macOS and excluded
 by a platform guard on Windows. Existing Metal tests cover rendering through the

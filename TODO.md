@@ -7,6 +7,64 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/LineString.hpp`
+
+### 可変幅・先細りの GPU 描画（Trail 系の知見待ち）
+
+- Trail 系の実装で幅指定・接合・半透明・頂点生成を評価してから、LineString / Bezier2/3 / Spline2D の可変幅描画 API を設計する。
+- 幅配列と点列の対応、弧長と時間による補間の違い、幅 0・負の幅、重複点、接合部と線端、閉じ目の契約を決める。内側の反転や半透明の重複をどこまで許容するか、テクスチャ座標と再利用可能な生成処理も含めて評価する。
+- 既存の一定幅描画へ分岐や幅補間の費用を加えず、再利用可能な作業領域と直接頂点生成を使う。
+
+## 2D 描画の拡張検討
+
+- [拡張提案](docs/geometry2d/proposals/drawing-extensions.md)の用途・設計条件を基に採否を判断する。対象リリースと実装時期は未定。
+- 四隅別角丸枠や Shape2D / Polygon 枠の LineStyle、楕円弧の矢印、LineString / 図形枠の JoinStyle は、自然な退化境界と半透明の見た目、描画の準備費用を比較する。
+- 形状生成や複合パスは、保存形状と既存の変換・点列生成で不足する具体的な用途を確認してから設計する。
+
+## RenderTexture / DepthTexture
+
+### RT 画像処理の追加候補
+
+- [操作候補と重要度](docs/renderer2d/proposals/texture-processing.md#操作の候補と重要度)から、GaussianBlurH/V、輪郭・影・Bloom、custom Blit、mask 生成・複数画像合成を用途別に評価する。重要度 A の全件を採用する前提にはしない。
+- Compute は保留。具体的な用途で、書き込み属性・中間画像・最終コピーまで含む利益が導入と保守の複雑さに見合う場合に再検討する。
+
+### 個別描画用のエンジン提供シェーダ（RT 操作とは別途検討）
+
+- [提供形の検討](docs/renderer2d/proposals/texture-processing.md#効果の提供形)を基に、Grayscale / Saturation / ColorMatrix は `ScopedCustomShader2D` に渡せるテクスチャ描画用 PS を候補にする。定数型・slot、PMA と描画色の処理順序、対象となる描画を決める。図形・模様・MSDF 文字へ一つの PS が自動適用できる前提にはせず、通常描画すべてに効果処理の費用を加える設計から始めない。
+- RGBShift / 色収差 / Pixelate は region・単位、mask / Dissolve / Displacement / LUT は補助 texture の設定・復元を先に評価する。このシェーダ群と補助 texture API は RT 操作の初期実装の完了条件には含めない。
+
+### 具体的な用途が必要になった時点で再開する拡張
+
+- 3D 描画の深度テスト・共有・参照の要件と合わせて、独立した `DepthTexture` を設計する。最初は単一サンプルの D32_Float を候補とし、色と独立したクリア、シェーダ参照、read-only 利用、reversed-Z の投影・比較・クリア値をそろえる。深度の resolve・Hi-Z の min/max 縮小を色のミップ生成と混同しない。
+- 色の描画先配列に任意の深度 1 枚を組み合わせる指定を設計する。色・深度のサイズとサンプル数の適合性を検証し、深度の共有・読み取り専用利用の契約を決める。
+- 3D 描画キューの導入時に、clear・ミップ生成・読み戻しが発行すべき保留描画の範囲を決める。現在の 2D Flush を無条件の 2D / 3D Flush に広げず、操作順序と不要な発行の費用を評価する。resolve の明示呼び出し・自動 Flush なしは維持する。
+- 異なるブレンドが必要な具体的な MRT パスができた時点で、出力別ブレンド指定を設計する。alpha-to-coverage などパス全体の設定と、各出力のブレンド・書き込みマスクを分離する。
+
+## 2D 図形の Image 書き込み
+
+今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。
+`.draw()` との差は機能単位で扱い、画素一致のために Image 書き込みの速度を落とさない。
+再開時は継続検証を優先する。機能拡張・追加最適化の候補は、具体的な用途や測定結果に基づいて別途着手する。
+
+### 継続検証
+
+- **手動確認**。[共通ギャラリー](Test/Manual/ImageWriting.md)で CPU / GPU の輪郭と alpha を確認する。Bezier / Spline の品質・分割上限、Spline の閉じ目と線端、Triangle / Quad の内外枠と中央配置の JoinStyle も含め、実際に操作・確認した条件を記録する。自動テストやサンプルの構文検査と区別する。
+
+### 将来の機能拡張候補
+
+- **Line の破線・LineStyle**。最初の範囲を Line の paint / overwrite に限定し、各パターン、位相、端点、短い区間の仕様と最小 API を決める。線端と破線断片の重複を一度だけ合成し、既存の実線の性能も比較する。その後、LineString / 曲線、図形の枠へ段階的に広げ、曲線の分割点配置に依存しない長さ基準と閉じ目の位相を検討する。
+- **LineString などへの JoinStyle 拡張**。最初は開いた折れ線・閉じた輪郭を対象に、既定値と線端・結合部の合成規則を決める。その後、Polygon / Shape2D の枠、Bezier / Spline の折り返しや cusp への適用を検討する。真の角と曲線近似の分割点を区別し、分割品質の変更で不自然な角が現れないようにする。Image と GPU は幾何的な意味を共有し、長い点列の一時確保、自己交差、穴、多重合成の費用を個別に評価する。
+
+### 用途・測定結果に応じて選ぶ候補
+
+- **変換付き描き込み・wireframe・添字付き三角形**。Polygon 等の変換済みコピーを作らない描き込みや、Shape2D の GPU と同じ添字付きメッシュを描く用途を評価する。Shape2D の頂点列を輪郭として塗る既存契約を保ち、添字付きメッシュは別 API として三角形の重複・共有辺・半透明の合成規則を決める。
+- **グラデーション・頂点色・パターン・影**。利用頻度と補間・座標・alpha の仕様を先に決め、一種類ずつ採否を判断する。単色描画の共通経路へ一律に費用を加えない。
+- **実用途に基づく追加最適化**。同じ画像への反復描画に加え、初期 alpha の異なる描画先やアプリ相当の呼び出し列を測定する。短い区間を多数連ねた Spline は、[曲線統合ベンチマーク](docs/geometry2d/bezier-drawing.md#spline-and-image-integration-costs)で密度分割の変換費用が頂点削減の効果を上回るケースを優先して切り分ける。CPU の準備・ラスタライズ・合成、一時確保、GPU 実行時間を区別する。再利用可能な公開コンテキストやキャッシュは、既存の [分離計測](tools/image-stroke-profile/profile.cpp)で費用と再利用の効果を確認してから検討する。
+
+### GPU 側の追加調査
+
+- **Circle arc の線端重複**。[共通ギャラリー](Test/Manual/ImageWriting.md)に記載された GPU キャップの重複を、短い弧・全周直前などで検証し、修正範囲を判断する。Image の一度だけの合成を参照しつつ、GPU 側の独立した作業として扱う。
+
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証
@@ -16,7 +74,7 @@
 
 ### 保存失敗の報告
 
-- `save()` / `saveMinified()` はファイルを開けない場合は false を返すが、`TextFileWriter::writeUTF8()` と下位 writer の flush/close が書き込み失敗を呼び出し側へ返さない。ディスク容量不足などを検出するには writer 層から結果を伝播する設計が必要。原子的な置換・既存ファイルの保持まで保証するかも決める。JSON 内で保存後に再読込する回避策は採らない。
+- `save()` / `saveMinified()` はファイルを開けない場合は false を返すが、`TextFileWriter::writeUTF8()` と `close()` が書き込み失敗を呼び出し側へ返さない。`BinaryFileWriter::close()` の結果を TextFileWriter 経由で JSON に伝播する設計が必要。原子的な置換・既存ファイルの保持まで保証するかも決める。JSON 内で保存後に再読込する回避策は採らない。
 
 ### BSON の互換性と検証
 
@@ -28,11 +86,9 @@
 - 子要素は親を所有しない参照。親の寿命終了や object/array の構造変更後に使うと無効になる。安全な長期保持は `clone()` で行えるが、所有する `JSON` と借用する view を型で分ける設計は別途検討する。常時 shared ownership を追加する前に費用と既存 API への影響を評価する。
 - 編集・flatten・書式化・バイナリ出力などは基盤ライブラリの例外を返す一方、Parse/Load/get 等は `Error` へ変換する。例外体系を統一する場合はユーザー定義 serializer / reader の例外も含めた境界を決める。
 
-## `Siv3D/include/Siv3D/TOML.hpp`
+## `Siv3D/include/Siv3D/Network.hpp` / macOS の到達性
 
-### Windows Debug の不正入力テスト
-
-- テストアプリをクリーンビルドした Debug 全テストが `TOML.Load.invalid` で CRT アサート（`isctype.cpp:36`、`c >= -1 && c <= 255`）に停止する。どの入力・文字分類呼び出しが原因か、エンジンと依存ライブラリを含めて切り分ける。Release 全テストは通過する。警告整理とは別件として保留し、不正入力の拒否を検証するテストやバイト単位の fixture を弱めない。
+- `HasInternetConnectivity()` は同期問い合わせの動作を維持するため、非推奨の `SCNetworkReachability` の2呼び出しに限って警告を抑制している。[Apple の移行方針](https://developer.apple.com/documentation/systemconfiguration/scnetworkreachability-g7d)に沿って `NWPathMonitor` へ移行する際は、監視の開始・終了、初回通知前の戻り値、更新の同期、IPv4 / IPv6 と VPN の扱いを決める。呼び出しごとの監視生成や通知待ちをフレームループへ持ち込まない。接続成否は実際の通信結果で判断する既存契約を維持する。
 
 ## `Siv3D/include/Siv3D/Keyboard.hpp` / macOS の入力
 
@@ -40,17 +96,41 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
-## `Siv3D/include/Siv3D/ScreenCapture.hpp`
+## `Siv3D/include/Siv3D/Window.hpp` / macOS のスクリーン座標
 
-### 保存先パスの契約
+- 全画面中の OS 表示倍率・解像度・リフレッシュレート変更と、物理的なモニター切断・再接続を検証する。残った画面で表示・操作を続けられ、再接続後も全画面往復と設定維持ができること。native detach の自動検査とは区別する。
+- 最小サイズ設定後に異種 DPI 間を手動移動し、枠ドラッグの下限が backing pixel 指定を維持することを確認する。上下・左右配置の連続ドラッグとポインター座標も目視確認する。手順は [手動テスト](Test/Manual/SceneHighResolution.md) に集約する。
 
-- `SaveCurrentFrame(U"/private/tmp/shot0.png")` が、macOS で `~/Pictures/Screenshot//private/tmp/shot0.png` に保存される。現在の `CScreenCapture.cpp` の保存処理は設定済みディレクトリと引数を単純連結し、公開ヘッダは引数を「ファイル名」としている。絶対パスをそのまま使うか、保存先からの相対指定に限定して絶対パスを拒否するか、既存利用との互換性を含めて決める。
-- ファイル名・相対サブディレクトリ・絶対パス・末尾区切りのない保存先・空の引数の扱いを整理し、Doxygen と専用の保存先テストを揃える。空の引数は現在、ファイル保存を伴わないキャプチャ要求として使われるため、その用途を維持する。Windows のドライブ文字・UNC パスは Windows 上で確認する。
+## `Siv3D/include/Siv3D/Scene.hpp`
+
+### 描画の境界・失敗時の検証
+
+- 有効な MSAA 列挙値が GPU 非対応となる環境で、`SceneMSAA.invalid_or_unsupported_preserves_scene` による `Error` と以前の状態の維持を確認する。
+- Intel iGPU の `ScenePresentation.D3D11.scaling_filter_and_buffer_reuse` では、2×2 シーンを 750×750 に Nearest 拡大した境界が 1 ピクセル左に寄る。D3D11 のテクスチャ座標精度と照合し、厳密一致を保証するか、観測位置を見直すか決める。Linear・MSAA resolve・バッファ再利用とは切り分け、許容差を一律に緩めない。
+- GPU 確保失敗後の状態維持と再試行を、D3D11 の確保段階と実際に確保が失敗する環境で検証する。Metal の [Configure / MSAA](Test/Test_SceneAllocationFailure.cpp)・[Window → Scene](Test/Test_WindowSceneSync.cpp) の失敗注入検査とは区別する。
+
+### 残る手動確認
+
+[共通プログラム](Test/Manual/SceneHighResolution.md) を使い、確認した設定・操作・モニター条件だけを完了扱いにする。描画、ホバー・クリック、復帰位置・寸法、SceneConfig の維持を確認する。
+
+| 対象 | 未確認の条件・組み合わせ |
+| --- | --- |
+| Windows / D3D11 | 全 6 設定 × API / Alt+Enter 往復・混在の目視網羅。特に Fixed / SceneSize と PixelArt の異種 DPI 移動、最大化・最小化復元。真上・真下の独立配置、全画面中の複数回モニター移動後の復帰 |
+| macOS / Metal | 異種 DPI 移動、最大化・最小化復元、全画面。実キーの Control+Command+F、メニューと緑ボタンの実クリック（緑ボタンは最大化） |
+| 両方 | OS 倍率変更、横長・縦長・シーンより小さいウィンドウへの連続リサイズ、右ドラッグ中の解像度方針切り替え |
+
+## Renderer2D / Triangle・Quad の JoinStyle
+
+- Windows / D3D11 で [手動ギャラリー](Test/Manual/Renderer2DJoinStyle.md) の半透明・パターン・拡大表示を確認する。
+- 凹形状・自己交差・内側輪郭の消失は Boost の topology 処理に残す。内外幅指定では領域の intersection / difference / union も含む。拡張する場合は非重複な領域分割と使用頻度を先に評価する。
+- 実アプリの描画負荷で CPU コマンド投入と GPU 実行を個別に計測する。形状生成のマイクロベンチマーク倍率を FPS や GPU の速度向上率として扱わない。
 
 ## Renderer2D / 組み込みシェーダ最適化
 
+- WARP の `Pattern.wave_rendering` / `Pattern.ripple_rendering` で、半透明の幅 0 の背景色と単色描画の比較に赤成分 1/255 の差が出る。端点色の補間・PMA・UNORM 変換の丸めを切り分け、必要な描画契約と画像比較の許容差を決める。画像全体の比較を一律に緩めない。
+- WARP の `MSDFFont.atlas_dimensions` で、同じグリフを幅 768 のアトラスに移すと輪郭描画は最大 2/255、Print 用シェーダは最大 11/255 の差が出る。幅 128 / 512 と比較し、非 2 冪アトラスの UV・フィルタリング・微分・coverage 計算を切り分ける。既存の 1 階調許容を根拠なく拡大しない。
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
-- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。[ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較も確認する。引き継いだ目視結果は macOS Debug のみで、Windows の描画検証を代替しない。
+- ScopedQuadWarp2D: Windows で [ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較を目視確認する。自動テストの画像比較と区別する。
 - Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。

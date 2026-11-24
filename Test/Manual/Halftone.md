@@ -123,8 +123,7 @@ void Main()
 {
 	Window::Resize(1180, 760);
 	Window::SetTitle(U"Halftone");
-	Scene::SetResizeMode(ResizeMode::Keep);
-	Scene::Resize(1180, 760);
+	Scene::Configure(SceneConfig::Fixed(Size{ 1180, 760 }));
 	Scene::SetBackground(ColorF{ 0.07, 0.09, 0.13 });
 	const Font title{ 25, Typeface::Bold };
 	const Font font{ 16 };

@@ -28,11 +28,11 @@ namespace s3d
 
 		bool open(FilePathView path, FileWriteMode writeMode);
 
-		void close();
+		bool close();
 
 		bool isOpen() const noexcept;
 
-		void flush();
+		bool flush();
 
 		void clear();
 
@@ -54,7 +54,7 @@ namespace s3d
 		{
 			HANDLE handle = INVALID_HANDLE_VALUE;
 
-			void close();
+			bool close();
 
 		} m_file;
 
@@ -76,6 +76,8 @@ namespace s3d
 			bool isOpen = false;
 
 		} m_info;
+
+		bool m_hasError = false;
 
 		int64 fillBuffer(NonNull<const void*> src, size_t writeSize);
 	};

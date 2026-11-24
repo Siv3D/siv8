@@ -1,4 +1,4 @@
-# MSDF font scale
+# MSDF font rendering
 
 The [glyph generator](../../Siv3D/src/Siv3D/Font/GlyphRenderer/MSDFGlyphRenderer.cpp)
 encodes a distance range of 16 texels. The built-in
@@ -21,11 +21,6 @@ CPU/shader constant-buffer layout. Normal and Outline text need only the scale.
 Shadow, OutlineShadow, and Print also use `invTextureSize` to convert a shadow
 displacement in texels into UVs. Compilers can remove its calculation when the
 selected pixel shader does not use it. Glow does not call `MSDF_Init`.
-
-Texture dimensions are queried from the bound texture, so atlas growth requires
-no additional inverse-size constant or CPU-side state tracking. Foreground PMA,
-outline and shadow colors, coverage thresholds, and texture sampling are separate
-from this scale calculation.
 
 ## Shader parameter interpretation
 
@@ -50,6 +45,35 @@ uses its own outline-distance offset and shadow displacement constants, followed
 by its square-root alpha and grayscale composition. Glow uses the texture alpha
 channel; the other styles obtain `sampledDistance` from the RGB median.
 
+## Color composition
+
+The vertex shader applies ColorMul to the text fill. The Outline, Shadow, and
+OutlineShadow pixel shaders receive the original style PMA colors in
+`g_sdfOutlineColorPMA` and `g_sdfShadowColorPMA`. They multiply these by
+`(r*a, g*a, b*a, a)`, using the effective straight multiplier `(r, g, b, a)` from
+`g_patternBackgroundColorMul`, then combine the fill and decoration coverage
+before applying ColorAdd.
+Print's dedicated grayscale shader does not consume these style colors.
+
+## Vendored msdfgen
+
+The [vendored sources](../../Siv3D/src/ThirdParty/msdfgen) contain upstream
+`core/`, `msdfgen.h`, and `ext/resolve-shape-geometry.{h,cpp}`. Siv3D loads font
+outlines through FreeType itself; msdfgen's font/SVG importers and command-line
+application are not included. [ThirdParty.md](../../ThirdParty.md) records the
+release version.
+
+When updating, compare the existing files with that upstream release and
+preserve the local Skia include paths, `[[maybe_unused]]` parameter attributes
+in `MSDFErrorCorrection.cpp`, `edge-segments.cpp`, and `edge-selectors.cpp`, and
+the static-library, C++11, and Skia settings in
+[msdfgen-config.h](../../Siv3D/src/ThirdParty/msdfgen/msdfgen-config.h).
+Update its version macros and copyright year along with `ThirdParty.md` and
+the msdfgen entry in
+[LicenseList.hpp](../../Siv3D/src/Siv3D/LicenseManager/LicenseList.hpp), using the
+upstream release's license. The Skia geometry adapter uses `SkPathBuilder`;
+its implementation must remain registered in both platform projects.
+
 ## Validation
 
 [Test_MSDFFont.cpp](../../Test/Test_MSDFFont.cpp) owns the
@@ -61,12 +85,15 @@ transparent colors, ColorMul, and ColorAdd. The comparison allows one RGBA8 unit
 for UV normalization and texture filtering, and requires visible glyph pixels to
 avoid accepting empty output.
 
+`MSDFFont.scoped_color_mul_styles` compares actual MSDF text drawing with a
+reference that bakes the multiplier into the fill and straight style colors.
+It covers independent changes to ColorMul and style, nested Push and Set, Flush,
+and ColorAdd. Zero-alpha cells must match the background exactly.
+
 Use the [host test workflow](../development/README.md#build-and-test) with
-`--test-case=MSDFFont*` for focused iteration, then run the full suite. When
-changing `MSDF_Init`, regenerate all five affected Windows pixel-shader assets:
-`msdffont.ps`, `msdffont_outline.ps`, `msdffont_shadow.ps`,
-`msdffont_outline_shadow.ps`, and `msdffont_print.ps`. Changes to Glow also
-require regenerating `msdffont_glow.ps`.
+`--test-case=MSDFFont*` for focused iteration, then run the full suite. Regenerate
+affected Windows bytecode following
+[backend shader maintenance](pattern-payload.md#backend-shader-maintenance).
 [CEngineShader_D3D11::init](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)
-defines their entry-point and file mappings. GPU-time measurements are separate
+defines the entry-point and asset mappings. GPU-time measurements are separate
 from image regression tests and intermediate instruction counts.

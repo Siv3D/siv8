@@ -185,13 +185,13 @@ namespace s3d
 	template <class DatasetAdapter>
 	void KDTree<DatasetAdapter>::release()
 	{
-		m_index.freeIndex();
+		m_index.freeIndex(m_index);
 	}
 
 	template <class DatasetAdapter>
 	size_t KDTree<DatasetAdapter>::usedMemory() const
 	{
-		return m_index.usedMemory();
+		return m_index.usedMemory(m_index);
 	}
 
 	template <class DatasetAdapter>
@@ -313,7 +313,7 @@ namespace s3d
 		{
 			detail::RadiusResultsAdapter<distance_type, index_type> resultSet{ (radius * radius), results };
 
-			m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
+			(void)m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
 		}
 	}
 
@@ -353,7 +353,7 @@ namespace s3d
 		{
 			detail::RadiusResultsPairAdapter<distance_type, index_type> resultSet{ (radius * radius), results };
 
-			m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
+			(void)m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
 		}
 	}
 }

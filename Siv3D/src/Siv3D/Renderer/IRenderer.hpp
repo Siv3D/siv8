@@ -12,12 +12,11 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/PointVector.hpp>
-# include <Siv3D/EngineOption.hpp>
 
 namespace s3d
 {
 	struct SceneStyle;
-	enum class ResizeMode : uint8;
+	struct SceneConfig;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer
 	{
@@ -29,8 +28,6 @@ namespace s3d
 		virtual ~ISiv3DRenderer() = default;
 
 		virtual StringView getName() const = 0;
-
-		virtual EngineOption::Renderer getRendererType() const noexcept = 0;
 
 		virtual void init() = 0;
 
@@ -44,11 +41,15 @@ namespace s3d
 
 		virtual SceneStyle& getSceneStyle() noexcept = 0;
 
-		virtual void setSceneResizeMode(ResizeMode resizeMode) = 0;
+		virtual void configureScene(const SceneConfig& config) = 0;
 
-		virtual ResizeMode getSceneResizeMode() const noexcept = 0;
+		virtual SceneConfig getSceneConfig() const noexcept = 0;
 
-		virtual void resizeSceneBuffer(Size size) = 0;
+		virtual void setSceneSampleCount(uint32 sampleCount) = 0;
+
+		virtual uint32 getSceneSampleCount() const noexcept = 0;
+
+		virtual const Size& getSceneSize() const noexcept = 0;
 
 		virtual const Size& getSceneBufferSize() const noexcept = 0;
 
@@ -60,7 +61,8 @@ namespace s3d
 
 		virtual bool isVSyncEnabled() const = 0;
 
-		virtual void captureScreenshot() = 0;
+		[[nodiscard]]
+		virtual bool captureScreenshot() = 0;
 
 		virtual const Image& getScreenCapture() const = 0;
 	};

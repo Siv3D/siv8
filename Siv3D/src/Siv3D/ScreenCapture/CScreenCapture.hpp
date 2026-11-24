@@ -15,6 +15,8 @@
 
 namespace s3d
 {
+	class ISiv3DRenderer;
+
 	class CScreenCapture final : public ISiv3DScreenCapture
 	{
 	public:
@@ -42,6 +44,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void update() override;
+
+		void update(ISiv3DRenderer& renderer);
 
 		////////////////////////////////////////////////////////////////
 		//

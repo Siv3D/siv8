@@ -57,7 +57,7 @@ namespace s3d
 			{
 				.vs = SIV3D_ENGINE(EngineShader)->getVS(scene ? EngineVS::Shape2D : EngineVS::FullScreenTriangle).id(),
 				.ps = SIV3D_ENGINE(EngineShader)->getPS(scene ? EnginePS::Shape2D : EnginePS::FullScreenTriangle).id(),
-				.pixelFormat = static_cast<uint16>(scene ? MTL::PixelFormatRGBA8Unorm : MTL::PixelFormatBGRA8Unorm),
+				.pixelFormats = { static_cast<uint16>(scene ? MTL::PixelFormatRGBA8Unorm : MTL::PixelFormatBGRA8Unorm) },
 				.sampleCount = static_cast<uint16>(scene ? 4 : 1),
 				.blendState = BlendState::Opaque,
 			};
@@ -91,6 +91,47 @@ namespace s3d
 		}
 	}
 
+	TEST_CASE("MetalRenderPipelineState.mrt_layout_and_write_mask_cache")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		__attribute__((objc_precise_lifetime)) Siv3DTestPipelineDevice* device = MakeDevice();
+		MetalRenderPipelineState cache;
+		cache.init((__bridge MTL::Device*)device, static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader)));
+		const PixelShader ps = PixelShader::MSL(std::string{ R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Output { float4 a [[color(0)]]; float4 b [[color(1)]]; };
+fragment Output PS() { return Output{ float4(1, 0, 0, 1), float4(0, 1, 0, 1) }; }
+)" }, U"PS");
+		REQUIRE(ps);
+		auto desc = MakeDesc(false);
+		desc.ps = ps.id();
+		desc.colorCount = 2;
+		desc.colorWriteMask = 3;
+		desc.pixelFormats[0] = uint16(MTL::PixelFormatRGBA8Unorm);
+		desc.pixelFormats[1] = uint16(MTL::PixelFormatRGBA16Float);
+		const auto initial = desc;
+		const auto* first = cache.get(desc);
+		REQUIRE(first);
+		desc.colorWriteMask = 1;
+		CHECK(cache.get(desc) != first);
+		desc.colorWriteMask = 3;
+		std::swap(desc.pixelFormats[0], desc.pixelFormats[1]);
+		CHECK(cache.get(desc) != first);
+		desc.colorCount = 3;
+		desc.pixelFormats[2] = uint16(MTL::PixelFormatR8Unorm);
+		REQUIRE(cache.get(desc));
+		CHECK(device.creationCount == 4);
+		for (const uint16 samples : { uint16{ 2 }, uint16{ 4 } })
+		{
+			desc.sampleCount = samples;
+			REQUIRE(cache.get(desc));
+		}
+		CHECK(device.creationCount == 6);
+		CHECK(cache.get(initial) == first);
+		CHECK(device.creationCount == 6);
+	}
+
 	TEST_CASE("MetalRenderPipelineState.failure_retry_and_cache")
 	{
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
@@ -120,7 +161,7 @@ namespace s3d
 					CHECK(message.contains("newRenderPipelineState"));
 					CHECK(message.contains(fmt::format("vs = {}", desc.vs.value())));
 					CHECK(message.contains(fmt::format("ps = {}", desc.ps.value())));
-					CHECK(message.contains(fmt::format("pixelFormat = {}", desc.pixelFormat)));
+					CHECK(message.contains(fmt::format("pixelFormat = {}", desc.pixelFormats[0])));
 					CHECK(message.contains("sampleCount = 1"));
 					CHECK(message.contains(withError ? "Injected pipeline creation failure" : "No Metal error details"));
 				}
@@ -147,8 +188,8 @@ namespace s3d
 		Scene::SetBackground(Palette::Black);
 		const Transformer2D camera{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
 		const Transformer2D local{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
-		const ScopedColorMul2D colorMul{ Palette::White };
-		const ScopedColorAdd2D colorAdd{ 0.0 };
+		const ScopedColorMul2D colorMul{ Palette::White, ScopedColorMul2D::Target::Set };
+		const ScopedColorAdd2D colorAdd{ 0.0, ScopedColorAdd2D::Target::Set };
 		const ScopedViewport2D viewport{ none };
 		const ScopedScissorRect2D scissor{ none };
 		const ScopedRenderStates2D states{ BlendState::Opaque, RasterizerState::Default2D };
@@ -167,7 +208,7 @@ namespace s3d
 			if (withPriorDraws)
 			{
 				RectF{ 0, 0, 16, 16 }.draw(Palette::Lime);
-				renderer->flush();
+				Graphics2D::Flush();
 				// This draw uses the cached pipeline and succeeds in the failing flush.
 				RectF{ 20, 0, 16, 16 }.draw(Palette::Yellow);
 			}
@@ -179,17 +220,17 @@ namespace s3d
 			}
 			// Discard the rest of this flush too, including a different index count.
 			Triangle{ Vec2{ 60, 0 }, Vec2{ 76, 0 }, Vec2{ 60, 16 } }.draw(Palette::Blue);
-			CHECK_THROWS_AS(renderer->flush(), InternalEngineError);
+			CHECK_THROWS_AS(Graphics2D::Flush(), InternalEngineError);
 			CHECK(device.creationCount == (creationsBeforeFailure + 1));
 
 			// Neither an empty flush nor a later draw may replay the discarded geometry.
 			device.failCreation = NO;
 			if (emptyFlush)
 			{
-				renderer->flush();
+				Graphics2D::Flush();
 			}
 			RectF{ 80, 0, 16, 16 }.draw(Palette::Red);
-			renderer->flush();
+			Graphics2D::Flush();
 			RectF{ 100, 0, 16, 16 }.draw(Palette::Cyan);
 			ScreenCapture::RequestCurrentFrame();
 			REQUIRE(System::Update());

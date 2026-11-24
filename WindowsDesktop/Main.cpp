@@ -14,11 +14,11 @@ void Main()
 
 	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
-	//Scene::SetResizeMode(ResizeMode::Keep);
+	//Scene::Configure(SceneConfig::Fixed({ 800, 600 }));
 
 	const Texture texture{ U"example/windmill.png" };
 	const Texture emoji{ U"🔥"_emoji, 200 };
-	const Font font{ 40, Typeface::Bold };
+	const Font font{ FontMethod::MSDF, 40, Typeface::Bold };
 	font.addFallback(Font{ 40, Typeface::ColorEmoji });
 
 	Print << U"Hello, Siv3D! 🐥";

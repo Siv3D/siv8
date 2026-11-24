@@ -28,7 +28,7 @@ namespace s3d
 	///
 	/// @remark
 	/// 更新は弧長を厳密に解くのではなく、曲線の速度 |B'(t)| を用いた近似で行います。
-	/// 高精度が必要な場合は `Bezier3::tAtLength()` などの利用を検討してください。
+	/// 高精度が必要な場合は `Bezier3::computeTAtDistance()` などの利用を検討してください。
 	struct Bezier3Walker
 	{
 	public:

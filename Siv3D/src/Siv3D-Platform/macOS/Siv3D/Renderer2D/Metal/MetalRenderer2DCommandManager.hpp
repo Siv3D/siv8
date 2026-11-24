@@ -24,6 +24,7 @@
 # include <Siv3D/Texture.hpp>
 # include "MetalRenderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
+# include <Siv3D/Renderer2D/Renderer2DTransformState.hpp>
 # include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
 
 namespace s3d
@@ -34,8 +35,8 @@ namespace s3d
 
 		MetalRenderer2DCommandManager();
 
-		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
-		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0);
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size, size_t capacity = 0);
 		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
 		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
 
@@ -43,7 +44,16 @@ namespace s3d
 
 		void flush();
 
+		bool hasDraws() const noexcept { return (m_current.draw.indexCount || not m_buffer.draws.isEmpty() || not m_buffer.proceduralDraws.isEmpty()); }
+
+		void setSceneScale(Float2 scale);
+		Float2 getSceneScale() const noexcept { return m_current.transform.sceneScale; }
+		float getCurrentRasterScaling() const noexcept { return m_current.transform.rasterScaling; }
+
 		const Array<MetalRenderer2DCommand>& getCommands() const noexcept;
+
+		void pushProceduralDraw(uint32 vertexCount);
+		uint32 getProceduralDraw(uint32 index) const noexcept;
 
 		void pushDraw(uint32 indexCount);
 		const MetalDrawCommand& getDraw(uint32 index) const noexcept;
@@ -125,6 +135,7 @@ namespace s3d
 
 		void updateAffineTransform();
 		void updateTransform();
+		void updateRasterScaling();
 
 		ConstantBuffer2DCommands m_constantBuffers;
 
@@ -135,6 +146,8 @@ namespace s3d
 		struct Buffer
 		{
 			Array<MetalDrawCommand> draws;
+
+			Array<uint32> proceduralDraws;
 
 			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			
@@ -196,17 +209,7 @@ namespace s3d
 			
 			PixelShader::IDType pixelShader		= PixelShader::IDType::Invalid();
 
-			Mat3x2 localTransform				= Mat3x2::Identity();
-			
-			Mat3x2 cameraTransform				= Mat3x2::Identity();
-			
-			Mat3x2 affineTransform = Mat3x2::Identity();
-
-			Mat3x3 quadWarpTransform = Mat3x3::Identity();
-
-			Mat3x3 combinedTransform			= Mat3x3::Identity();
-
-			float rmsScaling					= 1.0f;
+			Renderer2DTransformState transform;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

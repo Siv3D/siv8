@@ -14,23 +14,23 @@
 
 namespace s3d
 {
-	ScopedColorAdd2D::ScopedColorAdd2D(const ColorF& rgb)
-		: ScopedColorAdd2D{ rgb.toFloat3() } {}
+	ScopedColorAdd2D::ScopedColorAdd2D(const ColorF& rgb, const Target target)
+		: ScopedColorAdd2D{ rgb.toFloat3(), target } {}
 
-	ScopedColorAdd2D::ScopedColorAdd2D(const Float4& rgb)
-		: ScopedColorAdd2D{ rgb.xyz() } {}
+	ScopedColorAdd2D::ScopedColorAdd2D(const Float4& rgb, const Target target)
+		: ScopedColorAdd2D{ rgb.xyz(), target } {}
 
-	ScopedColorAdd2D::ScopedColorAdd2D(const Float3& rgb)
+	ScopedColorAdd2D::ScopedColorAdd2D(const Float3& rgb, const Target target)
 		: m_oldColor{ Graphics2D::GetColorAdd() }
 	{
-		Graphics2D::Internal::SetColorAdd(rgb);
+		Graphics2D::Internal::SetColorAdd((target == Target::Push) ? (*m_oldColor + rgb) : rgb);
 	}
 
-	ScopedColorAdd2D::ScopedColorAdd2D(const double rgb)
-		: ScopedColorAdd2D{ Float3::All(static_cast<float>(rgb))} {}
+	ScopedColorAdd2D::ScopedColorAdd2D(const double rgb, const Target target)
+		: ScopedColorAdd2D{ Float3::All(static_cast<float>(rgb)), target } {}
 
-	ScopedColorAdd2D::ScopedColorAdd2D(const double r, const double g, const double b)
-		: ScopedColorAdd2D{ Float3{ r, g, b } } {}
+	ScopedColorAdd2D::ScopedColorAdd2D(const double r, const double g, const double b, const Target target)
+		: ScopedColorAdd2D{ Float3{ r, g, b }, target } {}
 
 	ScopedColorAdd2D::ScopedColorAdd2D(ScopedColorAdd2D&& other) noexcept
 	{

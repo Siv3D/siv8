@@ -13,6 +13,8 @@
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
+# include <Siv3D/ConstantBuffer.hpp>
+# include <Siv3D/RenderTextureOps/TextureProcessing.hpp>
 # include "MetalTexture.hpp"
 
 namespace s3d
@@ -30,12 +32,12 @@ namespace s3d
 		~CTexture_Metal() override;
 
 		void init() override;
-		
+
 		[[nodiscard]]
 		Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) override;
 
 		[[nodiscard]]
-		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;
+		Texture::IDType create(const Image& image, std::span<const Image> mipmaps, TextureDesc desc) override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
@@ -45,6 +47,23 @@ namespace s3d
 
 		[[nodiscard]]
 		Texture::IDType createDynamic(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
+
+		[[nodiscard]]
+		Texture::IDType createRender(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc, const ColorF& color) override;
+
+		[[nodiscard]]
+		Texture::IDType createMSRender(const Size& size, const TextureFormat& format, TextureDesc desc, const ColorF& color, uint32 sampleCount) override;
+
+		void processRenderTextures(std::span<const detail::TextureProcessingPass> passes) override;
+
+		void resolveMSRT(Texture::IDType handleID) override;
+
+		[[nodiscard]]
+		uint32 getSampleCount(Texture::IDType handleID) override;
+
+		void clearRT(Texture::IDType handleID, const ColorF& color) override;
+
+		bool readRT(Texture::IDType handleID, std::span<Byte> destination, uint32 mipLevel) override;
 
 		void release(Texture::IDType handleID) override;
 
@@ -67,7 +86,7 @@ namespace s3d
 
 		bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) override;
 
-		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) override;
+		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect, bool wait) override;
 
 		bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) override;
 
@@ -76,13 +95,26 @@ namespace s3d
 		[[nodiscard]]
 		MTL::Texture* getTexture(Texture::IDType handleID);
 
+		[[nodiscard]]
+		MTL::Texture* getRenderTargetTexture(Texture::IDType handleID);
+
 	private:
+
+		ConstantBuffer<detail::TextureProcessingConstants> m_processingConstants;
+
+		ConstantBuffer<std::array<Float4, detail::MaxGaussianSamples>> m_gaussianSamples;
+
+		[[nodiscard]]
+		MTL::CommandBuffer* renderCommands(bool flushDraws);
+
 	
 		CRenderer_Metal* m_pRenderer = nullptr;
 
 		MTL::Device* m_device = nullptr;
 
 		MTL::CommandQueue* m_commandQueue = nullptr;
+
+		bool m_float32Filtering = false;
 
 		// Texture の管理
 		AssetHandleManager<Texture::IDType, MetalTexture> m_textures{ "Texture" };

@@ -139,7 +139,7 @@ namespace s3d::Mesh3DDetail
 		const bool generateEndCaps = ((closeSweepEnds == CloseEnds::Yes) && (not fullRevolution));
 		if ((sweepAngle <= 0.0)
 			|| (Math::TwoPi < sweepAngle)
-			|| (segments < (fullRevolution ? 3 : 1))
+			|| (segments < (fullRevolution ? 3u : 1u))
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{

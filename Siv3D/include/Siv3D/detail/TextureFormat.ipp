@@ -32,4 +32,17 @@ namespace s3d
 	{
 		return m_value;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isFloat32
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool TextureFormat::isFloat32() const noexcept
+	{
+		return ((m_value == TexturePixelFormat::R32_Float)
+			|| (m_value == TexturePixelFormat::R32G32_Float)
+			|| (m_value == TexturePixelFormat::R32G32B32A32_Float));
+	}
 }

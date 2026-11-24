@@ -202,7 +202,10 @@ TEST_CASE("TOML.Load.invalid")
 
 	{
 		const auto result = TOML::LoadResult(InvalidNonUTF8Latin1);
-		CHECK(not result);
+		REQUIRE(not result);
+		REQUIRE(not result.error().isEmpty());
+		REQUIRE(not result.error().front().locations.isEmpty());
+		CHECK(result.error().front().locations.front().contains(U"caf"));
 	}
 }
 

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/MemoryMappedFileView.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/MemoryMappedFileView/MemoryMappedFileViewDetail.hpp>
 
 namespace s3d
@@ -55,7 +56,19 @@ namespace s3d
 
 	bool MemoryMappedFileView::open(const FilePathView path)
 	{
-		return pImpl->open(path);
+		if (path.contains(U'\0'))
+		{
+			close();
+			return false;
+		}
+
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<MemoryMappedFileViewDetail>();
+		}
+
+		// Resolve before closing: path may refer to this object's path().
+		return pImpl->open(FileSystem::FullPath(path));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -66,7 +79,10 @@ namespace s3d
 
 	void MemoryMappedFileView::close()
 	{
-		pImpl->close();
+		if (pImpl)
+		{
+			pImpl->close();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -77,7 +93,7 @@ namespace s3d
 
 	bool MemoryMappedFileView::isOpen() const
 	{
-		return pImpl->isOpen();
+		return (pImpl && pImpl->isOpen());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -99,7 +115,7 @@ namespace s3d
 
 	MappedMemoryView MemoryMappedFileView::map(const size_t offset, const size_t requestSize)
 	{
-		return pImpl->map(offset, requestSize);
+		return (pImpl ? pImpl->map(offset, requestSize) : MappedMemoryView{});
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -110,7 +126,7 @@ namespace s3d
 
 	MappedMemoryView MemoryMappedFileView::mapAll()
 	{
-		return pImpl->map(0, pImpl->size());
+		return map(0, static_cast<size_t>(size()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -121,7 +137,10 @@ namespace s3d
 
 	void MemoryMappedFileView::unmap()
 	{
-		pImpl->unmap();
+		if (pImpl)
+		{
+			pImpl->unmap();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -132,7 +151,7 @@ namespace s3d
 
 	int64 MemoryMappedFileView::size() const
 	{
-		return pImpl->size();
+		return (pImpl ? pImpl->size() : 0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -143,6 +162,12 @@ namespace s3d
 
 	const FilePath& MemoryMappedFileView::path() const
 	{
-		return pImpl->path();
+		if (pImpl)
+		{
+			return pImpl->path();
+		}
+
+		static const FilePath emptyPath;
+		return emptyPath;
 	}
 }
