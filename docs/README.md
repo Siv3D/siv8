@@ -8,6 +8,7 @@ Test. Unfinished work is tracked in [TODO](../TODO.md).
 - [Array](array/README.md): sequence operations, Array-like owners and views, allocators, and migration.
 - [FileSystem](filesystem/README.md): filesystem behavior, diagnostics, and foundation design review.
 - [Geometry2D](geometry2d/README.md): boundary queries, continued rays, and spline paths.
+- [Image](image/README.md): CPU image operations, member-function inventory, and rectangular-view design.
 - [JSON](json/README.md): JSON data handling, ownership, representation limits, and validation.
 - [Mesh3D](mesh3d/README.md): CPU modeling, assembly, export, and implementation guidance.
 - [Renderer2D](renderer2d/README.md): pattern coordinates, transforms, and rendering checks.

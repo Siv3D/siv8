@@ -20,6 +20,8 @@
 # include "Blob.hpp"
 # include "PNGFilter.hpp"
 # include "PredefinedYesNo.hpp"
+# include "ImageView.hpp"
+# include "MutableImageView.hpp"
 
 namespace s3d
 {
@@ -417,6 +419,129 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 左上座標と辺の長さを指定して正方形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(int32 x, int32 y, int32 size) & noexcept;
+
+		/// @brief 左上座標と辺の長さを指定して正方形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(int32 x, int32 y, int32 size) const& noexcept;
+
+		/// @brief 左上座標と幅・高さを指定して矩形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param w 幅（ピクセル）
+		/// @param h 高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(int32 x, int32 y, int32 w, int32 h) & noexcept;
+
+		/// @brief 左上座標と幅・高さを指定して矩形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param w 幅（ピクセル）
+		/// @param h 高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(int32 x, int32 y, int32 w, int32 h) const& noexcept;
+
+		/// @brief 左上座標と幅・高さを指定して矩形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param w 幅（ピクセル）
+		/// @param h 高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(Point pos, int32 w, int32 h) & noexcept;
+
+		/// @brief 左上座標と幅・高さを指定して矩形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param w 幅（ピクセル）
+		/// @param h 高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(Point pos, int32 w, int32 h) const& noexcept;
+
+		/// @brief 左上座標とサイズを指定して矩形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(int32 x, int32 y, Size size) & noexcept;
+
+		/// @brief 左上座標とサイズを指定して矩形領域を参照します。
+		/// @param x 左上の X 座標
+		/// @param y 左上の Y 座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(int32 x, int32 y, Size size) const& noexcept;
+
+		/// @brief 左上座標と辺の長さを指定して正方形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(Point pos, int32 size) & noexcept;
+
+		/// @brief 左上座標と辺の長さを指定して正方形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(Point pos, int32 size) const& noexcept;
+
+		/// @brief 左上座標とサイズを指定して矩形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		MutableImageView operator ()(Point pos, Size size) & noexcept;
+
+		/// @brief 左上座標とサイズを指定して矩形領域を参照します。
+		/// @param pos 左上の座標
+		/// @param size 幅と高さ（ピクセル）
+		/// @see operator()(Rect)
+		[[nodiscard]]
+		ImageView operator ()(Point pos, Size size) const& noexcept;
+
+		/// @brief 画像と rect の交差領域を参照するビューを返します。
+		/// @param rect 画像内の座標での矩形
+		/// @return 交差がない場合や rect の幅・高さが非正の場合は空のビュー
+		/// @remark 借用と無効化の規則は ImageView を参照してください。ImageView::subview() と同じ clipping を行います。
+		[[nodiscard]]
+		MutableImageView operator ()(Rect rect) & noexcept;
+
+		/// @brief 画像と rect の交差領域を参照するビューを返します。
+		/// @param rect 画像内の座標での矩形
+		/// @return 交差がない場合や rect の幅・高さが非正の場合は空のビュー
+		/// @remark 借用と無効化の規則は ImageView を参照してください。ImageView::subview() と同じ clipping を行います。
+		[[nodiscard]]
+		ImageView operator ()(Rect rect) const& noexcept;
+
+		/// @brief 一時画像からの借用を禁止します。
+		void operator ()(int32 x, int32 y, int32 size) const&& = delete;
+		void operator ()(int32 x, int32 y, int32 w, int32 h) const&& = delete;
+		void operator ()(Point pos, int32 w, int32 h) const&& = delete;
+		void operator ()(int32 x, int32 y, Size size) const&& = delete;
+		void operator ()(Point pos, int32 size) const&& = delete;
+		void operator ()(Point pos, Size size) const&& = delete;
+		void operator ()(Rect rect) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	cloned
 		//
 		////////////////////////////////////////////////////////////////
@@ -798,7 +923,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 画像の画素を dst の pos へ上書きコピーします。
+		/// @remark dst の範囲外を切り捨てます。alpha 合成は行いません。同じ Image へのコピーは何もしません。
 		void overwrite(Image& dst, Point pos) const;
+
+		/// @brief 画像の画素をビューの局所座標 pos へ上書きコピーします。
+		/// @remark 範囲・重複の扱いは ImageView::overwrite() と同じです。
+		void overwrite(MutableImageView dst, Point pos = Point{ 0, 0 }) const noexcept;
 
 
 		////////////////////////////////////////////////////////////////

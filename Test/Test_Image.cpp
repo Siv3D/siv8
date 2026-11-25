@@ -11,6 +11,7 @@
 
 # if defined(SIV3D_IMAGE_ALLOCATION_TEST)
 # include <Siv3D/Image.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/CPUInfo.hpp>
 # include "Siv3DTestFramework.hpp"
 // White-box checks share a translation unit with the unmodified implementation.
@@ -457,6 +458,46 @@ TEST_CASE("Image.allocation.failure_preserves_image")
 		CheckImageStorage(image);
 		CHECK(image.size() == ((operation < 3) ? Size{ 65, 7 } : Size{ 3, 65 }));
 		if (operation == 0 || operation == 2) { CHECK((image == source)); }
+	}
+}
+
+TEST_CASE("Image.allocation.view_operations")
+{
+	Image image = MakeTestImage(17);
+	Image destination{ 20, 20, Color::Zero() };
+	const Image original = image;
+	ImageAllocationProbe probe;
+	{
+		const ScopedImageAllocationProbe scope{ probe };
+		image(Rect{ 1, 2, 9, 8 }).fill(Color{ 11, 17, 23, 29 });
+		image(Rect{ 1, 2, 9, 8 }).overwrite(image(Rect{ image.size() }), Point{ 2, 3 });
+		image(Rect{ image.size() }).overwrite(destination);
+		image(Rect{ 1, 2, 9, 8 }).copyTo(destination);
+		image(Rect{ image.size() }).copyTo(image);
+	}
+	CHECK(probe.calls == 0);
+
+	for (const bool aliases : { false, true })
+	{
+		CAPTURE(aliases);
+		Image target = aliases ? original : Image{ 1, 1, Color{ 3, 5, 7, 11 } };
+		const Image before = target;
+		const auto allocation = target.data();
+		const ImageView source = aliases ? target(Rect{ 1, 2, 9, 8 }) : original(Rect{ original.size() });
+		ImageAllocationProbe failure{ .fail = true };
+		bool threw = false;
+		{
+			const ScopedImageAllocationProbe scope{ failure };
+			try { source.copyTo(target); }
+			catch (const std::bad_alloc&) { threw = true; }
+		}
+		CHECK(threw);
+		CHECK(failure.calls == 1);
+		CHECK(target.data() == allocation);
+		CHECK(target == before);
+		const Image expected = source.cloned();
+		source.copyTo(target);
+		CHECK(target == expected);
 	}
 }
 

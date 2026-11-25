@@ -391,6 +391,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageView.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MutableImageView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageDecoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageEncoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\INI.ipp" />
@@ -530,6 +532,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MutableImageView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat.hpp" />
@@ -1079,6 +1083,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAHeader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImagePixel\SolidColorWriter.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImagePainting.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImageRegion.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\FallbackNameList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\IKeyboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.hpp" />
@@ -1872,6 +1877,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageProcessing\SivImageProcessing.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\ImagePainting.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImageView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INISection\SivINISection.cpp" />

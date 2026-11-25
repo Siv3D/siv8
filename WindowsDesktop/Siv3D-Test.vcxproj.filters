@@ -163,6 +163,9 @@
     <ClCompile Include="..\Test\Test_Image.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ImageView.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ImageProcessing.cpp">
       <Filter>Test</Filter>
     </ClCompile>

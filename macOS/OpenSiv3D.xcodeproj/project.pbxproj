@@ -955,6 +955,7 @@
 		F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AACF2E2A0A14001B4D43 /* BitmapGlyphCache.cpp */; };
 		F943AAE32E2A0A3F001B4D43 /* ImagePainting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */; };
 		F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */; };
+		F9B800013034000000000006 /* ImageRegion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B800013034000000000005 /* ImageRegion.hpp */; };
 		F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */; };
 		F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */; };
 		C1B340C25CBA4DC39F6E6C7D /* SceneConfig.ipp in Headers */ = {isa = PBXBuildFile; fileRef = B3F60D9574A844F08D6F4F06 /* SceneConfig.ipp */; };
@@ -1073,11 +1074,17 @@
 		F9528B372BB0567000222F45 /* MemoryMappedFileViewDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B342BB0567000222F45 /* MemoryMappedFileViewDetail.hpp */; };
 		F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */; };
 		F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B392BB69C1800222F45 /* Image.hpp */; };
+		F9B800013034000000000002 /* ImageView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B800013034000000000001 /* ImageView.hpp */; };
+		F9B80001303400000000000C /* MutableImageView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B80001303400000000000B /* MutableImageView.hpp */; };
 		F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B3B2BB69C2800222F45 /* Image.ipp */; };
+		F9B800013034000000000004 /* ImageView.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B800013034000000000003 /* ImageView.ipp */; };
+		F9B80001303400000000000E /* MutableImageView.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B80001303400000000000D /* MutableImageView.ipp */; };
 		F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */; };
+		F9B80001303400000000000A /* Test_ImageView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B800013034000000000009 /* Test_ImageView.cpp */; };
 		C34971A32F95A03219E7A3BC /* Test_ImageProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34B77148A90D45B68C05F42D /* Test_ImageProcessing.cpp */; };
 		C849A87D82B44BC197A390A1 /* Test_ImageDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */; };
 		F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3F2BB69C8200222F45 /* SivImage.cpp */; };
+		F9B800013034000000000008 /* SivImageView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B800013034000000000007 /* SivImageView.cpp */; };
 		F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B422BB69CA900222F45 /* BigFloat.hpp */; };
 		F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B442BB69D8500222F45 /* BigFloat.ipp */; };
 		F9528B4B2BB69EAD00222F45 /* BigFloatDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */; };
@@ -4536,6 +4543,7 @@
 		F943AAD52E2A0A14001B4D43 /* MSDFGlyphCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyphCache.hpp; sourceTree = "<group>"; };
 		F943AAD62E2A0A14001B4D43 /* MSDFGlyphCache.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSDFGlyphCache.cpp; sourceTree = "<group>"; };
 		F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImagePainting.hpp; sourceTree = "<group>"; };
+		F9B800013034000000000005 /* ImageRegion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageRegion.hpp; sourceTree = "<group>"; };
 		F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePainting.cpp; sourceTree = "<group>"; };
 		F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.hpp; sourceTree = "<group>"; };
 		F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.ipp; sourceTree = "<group>"; };
@@ -4654,11 +4662,17 @@
 		F9528B332BB0567000222F45 /* MemoryMappedFileViewDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryMappedFileViewDetail.cpp; sourceTree = "<group>"; };
 		F9528B342BB0567000222F45 /* MemoryMappedFileViewDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryMappedFileViewDetail.hpp; sourceTree = "<group>"; };
 		F9528B392BB69C1800222F45 /* Image.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
+		F9B800013034000000000001 /* ImageView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageView.hpp; sourceTree = "<group>"; };
+		F9B80001303400000000000B /* MutableImageView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MutableImageView.hpp; sourceTree = "<group>"; };
 		F9528B3B2BB69C2800222F45 /* Image.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.ipp; sourceTree = "<group>"; };
+		F9B800013034000000000003 /* ImageView.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageView.ipp; sourceTree = "<group>"; };
+		F9B80001303400000000000D /* MutableImageView.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MutableImageView.ipp; sourceTree = "<group>"; };
 		F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Image.cpp; sourceTree = "<group>"; };
+		F9B800013034000000000009 /* Test_ImageView.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageView.cpp; sourceTree = "<group>"; };
 		34B77148A90D45B68C05F42D /* Test_ImageProcessing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageProcessing.cpp; sourceTree = "<group>"; };
 		C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ImageDraw.cpp; sourceTree = "<group>"; };
 		F9528B3F2BB69C8200222F45 /* SivImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage.cpp; sourceTree = "<group>"; };
+		F9B800013034000000000007 /* SivImageView.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageView.cpp; sourceTree = "<group>"; };
 		F9528B422BB69CA900222F45 /* BigFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.hpp; sourceTree = "<group>"; };
 		F9528B442BB69D8500222F45 /* BigFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.ipp; sourceTree = "<group>"; };
 		F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloatDetail.hpp; sourceTree = "<group>"; };
@@ -7483,6 +7497,7 @@
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
+				F9B800013034000000000009 /* Test_ImageView.cpp */,
 				34B77148A90D45B68C05F42D /* Test_ImageProcessing.cpp */,
 				C849A87D82B44BC197A390A2 /* Test_ImageDraw.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
@@ -8040,6 +8055,8 @@
 				F9797EF52F6EB6E800518D26 /* Icon.ipp */,
 				F9DD96362F0965A30026DFA5 /* IEffect.ipp */,
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
+				F9B800013034000000000003 /* ImageView.ipp */,
+				F9B80001303400000000000D /* MutableImageView.ipp */,
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
 				F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */,
 				F90F7A812FACFB7D0077F398 /* ImagePixel.ipp */,
@@ -8399,6 +8416,8 @@
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
 				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
 				F9528B392BB69C1800222F45 /* Image.hpp */,
+				F9B800013034000000000001 /* ImageView.hpp */,
+				F9B80001303400000000000B /* MutableImageView.hpp */,
 				F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */,
 				F90F7A7D2FACFB660077F398 /* ImageDraw.hpp */,
 				F9528C5A2BC05B0200222F45 /* ImageEncoder.hpp */,
@@ -10710,9 +10729,11 @@
 			isa = PBXGroup;
 			children = (
 				F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */,
+				F9B800013034000000000005 /* ImageRegion.hpp */,
 				F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */,
 				F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */,
 				F9528B3F2BB69C8200222F45 /* SivImage.cpp */,
+				F9B800013034000000000007 /* SivImageView.cpp */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -15239,6 +15260,8 @@
 				F93BD799300FB11A00B3542E /* SmallestEnclosingCircle.hpp in Headers */,
 				F93BD79A300FB11A00B3542E /* ConvexHull.hpp in Headers */,
 				F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */,
+				F9B800013034000000000004 /* ImageView.ipp in Headers */,
+				F9B80001303400000000000E /* MutableImageView.ipp in Headers */,
 				F986009C2BCFBB53006A4C0F /* SkIDChangeListener.h in Headers */,
 				F98600972BCFBB53006A4C0F /* SkColorData.h in Headers */,
 				F986028B2BCFBB54006A4C0F /* SkTHash.h in Headers */,
@@ -16171,6 +16194,7 @@
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
 				F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */,
+				F9B800013034000000000006 /* ImageRegion.hpp in Headers */,
 				F9797DE22F6275F900518D26 /* PDFDocument.hpp in Headers */,
 				F9797DE32F6275F900518D26 /* PDFLinkInfo.hpp in Headers */,
 				F9797DE42F6275F900518D26 /* PDFPage.hpp in Headers */,
@@ -16668,6 +16692,8 @@
 				F96F96082C359ED90033353E /* morton3D.h in Headers */,
 				F986021F2BCFBB54006A4C0F /* SkPictureFlat.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
+				F9B800013034000000000002 /* ImageView.hpp in Headers */,
+				F9B80001303400000000000C /* MutableImageView.hpp in Headers */,
 				F98600A72BCFBB53006A4C0F /* SkCanvasStateUtils.h in Headers */,
 				F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
@@ -17589,6 +17615,7 @@
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
+				F9B80001303400000000000A /* Test_ImageView.cpp in Sources */,
 				C34971A32F95A03219E7A3BC /* Test_ImageProcessing.cpp in Sources */,
 				C849A87D82B44BC197A390A1 /* Test_ImageDraw.cpp in Sources */,
 				F9528C522BC029E800222F45 /* Test_MemoryMappedFile.cpp in Sources */,
@@ -17734,6 +17761,7 @@
 				F980C4712C01B4B600A86B68 /* SivDepthStencilState.cpp in Sources */,
 				F99881C32F56CA7700C8991D /* SivDriveType.cpp in Sources */,
 				F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */,
+				F9B800013034000000000008 /* SivImageView.cpp in Sources */,
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F998817D2F45A23900C8991D /* CClipboard.mm in Sources */,

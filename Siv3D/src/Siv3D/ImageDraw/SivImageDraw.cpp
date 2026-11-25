@@ -31,7 +31,7 @@ namespace s3d
 {
 	namespace
 	{
-		struct ImageView
+		struct ImageDrawView
 		{
 			Color* data = nullptr;
 			int32 width = 0;
@@ -101,9 +101,9 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		ImageView MakeImageView(Image& image) noexcept
+		ImageDrawView MakeImageDrawView(Image& image) noexcept
 		{
-			return ImageView{
+			return ImageDrawView{
 				image.data(),
 				static_cast<int32>(image.width()),
 				static_cast<int32>(image.height()),
@@ -241,7 +241,7 @@ namespace s3d
 
 		void WriteMergedSpans(
 			const ImagePixel::detail::SolidColorWriter& writer,
-			ImageView view,
+			ImageDrawView view,
 			int32 y,
 			std::vector<SpanI>& spans)
 		{
@@ -267,7 +267,7 @@ namespace s3d
 
 		void WriteSpanHalfOpenClipped(
 			const ImagePixel::detail::SolidColorWriter& writer,
-			ImageView view,
+			ImageDrawView view,
 			int32 y,
 			int32 x0,
 			int32 x1)
@@ -294,7 +294,7 @@ namespace s3d
 
 		void WriteSpanInclusiveClipped(
 			const ImagePixel::detail::SolidColorWriter& writer,
-			ImageView view,
+			ImageDrawView view,
 			int32 y,
 			int32 x0,
 			int32 x1)
@@ -387,7 +387,7 @@ namespace s3d
 		}
 
 		void FillRectInteger(
-			ImageView view,
+			ImageDrawView view,
 			const Rect& rect,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -421,7 +421,7 @@ namespace s3d
 		}
 
 		void FillRectFloat(
-			ImageView view,
+			ImageDrawView view,
 			const RectF& rect,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -505,7 +505,7 @@ namespace s3d
 		}
 
 		void FillRectClipped(
-			const ImageView view,
+			const ImageDrawView view,
 			int32 x0,
 			int32 y0,
 			int32 x1,
@@ -528,7 +528,7 @@ namespace s3d
 		}
 
 		void FillRectFrameInteger(
-			const ImageView view,
+			const ImageDrawView view,
 			const Rect& rect,
 			const int32 innerThickness,
 			const int32 outerThickness,
@@ -624,7 +624,7 @@ namespace s3d
 		}
 
 		void FillRectFrameFloat(
-			const ImageView view,
+			const ImageDrawView view,
 			const RectF& rect,
 			const double innerThickness,
 			const double outerThickness,
@@ -750,7 +750,7 @@ namespace s3d
 		}
 
 		void FillCircleNoAAFast(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -892,7 +892,7 @@ namespace s3d
 		}
 
 		void FillRoundDiskNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -986,7 +986,7 @@ namespace s3d
 		}
 
 		void FillCircleAA(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -1084,7 +1084,7 @@ namespace s3d
 		}
 
 		void FillCircleFrameNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			double innerThickness,
 			double outerThickness,
@@ -1196,7 +1196,7 @@ namespace s3d
 		}
 
 		void FillCircleFrameAA(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			double innerThickness,
 			double outerThickness,
@@ -1663,7 +1663,7 @@ namespace s3d
 		}
 
 		void FillCirclePieByCoverage(
-			ImageView view,
+			ImageDrawView view,
 			const Circle& circle,
 			double startAngle,
 			double angle,
@@ -1749,7 +1749,7 @@ namespace s3d
 		}
 
 		void FillEllipseNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const Ellipse& ellipse,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -1805,7 +1805,7 @@ namespace s3d
 		}
 
 		void FillEllipseAA(
-			ImageView view,
+			ImageDrawView view,
 			const Ellipse& ellipse,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -1870,7 +1870,7 @@ namespace s3d
 		}
 
 		template <bool Rotated = false>
-		void FillEllipseFrameByDistance(const ImageView view, const Ellipse& ellipse,
+		void FillEllipseFrameByDistance(const ImageDrawView view, const Ellipse& ellipse,
 			const double innerThickness, const double outerThickness, const ImagePixel::BlendMode blendMode,
 			const ImageDraw::DstAlpha dstAlpha, const Color color, const bool antialiased, const double rotation = 0.0)
 		{
@@ -2273,7 +2273,7 @@ namespace s3d
 		}
 
 		void FillRoundRectByDistance(
-			ImageView view,
+			ImageDrawView view,
 			const RoundRect& roundRect,
 			ImagePixel::BlendMode blendMode,
 			ImageDraw::DstAlpha dstAlpha,
@@ -2418,7 +2418,7 @@ namespace s3d
 		}
 
 		void FillRoundRectFrameByDistance(
-			ImageView view,
+			ImageDrawView view,
 			const RoundRect& roundRect,
 			double innerThickness,
 			double outerThickness,
@@ -2639,7 +2639,7 @@ namespace s3d
 
 		template <class PointType>
 		void FillConvexPolygonNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const PointType* points,
 			size_t count,
 			const ImagePixel::detail::SolidColorWriter& writer)
@@ -2902,7 +2902,7 @@ namespace s3d
 		}
 
 		void DrawLineNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const Vec2& from,
 			const Vec2& to,
 			double thickness,
@@ -3061,7 +3061,7 @@ namespace s3d
 		}
 
 		void DrawLineAA(
-			ImageView view,
+			ImageDrawView view,
 			const Vec2& from,
 			const Vec2& to,
 			double thickness,
@@ -3307,7 +3307,7 @@ namespace s3d
 		}
 
 		void AddStrokePrimitiveWithBounds(
-			ImageView view,
+			ImageDrawView view,
 			std::vector<StrokePrimitive>& primitives,
 			StrokePrimitive primitive,
 			const BoundsD& bounds)
@@ -3335,7 +3335,7 @@ namespace s3d
 		}
 
 		void AddStrokeBodyPrimitive(
-			ImageView view,
+			ImageDrawView view,
 			std::vector<StrokePrimitive>& primitives,
 			const Vec2& from,
 			const Vec2& to,
@@ -3384,7 +3384,7 @@ namespace s3d
 		}
 
 		void AddStrokeDiskPrimitive(
-			ImageView view,
+			ImageDrawView view,
 			std::vector<StrokePrimitive>& primitives,
 			const Vec2& center,
 			const double radius)
@@ -3555,7 +3555,7 @@ namespace s3d
 		}
 
 		void DrawStrokePrimitivesNoAA(
-			ImageView view,
+			ImageDrawView view,
 			const std::vector<StrokePrimitive>& primitives,
 			const Color color,
 			const ImagePixel::BlendMode blendMode,
@@ -3612,7 +3612,7 @@ namespace s3d
 
 		template <bool TrimCovered>
 		void DrawStrokePrimitivesAA(
-			ImageView view,
+			ImageDrawView view,
 			const std::vector<StrokePrimitive>& primitives,
 			const Color color,
 			const ImagePixel::BlendMode blendMode,
@@ -3716,7 +3716,7 @@ namespace s3d
 		}
 
 		void DrawStrokePrimitives(
-			ImageView view,
+			ImageDrawView view,
 			const std::vector<StrokePrimitive>& primitives,
 			const double thickness,
 			const Color color,
@@ -3740,7 +3740,7 @@ namespace s3d
 		}
 
 		void BuildZeroLengthOpenStrokePrimitives(
-			ImageView view,
+			ImageDrawView view,
 			std::vector<StrokePrimitive>& primitives,
 			const Vec2& point,
 			const double halfThickness,
@@ -3801,7 +3801,7 @@ namespace s3d
 
 		// Segment rectangles and round joins; only the two endpoint caps are selectable.
 		void BuildOpenStrokePrimitives(
-			ImageView view,
+			ImageDrawView view,
 			const std::vector<Vec2>& effectivePoints,
 			const double thickness,
 			const LineCap startCap,
@@ -3855,7 +3855,7 @@ namespace s3d
 		// Append one round-join contour to the shared union, including polygon holes.
 		template <class PointType>
 		void AppendClosedStrokePrimitives(
-			ImageView view,
+			ImageDrawView view,
 			const PointType* points,
 			const size_t count,
 			const Vec2& offset,
@@ -3995,7 +3995,7 @@ namespace s3d
 
 		template <class PointType>
 		void FillPolygonNoAA(
-			const ImageView view,
+			const ImageDrawView view,
 			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
@@ -4242,7 +4242,7 @@ namespace s3d
 		};
 
 		template <bool Antialias, bool Split = false>
-		void DrawJoinedFramePolygons(const ImageView view, const std::span<const ConvexStrokePiece> polygons,
+		void DrawJoinedFramePolygons(const ImageDrawView view, const std::span<const ConvexStrokePiece> polygons,
 			const BoundsD& bounds, const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha,
 			const std::span<const Vec2> contour = {}, const size_t innerCount = 0)
 		{
@@ -4404,7 +4404,7 @@ namespace s3d
 			ConvexStrokePiece polygons[N * 2];
 			BoundsD bounds;
 			const size_t polygonCount = MakeJoinedFramePolygons({points, count}, joinStyle, thickness * 0.5, polygons, bounds);
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			const std::span<const ConvexStrokePiece> parts{ polygons, polygonCount };
 			if (enableAntialiasing == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
 			else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
@@ -4466,7 +4466,7 @@ namespace s3d
 
 		template <bool Antialias>
 		void FillCappedArrowBySpans(
-			const ImageView view, const Vec2& from, const Vec2& to, const double length,
+			const ImageDrawView view, const Vec2& from, const Vec2& to, const double length,
 			const double width, const SizeF& headSize, const LineCap startCap,
 			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
 		{
@@ -4555,7 +4555,7 @@ namespace s3d
 
 		template <bool Antialias>
 		void FillCircleArcBySpans(
-			const ImageView view, const Circle& circle, const CircleSectorData& sector,
+			const ImageDrawView view, const Circle& circle, const CircleSectorData& sector,
 			const double innerRadius, const double outerRadius, const LineCap startCap, const LineCap endCap,
 			const Color color, const ImagePixel::BlendMode blendMode, const ImageDraw::DstAlpha dstAlpha)
 		{
@@ -4690,7 +4690,7 @@ namespace s3d
 
 		template <bool Antialias>
 		void FillCircleSegmentBySpans(
-			const ImageView view, const Circle& circle, const double arcMidpointAngle, const double height,
+			const ImageDrawView view, const Circle& circle, const double arcMidpointAngle, const double height,
 			const Color color, const ImagePixel::BlendMode blendMode,
 			const ImageDraw::DstAlpha dstAlpha)
 		{
@@ -4773,7 +4773,7 @@ namespace s3d
 		}
 
 		void FillEllipsePieBySpans(
-			const ImageView view, const Ellipse& ellipse, const CircleSectorData& sector,
+			const ImageDrawView view, const Ellipse& ellipse, const CircleSectorData& sector,
 			const Color color, const ImagePixel::BlendMode blendMode,
 			const EnableAntialiasing enableAntialiasing, const ImageDraw::DstAlpha dstAlpha)
 		{
@@ -4866,7 +4866,7 @@ namespace s3d
 		}
 
 		template <size_t N>
-		void DrawSmallPolygonFrameByDistance(const ImageView view, const Vec2 (&input)[N], double innerThickness,
+		void DrawSmallPolygonFrameByDistance(const ImageDrawView view, const Vec2 (&input)[N], double innerThickness,
 			double outerThickness, Color color, ImagePixel::BlendMode blendMode,
 			EnableAntialiasing enableAntialiasing, ImageDraw::DstAlpha dstAlpha);
 
@@ -4877,7 +4877,7 @@ namespace s3d
 		{
 			if (joinStyle == JoinStyle::Round)
 			{
-				DrawSmallPolygonFrameByDistance(MakeImageView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
+				DrawSmallPolygonFrameByDistance(MakeImageDrawView(image), input, innerThickness, outerThickness, color, blendMode, aa, dstAlpha);
 				return;
 			}
 			if (image.isEmpty() || (innerThickness < 0.0) || (outerThickness < 0.0)
@@ -4893,7 +4893,7 @@ namespace s3d
 			{
 				const size_t polygonCount = MakeJoinedFramePolygons(contour, joinStyle, innerThickness, polygons, bounds);
 				const std::span<const ConvexStrokePiece> parts{polygons, polygonCount};
-				const ImageView view = MakeImageView(image);
+				const ImageDrawView view = MakeImageDrawView(image);
 				if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true>(view, parts, bounds, color, blendMode, dstAlpha);
 				else DrawJoinedFramePolygons<false>(view, parts, bounds, color, blendMode, dstAlpha);
 				return;
@@ -4903,7 +4903,7 @@ namespace s3d
 			const size_t outerCount = (outerThickness == 0.0) ? 0
 				: MakeJoinedFramePolygons(contour, joinStyle, outerThickness, polygons + innerCount, bounds);
 			const std::span<const ConvexStrokePiece> parts{polygons, innerCount + outerCount};
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			if (aa == EnableAntialiasing::Yes) DrawJoinedFramePolygons<true, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
 			else DrawJoinedFramePolygons<false, true>(view, parts, bounds, color, blendMode, dstAlpha, contour, innerCount);
 		}
@@ -4912,7 +4912,7 @@ namespace s3d
 		// first cannot preserve concave corners, crossings, or a collapsing inner hole.
 		template <size_t N>
 		void DrawSmallPolygonFrameByDistance(
-			const ImageView view,
+			const ImageDrawView view,
 			const Vec2 (&input)[N],
 			const double innerThickness,
 			const double outerThickness,
@@ -5036,7 +5036,7 @@ namespace s3d
 
 		template <class PointType>
 		void FillPolygonAA4x4InBounds(
-			const ImageView view,
+			const ImageDrawView view,
 			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
@@ -5117,7 +5117,7 @@ namespace s3d
 
 		template <class PointType>
 		void FillPolygonAA4x4(
-			const ImageView view,
+			const ImageDrawView view,
 			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
@@ -5142,7 +5142,7 @@ namespace s3d
 
 		template <class PointType>
 		void FillPolygonInternal(
-			const ImageView view,
+			const ImageDrawView view,
 			const PolygonContourView<PointType>* contours,
 			const size_t contourCount,
 			const Vec2& offset,
@@ -5240,7 +5240,7 @@ namespace s3d
 		// A small analytic shape produces a bounded number of intervals per sample row.
 		// Union before counting coverage keeps joins and overlapping parts single-covered.
 		template <size_t MaxSpans, class Scan>
-		void DrawSampledSpans(const ImageView view, const BoundsD& bounds, const Color color,
+		void DrawSampledSpans(const ImageDrawView view, const BoundsD& bounds, const Color color,
 			const ImagePixel::BlendMode blendMode, const EnableAntialiasing aa, Scan&& scan)
 		{
 			int32 x0, y0, x1, y1;
@@ -5288,7 +5288,7 @@ namespace s3d
 				Circle disk{ 0, 0, 0 };
 				double minY, maxY;
 			};
-			ImageView m_view;
+			ImageDrawView m_view;
 			BoundsD m_bounds;
 			std::vector<Piece> m_pieces;
 
@@ -5299,7 +5299,7 @@ namespace s3d
 
 		public:
 
-			explicit SampledShape(const ImageView view) : m_view{ view } {}
+			explicit SampledShape(const ImageDrawView view) : m_view{ view } {}
 
 			void polygon(const std::span<const Vec2> points)
 			{
@@ -5476,7 +5476,7 @@ namespace s3d
 					if (!behind(*start, *end) || !behind(*end, *start)) start->project = end->project = false;
 				}
 			}
-			SampledShape shape{ MakeImageView(image) };
+			SampledShape shape{ MakeImageDrawView(image) };
 			Vec2 startCut[2];
 			if (start) { startCut[0] = start->join[1]; startCut[1] = start->join[0]; }
 			shape.stroke(points, thickness, startCap, LineCap::Flat,
@@ -5679,7 +5679,7 @@ namespace s3d
 			}
 			const RoundedImageOutline outline{ rect, radii };
 			BoundsD bounds; bounds.include(rect.pos); bounds.include(rect.br());
-			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<1>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, auto&& add) { double l, r; if (outline.spanAt(y, l, r)) add(l, r); });
 		}
 
@@ -5698,7 +5698,7 @@ namespace s3d
 			const bool hole = ((inside.rect.w > 0) && (inside.rect.h > 0));
 			if (hole) RectCornerGeometry::NormalizeCornerRadii(inside.radii[0], inside.radii[1], inside.radii[2], inside.radii[3], inside.rect.w, inside.rect.h);
 			BoundsD bounds; bounds.include(outside.rect.pos); bounds.include(outside.rect.br());
-			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<2>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, auto&& add)
 				{
 					double l, r, il, ir;
@@ -5722,7 +5722,7 @@ namespace s3d
 			const Vec2 vertices[]{ p.base0, p.tip, p.base1 };
 			ConvexStrokePiece triangle; triangle.set(vertices, bounds);
 			ConvexStrokePiece::SpanCursor cursor;
-			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<2>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, auto&& add)
 				{
 					double l, right;
@@ -5752,7 +5752,7 @@ namespace s3d
 			const Vec2 cutCenter = (circle.center + shape->axis * width);
 			const double r = shape->circle.r;
 			BoundsD bounds; bounds.includeCircle(circle.center, r);
-			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<2>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, const auto& add)
 				{
 					const double dy = (y - circle.y);
@@ -5781,7 +5781,7 @@ namespace s3d
 			BoundsD bounds; bounds.includeCircle(circle.center, r);
 			ConvexStrokePiece triangle; triangle.set(points, bounds);
 			ConvexStrokePiece::SpanCursor cursor;
-			DrawSampledSpans<2>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<2>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, const auto& add)
 				{
 					const double dy = (y - circle.y);
@@ -5814,11 +5814,11 @@ namespace s3d
 			const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
 			if (enableAntialiasing == EnableAntialiasing::Yes)
 			{
-				FillCircleArcBySpans<true>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+				FillCircleArcBySpans<true>(MakeImageDrawView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
 			}
 			else
 			{
-				FillCircleArcBySpans<false>(MakeImageView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
+				FillCircleArcBySpans<false>(MakeImageDrawView(image), circle, sector, innerRadius, outerRadius, (angle < 0 ? endCap : startCap), (angle < 0 ? startCap : endCap), color, blendMode, dstAlpha);
 			}
 		}
 		void CircleTrimmedArc(Image& image, const Circle& circle, const double startAngle, const double angle,
@@ -5848,7 +5848,7 @@ namespace s3d
 			IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
 			IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
 			// Each of two ring spans intersects at most three convex angular regions.
-			DrawSampledSpans<6>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<6>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, const auto& add)
 				{
 					const double dy = (y - circle.y), dySq = (dy * dy);
@@ -5895,7 +5895,7 @@ namespace s3d
 			const double w = std::sqrt(a2 * c * c + b2 * s * s);
 			const double skew = ((a2 - b2) * c * s / h2), width = (ellipse.a * ellipse.b / h);
 			BoundsD bounds; bounds.include({ellipse.x - w, ellipse.y - h}); bounds.include({ellipse.x + w, ellipse.y + h});
-			DrawSampledSpans<1>(MakeImageView(image), bounds, color, mode, aa,
+			DrawSampledSpans<1>(MakeImageDrawView(image), bounds, color, mode, aa,
 				[&](const double y, const auto& add)
 				{
 					const double dy = (y - ellipse.y);
@@ -5916,7 +5916,7 @@ namespace s3d
 				ImageDraw::EllipseFrame(image, ellipse, innerThickness, outerThickness, color, mode, aa);
 				return;
 			}
-			FillEllipseFrameByDistance<true>(MakeImageView(image), ellipse, innerThickness, outerThickness,
+			FillEllipseFrameByDistance<true>(MakeImageDrawView(image), ellipse, innerThickness, outerThickness,
 				mode, ImageDraw::DstAlpha::UseStored, color, (aa == EnableAntialiasing::Yes), rotation);
 		}
 
@@ -5948,7 +5948,7 @@ namespace s3d
 				const double inward = Min(innerThickness, length * Min(ellipse.a / ellipse.b, ellipse.b / ellipse.a));
 				return Section{ base - normal * inward, base + normal * outerThickness, normal };
 			};
-			SampledShape shape{ MakeImageView(image) };
+			SampledShape shape{ MakeImageDrawView(image) };
 			const auto append = [&](auto&& self, double from, double to, const Section& a, const Section& b, int32 depth) -> void
 			{
 				const double mid = ((from + to) * 0.5);
@@ -6058,7 +6058,7 @@ namespace s3d
 			const ImagePixel::BlendMode blendMode,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (rect.w <= 0) || (rect.h <= 0))
 			{
@@ -6075,7 +6075,7 @@ namespace s3d
 			const ImagePixel::BlendMode blendMode,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < rect.w) || !(0.0 < rect.h))
 			{
@@ -6094,7 +6094,7 @@ namespace s3d
 			const ImagePixel::BlendMode blendMode,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6121,7 +6121,7 @@ namespace s3d
 			const ImagePixel::BlendMode blendMode,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6147,7 +6147,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < circle.r))
 			{
@@ -6174,7 +6174,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6201,7 +6201,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < circle.r) || !HasNonZeroSweep(angle))
 			{
@@ -6270,11 +6270,11 @@ namespace s3d
 			}
 			if (enableAntialiasing == EnableAntialiasing::Yes)
 			{
-				FillCircleSegmentBySpans<true>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+				FillCircleSegmentBySpans<true>(MakeImageDrawView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
 			}
 			else
 			{
-				FillCircleSegmentBySpans<false>(MakeImageView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
+				FillCircleSegmentBySpans<false>(MakeImageDrawView(image), circle, arcMidpointAngle, height, color, blendMode, dstAlpha);
 			}
 		}
 
@@ -6306,7 +6306,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6342,7 +6342,7 @@ namespace s3d
 				Fill(image, ellipse, color, blendMode, enableAntialiasing, dstAlpha);
 				return;
 			}
-			FillEllipsePieBySpans(MakeImageView(image), ellipse, MakeCircleSectorData(startAngle, angle),
+			FillEllipsePieBySpans(MakeImageDrawView(image), ellipse, MakeCircleSectorData(startAngle, angle),
 				color, blendMode, enableAntialiasing, dstAlpha);
 		}
 
@@ -6365,7 +6365,7 @@ namespace s3d
 				return;
 			}
 
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			int32 x0 = FloorToInt(superEllipse.x - a), x1 = CeilToInt(superEllipse.x + a);
 			int32 y0 = FloorToInt(superEllipse.y - b), y1 = CeilToInt(superEllipse.y + b);
 			if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
@@ -6442,7 +6442,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6470,7 +6470,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6497,7 +6497,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6525,7 +6525,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6601,7 +6601,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6677,7 +6677,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 3))
 			{
@@ -6713,7 +6713,7 @@ namespace s3d
 				return;
 			}
 
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
 			{
@@ -6758,7 +6758,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			const auto& points = shape.vertices();
 			if ((view.data == nullptr) || (points.size() < 3))
 			{
@@ -6791,7 +6791,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			const auto& points = shape.vertices();
 			if ((view.data == nullptr) || (points.size() < 3) || !(0.0 < thickness))
 			{
@@ -6827,7 +6827,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			if ((view.data == nullptr) || polygon.isEmpty() || !(0.0 < thickness))
 			{
 				return;
@@ -6880,7 +6880,7 @@ namespace s3d
 			const LineCap endCap,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < thickness))
 			{
@@ -6907,7 +6907,7 @@ namespace s3d
 				Fill(image, Shape2D::Arrow(from, to, width, headSize), color, blendMode, enableAntialiasing, dstAlpha);
 				return;
 			}
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 			if ((view.data == nullptr) || (width <= 0.0) || (headSize.x <= 0.0) || (headSize.y <= 0.0)) return;
 			const double length = from.distanceFrom(to);
 			if (length == 0.0) return;
@@ -6974,7 +6974,7 @@ namespace s3d
 			const LineCap endCap,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 2) || !(0.0 < thickness))
 			{
@@ -7035,7 +7035,7 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
-			const ImageView view = MakeImageView(image);
+			const ImageDrawView view = MakeImageDrawView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 3) || !(0.0 < thickness))
 			{

@@ -1308,6 +1308,8 @@
 
 // 画像 | Image
 # include <Siv3D/Image.hpp> // ToDo
+# include <Siv3D/ImageView.hpp>
+# include <Siv3D/MutableImageView.hpp>
 
 // 追加の画像処理 | Extra image processing
 # include <Siv3D/ImageProcessing.hpp>

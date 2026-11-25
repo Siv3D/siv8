@@ -7,6 +7,8 @@ ownership and organization follow [docs/AGENTS.md](../AGENTS.md).
   failure behavior, side effects, ownership, and non-obvious boundary cases.
   State when a result is empty or absent; do not call all such outcomes failures.
   Preserve guarantees about partial results and rollback of side effects.
+- Do not use `@copydoc` at present. Write a concise description directly at each
+  declaration; use ordinary references or `@see` for shared contracts.
 - Keep shared behavior in one canonical contract and link to it from related
   types and overloads. Do not create a separate `@remark` for each tested case.
   Put usage guidance, geometric derivations, implementation choices, and detailed

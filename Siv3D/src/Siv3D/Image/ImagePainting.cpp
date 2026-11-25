@@ -463,18 +463,5 @@ namespace s3d
 		{
 			Stamp_Reference(pSrc, pDst, width, height, srcWidth, dstWidth, color);
 		}
-
-		void Overwrite(const Color* pSrc, Color* pDst,
-			const int32 width, const int32 height, const int32 srcWidth, const int32 dstWidth)
-		{
-			const size_t stride_bytes = (width * sizeof(Color));
-
-			for (int32 y = 0; y < height; ++y)
-			{
-				std::memcpy(pDst, pSrc, stride_bytes);
-				pSrc += srcWidth;
-				pDst += dstWidth;
-			}
-		}
 	}
 }

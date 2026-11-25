@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 					for (size_t i = 0; i < n; ++i) points[i] = fixtures[shape][i] * (size / 32.0);
 					const std::span<const Vec2> contour{points, n};
 					std::vector<Color> pixels(size * size, Color{40,70,100,255});
-					const ImageView view{pixels.data(), size, size, static_cast<size_t>(size)};
+					const ImageDrawView view{pixels.data(), size, size, static_cast<size_t>(size)};
 					for (const auto style : {JoinStyle::Bevel, JoinStyle::Miter})
 						for (const int mode : {0, 1, 2, 3})
 						{
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 			{
 				constexpr int Size = 256;
 				std::vector<Color> pixels(Size * Size, Color{ 40, 70, 100, 255 });
-				const ImageView view{ pixels.data(), Size, Size, Size };
+				const ImageDrawView view{ pixels.data(), Size, Size, Size };
 				std::vector<Vec2> points;
 				for (int i = 0; i <= count; ++i)
 					points.emplace_back(Size * (0.1 + 0.8 * i / count) - clip, Size * (0.5 + 0.3 * std::sin(i * 0.7)));

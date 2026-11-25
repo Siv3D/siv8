@@ -15,7 +15,7 @@
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
-# include "ImagePainting.hpp"
+# include "ImageRegion.hpp"
 
 namespace s3d
 {
@@ -214,7 +214,7 @@ namespace s3d
 
 	void Image::fill(const Color color) noexcept
 	{
-		std::fill(m_pixels.begin(), m_pixels.end(), color); // 明示的に SIMD にしなくても早いコードが生成される
+		detail::ImageRegion::Fill(m_pixels.data(), m_pixels.size(), color);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -323,27 +323,13 @@ namespace s3d
 			return;
 		}
 
-		const Image& src = *this;
+		detail::ImageRegion::Overwrite<false>(m_pixels.data(), m_size, m_size.x,
+			dst.data(), dst.size(), dst.width(), pos);
+	}
 
-		const int32 dstXBegin = Max(pos.x, 0);
-		const int32 dstYBegin = Max(pos.y, 0);
-		const int32 dstXEnd = Min(pos.x + src.width(), dst.width());
-		const int32 dstYEnd = Min(pos.y + src.height(), dst.height());
-		const int32 writeWidth = ((dstXEnd - dstXBegin) > 0 ? (dstXEnd - dstXBegin) : 0);
-		const int32 writeHeight = ((dstYEnd - dstYBegin) > 0 ? (dstYEnd - dstYBegin) : 0);
-
-		if ((writeWidth * writeHeight) == 0)
-		{
-			return;
-		}
-
-		const int32 srcXBegin = Max(0, -pos.x);
-		const int32 srcYBegin = Max(0, -pos.y);
-		const Color* pSrc = &src[srcYBegin][srcXBegin];
-		Color* pDst = &dst[dstYBegin][dstXBegin];
-		const int32 srcWidth = src.width();
-		const int32 dstWidth = dst.width();
-
-		ImagePainting::Overwrite(pSrc, pDst, writeWidth, writeHeight, srcWidth, dstWidth);
+	void Image::overwrite(const MutableImageView dst, const Point pos) const noexcept
+	{
+		detail::ImageRegion::Overwrite<true>(m_pixels.data(), m_size, m_size.x,
+			dst.m_data, dst.m_size, dst.m_stride, pos);
 	}
 }

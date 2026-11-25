@@ -29,7 +29,9 @@ xcrun clang++ "${flags[@]}" -DSIV3D_IMAGE_ALLOCATION_TEST \
 	-I "${repo_dir}/Siv3D/include" -I "${repo_dir}/Siv3D/include/ThirdParty" \
 	"${repo_dir}/Test/ThirdParty/Catch2/catch_amalgamated.cpp" \
 	"${repo_dir}/Test/Test_Image.cpp" \
+	"${repo_dir}/Test/Test_ImageView.cpp" \
 	"${repo_dir}/Siv3D/src/Siv3D/Image/SivImage.cpp" \
+	"${repo_dir}/Siv3D/src/Siv3D/Image/SivImageView.cpp" \
 	-Wl,-dead_strip -o "${output_dir}/image-checks"
 
 "${output_dir}/image-checks"

@@ -386,7 +386,8 @@ creates and prints a temporary directory. The second selects `arm64` or `x86_64`
 and defaults to the host architecture. Running an x86_64 build on Apple Silicon
 requires Rosetta. The directory retains the instrumented executable
 and may be removed after inspection. The checker compiles the real Image sources
-and [Image tests](../../Test/Test_Image.cpp) with AddressSanitizer and
+and [Image tests](../../Test/Test_Image.cpp) and
+[ImageView tests](../../Test/Test_ImageView.cpp) with AddressSanitizer and
 UndefinedBehaviorSanitizer, without starting the engine. It checks pixel-count
 boundaries, writes beyond the logical image, storage reuse, and alignment. The
 normal engine tests use only Image's public API. In the isolated build, the test
@@ -402,7 +403,9 @@ The isolated executable additionally replaces `posix_memalign` at link time.
 A scoped, thread-local probe records allocation requests or returns `ENOMEM` to
 verify that allocation failure preserves the image. The probe is compiled only
 when the script supplies `SIV3D_IMAGE_ALLOCATION_TEST`; the engine and its normal
-test application contain no allocation override. These checks supplement the full
+test application contain no allocation override. View checks also cover strided
+fill/copy, overlapping rectangles, allocation-free operations, and destination
+preservation when a copy allocation fails. These checks supplement the full
 engine suite and do not verify the Windows allocator or MemorySanitizer behavior.
 
 ### Clang warnings on macOS

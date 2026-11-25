@@ -40,6 +40,12 @@
 - 3D 描画キューの導入時に、clear・ミップ生成・読み戻しが発行すべき保留描画の範囲を決める。現在の 2D Flush を無条件の 2D / 3D Flush に広げず、操作順序と不要な発行の費用を評価する。resolve の明示呼び出し・自動 Flush なしは維持する。
 - 異なるブレンドが必要な具体的な MRT パスができた時点で、出力別ブレンド指定を設計する。alpha-to-coverage などパス全体の設定と、各出力のブレンド・書き込みマスクを分離する。
 
+## `Siv3D/include/Siv3D/Image.hpp`
+
+- [メンバ関数の拡張案](docs/image/proposals/member-functions-and-views.md)を基に、v0.6 の復元と v0.8 の追加を段階的に進める。[view と矩形 copy / fill の共通基盤](docs/image/README.md)へ色調補正・配置変換・filter を接続する。
+- 色調補正の追加前に straight / premultiplied alpha の指定と既定値を決める。近傍 filter では ROI の外側を読む範囲、border、出力の重複、作業領域の再利用を決める。旧 paint / stamp の合成規則は ImagePixel の Source Over と区別して採否を判断する。
+- 既存の SIMD 処理の aligned 前提を ROI に持ち込まず、scalar / SSE / AVX2 / NEON と自動 vectorize を比較する。拡縮は既存の stb_image_resize2 経路を優先して評価する。
+
 ## 2D 図形の Image 書き込み
 
 今後の検証と機能拡張を扱う。採用済みの単色描画の仕様・API 対応表・再現可能な測定方法は [Image 書き込みガイド](docs/geometry2d/image-writing.md)を参照。

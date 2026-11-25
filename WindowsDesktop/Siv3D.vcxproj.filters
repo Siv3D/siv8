@@ -2397,7 +2397,19 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageView.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MutableImageView.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageView.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MutableImageView.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\BigFloat.hpp">
@@ -4815,6 +4827,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImagePainting.hpp">
       <Filter>src\Siv3D\Image</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImageRegion.hpp">
+      <Filter>src\Siv3D\Image</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\MSDFGlyphCache.hpp">
       <Filter>src\Siv3D\Font\GlyphCache</Filter>
     </ClInclude>
@@ -6582,6 +6597,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp">
+      <Filter>src\Siv3D\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImageView.cpp">
       <Filter>src\Siv3D\Image</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp">
