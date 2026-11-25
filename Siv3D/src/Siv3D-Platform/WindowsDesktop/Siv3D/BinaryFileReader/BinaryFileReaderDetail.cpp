@@ -94,22 +94,27 @@ namespace s3d
 		else
 		{
 			FilePath fullPath = FileSystem::FullPath(path);
+			const std::wstring nativePath = path.toWstr();
 			// Match the CRT's read/write sharing and handle inheritance.
 			SECURITY_ATTRIBUTES security{ sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
-			const HANDLE handle = ::CreateFileW(path.toWstr().c_str(), GENERIC_READ,
+			const HANDLE handle = ::CreateFileW(nativePath.c_str(), GENERIC_READ,
 				(FILE_SHARE_READ | FILE_SHARE_WRITE), &security, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path.toUTF8()));
+				const DWORD error = ::GetLastError();
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{}` (CreateFileW, Win32 error {})",
+					(fullPath ? fullPath.toUTF8() : path.toUTF8()), error));
 				return false;
 			}
 
 			LARGE_INTEGER fileSize;
 			if (not ::GetFileSizeEx(handle, &fileSize))
 			{
+				const DWORD error = ::GetLastError();
 				::CloseHandle(handle);
-				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to get the size of file `{0}`", path.toUTF8()));
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to get the size of file `{}` (GetFileSizeEx, Win32 error {})",
+					(fullPath ? fullPath.toUTF8() : path.toUTF8()), error));
 				return false;
 			}
 

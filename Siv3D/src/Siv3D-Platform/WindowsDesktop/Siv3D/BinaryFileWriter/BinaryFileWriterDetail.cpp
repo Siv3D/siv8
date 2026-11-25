@@ -82,11 +82,15 @@ namespace s3d
 
 		// ファイルのオープン
 		{
-			const HANDLE handle = ::CreateFile2(path.toWstr().c_str(), GENERIC_WRITE, 0, MakeCreationDisposition(writeMode), nullptr);
+			const std::wstring nativePath = path.toWstr();
+			const HANDLE handle = ::CreateFile2(nativePath.c_str(), GENERIC_WRITE, 0, MakeCreationDisposition(writeMode), nullptr);
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`. {1}", path.toUTF8(), Platform::Windows::GetLastErrorMessage().toUTF8()));
+				const DWORD error = ::GetLastError();
+				const String message = Platform::Windows::GetLastErrorMessage();
+				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{}` (CreateFile2, Win32 error {}). {}",
+					(fullPath ? fullPath.toUTF8() : path.toUTF8()), error, message.toUTF8()));
 				return false;
 			}
 
